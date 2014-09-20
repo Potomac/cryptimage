@@ -46,6 +46,13 @@ public class CryptVideo {
 	private int timeBase;
 	private int frameCount;
 	
+	private int step1 =0;
+	private int step20 = 0;
+	private int step40 =0;
+	private int step60 = 0;
+	private int step80 = 0;
+	private int step100 = 0;
+	
 	private CryptImage cryptImg;
 
 	public CryptVideo(String outputFilename, int keyWord, 
@@ -88,6 +95,7 @@ public class CryptVideo {
 	}
 	
 	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){
+		frameCount++;
 		BufferedImage bi;
 		this.cryptImg.setPosFrame(pos);
 		this.cryptImg.getImgRef().setImg(buff);
@@ -97,8 +105,9 @@ public class CryptVideo {
 		bi = this.cryptImg.getCryptDiscret11(keyWord);
 		//bi = new CryptImage(buff, pos, this.strictMode).getCryptDiscret11(keyWord);
 		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
-		vid.addFrame(bi, this.timeBase * timingFrame);		
-		System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		vid.addFrame(bi, this.timeBase * timingFrame);
+		updateProgress("encoded");
+		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 	}
 	
 	public void addFrameDec(BufferedImage buff, int pos, int timingFrame){
@@ -107,7 +116,8 @@ public class CryptVideo {
 		if (frameCount < this.positionSynchro){
 			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
 			vid.addFrame(buff,this.timeBase * timingFrame);
-			System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+			updateProgress("decoded");
+			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 		else{
 		BufferedImage bi;
@@ -119,8 +129,9 @@ public class CryptVideo {
 		bi = this.cryptImg.getDecryptDiscret11WithCode(keyWord);
 		//bi = new CryptImage(buff, pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
 		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
-		vid.addFrame(bi, this.timeBase * timingFrame);		
-		System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		vid.addFrame(bi, this.timeBase * timingFrame);
+		updateProgress("decoded");
+		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 	}
 	
@@ -188,6 +199,40 @@ public class CryptVideo {
 
 		return image;
 
+	}
+	
+	/**
+	 * update the status in the console for encoding/decoding process creation of the video
+	 * @param step the type of process ( encoded or decoded )
+	 */
+	private void updateProgress(String step){
+		int progress = (int)(((double)this.frameCount/(double)this.videoLengthFrames) * 100);
+		
+		if (progress == 1 && step1 == 0) {
+			System.out.println("Frames " + step + " 1%");
+			step1 = 1;
+		}
+
+		if (progress == 20 && step20 == 0) {
+			System.out.println("Frames " + step + " 20%");
+			step20 = 1;
+		}
+		if (progress == 40 && step40 == 0) {
+			System.out.println("Frames " + step + " 40%");
+			step40 = 1;
+		}
+		if (progress == 60 && step60 == 0) {
+			System.out.println("Frames " + step + " 60%");
+			step60 = 1;
+		}
+		if (progress == 80 && step80 == 0) {
+			System.out.println("Frames " + step + " 80%");
+			step80 = 1;
+		}
+		if (progress == 100 && step100 == 0) {
+			System.out.println("Frames " + step + " 100%");
+			step100 = 1;
+		}
 	}
 	
 	public int getVideoLengthFrames() {
