@@ -32,7 +32,9 @@ public class JobConfig {
 	private boolean strictMode = false;
 	private int positionSynchro = 1;
 	private boolean wantDec = false;
+	private boolean wantPlay = false;	
 	
+
 	public JobConfig() {
 		// TODO Auto-generated constructor stub
 	}
@@ -101,6 +103,12 @@ public class JobConfig {
 		this.wantDec = wantDec;
 	}
 	
+	public boolean isWantPlay() {
+		return wantPlay;
+	}
 
+	public void setWantPlay(boolean wantPlay) {
+		this.wantPlay = wantPlay;
+	}
 	
 }

@@ -69,8 +69,11 @@ public class Application {
 	         if (commandLine.hasOption('f')){	        	 
 	        	 job.setVideo_frame(Integer.parseInt(commandLine.getOptionValue('f')));
 	         }
+	         if (commandLine.hasOption('k')){	        	
+	        	 job.setPositionSynchro(Integer.parseInt(commandLine.getOptionValue('k')));
+	         }
 	         if (commandLine.hasOption('p')){	        	
-	        	 job.setPositionSynchro(Integer.parseInt(commandLine.getOptionValue('p')));
+	        	 job.setWantPlay(true);
 	         }
 	         if ( commandLine.hasOption("i") )  
 	         {  
@@ -242,7 +245,9 @@ public class Application {
 	      			.addOption("o", "output-file", true, "pathname for the destination file")	      			
 	      			.addOption("f", "video-frames", true, "the number of frames to capture from a video filename")
 	      			.addOption("s", "strict-mode", false, "use a true discret11 mode by resizing the image to 768x576 pixels")
-	      			.addOption("p", "position-synchro", true, "start the decryption with the given frame position ");
+	      			.addOption("k", "keyframe", true, "start the decryption with the given key frame position ")
+	      			.addOption("p", "play", false, "play the result instead of creating a video file");
+	      
 	          
 	      posixOptions.getOption("i").setRequired(true);
 	      posixOptions.getOption("i").setArgName("input file");
@@ -259,13 +264,13 @@ public class Application {
 	      posixOptions.getOption("f").setArgs(1);
 	      posixOptions.getOption("f").setType(Number.class);
 	      
-	      posixOptions.getOption("p").setRequired(false);
-	      posixOptions.getOption("p").setArgName("frame position");
-	      posixOptions.getOption("p").setArgs(1);
-	      posixOptions.getOption("p").setType(Number.class);
+	      posixOptions.getOption("k").setRequired(false);
+	      posixOptions.getOption("k").setArgName("key frame position");
+	      posixOptions.getOption("k").setArgs(1);
+	      posixOptions.getOption("k").setType(Number.class);
 	      
-	      posixOptions.getOption("s").setRequired(false);
-	      posixOptions.getOption("s").setArgs(0);	 
+	      posixOptions.getOption("p").setRequired(false);
+	      posixOptions.getOption("p").setArgs(0);	 
 	      
 	     	     
 	      OptionGroup grpOptCrypt = new OptionGroup();

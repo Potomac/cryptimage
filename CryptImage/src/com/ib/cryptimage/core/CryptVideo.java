@@ -27,11 +27,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import com.ib.cryptimage.gui.VideoPlayer;
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
 
-public class CryptVideo {
 
+public class CryptVideo {		
 	private String outputFilename;
 	private int keyWord;	
 	private BufferedImage buff;
@@ -53,25 +55,32 @@ public class CryptVideo {
 	private int step80 = 0;
 	private int step100 = 0;
 	
-	private CryptImage cryptImg;
+	private VideoPlayer vidPlayer;
+	
+	private CryptImage cryptImg;	
 
 	public CryptVideo(String outputFilename, int keyWord, 
 			String inputFileName, int videoLenghtFrame,
-			boolean isDecoding, boolean strictMode, int positionSynchro){
+			boolean isDecoding, boolean strictMode, int positionSynchro, boolean wantPlay){		
 		this.frameCount = 0;
 		this.positionSynchro = positionSynchro;
 		this.strictMode = strictMode;
 		this.outputFilename = outputFilename;
 		this.keyWord = keyWord;		
 		this.isDecoding = isDecoding;
-		this.videoLengthFrames = videoLenghtFrame;
+		this.videoLengthFrames = videoLenghtFrame;		
+
 			
 		IMediaReader reader = ToolFactory.makeReader(inputFileName);
 		reader.readPacket();
 		this.width =reader.getContainer().getStream(0).getStreamCoder().getWidth();
 		this.height = reader.getContainer().getStream(0).getStreamCoder().getHeight();
 		int frameRate = (int) reader.getContainer().getStream(0).getStreamCoder().getFrameRate().getValue();
-				
+		
+		if (wantPlay){
+			vidPlayer = new VideoPlayer(frameRate);
+		}
+		
 		//System.out.println((reader.getContainer().getDuration()/1000/1000)*frameRate);
 		
 		this.timeBase = 1000/frameRate;		
@@ -85,14 +94,64 @@ public class CryptVideo {
 			 this.width = 768;
 			 this.height = 576;
 		 }
-		 
+		
+		if(wantPlay !=true){
 	    vid = new VideoRecorder(outputFilename + info + keyWord +".mp4", width,
 				height);
-	    
+		}
 	    this.cryptImg = new CryptImage(new BufferedImage(this.width, this.height,
 	    		BufferedImage.TYPE_3BYTE_BGR), 1, this.strictMode);
 	    cryptImg.setDiscret11Word(keyWord);
 	}
+	
+	public void addDisplayFrameEnc(BufferedImage buff, int pos, int timingFrame){
+		frameCount++;
+		BufferedImage bi;
+		this.cryptImg.setPosFrame(pos);
+		this.cryptImg.getImgRef().setImg(buff);
+		if (this.strictMode && buff.getWidth()!=768 && buff.getHeight()!=576){
+			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
+		}
+		bi = this.cryptImg.getCryptDiscret11(keyWord);
+		
+		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
+		//vid.addFrame(bi, this.timeBase * timingFrame);
+		vidPlayer.addImage(bi);
+		vidPlayer.showImage();
+		updateProgress("encoded");
+		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+	}
+	
+	public void addDisplayFrameDec(BufferedImage buff, int pos, int timingFrame){
+		
+		frameCount++;
+		if (frameCount < this.positionSynchro){
+			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
+			//vid.addFrame(buff,this.timeBase * timingFrame);
+			vidPlayer.addImage(buff);
+			vidPlayer.showImage();
+			updateProgress("decoded");
+			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		}
+		else{
+		BufferedImage bi;
+		this.cryptImg.setPosFrame(pos);
+		this.cryptImg.getImgRef().setImg(buff);
+		if (this.strictMode && buff.getWidth()!=768 && buff.getHeight()!=576){
+			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
+		}
+		bi = this.cryptImg.getDecryptDiscret11WithCode(keyWord);
+		//bi = new CryptImage(buff, pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
+		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
+		//vid.addFrame(bi, this.timeBase * timingFrame);
+		vidPlayer.addImage(bi);
+		vidPlayer.showImage();
+		updateProgress("decoded");
+		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		}
+	}
+	
+	
 	
 	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){
 		frameCount++;

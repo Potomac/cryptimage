@@ -37,9 +37,7 @@ public class VideoRecorder {
 	public VideoRecorder(String outputFilename, int width, int height) {		
 		writer = ToolFactory.makeWriter(outputFilename);
 		writer.addListener(new RateChange());
-		
-		
-		
+				
 //		writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,
 //		                   width, height);
 		writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4,

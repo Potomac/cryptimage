@@ -48,7 +48,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		this.count = 0;
 		cryptVid = new CryptVideo(frmV.getOutputFilename(), frmV.getKeyWord(), 
 				frmV.getVideoFilename(), frmV.getNbFrames(), frmV.isbDec(),
-				frmV.isStrictMode(), frmV.getPositionSynchro());
+				frmV.isStrictMode(), frmV.getPositionSynchro(), frmV.getJob().isWantPlay());
 		posFrame = 0;
 		this.isDec = frmV.isbDec();
 		
@@ -58,30 +58,44 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		dumpFrameToBufferedImage(event.getImage());
 		count = count + 1;
 	 
-	if(count == cryptVid.getVideoLengthFrames()){
-		
+	if(count == cryptVid.getVideoLengthFrames() && frmV.getJob().isWantPlay() !=true){		
 		cryptVid.closeVideo();
 		cryptVid.saveDatFileVideo();    
 	}
    }
 
 	public void dumpFrameToBufferedImage(BufferedImage image) {
-	
 		this.img = image;
-		
-		posFrame++;
-		if (this.isDec) {			
-			cryptVid.addFrameDec(image, posFrame, count);
-			if (frmV.getPositionSynchro()  > this.count +1  ){
-				posFrame =0;
+
+		if (this.frmV.getJob().isWantPlay()) {
+			posFrame++;
+			if (this.isDec) {
+				cryptVid.addDisplayFrameDec(image, posFrame, count);
+				if (frmV.getPositionSynchro() > this.count + 1) {
+					posFrame = 0;
+				}
+			} else {
+				cryptVid.addDisplayFrameEnc(image, posFrame, count);
+			}
+			if (posFrame == 3) {
+				posFrame = 0;
 			}
 		}
+
 		else {
-			cryptVid.addFrameEnc(image, posFrame, count);
+			posFrame++;
+			if (this.isDec) {
+				cryptVid.addFrameDec(image, posFrame, count);
+				if (frmV.getPositionSynchro() > this.count + 1) {
+					posFrame = 0;
+				}
+			} else {
+				cryptVid.addFrameEnc(image, posFrame, count);
+			}
+			if (posFrame == 3) {
+				posFrame = 0;
+			}
 		}
-		if (posFrame == 3) {
-			posFrame = 0;
-		}		
 	}
 	
    public BufferedImage getImg() {
