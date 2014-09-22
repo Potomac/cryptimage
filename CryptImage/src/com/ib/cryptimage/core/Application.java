@@ -144,9 +144,15 @@ public class Application {
 			System.out.println("I/O error during the load of the input file");
 			System.exit(1);
 		}
-		
+				
 				
 		CryptImage cryptImg = new CryptImage(img, 1,job.isStrictMode());
+		if(job.isStrictMode() && ( cryptImg.getImgRef().getHeight() !=576 ||
+				cryptImg.getImgRef().getWidth() !=768)){
+			cryptImg.getImgRef().setImg(cryptImg.getScaledImage(img, 768, 576));
+			cryptImg.getImgRef().setHeight(576);
+			cryptImg.getImgRef().setWidth(768);
+		}
 		System.out.println("Height : " + cryptImg.getImgRef().getHeight());
 		System.out.println("Width : " + cryptImg.getImgRef().getWidth());
 				

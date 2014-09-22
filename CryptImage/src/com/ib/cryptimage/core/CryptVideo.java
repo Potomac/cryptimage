@@ -106,10 +106,10 @@ public class CryptVideo {
 	
 	public void addDisplayFrameEnc(BufferedImage buff, int pos, int timingFrame){
 		frameCount++;
-		BufferedImage bi;
+		BufferedImage bi;		
 		this.cryptImg.setPosFrame(pos);
 		this.cryptImg.getImgRef().setImg(buff);
-		if (this.strictMode && buff.getWidth()!=768 && buff.getHeight()!=576){
+		if (this.strictMode &&  ( buff.getWidth()!=768 || buff.getHeight()!=576)){
 			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
 		}
 		bi = this.cryptImg.getCryptDiscret11(keyWord);
@@ -137,7 +137,7 @@ public class CryptVideo {
 		BufferedImage bi;
 		this.cryptImg.setPosFrame(pos);
 		this.cryptImg.getImgRef().setImg(buff);
-		if (this.strictMode && buff.getWidth()!=768 && buff.getHeight()!=576){
+		if (this.strictMode && (buff.getWidth()!=768 || buff.getHeight()!=576)){
 			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
 		}
 		bi = this.cryptImg.getDecryptDiscret11WithCode(keyWord);
@@ -158,7 +158,7 @@ public class CryptVideo {
 		BufferedImage bi;
 		this.cryptImg.setPosFrame(pos);
 		this.cryptImg.getImgRef().setImg(buff);
-		if (this.strictMode && buff.getWidth()!=768 && buff.getHeight()!=576){
+		if (this.strictMode && ( buff.getWidth()!=768 || buff.getHeight()!=576)){
 			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
 		}
 		bi = this.cryptImg.getCryptDiscret11(keyWord);
@@ -182,7 +182,7 @@ public class CryptVideo {
 		BufferedImage bi;
 		this.cryptImg.setPosFrame(pos);
 		this.cryptImg.getImgRef().setImg(buff);
-		if (this.strictMode && buff.getWidth()!=768 && buff.getHeight()!=576){
+		if (this.strictMode && ( buff.getWidth()!=768 || buff.getHeight()!=576)){
 			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
 		}
 		bi = this.cryptImg.getDecryptDiscret11WithCode(keyWord);
@@ -305,4 +305,6 @@ public class CryptVideo {
 	public void setBuff(BufferedImage buff) {
 		this.buff = buff;
 	}
+	
+	
 }

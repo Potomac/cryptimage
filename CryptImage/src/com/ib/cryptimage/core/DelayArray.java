@@ -129,6 +129,7 @@ public class DelayArray {
 			i++;
 		}
 		delay[0][575] = 0; // line 623 (576) of even frame is not crypted with strictMode
+		delay[0][573] = 0; // line 622 (574) of even frame is not crypted with strictMode
 		// first full frame				
 		// odd frame ( frame impaire ) z = 0
 		
@@ -155,6 +156,7 @@ public class DelayArray {
 			i++;
 		}
 		delay[1][575] = 0; // line 623 (576) of even frame is not crypted with strictMode
+		delay[1][573] = 0; // line 622 (574) of even frame is not crypted with strictMode
 		
 		// odd frame ( frame impaire ) z = 1		
 		for (int i = 2; i < this.heightFrame; i++) {			
@@ -180,6 +182,7 @@ public class DelayArray {
 			i++;
 		}
 		delay[2][575] = 0; // line 623 (576) of even frame is not crypted with strictMode
+		delay[2][573] = 0; // line 622 (574) of even frame is not crypted with strictMode
 		// odd frame ( frame impaire ) z = 1		
 		for (int i = 2; i < this.heightFrame; i++) {			
 			delay[2][i] = getDelayValue(1, getLSB(randArray[j]), getMSB(randArray[j]));

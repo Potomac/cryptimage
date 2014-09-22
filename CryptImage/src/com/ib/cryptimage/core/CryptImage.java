@@ -53,8 +53,8 @@ public class CryptImage {
 	public CryptImage(BufferedImage buffImg, int posFrame,
 			boolean strict) {		
 		if (strict == true){
-			this.strictMode = strict;
-			this.img = new ImageRef(getScaledImage(buffImg, 768, 576));
+			this.strictMode = strict;				
+			this.img = new ImageRef(buffImg);			
 			this.arrayShift = new int[576];			
 		}
 		else {
@@ -119,7 +119,7 @@ public class CryptImage {
 		
 		// image cible résultant de la modification
 		BufferedImage bi = new BufferedImage(img.getWidth(),img.getHeight(),
-			BufferedImage.TYPE_INT_BGR );//img.getType_image());
+			BufferedImage.TYPE_INT_BGR );//img.getType_image()); BufferedImage.TYPE_INT_BGR
 
 		Raster raster1 = img.getImg().getRaster();
 		WritableRaster raster2 = bi.getRaster();	
@@ -128,7 +128,7 @@ public class CryptImage {
 		//long temps1 = System.currentTimeMillis();				
 				
 		if (img.getType_image() == 12 || img.getType_image() == 13 ||
-				img.getType_image() == 6) {
+				img.getType_image() == 6 ) {
 				for (int y = 0; y < img.getHeight(); y++) {									
 					bi.setRGB(tabDeca[y], y, bi.getWidth() - tabDeca[y],1,
 							img.getImg().getRGB(0, y, img.getWidth() - tabDeca[y], 1,
@@ -257,7 +257,7 @@ public class CryptImage {
 	    
 	    Graphics g3 = target.getGraphics();	    
 	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
-	    
+		    
 	    return target;
 	}
 	

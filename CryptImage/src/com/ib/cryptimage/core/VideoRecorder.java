@@ -23,7 +23,10 @@ package com.ib.cryptimage.core;
 
 import java.awt.image.BufferedImage;
 import java.util.concurrent.TimeUnit;
+
 import com.xuggle.xuggler.ICodec;
+//import com.xuggle.xuggler.IProperty;
+//import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
@@ -38,12 +41,45 @@ public class VideoRecorder {
 		writer = ToolFactory.makeWriter(outputFilename);
 		writer.addListener(new RateChange());
 				
-//		writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,
-//		                   width, height);
 		writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4,
-                width, height);
+		                   width, height);
+		//writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,
+        //        width, height);
 				
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(7000*1024);
+		//IStreamCoder coder = writer.getContainer().getStream(0).getStreamCoder();
+//		writer.getContainer().getStream(0).getStreamCoder()
+//		.setProperty("flags", "+cgop+umv");
+//		writer.getContainer().getStream(0).getStreamCoder()
+//		.setProperty("me_method", "+esa");
+//		writer.getContainer().getStream(0).getStreamCoder().setProperty("qcomp", 0.6);
+		//writer.getContainer().getStream(0).getStreamCoder().setGlobalQuality(5000000);
+		
+		/* int j = 0;
+	       String test;
+	       
+	       IStreamCoder coder = writer.getContainer().getStream(0).getStreamCoder();
+	       ICodec codec = ICodec.findEncodingCodec(ICodec.ID.CODEC_ID_H264);
+	       
+	       String codecname = codec.getLongName();
+	       System.out.println("Codec Name: " + codecname);
+	       
+	       int numproperties = coder.getNumProperties();
+	       System.out.println("Number of Properties: " + numproperties);
+	       
+	       
+	       
+	       IProperty testProperty = coder.getPropertyMetaData(j);
+	     
+	       while (j < numproperties)
+	       {
+	           testProperty = coder.getPropertyMetaData(j);
+	           String testname = testProperty.getName();
+	           test = coder.getPropertyAsString(testname);
+	           System.out.println("Property " + j + " = " + testname + "  Value = " + test);
+	           j++;
+	       }*/
+		
 
 		
 	}

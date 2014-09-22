@@ -77,20 +77,27 @@ public class VideoPlayer {
 		long time;
 		
 		if (diffTime >  (1000/frameRate) && this.systemPreviousCurrentTime !=0){
-			 time =  diffTime - (1000/frameRate);
+			 time =  0;//(1000/frameRate);			 
 		}
 		else if(this.systemPreviousCurrentTime == 0){
-			time = (1000/frameRate);
+			time = (1000/frameRate);			
 		}
 		else {
-			time = (1000/frameRate) - diffTime;
+			time = (1000/frameRate) - diffTime;			
 		}		
 		
 			try {
 				Thread.sleep(time );
 			} catch (InterruptedException e) {				
 				e.printStackTrace();
-			}		
+			}
+			
+			double speed = (double)(1000/frameRate);
+			double tot = time + diffTime;
+			int speed_pourc = (int)((speed/tot) * 100);
+			
+			
+		System.out.println("speed : " + " " +  speed_pourc);
 		
 		this.systemPreviousCurrentTime = System.currentTimeMillis();
 	}
