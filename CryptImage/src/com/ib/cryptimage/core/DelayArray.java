@@ -63,136 +63,91 @@ public class DelayArray {
 		}		
 	}
 	
-	private void feedTheDelayArray(){
+	private void feedTheDelayArray() {
+		int temp = 0;
 		int j = 0;
-		
-		// first full frame			
-		// even frame ( frame paire ) z = 0
-		for (int i = 1; i < this.heightFrame; i++) {			
-			delay[0][i] = getDelayValue(0, getLSB(randArray[j]), getMSB(randArray[j]));
-			i++;
-			j++;
-		}
-		// odd frame ( frame impaire ) z = 0
-		for (int i = 0; i < this.heightFrame; i++) {			
-			delay[0][i] = getDelayValue(0, getLSB(randArray[j]), getMSB(randArray[j]));
-			//delay[0][i] = 0;
-			i++;
-			j++;
-		}
-		
-		//second full frame		
-		// even frame ( frame paire ) z = 0
-		for (int i = 1; i < this.heightFrame; i++) {			
-			delay[1][i] = getDelayValue(0, getLSB(randArray[j]), getMSB(randArray[j]));			
-			i++;
-			j++;
-		}
-		// odd frame ( frame impaire ) z = 1
-		for (int i = 0; i < this.heightFrame; i++) {			
-			delay[1][i] = getDelayValue(1, getLSB(randArray[j]), getMSB(randArray[j]));
-			//delay[1][i] = 0;
-			i++;
-			j++;
-		}		
 
-		
-		
-		//third full frame		
-		// even frame ( frame paire ) z = 1
-		for (int i = 1; i < this.heightFrame; i++) {			
-			delay[2][i] = getDelayValue(1, getLSB(randArray[j]), getMSB(randArray[j]));
-			i++;
-			j++;
-		}		
-		// odd frame ( frame impaire ) z = 1
-		for (int i = 0; i < this.heightFrame; i++) {			
-			delay[2][i] = getDelayValue(1, getLSB(randArray[j]), getMSB(randArray[j]));
-			//delay[2][i] = 0;
-			i++;
-			j++;
+		int[][] z = new int[3][2];
+		z[0][0] = 0;
+		z[0][1] = 0;
+		z[1][0] = 0;
+		z[1][1] = 1;
+		z[2][0] = 1;
+		z[2][1] = 1;
+
+		for (int fullFrame = 0; fullFrame < 3; fullFrame++) {
+			// even frame ( frame paire )
+			for (int i = 1; i < this.heightFrame; i++) {
+				temp = j;
+				delay[fullFrame][i] = getDelayValue(z[fullFrame][0],
+						getLSB(randArray[j]), getMSB(randArray[j]));
+				j++;
+				debugDelay(i, temp, delay[fullFrame][i]);
+				i++;
+			}
+
+			// odd frame ( frame impaire )
+			for (int i = 0; i < this.heightFrame; i++) {
+				temp = j;
+				delay[fullFrame][i] = getDelayValue(z[fullFrame][1],
+						getLSB(randArray[j]), getMSB(randArray[j]));
+				j++;
+				debugDelay(i, temp, delay[fullFrame][i]);
+				i++;
+			}
 		}
 	}
 	
 	private void feedTheDelayArrayStrictMode(){
+		int temp = 0;
 		int j = 0;
 		
-		//first full frame
-		delay[0][0] = 0; // line 23 (1) of odd frame is not crypted with strictMode
-		delay[0][1] = 0; // line 336 (2) of even frame is not crypted with strictMode
-		// even frame ( frame paire ) z = 0
-		for (int i = 3; i < this.heightFrame; i++) {			
-			delay[0][i] = getDelayValue(0, getLSB(randArray[j]), getMSB(randArray[j]));			
-			if(i!=573){// we don't increment if it's line 623 ( 576 in digital image )
-				j++;
-			}
-			i++;
-		}
-		delay[0][575] = 0; // line 623 (576) of even frame is not crypted with strictMode
-		delay[0][573] = 0; // line 622 (574) of even frame is not crypted with strictMode
-		// first full frame				
-		// odd frame ( frame impaire ) z = 0
+		int[][] z = new int[3][2];
+		z[0][0] = 0;
+		z[0][1] = 0;
+		z[1][0] = 0;
+		z[1][1] = 1;
+		z[2][0] = 1;
+		z[2][1] = 1;
 		
-		for (int i = 2; i < this.heightFrame; i++) {			
-			delay[0][i] = getDelayValue(0, getLSB(randArray[j]), getMSB(randArray[j]));			
-			//delay[0][i] = 0;			
-			if(i!=572) { // we don't increment if it's line 310 ( 575 in digital image )
-				j++;}
-			i++;
-		}
-		delay[0][574] = 0; // line 310 (575) of odd frame is not crypted with strictMode		
-
-		////////////////////////////////////////////////////
-		//second full frame
-		delay[1][0] = 0; // line 23 (1) of odd frame is not crypted with strictMode
-		delay[1][1] = 0; // line 336 (2) of even frame is not crypted with strictMode		
-		//second full frame
-		// even frame ( frame paire ) z = 0
-		for (int i = 3; i < this.heightFrame; i++) {			
-			delay[1][i] = getDelayValue(0, getLSB(randArray[j]), getMSB(randArray[j]));				
-			if(i!=573){// we don't increment if it's line 623 ( 576 in digital image )
-				j++;
+		for (int fullFrame = 0; fullFrame < 3; fullFrame++) {
+			delay[fullFrame][0] = 0; // line 23 (1) of odd frame is not crypted with
+								// strictMode			
+			// even frame ( frame paire )
+			for (int i = 1; i < this.heightFrame; i++) {
+				temp = j;
+				delay[fullFrame][i] = getDelayValue(z[fullFrame][0], getLSB(randArray[j]),
+						getMSB(randArray[j]));
+				if (i != 571 && i!= 573) {// we don't increment if next line is 622 ( 574 in
+								// digital image ) or if next line is 623 ( 576 in digital image )
+					j++;
+				}
+				debugDelay(i, temp, delay[fullFrame][i]);
+//				System.out.println("ligne" + (i + 1) + " convert"
+//						+ convertLine(i + 1) + " P" + temp + " " + "valeur("
+//						+ delay[fullFrame][i]);
+				i++;
 			}
-			i++;
-		}
-		delay[1][575] = 0; // line 623 (576) of even frame is not crypted with strictMode
-		delay[1][573] = 0; // line 622 (574) of even frame is not crypted with strictMode
-		
-		// odd frame ( frame impaire ) z = 1		
-		for (int i = 2; i < this.heightFrame; i++) {			
-			delay[1][i] = getDelayValue(1, getLSB(randArray[j]), getMSB(randArray[j]));
-			//delay[1][i] = 0;			
-			if(i!=572) { // we don't increment if it's line 310 ( 575 in digital image )
-				j++;}
-			i++;
-		}
-		delay[1][574] = 0; // line 310 (575) of odd frame is not crypted with strictMode
-		
-		////////////////////////////////////////////////////////////////////////
-		//third full frame
-		delay[2][0] = 0; // line 23 (1) of odd frame is not crypted with strictMode
-		delay[2][1] = 0; // line 336 (2) of even frame is not crypted with strictMode		
-		//third full frame
-		// even frame ( frame paire ) z = 1
-		for (int i = 3; i < this.heightFrame; i++) {			
-			delay[2][i] = getDelayValue(1, getLSB(randArray[j]), getMSB(randArray[j]));			
-			if(i!=573){// we don't increment if it's line 623 ( 576 in digital image )
-				j++;
+			delay[fullFrame][575] = 0; // line 623 (576) of even frame is not crypted
+								// with strictMode
+			delay[fullFrame][573] = 0; // line 622 (574) of even frame is not crypted
+								// with strictMode	
+			
+			// odd frame ( frame impaire )
+			for (int i = 2; i < this.heightFrame; i++) {
+				temp = j;
+				delay[fullFrame][i] = getDelayValue(z[fullFrame][1], getLSB(randArray[j]),
+						getMSB(randArray[j]));				
+				if (i != 572) { // we don't increment if it's line 310 ( 575 in
+								// digital image )
+					j++;
+				}
+				debugDelay(i, temp, delay[fullFrame][i]);
+				i++;
 			}
-			i++;
+			delay[fullFrame][574] = 0; // line 310 (575) of odd frame is not crypted
+								// with strictMode
 		}
-		delay[2][575] = 0; // line 623 (576) of even frame is not crypted with strictMode
-		delay[2][573] = 0; // line 622 (574) of even frame is not crypted with strictMode
-		// odd frame ( frame impaire ) z = 1		
-		for (int i = 2; i < this.heightFrame; i++) {			
-			delay[2][i] = getDelayValue(1, getLSB(randArray[j]), getMSB(randArray[j]));
-			//delay[2][i] = 0;			
-			if(i!=572) { // we don't increment if it's line 310 ( 575 in digital image )
-				j++;}
-			i++;
-		}
-		delay[2][574] = 0; // line 310 (575) of odd frame is not crypted with strictMode
-	
 	}
 	
 	private int getLSB(int word){
@@ -239,6 +194,51 @@ public class DelayArray {
 			res = 1;
 		}
 		return res;		
+	}
+	
+	private int convertLine2(int frame_line)
+	   {
+	      if (frame_line < 23)
+	      {
+	         return 0;
+	      }
+	      if (frame_line <= 310)
+	      {
+	         return (2 * (frame_line - 23)) + 1;
+	      }
+	      if (frame_line < 336)
+	      {
+	         return 0;
+	      }
+	      if (frame_line <= 623)
+	      {
+	         return (2 * (frame_line - 336)) + 2;
+	      }
+	      else
+	      {
+	         return 0;
+	      }
+	   }
+	
+	private int convertLine(int frame_line) {
+		float res = (float) ((float) (frame_line) / 2);
+		float diff = res - (int)res;
+
+		if (diff != 0) { //frame impaire
+			int val = (int)res + 23;
+			return val;
+		}
+		else {
+			return (int)(res + 335);
+		}
+
+	}
+	
+	private void debugDelay(int digitalLine, int cptJ, int delay ){
+		String message = "ligne " + (digitalLine + 1) + " convert "
+				+ convertLine(digitalLine + 1) + " P" + cptJ + " " + "(valeur "+
+				+ delay  +")";
+		System.out.println(message);
 	}
 
 }

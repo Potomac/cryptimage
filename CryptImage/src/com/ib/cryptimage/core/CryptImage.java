@@ -104,12 +104,12 @@ public class CryptImage {
 		
 		if(this.strictMode && ( this.posFrame == 1)){
 			setWhite310Line(this.img.getImg());
-			setBlack622Line(this.img.getImg());
+			setWhite622Line(this.img.getImg());
 		}
 		
 		if(this.strictMode && ( this.posFrame == 2)){
 			setBlack310Line(this.img.getImg());
-			setBlack622Line(this.img.getImg());
+			setWhite622Line(this.img.getImg());
 		}
 		
 		if(this.strictMode && ( this.posFrame == 3)){
