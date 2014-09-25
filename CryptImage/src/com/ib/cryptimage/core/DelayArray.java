@@ -169,7 +169,7 @@ public class DelayArray {
 	private int getDelayValue(int z, int b0, int b10){		
 		int res = 0;
 		
-		if ( z==0 && b0 == 0 && b10 ==0 ){
+/*		if ( z==0 && b0 == 0 && b10 ==0 ){
 			res = 0;
 		}
 		if ( z==0 && b0 == 0 && b10 ==1 ){
@@ -193,7 +193,32 @@ public class DelayArray {
 		if ( z == 1 && b0 == 1 && b10 == 1 ){
 			res = 1;
 		}
-		return res;		
+		return res;*/
+		if (z == 0 && b0 == 0 && b10 == 0) {
+			res = 2;
+		}
+		if (z == 0 && b0 == 0 && b10 == 1) {
+			res = 1;
+		}
+		if (z == 0 && b0 == 1 && b10 == 0) {
+			res = 0;
+		}
+		if (z == 0 && b0 == 1 && b10 == 1) {
+			res = 0;
+		}
+		if (z == 1 && b0 == 0 && b10 == 0) {
+			res = 0;
+		}
+		if (z == 1 && b0 == 0 && b10 == 1) {
+			res = 2;
+		}
+		if (z == 1 && b0 == 1 && b10 == 0) {
+			res = 2;
+		}
+		if (z == 1 && b0 == 1 && b10 == 1) {
+			res = 1;
+		}
+		return res;
 	}
 	
 	private int convertLine2(int frame_line)
@@ -235,9 +260,9 @@ public class DelayArray {
 	}
 	
 	private void debugDelay(int digitalLine, int cptJ, int delay ){
-		String message = "ligne " + (digitalLine + 1) + " convert "
-				+ convertLine(digitalLine + 1) + " P" + cptJ + " " + "(valeur "+
-				+ delay  +")";
+		String message = "ligne " + (digitalLine + 1) + ", analog "
+				+ convertLine(digitalLine + 1) + ", P" + cptJ + " " + "(, retard "+
+				+ delay  +"), LFSR " + randArray[cptJ] ;
 		System.out.println(message);
 	}
 
