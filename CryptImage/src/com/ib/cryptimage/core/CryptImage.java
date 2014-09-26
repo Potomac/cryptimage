@@ -30,7 +30,6 @@ import java.awt.image.WritableRaster;
 import java.awt.image.Raster;
 
 
-
 //import java.util.Random;
 
 public class CryptImage {
@@ -43,6 +42,8 @@ public class CryptImage {
 	private int[][] delayArrayCrypt;
 	private boolean strictMode;	
 	private int[] arrayShift;
+	private int audienceLevel;
+	private boolean isDecoding;
 	
 	/**
 	 * constructor
@@ -51,11 +52,13 @@ public class CryptImage {
 	 * @param strict use the "discret11 strict mode", image will be resized to 768x576 pixels
 	 */
 	public CryptImage(BufferedImage buffImg, int posFrame,
-			boolean strict) {		
+			boolean strict, int audienceLevel, boolean isDecoding) {
+		this.isDecoding = isDecoding;
 		if (strict == true){
 			this.strictMode = strict;				
 			this.img = new ImageRef(buffImg);			
-			this.arrayShift = new int[576];			
+			this.arrayShift = new int[576];
+			this.audienceLevel = audienceLevel;
 		}
 		else {
 			this.strictMode = strict;
@@ -78,7 +81,7 @@ public class CryptImage {
 			this.setDeca();
 	
 			this.delayArrayCrypt = new DelayArray(this.img.getHeight(),
-					this.discret11Word, strictMode).getDelayArray();
+					this.discret11Word, strictMode, this.isDecoding).getDelayArray();
 		
 			for (int i = 0; i < arrayShift.length; i++) {
 				sDecaList += String.format("%02d", deca[this.delayArrayCrypt[this.posFrame - 1][i]]) + " ";
@@ -102,50 +105,55 @@ public class CryptImage {
 	 */
 	private BufferedImage getCryptDiscret11Param(int[] tabDeca){
 		
+		if(this.strictMode){
+			setAudience622Line(this.audienceLevel,this.posFrame, this.img.getImg());
+		}
+		
 		if(this.strictMode && ( this.posFrame == 1)){
-			setWhite310Line(this.img.getImg());
-			setWhite622Line(this.img.getImg());
+			setWhite310Line(this.img.getImg());			
 		}
 		
 		if(this.strictMode && ( this.posFrame == 2)){
-			setBlack310Line(this.img.getImg());
-			setWhite622Line(this.img.getImg());
+			setBlack310Line(this.img.getImg());			
 		}
 		
 		if(this.strictMode && ( this.posFrame == 3)){
-			setBlack310Line(this.img.getImg());
-			setWhite622Line(this.img.getImg());
-		}
+			setBlack310Line(this.img.getImg());			
+		}		
 		
+		return this.getDelayLines(tabDeca);		
+	}
+	
+	private BufferedImage getDelayLines(int[] tabDeca) {
 		// image cible résultant de la modification
-		BufferedImage bi = new BufferedImage(img.getWidth(),img.getHeight(),
-			BufferedImage.TYPE_INT_BGR );//img.getType_image()); BufferedImage.TYPE_INT_BGR
+		BufferedImage bi = new BufferedImage(img.getWidth(), img.getHeight(),
+				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
+											// BufferedImage.TYPE_INT_BGR
+				
+		this.img.setImg(convertToType(this.img.getImg(), BufferedImage.TYPE_3BYTE_BGR));
 
 		Raster raster1 = img.getImg().getRaster();
-		WritableRaster raster2 = bi.getRaster();	
+		WritableRaster raster2 = bi.getRaster();
 		
 		
-		//long temps1 = System.currentTimeMillis();				
-				
-		if (img.getType_image() == 12 || img.getType_image() == 13 ||
-				img.getType_image() == 6 ) {
-				for (int y = 0; y < img.getHeight(); y++) {									
-					bi.setRGB(tabDeca[y], y, bi.getWidth() - tabDeca[y],1,
-							img.getImg().getRGB(0, y, img.getWidth() - tabDeca[y], 1,
-									new int[bi.getWidth() - tabDeca[y]], 0, 1), 0, 1);		
-					}			
-			} 
-			else {
-				for (int y = 0; y < img.getHeight(); y++) {					
-					raster2.setPixels(tabDeca[y], y, img.getWidth() - tabDeca[y], 1,
-							raster1.getPixels(0, y, raster1.getWidth() - tabDeca[y],
-									1, new int[(raster1.getWidth() - tabDeca[y]) * 3]));
-				}
+//
+//		// long temps1 = System.currentTimeMillis();
+		int shift = 0;
+		for (int y = 0; y < img.getHeight(); y++) {
+			shift = 0;
+			if (this.isDecoding && tabDeca[y] == this.deca[1]) {
+				shift = (this.deca[2] - this.deca[1]) - this.deca[1];
 			}
-		
-		//long temps2 = System.currentTimeMillis();		
-		return bi;		
+			raster2.setPixels(tabDeca[y] + shift, y, img.getWidth()
+					- tabDeca[y] - shift, 1, raster1.getPixels(0, y,
+							img.getWidth() - tabDeca[y] - shift, 1,
+					new int[(img.getWidth() - tabDeca[y]- shift)*3 ]));
+		}		
+	
+//		// long temps2 = System.currentTimeMillis();
+		return bi;
 	}
+	
 	
 	/**
 	 * set the 3 shift pixels value for deca[]
@@ -154,7 +162,7 @@ public class CryptImage {
 		deca = new int[3];
 		deca[0] = 0;
 		deca[1] = (int)(Math.round(0.0167 * img.getWidth())); // previous value : 0.018
-		deca[2] = (int)Math.round(0.0347 * img.getWidth()); // previous value : 0.036
+		deca[2] = (int)(Math.round(0.0347 * img.getWidth())); // previous value : 0.036
 		
 		if (deca[1] == 0){
 			deca[1] = 1;
@@ -164,6 +172,7 @@ public class CryptImage {
 		}
 		
 	}
+	
 	
 	/**
 	 * Decrypt a discret11 image by using a discret11 word
@@ -178,7 +187,7 @@ public class CryptImage {
 			sDecaList = "";
 
 			this.delayArrayCrypt = new DelayArray(this.img.getHeight(),
-					this.discret11Word, this.strictMode).getDelayArray();
+					this.discret11Word, this.strictMode, this.isDecoding).getDelayArray();
 
 			for (int i = 0; i < arrayShift.length; i++) {
 				sDecaList += String.format("%02d", deca[this.delayArrayCrypt[this.posFrame - 1][i]]) + " ";
@@ -199,38 +208,9 @@ public class CryptImage {
 	 * @param sDeca the file who stores the shift numbers used for the encryption
 	 * @return a decrypted image
 	 */
-	public BufferedImage getDecryptDiscret11(int[] tDeca){		
-				
-		// image cible résultant de la modification
-		BufferedImage bi = new BufferedImage(img.getWidth(),img.getHeight(),
-			BufferedImage.TYPE_INT_BGR );//img.getType_image());
-
-		Raster raster1 = img.getImg().getRaster();
-		WritableRaster raster2 = bi.getRaster();	
-				
-		//long temps1 = System.currentTimeMillis();							
-				
-		if (img.getType_image() == 12 || img.getType_image() == 13) {
-			for (int y = 0; y < img.getHeight(); y++) {				
-				bi.setRGB(
-						0,
-						y,
-						bi.getWidth() - tDeca[y],
-						1,
-						img.getImg().getRGB(tDeca[y], y,
-								img.getWidth() - tDeca[y], 1,
-								new int[bi.getWidth() - tDeca[y]], 0, 1), 0, 1);				
-			}
-		} else {
-			for (int y = 0; y < img.getHeight(); y++) {								
-				raster2.setPixels(0, y, img.getWidth() - tDeca[y], 1, raster1
-						.getPixels(tDeca[y], y, raster1.getWidth() - tDeca[y], 1,
-								new int[(raster1.getWidth() - tDeca[y]) * 3]));				
-			}
-		}
+	public BufferedImage getDecryptDiscret11(int[] tDeca){	
 		
-		//long temps2 = System.currentTimeMillis();		
-		return bi;				
+		return getDelayLines(tDeca);		
 	}
 	
 	public BufferedImage getScaledImage(BufferedImage src, int w, int h){
@@ -261,6 +241,91 @@ public class CryptImage {
 	    return target;
 	}
 	
+	private void setAudience622Line(int audience, int posFrame,
+			BufferedImage buff) {
+		switch (audience) {
+		case 1:
+			if (posFrame == 1) {
+				setWhite622Line(buff);
+			}
+			if (posFrame == 2) {
+				setBlack622Line(buff);
+			}
+			if (posFrame == 3) {
+				setBlack622Line(buff);
+			}
+			break;
+		case 2:
+			if (posFrame == 1) {
+				setBlack622Line(buff);
+			}
+			if (posFrame == 2) {
+				setWhite622Line(buff);
+			}
+			if (posFrame == 3) {
+				setBlack622Line(buff);
+			}
+			break;
+		case 3:
+			if (posFrame == 1) {
+				setWhite622Line(buff);
+			}
+			if (posFrame == 2) {
+				setWhite622Line(buff);
+			}
+			if (posFrame == 3) {
+				setBlack622Line(buff);
+			}
+			break;
+		case 4:
+			if (posFrame == 1) {
+				setBlack622Line(buff);
+			}
+			if (posFrame == 2) {
+				setBlack622Line(buff);
+			}
+			if (posFrame == 3) {
+				setWhite622Line(buff);
+			}
+			break;
+		case 5:
+			if (posFrame == 1) {
+				setWhite622Line(buff);
+			}
+			if (posFrame == 2) {
+				setBlack622Line(buff);
+			}
+			if (posFrame == 3) {
+				setWhite622Line(buff);
+			}
+			break;
+		case 6:
+			if (posFrame == 1) {
+				setBlack622Line(buff);
+			}
+			if (posFrame == 2) {
+				setWhite622Line(buff);
+			}
+			if (posFrame == 3) {
+				setWhite622Line(buff);
+			}
+			break;
+		case 7:
+			if (posFrame == 1) {
+				setWhite622Line(buff);
+			}
+			if (posFrame == 2) {
+				setWhite622Line(buff);
+			}
+			if (posFrame == 3) {
+				setWhite622Line(buff);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
 	private BufferedImage setWhite310Line(BufferedImage buff){
 		for (int i = 0; i < buff.getWidth(); i++) {
 			buff.setRGB(i, 574, new Color(255,255, 255).getRGB());
@@ -288,6 +353,7 @@ public class CryptImage {
 		}
 		return buff;		
 	}
+	
 	
 
 	/**
@@ -348,6 +414,27 @@ public class CryptImage {
 
 	public void setPosFrame(int posFrame) {
 		this.posFrame = posFrame;
-	}
+	}	
 
+
+	private  BufferedImage convertToType(BufferedImage sourceImage,
+			int targetType) {
+		BufferedImage image;
+
+		// if the source image is already the target type, return the source
+		// image
+		if (sourceImage.getType() == targetType) {
+			image = sourceImage;
+		}
+		// otherwise create a new image of the target type and draw the new
+		// image
+		else {
+			image = new BufferedImage(sourceImage.getWidth(),
+					sourceImage.getHeight(), targetType);
+			image.getGraphics().drawImage(sourceImage, 0, 0, null);
+		}
+		return image;
+	}
+	
+	
 }

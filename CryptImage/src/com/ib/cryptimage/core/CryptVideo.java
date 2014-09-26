@@ -47,6 +47,7 @@ public class CryptVideo {
 	private int videoLengthFrames;
 	private int timeBase;
 	private int frameCount;
+	private int audienceLevel;
 	
 	private int step1 =0;
 	private int step20 = 0;
@@ -61,7 +62,9 @@ public class CryptVideo {
 
 	public CryptVideo(String outputFilename, int keyWord, 
 			String inputFileName, int videoLenghtFrame,
-			boolean isDecoding, boolean strictMode, int positionSynchro, boolean wantPlay){		
+			boolean isDecoding, boolean strictMode, int positionSynchro, boolean wantPlay,
+			int audienceLevel, int videoBitrate, int videoCodec){	
+		this.audienceLevel = audienceLevel;
 		this.frameCount = 0;
 		this.positionSynchro = positionSynchro;
 		this.strictMode = strictMode;
@@ -97,10 +100,10 @@ public class CryptVideo {
 		
 		if(wantPlay !=true){
 	    vid = new VideoRecorder(outputFilename + info + keyWord +".mp4", width,
-				height);
+				height, videoBitrate, videoCodec);
 		}
 	    this.cryptImg = new CryptImage(new BufferedImage(this.width, this.height,
-	    		BufferedImage.TYPE_3BYTE_BGR), 1, this.strictMode);
+	    		BufferedImage.TYPE_3BYTE_BGR), 1, this.strictMode, this.audienceLevel,this.isDecoding);
 	    cryptImg.setDiscret11Word(keyWord);
 	}
 	
@@ -164,7 +167,7 @@ public class CryptVideo {
 		bi = this.cryptImg.getCryptDiscret11(keyWord);
 		//bi = new CryptImage(buff, pos, this.strictMode).getCryptDiscret11(keyWord);
 		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
-		vid.addFrame(bi, this.timeBase * timingFrame);
+		vid.addFrame(bi, this.timeBase * ( timingFrame ));
 		updateProgress("encoded");
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 	}
@@ -174,7 +177,7 @@ public class CryptVideo {
 		frameCount++;
 		if (frameCount < this.positionSynchro){
 			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
-			vid.addFrame(buff,this.timeBase * timingFrame);
+			vid.addFrame(buff,this.timeBase * ( timingFrame  ));
 			updateProgress("decoded");
 			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
@@ -211,26 +214,32 @@ public class CryptVideo {
 		if(isDecoding !=true){
 		buff = new BufferedImage(this.width,
 				this.height, 12);
-		CryptImage cryptImg = new CryptImage(buff, 1,this.strictMode);
+		CryptImage cryptImg = new CryptImage(buff, 1,this.strictMode, this.audienceLevel,
+				this.isDecoding);
 		cryptImg.getCryptDiscret11(keyWord);
 		//int [][] delayTab = cryptImg.getDelayTabCrypt();		
 		
 		//save the data file
+		
+		DelayArray delArray = new DelayArray(this.height, this.keyWord, this.strictMode, this.isDecoding);
+		delArray.getDelayArray();
+		
 		try {
-			File dataFile = new File(this.outputFilename + "_crypt_" + this.keyWord + ".dat");
+			File dataFile = new File(this.outputFilename + "_crypt_" + this.keyWord + ".txt");
 			dataFile.createNewFile();
 			FileWriter ffw = new FileWriter(dataFile);
-			BufferedWriter bfw = new BufferedWriter(ffw);
-			bfw.write(cryptImg.getsDecaList() + "\r\n");
-			bfw.write(cryptImg.getDelayArrayAtFrame(1) + "\r\n");
-			bfw.write(cryptImg.getDelayArrayAtFrame(2) + "\r\n");
-			bfw.write(cryptImg.getDelayArrayAtFrame(3) + "\r\n");
-			bfw.write("key : " +this.keyWord + "\r\n");
-			bfw.write("file : " + this.outputFilename +"_crypt_" +
-					this.keyWord + ".mp4");
+			BufferedWriter bfw = new BufferedWriter(ffw);			
+			bfw.write("Frame 1: " + cryptImg.getDelayArrayAtFrame(1) + "\r\n");
+			bfw.write("Frame 2: " + cryptImg.getDelayArrayAtFrame(2) + "\r\n");
+			bfw.write("Frame 3: " + cryptImg.getDelayArrayAtFrame(3) + "\r\n");
+			bfw.write("Delay in pixels : " + cryptImg.getShiftValues()+ "\r\n");
+			bfw.write("11 bits keyword : " +this.keyWord + "\r\n");
+			bfw.write("File : " + this.outputFilename +"_crypt_" +
+					this.keyWord + ".mp4" +"\r\n");
+			bfw.write("debug lines : " + "\r\n" + delArray.getSdebugLines());
 			bfw.close();
 			System.out.println("Data report : " + this.outputFilename
-					+ "_" + this.keyWord + ".dat");
+					+ "_" + this.keyWord + ".txt");
 		} catch (IOException e) {
 			System.out
 					.println("I/O error during the write of the report file");

@@ -25,28 +25,51 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.TimeUnit;
 
 import com.xuggle.xuggler.ICodec;
+import com.xuggle.xuggler.IRational;
 //import com.xuggle.xuggler.IProperty;
 //import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IAddStreamEvent;
-
+import com.xuggle.xuggler.IPixelFormat;
 
 public class VideoRecorder {
 	
 	private IMediaWriter writer;
 	
-	public VideoRecorder(String outputFilename, int width, int height) {		
+	public VideoRecorder(String outputFilename, int width, int height,
+			int videoBitrate, int videoCodec) {		
 		writer = ToolFactory.makeWriter(outputFilename);
 		writer.addListener(new RateChange());
+		
+		
+		switch (videoCodec) {
+		case 1:
+			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264, width, height);
+//			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
+//			writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(25);
+			
+			break;
+		case 2:
+			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, width, height);
+			/*IRational frameRate = IRational.make(1, 25);
+			writer.getContainer().getStream(0).getStreamCoder().setFrameRate(frameRate);
+			//writer.getContainer().getStream(0).getStreamCoder().setTimeBase(IRational.make(frameRate.getDenominator(),
+			//		frameRate.getNumerator()));
+*/			break;
+		case 3:
+			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4, width, height);
+			break;
+		default:
+			break;
+		}
 				
-		writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4,
-		                   width, height);
 		//writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,
         //        width, height);
 				
-		writer.getContainer().getStream(0).getStreamCoder().setBitRate(7000*1024);
+		writer.getContainer().getStream(0).getStreamCoder().setBitRate(videoBitrate*1024);
+	
 		//IStreamCoder coder = writer.getContainer().getStream(0).getStreamCoder();
 //		writer.getContainer().getStream(0).getStreamCoder()
 //		.setProperty("flags", "+cgop+umv");

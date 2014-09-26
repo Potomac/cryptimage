@@ -34,6 +34,9 @@ public class JobConfig {
 	private boolean wantDec = false;
 	private boolean wantPlay = false;	
 	private boolean modePhoto = false;
+	private int audienceLevel = 2;
+	private int videoBitrate = 2000;
+	private int videoCodec = 1;
 
 	public JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -81,6 +84,30 @@ public class JobConfig {
 
 	public boolean isStrictMode() {
 		return strictMode;
+	}
+
+	public int getAudienceLevel() {
+		return audienceLevel;
+	}
+
+	public void setAudienceLevel(int audienceLevel) {
+		this.audienceLevel = audienceLevel;
+	}
+
+	public int getVideoBitrate() {
+		return videoBitrate;
+	}
+
+	public void setVideoBitrate(int videoBitrate) {
+		this.videoBitrate = videoBitrate;
+	}
+
+	public int getVideoCodec() {
+		return videoCodec;
+	}
+
+	public void setVideoCodec(int videoCodec) {
+		this.videoCodec = videoCodec;
 	}
 
 	public void setStrictMode(boolean strictMode) {

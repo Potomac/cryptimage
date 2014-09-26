@@ -48,7 +48,9 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		this.count = 0;
 		cryptVid = new CryptVideo(frmV.getOutputFilename(), frmV.getKeyWord(), 
 				frmV.getVideoFilename(), frmV.getNbFrames(), frmV.isbDec(),
-				frmV.isStrictMode(), frmV.getPositionSynchro(), frmV.getJob().isWantPlay());
+				frmV.isStrictMode(), frmV.getPositionSynchro(), frmV.getJob().isWantPlay(),
+				frmV.getJob().getAudienceLevel(), frmV.getJob().getVideoBitrate(),
+				frmV.getJob().getVideoCodec());
 		posFrame = 0;
 		this.isDec = frmV.isbDec();
 		

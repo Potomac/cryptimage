@@ -29,8 +29,11 @@ public class DelayArray {
 	private Lfsr gen;	
 	private int[] randArray;
 	private boolean strictMode;
+	private String sdebugLines = "";
+	private boolean isDecoding;
 	
-	public DelayArray(int heightFrame, int keyWord, boolean strictMode){
+	public DelayArray(int heightFrame, int keyWord, boolean strictMode, boolean isDecoding){
+		this.isDecoding = isDecoding;
 		this.strictMode = strictMode;
 		this.heightFrame = heightFrame;
 		//this.keyWord = keyWord;
@@ -64,8 +67,9 @@ public class DelayArray {
 	}
 	
 	private void feedTheDelayArray() {
-		int temp = 0;
+		int temp =0;
 		int j = 0;
+		boolean stop = false;
 
 		int[][] z = new int[3][2];
 		z[0][0] = 0;
@@ -77,30 +81,31 @@ public class DelayArray {
 
 		for (int fullFrame = 0; fullFrame < 3; fullFrame++) {
 			// even frame ( frame paire )
-			for (int i = 1; i < this.heightFrame; i++) {
+			for (int i = 1; i < this.heightFrame; i++) {				
 				temp = j;
 				delay[fullFrame][i] = getDelayValue(z[fullFrame][0],
 						getLSB(randArray[j]), getMSB(randArray[j]));
 				j++;
-				debugDelay(i, temp, delay[fullFrame][i]);
+				debugDelay(i, temp, delay, fullFrame, z[fullFrame][0],randArray[temp], stop);
 				i++;
 			}
 
 			// odd frame ( frame impaire )
-			for (int i = 0; i < this.heightFrame; i++) {
+			for (int i = 0; i < this.heightFrame; i++) {	
 				temp = j;
 				delay[fullFrame][i] = getDelayValue(z[fullFrame][1],
 						getLSB(randArray[j]), getMSB(randArray[j]));
 				j++;
-				debugDelay(i, temp, delay[fullFrame][i]);
+				debugDelay(i, temp, delay, fullFrame, z[fullFrame][1],randArray[temp], stop);
 				i++;
 			}
 		}
 	}
 	
-	private void feedTheDelayArrayStrictMode(){
+	private void feedTheDelayArrayStrictMode(){	
 		int temp = 0;
 		int j = 0;
+		boolean stop = false;
 		
 		int[][] z = new int[3][2];
 		z[0][0] = 0;
@@ -116,13 +121,15 @@ public class DelayArray {
 			// even frame ( frame paire )
 			for (int i = 1; i < this.heightFrame; i++) {
 				temp = j;
-				delay[fullFrame][i] = getDelayValue(z[fullFrame][0], getLSB(randArray[j]),
-						getMSB(randArray[j]));
-				if (i != 571 && i!= 573) {// we don't increment if next line is 622 ( 574 in
+				stop = true;
+				if (i!= 573 && i!= 575) {// we don't increment if next line is 622 ( 574 in
 								// digital image ) or if next line is 623 ( 576 in digital image )
+					delay[fullFrame][i] = getDelayValue(z[fullFrame][0], getLSB(randArray[j]),
+							getMSB(randArray[j]));
 					j++;
+					stop = false;
 				}
-				debugDelay(i, temp, delay[fullFrame][i]);
+				debugDelay(i, temp, delay, fullFrame, z[fullFrame][0], randArray[temp],stop);
 //				System.out.println("ligne" + (i + 1) + " convert"
 //						+ convertLine(i + 1) + " P" + temp + " " + "valeur("
 //						+ delay[fullFrame][i]);
@@ -134,15 +141,17 @@ public class DelayArray {
 								// with strictMode	
 			
 			// odd frame ( frame impaire )
-			for (int i = 2; i < this.heightFrame; i++) {
+			for (int i = 2; i < this.heightFrame; i++) {	
 				temp = j;
-				delay[fullFrame][i] = getDelayValue(z[fullFrame][1], getLSB(randArray[j]),
-						getMSB(randArray[j]));				
-				if (i != 572) { // we don't increment if it's line 310 ( 575 in
+				stop = true;
+				if (i != 574) { // we don't increment if it's line 310 ( 575 in
 								// digital image )
+					delay[fullFrame][i] = getDelayValue(z[fullFrame][1], getLSB(randArray[j]),
+							getMSB(randArray[j]));	
 					j++;
-				}
-				debugDelay(i, temp, delay[fullFrame][i]);
+					stop = false;
+				}				 
+				debugDelay(i, temp, delay,fullFrame,z[fullFrame][1],randArray[temp], stop);
 				i++;
 			}
 			delay[fullFrame][574] = 0; // line 310 (575) of odd frame is not crypted
@@ -166,34 +175,25 @@ public class DelayArray {
 		
 	}
 	
+
+	/**
+	 * @param z
+	 * @param b0
+	 * @param b10
+	 * @return
+	 */
 	private int getDelayValue(int z, int b0, int b10){		
+		if(this.isDecoding){
+			return this.getValuefromTableDec(z, b0, b10);
+		}
+		else
+		{
+			return this.getValuefromTableEnc(z, b0, b10);			
+		}		
+	}
+	
+	private int getValuefromTableEnc(int z, int b0, int b10) {
 		int res = 0;
-		
-/*		if ( z==0 && b0 == 0 && b10 ==0 ){
-			res = 0;
-		}
-		if ( z==0 && b0 == 0 && b10 ==1 ){
-			res = 1;
-		}
-		if ( z==0 && b0 == 1 && b10 ==0 ){
-			res = 2;
-		}
-		if ( z==0 && b0 == 1 && b10 ==1 ){
-			res = 2;
-		}
-		if ( z==1 && b0 == 0 && b10 ==0 ){
-			res = 2;
-		}
-		if ( z==1 && b0 == 0 && b10 ==1 ){
-			res = 0;
-		}
-		if ( z==1 && b0 == 1 && b10 ==0 ){
-			res = 0;
-		}
-		if ( z == 1 && b0 == 1 && b10 == 1 ){
-			res = 1;
-		}
-		return res;*/
 		if (z == 0 && b0 == 0 && b10 == 0) {
 			res = 2;
 		}
@@ -216,6 +216,36 @@ public class DelayArray {
 			res = 2;
 		}
 		if (z == 1 && b0 == 1 && b10 == 1) {
+			res = 1;
+		}
+		return res;
+	}
+	
+	private int getValuefromTableDec(int z, int b0, int b10) {
+		int res = 0;
+		
+		if ( z==0 && b0 == 0 && b10 ==0 ){
+			res = 0;
+		}
+		if ( z==0 && b0 == 0 && b10 ==1 ){
+			res = 1;
+		}
+		if ( z==0 && b0 == 1 && b10 ==0 ){
+			res = 2;
+		}
+		if ( z==0 && b0 == 1 && b10 ==1 ){
+			res = 2;
+		}
+		if ( z==1 && b0 == 0 && b10 ==0 ){
+			res = 2;
+		}
+		if ( z==1 && b0 == 0 && b10 ==1 ){
+			res = 0;
+		}
+		if ( z==1 && b0 == 1 && b10 ==0 ){
+			res = 0;
+		}
+		if ( z == 1 && b0 == 1 && b10 == 1 ){
 			res = 1;
 		}
 		return res;
@@ -259,11 +289,29 @@ public class DelayArray {
 
 	}
 	
-	private void debugDelay(int digitalLine, int cptJ, int delay ){
-		String message = "ligne " + (digitalLine + 1) + ", analog "
-				+ convertLine(digitalLine + 1) + ", P" + cptJ + " " + "(, retard "+
-				+ delay  +"), LFSR " + randArray[cptJ] ;
-		System.out.println(message);
+	private void debugDelay(int i, int j, int[][] delay, int trameNb, int z, int rand,
+			boolean stop){
+		String bloque = "P yes";
+		
+		if(stop){
+			bloque = "P no ";
+		}
+		
+		String message = "trame " +  (trameNb +1) + "; ligne " 
+				+ String.format("%03d",(i + 1)) + "; analog "
+				+ String.format("%03d",convertLine(i + 1)) 
+				+ "; (P" + String.format("%04d",j)
+				+ "); " + bloque
+				+ " ; (retard: " + String.format("%1d",delay[trameNb][i]) 
+				+"); LFSR " + String.format("%04d",rand) 
+				+ " 0x" + Integer.toHexString(rand)
+				+ "; z: " + z;
+		this.sdebugLines += message +" \r\n";
+				//System.out.println(message);
+	}
+
+	public String getSdebugLines() {
+		return sdebugLines;
 	}
 
 }

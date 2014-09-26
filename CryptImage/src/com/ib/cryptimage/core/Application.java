@@ -69,6 +69,15 @@ public class Application {
 	         if (commandLine.hasOption('f')){	        	 
 	        	 job.setVideo_frame(Integer.parseInt(commandLine.getOptionValue('f')));
 	         }
+	         if (commandLine.hasOption('a')){	        	 
+	        	 job.setAudienceLevel(Integer.parseInt(commandLine.getOptionValue('a')));
+	         }
+	         if (commandLine.hasOption('b')){	        	 
+	        	 job.setVideoBitrate(Integer.parseInt(commandLine.getOptionValue('b')));
+	         }
+	         if (commandLine.hasOption('e')){	        	 
+	        	 job.setVideoCodec(Integer.parseInt(commandLine.getOptionValue('e')));
+	         }
 	         if (commandLine.hasOption('k')){	        	
 	        	 job.setPositionSynchro(Integer.parseInt(commandLine.getOptionValue('k')));
 	         }
@@ -146,7 +155,8 @@ public class Application {
 		}
 				
 				
-		CryptImage cryptImg = new CryptImage(img, 1,job.isStrictMode());
+		CryptImage cryptImg = new CryptImage(img, 1,job.isStrictMode(), job.getAudienceLevel(),
+				job.isWantDec());
 		if(job.isStrictMode() && ( cryptImg.getImgRef().getHeight() !=576 ||
 				cryptImg.getImgRef().getWidth() !=768)){
 			cryptImg.getImgRef().setImg(cryptImg.getScaledImage(img, 768, 576));
@@ -221,8 +231,8 @@ public class Application {
 		// get the discret11 buffered image
 		BufferedImage bi = null;
 
-		bi = cryptImg.getDecryptDiscret11WithCode(key11);
-		saveDecryptFile(bi, output_file, String.valueOf(key11));		
+		bi = cryptImg.getDecryptDiscret11WithCode(key11);		
+        saveDecryptFile(bi, output_file, String.valueOf(key11));		
 	}	
 
 	public static void saveDecryptFile(BufferedImage bi,String output_file, String key11){
@@ -256,7 +266,10 @@ public class Application {
 	      			.addOption("s", "strict-mode", false, "use a true discret11 mode by resizing the image to 768x576 pixels")
 	      			.addOption("k", "keyframe", true, "start the decryption with the given key frame position ")
 	      			.addOption("p", "play", false, "play the result instead of creating a video file")
-					.addOption("m", "mode-photo", false, "mode photo, works only with image file");
+					.addOption("m", "mode-photo", false, "mode photo, works only with image file")
+					.addOption("a", "audience-level", true, "set an audience level, 1 to 7")
+					.addOption("b", "video-bitrate", true, "set the video bitrate ( default : 2000 )")
+					.addOption("e", "codec", true, "select the video codec ( default: 1)");
 	      
 	          
 	      posixOptions.getOption("i").setRequired(true);
@@ -283,7 +296,22 @@ public class Application {
 	      posixOptions.getOption("p").setArgs(0);
 	      
 	      posixOptions.getOption("m").setRequired(false);
-	      posixOptions.getOption("m").setArgs(0);	 
+	      posixOptions.getOption("m").setArgs(0);
+	      
+	      posixOptions.getOption("a").setRequired(false);
+	      posixOptions.getOption("a").setArgName("audience level (1-7)");
+	      posixOptions.getOption("a").setArgs(1);
+	      posixOptions.getOption("a").setType(Number.class);
+	      
+	      posixOptions.getOption("b").setRequired(false);
+	      posixOptions.getOption("b").setArgName("video bitrate");
+	      posixOptions.getOption("b").setArgs(1);
+	      posixOptions.getOption("b").setType(Number.class);
+	      
+	      posixOptions.getOption("e").setRequired(false);
+	      posixOptions.getOption("e").setArgName("video codec 1: h264, 2: mpeg2, 3: mpeg4,");
+	      posixOptions.getOption("e").setArgs(1);
+	      posixOptions.getOption("e").setType(Number.class);
 	      
 	     	     
 	      OptionGroup grpOptCrypt = new OptionGroup();
