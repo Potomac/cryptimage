@@ -1,20 +1,20 @@
 /**
- * This file is part of	CryptImage.
+ * This file is part of	CryptImage_Dev.
  *
- * CryptImage is free software: you can redistribute it and/or modify
+ * CryptImage_Dev is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage is distributed in the hope that it will be useful,
+ * CryptImage_Dev is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 18 sept. 2014 Author Mannix54
+ * 29 sept. 2014 Author Mannix54
  */
 
 
@@ -49,6 +49,10 @@ public class CryptVideo {
 	private int frameCount;
 	private int audienceLevel;
 	
+	private Discret11 discret;
+	private double perc1;
+	private double perc2;
+	
 	private int step1 =0;
 	private int step20 = 0;
 	private int step40 =0;
@@ -56,31 +60,42 @@ public class CryptVideo {
 	private int step80 = 0;
 	private int step100 = 0;
 	
-	private VideoPlayer vidPlayer;
+	private VideoPlayer vidPlayer;	
 	
-	private CryptImage cryptImg;	
 
-	public CryptVideo(String outputFilename, int keyWord, 
-			String inputFileName, int videoLenghtFrame,
-			boolean isDecoding, boolean strictMode, int positionSynchro, boolean wantPlay,
-			int audienceLevel, int videoBitrate, int videoCodec){	
-		this.audienceLevel = audienceLevel;
+	public CryptVideo(FramesPlayer frmv){	
+		this.audienceLevel = frmv.getJob().getAudienceLevel();
 		this.frameCount = 0;
-		this.positionSynchro = positionSynchro;
-		this.strictMode = strictMode;
-		this.outputFilename = outputFilename;
-		this.keyWord = keyWord;		
-		this.isDecoding = isDecoding;
-		this.videoLengthFrames = videoLenghtFrame;		
+		this.positionSynchro = frmv.getJob().getPositionSynchro();
+		this.strictMode = frmv.getJob().isStrictMode();
+		this.outputFilename = frmv.getJob().getOutput_file();
+		this.keyWord = frmv.getJob().getDiscret11Word();		
+		this.isDecoding = frmv.getJob().isWantDec();
+		this.videoLengthFrames = frmv.getJob().getVideo_frame();
+		this.perc1 = frmv.getJob().getPerc1();
+		this.perc2 = frmv.getJob().getPerc2();
+		
+		
+		int mode;
+		if(this.isDecoding){
+			mode = Discret11.MODE_DEC;
+		}
+		else{
+			mode = Discret11.MODE_ENC;			
+		}
+		
+		
+		discret = new Discret11(this.keyWord, mode, this.audienceLevel,
+				this.perc1, this.perc2);
 
 			
-		IMediaReader reader = ToolFactory.makeReader(inputFileName);
+		IMediaReader reader = ToolFactory.makeReader(frmv.getJob().getInput_file());
 		reader.readPacket();
 		this.width =reader.getContainer().getStream(0).getStreamCoder().getWidth();
 		this.height = reader.getContainer().getStream(0).getStreamCoder().getHeight();
 		int frameRate = (int) reader.getContainer().getStream(0).getStreamCoder().getFrameRate().getValue();
 		
-		if (wantPlay){
+		if (frmv.getJob().isWantPlay()){
 			vidPlayer = new VideoPlayer(frameRate);
 		}
 		
@@ -98,27 +113,18 @@ public class CryptVideo {
 			 this.height = 576;
 		 }
 		
-		if(wantPlay !=true){
+		if(frmv.getJob().isWantPlay() !=true){
 	    vid = new VideoRecorder(outputFilename + info + keyWord + "_audience_" 
 		+ this.audienceLevel + ".mp4", width,
-				height, videoBitrate, videoCodec);
+				height, frmv.getJob().getVideoBitrate(), frmv.getJob().getVideoCodec());
 		}
-	    this.cryptImg = new CryptImage(new BufferedImage(this.width, this.height,
-	    		BufferedImage.TYPE_3BYTE_BGR), 1, this.strictMode, this.audienceLevel,this.isDecoding);
-	    cryptImg.setDiscret11Word(keyWord);
 	}
 	
 	public void addDisplayFrameEnc(BufferedImage buff, int pos, int timingFrame){
 		frameCount++;
 		BufferedImage bi;		
-		this.cryptImg.setPosFrame(pos);
-		this.cryptImg.getImgRef().setImg(buff);
-		if (this.strictMode &&  ( buff.getWidth()!=768 || buff.getHeight()!=576)){
-			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
-		}
-		bi = this.cryptImg.getCryptDiscret11(keyWord);
+		bi = this.discret.transform(buff);
 		
-		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
 		//vid.addFrame(bi, this.timeBase * timingFrame);
 		vidPlayer.addImage(bi);
 		vidPlayer.showImage();
@@ -138,16 +144,8 @@ public class CryptVideo {
 			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 		else{
-		BufferedImage bi;
-		this.cryptImg.setPosFrame(pos);
-		this.cryptImg.getImgRef().setImg(buff);
-		if (this.strictMode && (buff.getWidth()!=768 || buff.getHeight()!=576)){
-			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
-		}
-		bi = this.cryptImg.getDecryptDiscret11WithCode(keyWord);
-		//bi = new CryptImage(buff, pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
-		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
-		//vid.addFrame(bi, this.timeBase * timingFrame);
+		BufferedImage bi;		
+		bi = this.discret.transform(buff);
 		vidPlayer.addImage(bi);
 		vidPlayer.showImage();
 		updateProgress("decoded");
@@ -160,14 +158,8 @@ public class CryptVideo {
 	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){
 		frameCount++;
 		BufferedImage bi;
-		this.cryptImg.setPosFrame(pos);
-		this.cryptImg.getImgRef().setImg(buff);
-		if (this.strictMode && ( buff.getWidth()!=768 || buff.getHeight()!=576)){
-			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
-		}
-		bi = this.cryptImg.getCryptDiscret11(keyWord);
-		//bi = new CryptImage(buff, pos, this.strictMode).getCryptDiscret11(keyWord);
-		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
+		bi = this.discret.transform(buff);
+		//bi = new CryptImage(buff, pos, this.strictMode).getCryptDiscret11(keyWord);		
 		vid.addFrame(bi, this.timeBase * ( timingFrame ));
 		updateProgress("encoded");
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
@@ -184,14 +176,8 @@ public class CryptVideo {
 		}
 		else{
 		BufferedImage bi;
-		this.cryptImg.setPosFrame(pos);
-		this.cryptImg.getImgRef().setImg(buff);
-		if (this.strictMode && ( buff.getWidth()!=768 || buff.getHeight()!=576)){
-			this.cryptImg.getImgRef().setImg(cryptImg.getScaledImage(buff, 768, 576));
-		}
-		bi = this.cryptImg.getDecryptDiscret11WithCode(keyWord);
+		bi = this.discret.transform(buff);
 		//bi = new CryptImage(buff, pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
-		bi = convertToType(bi, BufferedImage.TYPE_3BYTE_BGR);
 		vid.addFrame(bi, this.timeBase * timingFrame);
 		updateProgress("decoded");
 		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
@@ -215,31 +201,23 @@ public class CryptVideo {
 		if(isDecoding !=true){
 		buff = new BufferedImage(this.width,
 				this.height, 12);
-		CryptImage cryptImg = new CryptImage(buff, 1,this.strictMode, this.audienceLevel,
-				this.isDecoding);
-		cryptImg.getCryptDiscret11(keyWord);
+		
 		//int [][] delayTab = cryptImg.getDelayTabCrypt();		
 		
 		//save the data file
 		
-		DelayArray delArray = new DelayArray(this.height, this.keyWord, this.strictMode, this.isDecoding);
-		delArray.getDelayArray();
 		
 		try {
 			File dataFile = new File(this.outputFilename + "_crypt_" + this.keyWord +
 					"_audience_" + this.audienceLevel + ".txt");
 			dataFile.createNewFile();
 			FileWriter ffw = new FileWriter(dataFile);
-			BufferedWriter bfw = new BufferedWriter(ffw);			
-			bfw.write("Frame 1: " + cryptImg.getDelayArrayAtFrame(1) + "\r\n");
-			bfw.write("Frame 2: " + cryptImg.getDelayArrayAtFrame(2) + "\r\n");
-			bfw.write("Frame 3: " + cryptImg.getDelayArrayAtFrame(3) + "\r\n");
-			bfw.write("Delay in pixels : " + cryptImg.getShiftValues()+ "\r\n");
+			BufferedWriter bfw = new BufferedWriter(ffw);	
 			bfw.write("11 bits keyword : " + this.keyWord + "\r\n");
 			bfw.write("Audience level : " + this.audienceLevel + "\r\n");
 			bfw.write("File : " + this.outputFilename +"_crypt_" +
 					this.keyWord + "_audience_" + this.audienceLevel + ".mp4" +"\r\n");
-			bfw.write("debug lines : " + "\r\n" + delArray.getSdebugLines());
+			bfw.write("debug lines : " + "\r\n" + discret.getsDebugLines());
 			bfw.close();
 			System.out.println("Data report : " + this.outputFilename
 					+ "_crypt_" + this.keyWord + "_audience_" 
@@ -252,26 +230,6 @@ public class CryptVideo {
 		}
 	}
 
-	public  BufferedImage convertToType(BufferedImage sourceImage,
-			int targetType) {
-		BufferedImage image;
-
-		// if the source image is already the target type, return the source
-		// image
-		if (sourceImage.getType() == targetType) {
-			image = sourceImage;
-		}
-		// otherwise create a new image of the target type and draw the new
-		// image
-		else {
-			image = new BufferedImage(sourceImage.getWidth(),
-					sourceImage.getHeight(), targetType);
-			image.getGraphics().drawImage(sourceImage, 0, 0, null);
-		}
-
-		return image;
-
-	}
 	
 	/**
 	 * update the status in the console for encoding/decoding process creation of the video

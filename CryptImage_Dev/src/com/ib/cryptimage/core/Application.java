@@ -1,25 +1,25 @@
 /**
- * This file is part of	CryptImage.
+ * This file is part of	CryptImage_Dev.
  *
- * CryptImage is free software: you can redistribute it and/or modify
+ * CryptImage_Dev is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage is distributed in the hope that it will be useful,
+ * CryptImage_Dev is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 18 sept. 2014 Author Mannix54
+ * 29 sept. 2014 Author Mannix54
  */
 
 
-package com.ib.cryptimage.core;
 
+package com.ib.cryptimage.core;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -55,7 +55,7 @@ public class Application {
 	          
 	         if ( commandLine.hasOption("v") && args.length == 1 )  
 	         {  
-	        	System.out.println("CryptImage v0.0.2b");
+	        	System.out.println("CryptImage v0.0.2d");
 	 			System.out.println("Copyright (C) 2014-09-28 Mannix54");
 	 			printLicense();
 	 			System.exit(0);
@@ -68,6 +68,22 @@ public class Application {
 	         }	         
 	         if (commandLine.hasOption('f')){	        	 
 	        	 job.setVideo_frame(Integer.parseInt(commandLine.getOptionValue('f')));
+	         }
+	         if (commandLine.hasOption('r')){
+	        	 double perc1 = Double.parseDouble(commandLine.getOptionValues('r')[0]);
+	        	 double perc2 = Double.parseDouble(commandLine.getOptionValues('r')[1]);
+	        	 if(perc1 > 100 || perc1 < 0 ||
+	        		perc2 >100 || perc2 < 0){
+	        		 System.out.println("percentages values incorrects, values must be a float "
+	        		 	+ " between 1 and 100");
+	        		 System.exit(1);
+	        	 }
+	        	 perc1 = (double)(perc1/100);
+	        	 perc2 = (double)(perc2/100);
+	        	 job.setPerc1(perc1);
+	        	 job.setPerc2(perc2);
+	        	 System.out.println("New percentage value for delay 1 ( 902 ns ) : " + job.getPerc1()*100 + "%");
+	        	 System.out.println("New percentage value for delay 2 (1804 ns ) : "  + job.getPerc2()*100 + "%");
 	         }
 	         if (commandLine.hasOption('a')){	        	 
 	        	 job.setAudienceLevel(Integer.parseInt(commandLine.getOptionValue('a')));
@@ -101,9 +117,10 @@ public class Application {
 	         if (commandLine.hasOption("s")){	        	
 	        	 job.setStrictMode(true);
 	         }
-	         if (commandLine.hasOption("m")){	        	
+	         job.setStrictMode(true);
+/*	         if (commandLine.hasOption("m")){	        	
 	        	 job.setModePhoto(true);
-	         }
+	         }*/
 	         if ( commandLine.hasOption("o") )  
 	         { 	           
 	            job.setOutput_file(commandLine.getOptionValue("o"));
@@ -150,33 +167,12 @@ public class Application {
 			 img = ImageIO.read(new File(job.getInput_file()));
 		}
 		catch(IOException e){			
-			System.out.println("I/O error during the load of the input file");
+			System.out.println("I/O error during the load of the input file.");
 			System.exit(1);
 		}
 				
 				
-		CryptImage cryptImg = new CryptImage(img, 1,job.isStrictMode(), job.getAudienceLevel(),
-				job.isWantDec());
-		if(job.isStrictMode() && ( cryptImg.getImgRef().getHeight() !=576 ||
-				cryptImg.getImgRef().getWidth() !=768)){
-			cryptImg.getImgRef().setImg(cryptImg.getScaledImage(img, 768, 576));
-			cryptImg.getImgRef().setHeight(576);
-			cryptImg.getImgRef().setWidth(768);
-		}
-		System.out.println("Height : " + cryptImg.getImgRef().getHeight());
-		System.out.println("Width : " + cryptImg.getImgRef().getWidth());
-				
-		//decrypt with code
-		if(job.getDiscret11Word() !=0 && job.isWantDec() == true) {
-			decryptWithCode(job.getDiscret11Word(), cryptImg, job.getOutput_file());
-			System.exit(0);
-		}
 		
-		//crypt with code
-		if(job.isWantDec() == false){
-			cryptWithCode(cryptImg, job.getDiscret11Word(),job.getOutput_file(), job.getAudienceLevel());
-			System.exit(0);
-		}		
 		
 	}
 	
@@ -186,69 +182,7 @@ public class Application {
 					System.exit(0);					
 	}
 	
-	public static void cryptWithCode(CryptImage cryptImg, int discret11Word,
-			String output_file, int levelAudience){
-		BufferedImage bi;
-		bi = cryptImg.getCryptDiscret11(discret11Word);
-		System.out.println("shift pixels : " + cryptImg.getShiftValues());
-		saveCryptImage(bi, cryptImg, output_file, discret11Word, levelAudience);
-	}
 	
-	public static void saveCryptImage(BufferedImage bi, CryptImage cryptImg,
-			String output_file, int key11, int levelAudience) {
-		try {
-			// retrieve image
-			File outputfile = new File(output_file + "_crypt" + key11 + ".png");
-			ImageIO.write(bi, "png", outputfile);
-			System.out.println("Discret11 crypted image : " + output_file
-					+ "_crypt"+ key11 + ".png");
-		} catch (IOException e) {
-			System.out.println("I/O error during the write of the crypted image");
-			System.exit(1);
-		}
-
-		try {
-			File dataFile = new File(output_file + "_crypt" + key11 + ".dat");
-			dataFile.createNewFile();
-			FileWriter ffw = new FileWriter(dataFile);			
-			ffw.write(cryptImg.getsDecaList() + "\r\n");
-			ffw.write(cryptImg.getDelayArrayAtFrame(1) + "\r\n");
-			ffw.write(cryptImg.getDelayArrayAtFrame(2) + "\r\n");
-			ffw.write(cryptImg.getDelayArrayAtFrame(3) + "\r\n");
-			ffw.write("key : " + key11 + "\r\n");
-			ffw.write("audience evel : " + levelAudience + "\r\n");
-			ffw.write("file : " + output_file + "_crypt" + key11 + "_audience_" 
-			+ levelAudience + ".dat");
-			ffw.close();
-			System.out.println("Report shift file : " + output_file
-					+ "_crypt" + key11 + ".dat");
-		} catch (IOException e) {
-			System.out
-					.println("I/O error during the write of the report file");
-			System.exit(1);
-		}
-	}
-	
-	public static void decryptWithCode(int key11, CryptImage cryptImg,
-			String output_file) {
-		// get the discret11 buffered image
-		BufferedImage bi = null;
-
-		bi = cryptImg.getDecryptDiscret11WithCode(key11);		
-        saveDecryptFile(bi, output_file, String.valueOf(key11));		
-	}	
-
-	public static void saveDecryptFile(BufferedImage bi,String output_file, String key11){
-		try {
-			// retrieve image
-			File outputfile = new File(output_file + "_decrypt_" + key11 + ".png");
-			ImageIO.write(bi, "png", outputfile);
-			System.out.println( "Output File decrypted : " + output_file + "_decrypt_" + key11 + ".png" );
-		} catch (IOException e) {
-			System.out.println("I/O error during the write of the decrypted image");			
-			System.exit(1);
-		}
-	}	
 	
 	
 	public static void printArgs(String[] args){
@@ -272,8 +206,8 @@ public class Application {
 					.addOption("m", "mode-photo", false, "Mode photo, works only with image file.")
 					.addOption("a", "audience-level", true, "Set an audience level, 1 to 7.")
 					.addOption("b", "video-bitrate", true, "Set the video bitrate ( default : 2000 ).")
-					.addOption("e", "codec", true, "Select the video codec ( default: 3).");
-	      
+					.addOption("e", "codec", true, "Select the video codec ( default: 3).")
+	      			.addOption("r", "set-percentages", true, "Set the percentages for delay 1 and 2 ( default: 1.67 and 3.47).");
 	          
 	      posixOptions.getOption("i").setRequired(true);
 	      posixOptions.getOption("i").setArgName("input file");
@@ -315,6 +249,11 @@ public class Application {
 	      posixOptions.getOption("e").setArgName("1: h264, 2: mpeg2, 3: mpeg4,");
 	      posixOptions.getOption("e").setArgs(1);
 	      posixOptions.getOption("e").setType(Number.class);
+	      
+	      posixOptions.getOption("r").setRequired(false);
+	      posixOptions.getOption("r").setArgName("percentage1 percentage2");
+	      posixOptions.getOption("r").setArgs(2);
+	      posixOptions.getOption("r").setType(Number.class);
 	      
 	     	     
 	      OptionGroup grpOptCrypt = new OptionGroup();

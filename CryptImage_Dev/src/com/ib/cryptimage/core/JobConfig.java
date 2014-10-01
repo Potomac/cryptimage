@@ -1,23 +1,21 @@
 /**
- * This file is part of	CryptImage.
+ * This file is part of	CryptImage_Dev.
  *
- * CryptImage is free software: you can redistribute it and/or modify
+ * CryptImage_Dev is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage is distributed in the hope that it will be useful,
+ * CryptImage_Dev is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 18 sept. 2014 Author Mannix54
+ * 29 sept. 2014 Author Mannix54
  */
-
-
 
 
 package com.ib.cryptimage.core;
@@ -34,9 +32,11 @@ public class JobConfig {
 	private boolean wantDec = false;
 	private boolean wantPlay = false;	
 	private boolean modePhoto = false;
-	private int audienceLevel = 2;
+	private int audienceLevel = 7;
 	private int videoBitrate = 2000;
 	private int videoCodec = 3;
+	private double perc1 = 0.0167;
+	private double perc2 = 0.0347;
 
 	public JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -44,6 +44,22 @@ public class JobConfig {
 
 	public String getInput_file() {
 		return input_file;
+	}
+
+	public double getPerc1() {
+		return perc1;
+	}
+
+	public void setPerc1(double perc1) {
+		this.perc1 = perc1;
+	}
+
+	public double getPerc2() {
+		return perc2;
+	}
+
+	public void setPerc2(double perc2) {
+		this.perc2 = perc2;
 	}
 
 	public void setInput_file(String input_file) {

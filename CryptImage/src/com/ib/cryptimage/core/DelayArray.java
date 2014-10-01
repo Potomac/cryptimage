@@ -192,7 +192,7 @@ public class DelayArray {
 		}		
 	}
 	
-	private int getValuefromTableEnc(int z, int b0, int b10) {
+	private int getValuefromTableDec(int z, int b0, int b10) {
 		int res = 0;
 		if (z == 0 && b0 == 0 && b10 == 0) {
 			res = 2;
@@ -221,7 +221,7 @@ public class DelayArray {
 		return res;
 	}
 	
-	private int getValuefromTableDec(int z, int b0, int b10) {
+	private int getValuefromTableEnc(int z, int b0, int b10) {
 		int res = 0;
 		
 		if ( z==0 && b0 == 0 && b10 ==0 ){
