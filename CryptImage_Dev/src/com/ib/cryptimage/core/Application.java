@@ -55,7 +55,7 @@ public class Application {
 	          
 	         if ( commandLine.hasOption("v") && args.length == 1 )  
 	         {  
-	        	System.out.println("CryptImage v0.0.2d");
+	        	System.out.println("CryptImage v0.0.2h");
 	 			System.out.println("Copyright (C) 2014-09-28 Mannix54");
 	 			printLicense();
 	 			System.exit(0);
@@ -116,11 +116,10 @@ public class Application {
 	         }
 	         if (commandLine.hasOption("s")){	        	
 	        	 job.setStrictMode(true);
-	         }
-	         job.setStrictMode(true);
-/*	         if (commandLine.hasOption("m")){	        	
+	         }	         
+	         if (commandLine.hasOption("m")){	        	
 	        	 job.setModePhoto(true);
-	         }*/
+	         }
 	         if ( commandLine.hasOption("o") )  
 	         { 	           
 	            job.setOutput_file(commandLine.getOptionValue("o"));
@@ -169,12 +168,74 @@ public class Application {
 		catch(IOException e){			
 			System.out.println("I/O error during the load of the input file.");
 			System.exit(1);
-		}
-				
-				
+		}		
 		
+		if(job.isModePhoto() && job.isWantDec()){
+			decPhoto(img, job);
+		}
+		else if(job.isModePhoto() && job.isWantDec()!=true){
+			encPhoto(img, job);
+		}	
 		
 	}
+	
+	
+	public static void decPhoto(BufferedImage img, JobConfig job){
+		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getDiscret11Word(),
+				SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
+		BufferedImage imgRes = simpleDiscret.transform(img);
+		saveDecryptFile(imgRes, job.getOutput_file(), job.getDiscret11Word());		
+	}
+	
+	public static void encPhoto(BufferedImage img, JobConfig job){
+		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getDiscret11Word(),
+				SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
+		BufferedImage imgRes = simpleDiscret.transform(img);
+		saveCryptImage(imgRes, simpleDiscret, job.getOutput_file(), job.getDiscret11Word());		
+	}
+	
+	public static void saveCryptImage(BufferedImage bi, SimpleDiscret11 cryptImg,
+			String output_file, int key11) {
+		try {
+			// retrieve image
+			File outputfile = new File(output_file + "_crypt" + key11 + ".png");
+			ImageIO.write(bi, "png", outputfile);
+			System.out.println("SimpleDiscret11 crypted image : " + output_file
+					+ "_crypt"+ key11 + ".png");
+		} catch (IOException e) {
+			System.out.println("I/O error during the write of the crypted image");
+			System.exit(1);
+		}
+
+		try {
+			File dataFile = new File(output_file + "_crypt" + key11 + ".dat");
+			dataFile.createNewFile();
+			FileWriter ffw = new FileWriter(dataFile);	
+			ffw.write("key : " + key11 + "\r\n");			
+			ffw.write("file : " + output_file + "_crypt" + key11 +
+			 ".txt");
+			ffw.close();
+			System.out.println("Report shift file : " + output_file
+					+ "_crypt" + key11 + ".txt");
+		} catch (IOException e) {
+			System.out
+					.println("I/O error during the write of the report file");
+			System.exit(1);
+		}
+	}
+	
+	public static void saveDecryptFile(BufferedImage bi,String output_file, int key11){
+		try {
+			// retrieve image
+			File outputfile = new File(output_file + "_decrypt_" + key11 + ".png");
+			ImageIO.write(bi, "png", outputfile);
+			System.out.println( "Output File decrypted : " + output_file + "_decrypt_" + key11 + ".png" );
+		} catch (IOException e) {
+			System.out.println("I/O error during the write of the decrypted image");			
+			System.exit(1);
+		}
+	}	
+	
 	
 	public static void videoManager(JobConfig job){	
 					FramesPlayer frmVideo = new FramesPlayer( job);

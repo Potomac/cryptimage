@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 28 sept. 2014 Author Mannix54
+ * 6 oct. 2014 Author Mannix54
  */
+
 
 
 package com.ib.cryptimage.core;
 
-import java.awt.Color;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -30,13 +31,11 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 
-
 /**
  * @author Mannix54
  *
  */
-public class Discret11 {
-	
+public class SimpleDiscret11 {
 	/**
 	 * store the 11 bits key word
 	 */
@@ -49,10 +48,7 @@ public class Discret11 {
 	 * true if decoding, false otherwise
 	 */
 	private boolean isDec;
-	/**
-	 * store the current audience level
-	 */
-	private int audienceLevel;
+	
 	/**
 	 * store the current operation mode ( 0 : encoding, 1: decoding )
 	 */
@@ -68,15 +64,15 @@ public class Discret11 {
 	/**
 	 * array for storing the values of LFSR
 	 */
-	private int[] poly = new int[1716];
+	private int[] poly;
 	/**
 	 * store the number of frames that has been transformed by Discret11
 	 */
 	private int currentframePos = 0;
 	/**
-	 * store the current position from the 6 frames ( half image ) sequence
+	 * store the current position from the 3 frames ( full image ) sequence
 	 */
-	private int seqFrame = 0;
+	private int seqFullFrame = 0;
 	/**
 	 * store the value for the truth table
 	 * first dimension is z, second is b0, third is b10
@@ -88,7 +84,7 @@ public class Discret11 {
 	 * in 2 dimension array who represents
 	 * the 6 TV frames
 	 */
-	private int[][] delayArray = new int[6][286];
+	private int[][] delayArray;	
 	/**
 	 * array for storing the delay in pixels
 	 * 3 types of delay
@@ -105,23 +101,34 @@ public class Discret11 {
 	/**
 	 * a string for storing a debug message about the modified lines in a trame
 	 */
-	private String sDebugLines = "";
-	
+	private String sDebugLines = "";	
 	/**
 	 * the current image processed by the Direct11 object
 	 */
-	private BufferedImage imgRef;
+	private BufferedImage imgRef;	
+	/**
+	 * the height of the image
+	 */
+	private int height;
+	/**
+	 * the width of the image
+	 */
+	private int width;
 	
 	
 	/**
-	 * create a new Discret11 object
+	 * create a new SimpleDiscret11 object
 	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
 	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
-	 * @param audienceLevel the audience Level ( 1 to 7 )
+	 * @param height the height of the image
+	 * @param width the width of the image
 	 */
-	public Discret11(int key11bits, int mode, int audienceLevel){		
-		this.key11bits = key11bits;		
-		this.audienceLevel = audienceLevel;
+	public SimpleDiscret11(int key11bits, int mode, int height, int width){		
+		this.key11bits = key11bits;
+		this.height = height;
+		this.width = width;
+		poly = new int[this.height * 3];
+		delayArray = new int [3][this.height];
 		initMode(mode);
 		initPolyLFSR(key11bits);
 		// choose the right truth table and feed the array delay
@@ -131,17 +138,21 @@ public class Discret11 {
 	}
 	
 	/**
-	 * create a new Discret11 object with redefined percentages for the delay 1 and 2
+	 * create a new SimpleDiscret11 object with redefined percentages for the delay 1 and 2
 	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
 	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
-	 * @param audienceLevel the audience Level ( 1 to 7 )
+	 * @param height the height of the image
+	 * @param width the width of the image
 	 * @param perc1 the percentage level for delay 1
 	 * @param perc2 the percentage level for delay 2
 	 */
-	public Discret11(int key11bits, int mode, int audienceLevel, 
+	public SimpleDiscret11(int key11bits, int mode, int height, int width,
 			double perc1, double perc2){		
 		this.key11bits = key11bits;		
-		this.audienceLevel = audienceLevel;
+		this.height = height;
+		this.width = width;
+		poly = new int[this.height * 3];
+		delayArray = new int [3][this.height];
 		initMode(mode);
 		initPolyLFSR(key11bits);
 		// choose the right truth table and feed the array delay
@@ -175,25 +186,16 @@ public class Discret11 {
 				("%11s", Integer.toBinaryString(key11bits)).replace(" ", "0");
 		word = new StringBuilder(word).reverse().toString();
 		
-		int key = Integer.parseInt(word,2);
+		int key = Integer.parseInt(word,2);		
 		
 		poly[0] = key;
 		
 		for (int i = 1; i < poly.length; i++) {
 			key = getXorPoly(key);
 			poly[i] = key;
-		}
-		
-//		Lfsr gen = new Lfsr(word,9); // TODO
-//		
-//		gen.resetLFSR();
-//		
-//		for (int i = 0; i < poly.length; i++) {
-//			gen.generate(i);
-//			poly[i] = Integer.parseInt(gen.toString(), 2);
-//			gen.resetLFSR();
-//		}		
+		}		
 	}
+	
 	/**
 	 * initialize the delay table, 
 	 * we choose the right truth table to be compatible with
@@ -224,33 +226,7 @@ public class Discret11 {
 			break;
 		default:
 			break;
-		}
-		
-/*		switch (this.currentMode) {
-		case 0: //encoding mode
-			truthTable[0][0][0] = 0;
-			truthTable[0][0][1] = 1;
-			truthTable[0][1][0] = 2;
-			truthTable[0][1][1] = 2;
-			truthTable[1][0][0] = 2;
-			truthTable[1][0][1] = 0;
-			truthTable[1][1][0] = 0;
-			truthTable[1][1][1] = 1;			
-			break;
-		case 1: //decoding mode
-			truthTable[0][0][0] = 2;
-			truthTable[0][0][1] = 1;
-			truthTable[0][1][0] = 0;
-			truthTable[0][1][1] = 0;
-			truthTable[1][0][0] = 0;
-			truthTable[1][0][1] = 2;
-			truthTable[1][1][0] = 2;
-			truthTable[1][1][1] = 1;
-			break;
-		default:
-			break;
-		}*/
-		
+		}	
 	}
 	
 	/**
@@ -276,18 +252,31 @@ public class Discret11 {
 	 * the 6 TV frames
 	 */
 	private void initDelayArray(){
-		int z = 0;
-		for (int i = 0; i < 6; i++) {
-			for (int j = 0; j < 286; j++) {
-				if(i == 0 || i == 1 || i == 2){
-					z = 0;					
-				}
-				else{
-					z = 1;
-				}
-				delayArray[i][j] = decaPixels[getDelay(poly[(i*286) +j], z)];
+
+		int[][] z = new int[3][2];
+		z[0][0] = 0;
+		z[0][1] = 0;
+		z[1][0] = 0;
+		z[1][1] = 1;
+		z[2][0] = 1;
+		z[2][1] = 1;	
+
+		for (int fullFrame = 0; fullFrame < 3; fullFrame++) {
+			
+			// odd frame ( frame impaire )
+			for (int i = 0; i < this.height; i++) {	
+				delayArray[fullFrame][i] = decaPixels[
+				 getDelay(poly[(fullFrame*this.height) + i],z[fullFrame][0])];				
+				i++;
 			}			
-		}
+			
+			// even frame ( frame paire )
+			for (int i = 1; i < this.height; i++) {						
+				delayArray[fullFrame][i] = decaPixels[
+				  getDelay(poly[(fullFrame*this.height) + i],z[fullFrame][1])];				
+				i++;
+			}
+		}		
 	}
 	
 	/**
@@ -350,7 +339,7 @@ public class Discret11 {
 	/**
 	 * transform an image that have been added
 	 * this image can be crypted or decrypted, depending of the current mode
-	 * of the Discret11 object
+	 * of the SimpleDiscret11 object
 	 * @param image the image to be transformed
 	 * @return the transformed image
 	 */
@@ -358,218 +347,46 @@ public class Discret11 {
 				
 		//we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
-		if(image.getWidth() != 768 || image.getHeight() != 576){
-			image = this.getScaledImage(image, 768, 576);
-		}
 		this.imgRef = image;
 		
-		int z = 0;
-		//this.seqFrame++;	
-
-		
-		switch (this.seqFrame) {
-		case 0:
-				z = 0;
-			break;
-		case 1:
-				z = 0;
-			break;
-		case 2:
-				z = 0;
-			break;
-		case 3:
-				z = 1;
-			break;
-		case 4:
-				z = 1;
-			break;
-		case 5:
-				z = 1;
-			break;	
-
-		default:
-			break;
-		}
-		
-		if (this.currentframePos == 0){ // we compute only the even part of the image
-			image = modifyEvenFrame(image, z);			
-			this.seqFrame++;						
-			this.currentframePos++;			
-		}
-		else{ // we compute both the odd and even parts of the image ( impaire, paire )	
-			image = modifyOddFrame(image, z);
-			this.seqFrame++;			
-			setAudience622Line(image);
-			if(this.seqFrame == 6 ){
-				setWhite310Line(image);				
-				this.seqFrame = 0;
-				this.cptPoly = 0;
-			}			
-			else {
-				image = setBlack310Line(image);
-			}
-				
-
-			image = modifyEvenFrame(image, z);			
-			this.seqFrame++;
-			setAudience622Line(image);
-	
-			this.currentframePos++;
-		
-		}
-
-		//System.out.println("retourne image seq " + this.seqFrame + " nb images : " + this.currentframePos );
-		return image;
-	}
-	
-	/**
-	 * Transform the lines of the even part of an image ( trame paire )
-	 * @param image
-	 * @param z the z value for the delay array
-	 * @return
-	 */
-	private BufferedImage modifyEvenFrame(BufferedImage image, int z){	
-		BufferedImage bi = new BufferedImage(768,576,
+		BufferedImage bi = new BufferedImage(this.width,this.height,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
 											// BufferedImage.TYPE_INT_BGR			
 		
 		Raster raster1 = bi.getRaster();
 		WritableRaster raster2 = image.getRaster();		
 		
-//
-        long temps1 = System.currentTimeMillis();
-		int shift = 0;
-		int valDelay;
-		boolean stop = false;
-		int temp = 0;
-		int temp2 = 0;
-		int tempCptArray = 0;
-		int tempSeqFrame = 0;
 		
-		for (int y = 1; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
-			}
-			shift = 0;
-			stop = true;
-			temp = cptPoly;
-			//valDelay = getDelay(poly[cptPoly], z);
-			temp2 = delayArray[this.seqFrame][cptArray];
-			tempCptArray = cptArray;
-			tempSeqFrame = this.seqFrame;
-			if (this.isDec == true && (temp2 == decaPixels[1])) {
+		int temp = 0;
+		int shift = 0;
+		
+		for (int y = 0; y < this.height; y++) {
+			temp = delayArray[this.seqFullFrame][y];
+			if (this.isDec == true && (temp == decaPixels[1])) {
 				shift = (this.decaPixels[2] - this.decaPixels[1])
 						- this.decaPixels[1];
 			}
-			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
-				// digital image ) or if next line is 623 ( 576 in digital image )
-				raster2.setPixels(temp2 + shift, y, 768
-						- temp2 - shift, 1, raster2.getPixels(0,
-						y, 768 - temp2 - shift, 1,
-						new int[(768 - temp2 - shift) * 3]));
-				//draw black line at start of delay
-				raster2.setPixels(0, y, temp2 + shift, 1, raster1.getPixels(0,
-						y, temp2 + shift, 1,
-						new int[(temp2 + shift) * 3]));
-				stop = false;				
-				cptPoly++; // we increment the count of poly array
-				cptArray++;
-			}
-			if (Debug.nbDebug < 1726) {
-				Debug.cptArray = tempCptArray;
-				Debug.delayPixels = temp2;
-				Debug.lfsr = temp;
-				Debug.poly = poly[temp];
-				Debug.digitalLine = y;
-				Debug.z = z;
-				Debug.stop = stop;
-				Debug.seqFrame = tempSeqFrame;
-				Debug.nbDebug++;
-				debugFrame();
-			}			
-			y++; // add one to y in order to have only even lines frame
-		}		
-	
-		 long temps2 = System.currentTimeMillis();
-		 //System.out.println("temps frame paire : " + (temps2 - temps1));	
-		return image;		
-	}
-	
-	/**
-	 * Transform the lines of the odd part of an image ( trame impaire )
-	 * @param image
-	 * @param z the z value for the delay array
-	 * @return
-	 */
-	private BufferedImage modifyOddFrame(BufferedImage image, int z){	
-		BufferedImage bi = new BufferedImage(768,576,
-				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR			
+			raster2.setPixels(temp + shift, y, this.width
+					- temp - shift, 1, raster2.getPixels(0,
+					y, this.width - temp - shift, 1,
+					new int[(this.width - temp - shift) * 3]));
+			//draw black line at start of delay
+			raster2.setPixels(0, y, temp + shift, 1, raster1.getPixels(0,
+					y, temp + shift, 1,
+					new int[(temp + shift) * 3]));			
+		}
 		
-		Raster raster1 = bi.getRaster();
-		WritableRaster raster2 = image.getRaster();				
-
-		 long temps1 = System.currentTimeMillis();
-		int shift = 0;
-		int valDelay;
-		boolean stop = false;
-		int temp = 0;
-		int temp2 = 0;
-		int tempCptArray = 0;
-		int tempSeqFrame = 0;		
-
+		this.seqFullFrame++;
 	
-		for (int y = 2; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
-			}
-			shift = 0;
-			stop = true;
-			if(cptPoly == 1716){
-				cptPoly = 0;				
-			}
-			temp = cptPoly;
-			//valDelay = getDelay(poly[cptPoly], z);
-			temp2 = delayArray[this.seqFrame][cptArray];
-			tempCptArray = cptArray;
-			tempSeqFrame = this.seqFrame;
-			if (this.isDec == true && (temp2 == decaPixels[1])) {
-				shift = (this.decaPixels[2] - this.decaPixels[1])
-						- this.decaPixels[1];
-			}
-			if (y != 574) { // we don't increment if it's line 310 ( 575 in
-				// digital image )
-				raster2.setPixels(temp2 + shift, y, 768
-						- temp2 - shift, 1, raster2.getPixels(0,
-						y, 768 - temp2 - shift, 1,
-						new int[(768 - temp2 - shift) * 3]));
-				//draw black line at start of delay
-				raster2.setPixels(0, y, temp2 + shift, 1, raster1.getPixels(0,
-						y, temp2 + shift, 1,
-						new int[(temp2 + shift) * 3]));
-				stop = false;
-				cptPoly++; // we increment the count of poly array
-				cptArray++;
-			}
-			if (Debug.nbDebug < 1726) {
-				Debug.cptArray = tempCptArray;
-				Debug.delayPixels = temp2;
-				Debug.lfsr = temp;
-				Debug.poly = poly[temp];
-				Debug.digitalLine = y;
-				Debug.z = z;
-				Debug.stop = stop;
-				Debug.seqFrame = tempSeqFrame;
-				Debug.nbDebug++;
-				debugFrame();
-			}
-			y++; // add one to y in order to have only odd lines frame
-		}			
-		 long temps2 = System.currentTimeMillis();
-		 //System.out.println("temps frame impaire : " + (temps2 - temps1));
+		if (this.seqFullFrame == 3) {
+			this.seqFullFrame = 0;
+			this.cptPoly = 0;
+		}
 
-		return image;			
-	}
+		this.currentframePos++;
+		
+		return image;
+	}	
 	
 	/**
 	 * Convert a source image to a desired BufferedImage type
@@ -629,144 +446,7 @@ public class Discret11 {
 	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
 		    
 	    return target;
-	}
-	
-	/**
-	 * we set the color of the 622 line according to the audience level	
-	 * @param buff the BufferedImage
-	 */
-	private void setAudience622Line(BufferedImage buff) {
-		switch (this.audienceLevel) {
-		case 1:
-			if (this.seqFrame == 1) {
-				setWhite622Line(buff);
-			}
-			if (this.seqFrame == 3) {
-				setBlack622Line(buff);
-			}
-			if (this.seqFrame == 5) {
-				setBlack622Line(buff);
-			}
-			break;
-		case 2:
-			if (this.seqFrame == 1) {
-				setBlack622Line(buff);
-			}
-			if (this.seqFrame == 3) {
-				setWhite622Line(buff);
-			}
-			if (this.seqFrame == 5) {
-				setBlack622Line(buff);
-			}
-			break;
-		case 3:
-			if (this.seqFrame == 1) {
-				setWhite622Line(buff);
-			}
-			if (this.seqFrame == 3) {
-				setWhite622Line(buff);
-			}
-			if (this.seqFrame == 5) {
-				setBlack622Line(buff);
-			}
-			break;
-		case 4:
-			if (this.seqFrame == 1) {
-				setBlack622Line(buff);
-			}
-			if (this.seqFrame == 3) {
-				setBlack622Line(buff);
-			}
-			if (this.seqFrame == 5) {
-				setWhite622Line(buff);
-			}
-			break;
-		case 5:
-			if (this.seqFrame == 1) {
-				setWhite622Line(buff);
-			}
-			if (this.seqFrame == 3) {
-				setBlack622Line(buff);
-			}
-			if (this.seqFrame == 5) {
-				setWhite622Line(buff);
-			}
-			break;
-		case 6:
-			if (this.seqFrame == 1) {
-				setBlack622Line(buff);
-			}
-			if (this.seqFrame == 3) {
-				setWhite622Line(buff);
-			}
-			if (this.seqFrame == 5) {
-				setWhite622Line(buff);
-			}
-			break;
-		case 7:
-			if (this.seqFrame == 1) {
-				setWhite622Line(buff);
-			}
-			if (this.seqFrame == 3) {
-				setWhite622Line(buff);
-			}
-			if (this.seqFrame == 5) {
-				setWhite622Line(buff);
-			}
-			break;
-		default:
-			break;
-		}
-	}
-	
-	/**
-	 * set to white the 310 line
-	 * @param buff the BufferedImage
-	 * @return a modified BufferedImage with 310 line set to white
-	 */
-	private BufferedImage setWhite310Line(BufferedImage buff){
-		for (int i = 0; i < buff.getWidth(); i++) {
-			buff.setRGB(i, 574, new Color(255,255, 255).getRGB());
-		}
-		return buff;		
-	}
-	
-	/**
-	 * set to black the 310 line
-	 * @param buff the BufferedImage
-	 * @return a modified BufferedImage with 310 line set to black
-	 */
-	private BufferedImage setBlack310Line(BufferedImage buff){
-		for (int i = 0; i < buff.getWidth(); i++) {
-			buff.setRGB(i, 574, new Color(0, 0, 0).getRGB());
-		}
-		return buff;		
-	}
-	
-	/**
-	 * set to black the 622 line
-	 * @param buff the BufferedImage
-	 * @return a modified BufferedImage with 622 line set to black
-	 */
-	private BufferedImage setBlack622Line(BufferedImage buff){
-		for (int i = 0; i < buff.getWidth(); i++) {
-			buff.setRGB(i, 573, new Color(0, 0, 0).getRGB());
-		}
-		return buff;		
-	}
-	
-	/**
-	 * set to white the 622 line
-	 * @param buff the BufferedImage
-	 * @return a modified BufferedImage with 622 line set to white
-	 */
-	private BufferedImage setWhite622Line(BufferedImage buff){
-		for (int i = 0; i < buff.getWidth(); i++) {
-			buff.setRGB(i, 573, new Color(255,255, 255).getRGB());
-		}
-		return buff;		
-	}
-	
+	}	
 	
 	private void debugFrame(){
 		String bloque = "P yes";
@@ -826,15 +506,6 @@ public class Discret11 {
 			return (int)(res + 335);
 		}
 	}
-	
-	
-	public int getAudienceLevel() {
-		return audienceLevel;
-	}
-
-	public void setAudienceLevel(int audienceLevel) {
-		this.audienceLevel = audienceLevel;
-	}
 
 	public int getKey11bits() {
 		return key11bits;
@@ -857,7 +528,7 @@ public class Discret11 {
 	}
 
 	public int getSeqFrame() {
-		return seqFrame;
+		return seqFullFrame;
 	}
 
 	public int[] getDecaPixels() {
@@ -887,8 +558,6 @@ public class Discret11 {
 		private static int seqFrame = 0;
 		private static int nbDebug = 0;
 	
-	}
+	}	
+	
 }
-
-
-

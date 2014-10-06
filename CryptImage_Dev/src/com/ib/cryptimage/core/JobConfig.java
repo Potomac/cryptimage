@@ -36,7 +36,7 @@ public class JobConfig {
 	private int videoBitrate = 2000;
 	private int videoCodec = 3;
 	private double perc1 = 0.0167;
-	private double perc2 = 0.0347;
+	private double perc2 = 0.0334;
 
 	public JobConfig() {
 		// TODO Auto-generated constructor stub

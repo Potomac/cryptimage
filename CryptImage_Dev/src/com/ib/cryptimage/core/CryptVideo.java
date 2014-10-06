@@ -50,6 +50,7 @@ public class CryptVideo {
 	private int audienceLevel;
 	
 	private Discret11 discret;
+	private SimpleDiscret11 simpleDiscret;
 	private double perc1;
 	private double perc2;
 	
@@ -84,10 +85,6 @@ public class CryptVideo {
 			mode = Discret11.MODE_ENC;			
 		}
 		
-		
-		discret = new Discret11(this.keyWord, mode, this.audienceLevel,
-				this.perc1, this.perc2);
-
 			
 		IMediaReader reader = ToolFactory.makeReader(frmv.getJob().getInput_file());
 		reader.readPacket();
@@ -112,6 +109,14 @@ public class CryptVideo {
 			 this.width = 768;
 			 this.height = 576;
 		 }
+		 
+		if (this.strictMode) {
+			discret = new Discret11(this.keyWord, mode, this.audienceLevel,
+					this.perc1, this.perc2);
+		} else {
+			simpleDiscret = new SimpleDiscret11(this.keyWord, mode,
+					this.height, this.width);
+		}
 		
 		if(frmv.getJob().isWantPlay() !=true){
 	    vid = new VideoRecorder(outputFilename + info + keyWord + "_audience_" 
@@ -122,8 +127,16 @@ public class CryptVideo {
 	
 	public void addDisplayFrameEnc(BufferedImage buff, int pos, int timingFrame){
 		frameCount++;
-		BufferedImage bi;		
-		bi = this.discret.transform(buff);
+		BufferedImage bi;
+		
+		if(this.strictMode){
+			bi = this.discret.transform(buff);
+		}
+		else
+		{
+			bi = this.simpleDiscret.transform(buff);
+		}
+
 		
 		//vid.addFrame(bi, this.timeBase * timingFrame);
 		vidPlayer.addImage(bi);
@@ -145,7 +158,13 @@ public class CryptVideo {
 		}
 		else{
 		BufferedImage bi;		
-		bi = this.discret.transform(buff);
+		if(this.strictMode){
+			bi = this.discret.transform(buff);
+		}
+		else
+		{
+			bi = this.simpleDiscret.transform(buff);
+		}		
 		vidPlayer.addImage(bi);
 		vidPlayer.showImage();
 		updateProgress("decoded");
@@ -158,7 +177,13 @@ public class CryptVideo {
 	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){
 		frameCount++;
 		BufferedImage bi;
-		bi = this.discret.transform(buff);
+		if(this.strictMode){
+			bi = this.discret.transform(buff);
+		}
+		else
+		{
+			bi = this.simpleDiscret.transform(buff);
+		}
 		//bi = new CryptImage(buff, pos, this.strictMode).getCryptDiscret11(keyWord);		
 		vid.addFrame(bi, this.timeBase * ( timingFrame ));
 		updateProgress("encoded");
@@ -176,7 +201,13 @@ public class CryptVideo {
 		}
 		else{
 		BufferedImage bi;
-		bi = this.discret.transform(buff);
+		if(this.strictMode){
+			bi = this.discret.transform(buff);
+		}
+		else
+		{
+			bi = this.simpleDiscret.transform(buff);
+		}
 		//bi = new CryptImage(buff, pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
 		vid.addFrame(bi, this.timeBase * timingFrame);
 		updateProgress("decoded");
@@ -205,6 +236,14 @@ public class CryptVideo {
 		//int [][] delayTab = cryptImg.getDelayTabCrypt();		
 		
 		//save the data file
+		String messDebug = "";
+		if(this.strictMode){
+			messDebug = this.discret.getsDebugLines();
+		}
+		else
+		{
+			messDebug = this.simpleDiscret.getsDebugLines();
+		}
 		
 		
 		try {
@@ -217,7 +256,7 @@ public class CryptVideo {
 			bfw.write("Audience level : " + this.audienceLevel + "\r\n");
 			bfw.write("File : " + this.outputFilename +"_crypt_" +
 					this.keyWord + "_audience_" + this.audienceLevel + ".mp4" +"\r\n");
-			bfw.write("debug lines : " + "\r\n" + discret.getsDebugLines());
+			bfw.write("debug lines : " + "\r\n" + messDebug);
 			bfw.close();
 			System.out.println("Data report : " + this.outputFilename
 					+ "_crypt_" + this.keyWord + "_audience_" 
