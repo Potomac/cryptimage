@@ -2,11 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="/home/cesar/telechargements/java/xuggle-xuggler-5.4.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://www.xuggle.com/public/documentation/java/api/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/home/cesar/telechargements/java/commons-cli-1.2.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/home/cesar/telechargements/java/commons-cli-1.2-javadoc.jar!/"/>
@@ -14,5 +9,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/home/cesar/telechargements/java/slf4j-api-1.7.7.jar"/>
 	<classpathentry kind="lib" path="/home/cesar/telechargements/java/slf4j-simple-1.7.7.jar"/>
+	<classpathentry kind="lib" path="/home/cesar/telechargements/java/xuggle-xuggler-noarch-5.4.jar"/>
+	<classpathentry kind="lib" path="/home/cesar/telechargements/java/xuggle-xuggler-arch-x86_64-pc-linux-gnu.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

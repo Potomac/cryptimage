@@ -22,11 +22,17 @@
 package com.ib.cryptimage.core;
 
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.Buffer;
 
 import com.ib.cryptimage.gui.VideoPlayer;
 import com.xuggle.mediatool.IMediaReader;
@@ -61,6 +67,7 @@ public class CryptVideo {
 	private int step80 = 0;
 	private int step100 = 0;
 	
+	
 	private VideoPlayer vidPlayer;	
 	
 
@@ -74,7 +81,7 @@ public class CryptVideo {
 		this.isDecoding = frmv.getJob().isWantDec();
 		this.videoLengthFrames = frmv.getJob().getVideo_frame();
 		this.perc1 = frmv.getJob().getPerc1();
-		this.perc2 = frmv.getJob().getPerc2();
+		this.perc2 = frmv.getJob().getPerc2();		
 		
 		
 		int mode;
@@ -126,26 +133,37 @@ public class CryptVideo {
 	}
 	
 	public void addDisplayFrameEnc(BufferedImage buff, int pos, int timingFrame){
+		BufferedImage save;
+		save = deepCopy(buff);	
+		
 		frameCount++;
 		BufferedImage bi;
 		
 		if(this.strictMode){
 			bi = this.discret.transform(buff);
+			save = getScaledImage(save, 768, 576);
 		}
 		else
 		{
 			bi = this.simpleDiscret.transform(buff);
 		}
-
+			
+		if( vidPlayer.isInverse() == true){	
+			vidPlayer.addImage(save);
+		}
+		else{			
+			vidPlayer.addImage(bi);
+		}
 		
-		//vid.addFrame(bi, this.timeBase * timingFrame);
-		vidPlayer.addImage(bi);
 		vidPlayer.showImage();
 		updateProgress("encoded");
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 	}
 	
 	public void addDisplayFrameDec(BufferedImage buff, int pos, int timingFrame){
+		
+		BufferedImage save;
+		save = deepCopy(buff);
 		
 		frameCount++;
 		if (frameCount < this.positionSynchro){
@@ -160,12 +178,20 @@ public class CryptVideo {
 		BufferedImage bi;		
 		if(this.strictMode){
 			bi = this.discret.transform(buff);
+			//save = getScaledImage(save, 768, 576);
 		}
 		else
 		{
 			bi = this.simpleDiscret.transform(buff);
-		}		
-		vidPlayer.addImage(bi);
+		}
+		
+		if(vidPlayer.isInverse() == true){
+			vidPlayer.addImage(save);
+		}
+		else{
+			vidPlayer.addImage(bi);
+		}
+		
 		vidPlayer.showImage();
 		updateProgress("decoded");
 		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
@@ -174,7 +200,7 @@ public class CryptVideo {
 	
 	
 	
-	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){
+	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){		
 		frameCount++;
 		BufferedImage bi;
 		if(this.strictMode){
@@ -316,5 +342,51 @@ public class CryptVideo {
 		this.buff = buff;
 	}
 	
+	/**
+	 * clone a BufferedImage
+	 * @param bi the BufferedImage to clone
+	 * @return a cloned BufferedImage
+	 */
+	private BufferedImage deepCopy(BufferedImage bi) {
+		ColorModel cm = bi.getColorModel();
+		boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+		WritableRaster raster = bi.copyData(null);
+		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+	}
+	
+	/**
+	 * Scale an image to a new size
+	 * @param src the image source
+	 * @param w the new width
+	 * @param h the new height
+	 * @return the resized image
+	 */
+	private BufferedImage getScaledImage(BufferedImage src, int w, int h){
+	    int finalw = w;
+	    int finalh = h;
+	    double factor = 1.0d;
+	    if(src.getWidth() > src.getHeight()){
+	        factor = ((double)src.getHeight()/(double)src.getWidth());
+	        finalh = (int)(finalw * factor);                
+	    }else{
+	        factor = ((double)src.getWidth()/(double)src.getHeight());
+	        finalw = (int)(finalh * factor);
+	    }   
+
+	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TRANSLUCENT);
+	    Graphics2D g2 = resizedImg.createGraphics();
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.drawImage(src, 0, 0, finalw, finalh, null);
+	    g2.dispose();
+	    
+	    //step 2 create a bufferedimage with exact size
+	    
+	    BufferedImage target = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+	    
+	    Graphics g3 = target.getGraphics();	    
+	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
+		    
+	    return target;
+	}
 	
 }

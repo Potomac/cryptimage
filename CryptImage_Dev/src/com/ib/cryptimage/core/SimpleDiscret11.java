@@ -448,30 +448,30 @@ public class SimpleDiscret11 {
 	    return target;
 	}	
 	
-	private void debugFrame(){
-		String bloque = "P yes";
-		
-		if(Debug.stop){
-			bloque = "P no ";
-		}
-		
-		String message = "trame " +  (Debug.seqFrame +1) + "; ligne " 
-				+ String.format("%03d",(Debug.digitalLine + 1)) + "; analog "
-				+ String.format("%03d",convertLine(Debug.digitalLine + 1)) 
-				+ "; (P" + String.format("%04d",Debug.lfsr)
-				+ "); " + bloque
-				+ " ; (retard: " + Debug.delayPixels  
-				+"); LFSR " + String.format("%04d",Debug.poly) 
-				+ " 0x" + Integer.toHexString(Debug.poly)
-				+ "; z: " + Debug.z
-				+"); LFSR2 " + String.format("%04d",
-						poly[Debug.seqFrame *286 + Debug.cptArray]) 
-				+ " 0x" + Integer.toHexString(
-						poly[Debug.seqFrame *286 + Debug.cptArray]) 
-				+ "; cptArray " + Debug.cptArray;
-		this.sDebugLines += message +" \r\n";
-				//System.out.println(message);
-	}
+//	private void debugFrame(){
+//		String bloque = "P yes";
+//		
+//		if(Debug.stop){
+//			bloque = "P no ";
+//		}
+//		
+//		String message = "trame " +  (Debug.seqFrame +1) + "; ligne " 
+//				+ String.format("%03d",(Debug.digitalLine + 1)) + "; analog "
+//				+ String.format("%03d",convertLine(Debug.digitalLine + 1)) 
+//				+ "; (P" + String.format("%04d",Debug.lfsr)
+//				+ "); " + bloque
+//				+ " ; (retard: " + Debug.delayPixels  
+//				+"); LFSR " + String.format("%04d",Debug.poly) 
+//				+ " 0x" + Integer.toHexString(Debug.poly)
+//				+ "; z: " + Debug.z
+//				+"); LFSR2 " + String.format("%04d",
+//						poly[Debug.seqFrame *286 + Debug.cptArray]) 
+//				+ " 0x" + Integer.toHexString(
+//						poly[Debug.seqFrame *286 + Debug.cptArray]) 
+//				+ "; cptArray " + Debug.cptArray;
+//		this.sDebugLines += message +" \r\n";
+//				//System.out.println(message);
+//	}
 	
 	private int inverseWord(int val){
 		String word = String.format
@@ -547,17 +547,17 @@ public class SimpleDiscret11 {
 		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
 	}
 	
-	final static class Debug{
-		private static int cptArray = 0;
-		private static int lfsr = 0;
-		private static int poly = 0;
-		private static int delayPixels = 0;
-		private static int digitalLine = 0;	
-		private static int z = 0;
-		private static boolean stop = false;
-		private static int seqFrame = 0;
-		private static int nbDebug = 0;
-	
-	}	
+//	final static class Debug{
+//		private static int cptArray = 0;
+//		private static int lfsr = 0;
+//		private static int poly = 0;
+//		private static int delayPixels = 0;
+//		private static int digitalLine = 0;	
+//		private static int z = 0;
+//		private static boolean stop = false;
+//		private static int seqFrame = 0;
+//		private static int nbDebug = 0;
+//	
+//	}	
 	
 }

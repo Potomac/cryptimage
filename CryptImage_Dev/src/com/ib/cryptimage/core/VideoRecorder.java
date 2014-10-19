@@ -41,7 +41,7 @@ public class VideoRecorder {
 	public VideoRecorder(String outputFilename, int width, int height,
 			int videoBitrate, int videoCodec) {		
 		writer = ToolFactory.makeWriter(outputFilename);
-		writer.addListener(new RateChange());
+		//writer.addListener(new RateChange());
 		
 		
 		switch (videoCodec) {
@@ -118,19 +118,19 @@ public class VideoRecorder {
 
 }
 
-class RateChange extends MediaListenerAdapter {
-
-	public RateChange(){
-		super();
-	}
-	
-	public void onAddStream(IAddStreamEvent event) {
-/*
-		IStreamCoder coder = event.getSource().getContainer().getStream(0).getStreamCoder();
-		coder.setBitRate(50000000);
-		//coder.setBitRateTolerance(0);
-*/		//System.out.println(event.getSource().getContainer().getStream(0).getStreamCoder().getBitRate());
-
-	}
-
-}
+//class RateChange extends MediaListenerAdapter {
+//
+//	public RateChange(){
+//		super();
+//	}
+//	
+//	public void onAddStream(IAddStreamEvent event) {
+///*
+//		IStreamCoder coder = event.getSource().getContainer().getStream(0).getStreamCoder();
+//		coder.setBitRate(50000000);
+//		//coder.setBitRateTolerance(0);
+//*/		//System.out.println(event.getSource().getContainer().getStream(0).getStreamCoder().getBitRate());
+//
+//	}
+//
+//}
