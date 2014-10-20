@@ -55,7 +55,7 @@ public class Application {
 	          
 	         if ( commandLine.hasOption("v") && args.length == 1 )  
 	         {  
-	        	System.out.println("CryptImage v0.0.2j");
+	        	System.out.println("CryptImage v0.0.2l");
 	 			System.out.println("Copyright (C) 2014-09-28 Mannix54");
 	 			printLicense();
 	 			System.exit(0);
@@ -116,7 +116,15 @@ public class Application {
 	         }
 	         if (commandLine.hasOption("s")){	        	
 	        	 job.setStrictMode(true);
-	         }	         
+	         }
+	         if (commandLine.hasOption("t")){
+	        	 if(commandLine.hasOption("s") !=true ){
+	        		System.out.println("you need to use -s option if you want to use also -t option" );	 	        	
+	 	 			System.exit(1);
+	        	 }
+	        	 job.setsWidth(720);
+	         }
+	         
 	         if (commandLine.hasOption("m")){	        	
 	        	 job.setModePhoto(true);
 	         }
@@ -268,7 +276,8 @@ public class Application {
 					.addOption("a", "audience-level", true, "Set an audience level, 1 to 7.")
 					.addOption("b", "video-bitrate", true, "Set the video bitrate ( default : 2000 ).")
 					.addOption("e", "codec", true, "Select the video codec ( default: 3).")
-	      			.addOption("r", "set-percentages", true, "Set the percentages for delay 1 and 2 ( default: 1.67 and 3.47).");
+	      			.addOption("r", "set-percentages", true, "Set the percentages for delay 1 and 2 ( default: 1.67 and 3.47).")
+	      			.addOption("t", "pal", false, "generate 720x576 video format instead of 768x576");
 	          
 	      posixOptions.getOption("i").setRequired(true);
 	      posixOptions.getOption("i").setArgName("input file");
@@ -315,6 +324,9 @@ public class Application {
 	      posixOptions.getOption("r").setArgName("percentage1 percentage2");
 	      posixOptions.getOption("r").setArgs(2);
 	      posixOptions.getOption("r").setType(Number.class);
+	      
+	      posixOptions.getOption("t").setRequired(false);
+	      posixOptions.getOption("t").setArgs(0);	  
 	      
 	     	     
 	      OptionGroup grpOptCrypt = new OptionGroup();

@@ -25,21 +25,26 @@ import java.util.concurrent.TimeUnit;
 
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IRational;
+import com.xuggle.xuggler.IStreamCoder;
 //import com.xuggle.xuggler.IProperty;
 //import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.mediatool.event.IAddStreamEvent;
-import com.xuggle.xuggler.IPixelFormat;
+
 
 
 public class VideoRecorder {
 	
 	private IMediaWriter writer;
+	private boolean is720 = false;
 	
 	public VideoRecorder(String outputFilename, int width, int height,
-			int videoBitrate, int videoCodec) {		
+			int videoBitrate, int videoCodec, int sWidth, double framerate) {		
+		
+		if(sWidth== 720){
+			this.is720 = true;
+		}
+		
 		writer = ToolFactory.makeWriter(outputFilename);
 		//writer.addListener(new RateChange());
 		
@@ -69,6 +74,15 @@ public class VideoRecorder {
         //        width, height);
 				
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(videoBitrate*1024);
+		IRational frame_rate = IRational.make(framerate);
+		writer.getContainer().getStream(0).getStreamCoder().setFrameRate(frame_rate);
+		IStreamCoder coder = writer.getContainer().getStream(0).getStreamCoder();
+		coder.setFrameRate(frame_rate);
+		System.out.println("frame rate: " + framerate);
+	
+		
+/*		IRational ratio = IRational.make(4,3);		
+		writer.getContainer().getStream(0).setSampleAspectRatio(ratio);*/
 	
 		//IStreamCoder coder = writer.getContainer().getStream(0).getStreamCoder();
 //		writer.getContainer().getStream(0).getStreamCoder()
@@ -107,12 +121,16 @@ public class VideoRecorder {
 		
 	}
 	
-	public void addFrame(BufferedImage buff, int timeMilliseconds){
-		 writer.encodeVideo(0, buff,timeMilliseconds,TimeUnit.MILLISECONDS);
+	public void addFrame(BufferedImage buff, double timeMilliseconds){
+		 writer.encodeVideo(0, buff,(int)(timeMilliseconds *1000d),TimeUnit.MICROSECONDS);
 		
 	}
 	
 	public void closeVideo(){
+		if(this.is720){
+			IRational ratio = IRational.make(16,15);			 
+			writer.getContainer().getStream(0).setSampleAspectRatio(ratio);
+		}		
 		writer.close();
 	}
 

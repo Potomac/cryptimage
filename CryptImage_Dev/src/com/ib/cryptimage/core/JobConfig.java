@@ -37,6 +37,7 @@ public class JobConfig {
 	private int videoCodec = 3;
 	private double perc1 = 0.0167;
 	private double perc2 = 0.0334;	
+	private int sWidth = 768;
 
 	public JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -160,6 +161,14 @@ public class JobConfig {
 
 	public void setModePhoto(boolean modePhoto) {
 		this.modePhoto = modePhoto;
+	}
+
+	public int getsWidth() {
+		return sWidth;
+	}
+
+	public void setsWidth(int sWidth) {
+		this.sWidth = sWidth;
 	}
 
 

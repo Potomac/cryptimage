@@ -22,6 +22,7 @@
 package com.ib.cryptimage.core;
 import java.awt.image.BufferedImage;
 
+
 import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 
@@ -60,7 +61,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	}
    }
 
-	public void dumpFrameToBufferedImage(BufferedImage image) {
+	public void dumpFrameToBufferedImage(BufferedImage image) {		
 		this.img = image;
 
 		if (this.frmV.getJob().isWantPlay()) {
@@ -108,7 +109,6 @@ public class ImageSnapListener extends MediaListenerAdapter {
 
 	public void setCount(int count) {
 		this.count = count;
-	}
-   
+	}   
    
  }

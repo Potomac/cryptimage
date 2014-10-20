@@ -30,7 +30,6 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 
-
 /**
  * @author Mannix54
  *
@@ -111,6 +110,10 @@ public class Discret11 {
 	 * the current image processed by the Direct11 object
 	 */
 	private BufferedImage imgRef;
+	/**
+	 * the default width of the image which is 768
+	 */
+	private int sWidth = 768;
 	
 	
 	/**
@@ -131,6 +134,25 @@ public class Discret11 {
 	}
 	
 	/**
+	 * create a new Discret11 object
+	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
+	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
+	 * @param audienceLevel the audience Level ( 1 to 7 )
+	 * @param width the width of the transformed image
+	 */
+	public Discret11(int key11bits, int mode, int audienceLevel, int width){		
+		this.key11bits = key11bits;		
+		this.audienceLevel = audienceLevel;
+		this.sWidth = width;
+		initMode(mode);
+		initPolyLFSR(key11bits);
+		// choose the right truth table and feed the array delay
+		initTruthTable();
+		initDecaPixels(0.0167,0.0334);
+		initDelayArray();
+	}
+	
+	/**
 	 * create a new Discret11 object with redefined percentages for the delay 1 and 2
 	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
 	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
@@ -142,6 +164,28 @@ public class Discret11 {
 			double perc1, double perc2){		
 		this.key11bits = key11bits;		
 		this.audienceLevel = audienceLevel;
+		initMode(mode);
+		initPolyLFSR(key11bits);
+		// choose the right truth table and feed the array delay
+		initTruthTable();
+		initDecaPixels(perc1,perc2);
+		initDelayArray();
+	}
+	
+	/**
+	 * create a new Discret11 object with redefined percentages for the delay 1 and 2
+	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
+	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
+	 * @param audienceLevel the audience Level ( 1 to 7 )
+	 * @param perc1 the percentage level for delay 1
+	 * @param perc2 the percentage level for delay 2
+	 * @param width the width of the transformed image
+	 */
+	public Discret11(int key11bits, int mode, int audienceLevel, 
+			double perc1, double perc2, int width){		
+		this.key11bits = key11bits;		
+		this.audienceLevel = audienceLevel;
+		this.sWidth = width;
 		initMode(mode);
 		initPolyLFSR(key11bits);
 		// choose the right truth table and feed the array delay
@@ -261,8 +305,8 @@ public class Discret11 {
 	private void initDecaPixels(double perc1, double perc2){
 		
 		decaPixels[0] = 0;
-		decaPixels[1] = (int)(Math.round(perc1 * 768)); // previous value : 0.018 0.0167 0.0167
-		decaPixels[2] = (int)(Math.round(perc2 * 768)); // previous value : 0.036 0.0347 0.0334
+		decaPixels[1] = (int)(Math.round(perc1 * this.sWidth)); // previous value : 0.018 0.0167 0.0167
+		decaPixels[2] = (int)(Math.round(perc2 * this.sWidth)); // previous value : 0.036 0.0347 0.0334
 		
 		if (decaPixels[1] == 0){
 			decaPixels[1] = 1;
@@ -358,8 +402,8 @@ public class Discret11 {
 				
 		//we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
-		if(image.getWidth() != 768 || image.getHeight() != 576){
-			image = this.getScaledImage(image, 768, 576);
+		if(image.getWidth() != this.sWidth || image.getHeight() != 576){
+			image = this.getScaledImage(image, this.sWidth, 576);
 		}
 		this.imgRef = image;
 		
@@ -429,7 +473,7 @@ public class Discret11 {
 	 * @return
 	 */
 	private BufferedImage modifyEvenFrame(BufferedImage image, int z){	
-		BufferedImage bi = new BufferedImage(768,576,
+		BufferedImage bi = new BufferedImage(this.sWidth,576,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
 											// BufferedImage.TYPE_INT_BGR			
 		
@@ -463,10 +507,10 @@ public class Discret11 {
 			}
 			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
 				// digital image ) or if next line is 623 ( 576 in digital image )
-				raster2.setPixels(temp2 + shift, y, 768
+				raster2.setPixels(temp2 + shift, y, this.sWidth
 						- temp2 - shift, 1, raster2.getPixels(0,
-						y, 768 - temp2 - shift, 1,
-						new int[(768 - temp2 - shift) * 3]));
+						y, this.sWidth - temp2 - shift, 1,
+						new int[(this.sWidth - temp2 - shift) * 3]));
 				//draw black line at start of delay
 				raster2.setPixels(0, y, temp2 + shift, 1, raster1.getPixels(0,
 						y, temp2 + shift, 1,
@@ -502,7 +546,7 @@ public class Discret11 {
 	 * @return
 	 */
 	private BufferedImage modifyOddFrame(BufferedImage image, int z){	
-		BufferedImage bi = new BufferedImage(768,576,
+		BufferedImage bi = new BufferedImage(this.sWidth,576,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
 											// BufferedImage.TYPE_INT_BGR			
 		
@@ -539,10 +583,10 @@ public class Discret11 {
 			}
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
-				raster2.setPixels(temp2 + shift, y, 768
+				raster2.setPixels(temp2 + shift, y, this.sWidth
 						- temp2 - shift, 1, raster2.getPixels(0,
-						y, 768 - temp2 - shift, 1,
-						new int[(768 - temp2 - shift) * 3]));
+						y, this.sWidth - temp2 - shift, 1,
+						new int[(this.sWidth - temp2 - shift) * 3]));
 				//draw black line at start of delay
 				raster2.setPixels(0, y, temp2 + shift, 1, raster1.getPixels(0,
 						y, temp2 + shift, 1,
@@ -606,13 +650,34 @@ public class Discret11 {
 	private BufferedImage getScaledImage(BufferedImage src, int w, int h){
 	    int finalw = w;
 	    int finalh = h;
-	    double factor = 1.0d;
+	    double factor = 1.00d;
+	    double shiftw = 1d;
+	    
+	    if(src.getWidth()==720 && src.getHeight()==576){
+	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
+	    }
+	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
+	    	shiftw = (double)src.getWidth()/720d;	    	
+	    	//shiftw = 768d/(double)src.getWidth();
+	    	//finalw = (int)(finalh * shiftw);
+	    }
+	    else if(src.getWidth()==720 && src.getHeight()!=576){
+	    	//shiftw = (double)src.getWidth()/768d;	    	
+	    	shiftw = 768d/(double)src.getWidth();
+	    	//finalw = (int)(finalh * shiftw);
+	    }
+	    else if(w ==720){
+	    	//shiftw = (double)src.getWidth()/768d;	    	
+	    	shiftw = 768d/720d;
+	    	//finalw = (int)(finalh * shiftw);
+	    }
+	    
 	    if(src.getWidth() > src.getHeight()){
 	        factor = ((double)src.getHeight()/(double)src.getWidth());
-	        finalh = (int)(finalw * factor);                
+	        finalh = (int)(finalw * factor * shiftw);                
 	    }else{
 	        factor = ((double)src.getWidth()/(double)src.getHeight());
-	        finalw = (int)(finalh * factor);
+	        finalw = (int)(finalh * factor  );
 	    }   
 
 	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TRANSLUCENT);

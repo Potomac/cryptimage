@@ -49,12 +49,12 @@ public class VideoPlayer implements MouseListener {
 	private JPanel panBtn;
 	
 	private JButton btnInverse;
-	private int frameRate;
+	private double frameRate;
 	private long systemPreviousCurrentTime = 0;	
 	private boolean inverse;
 	
 
-	public VideoPlayer(int frameRate) {
+	public VideoPlayer(double frameRate) {
 		frame = new JFrame();
 		this.frame.setLayout(new BorderLayout());
 		this.frameRate = frameRate;
@@ -121,10 +121,10 @@ public class VideoPlayer implements MouseListener {
 		// frame.setLocation(200,100);
 		frame.setVisible(true);
 		
-		long systemClockCurrentTime = System.currentTimeMillis();
+		double systemClockCurrentTime = System.currentTimeMillis();
 		
-		long diffTime = systemClockCurrentTime - this.systemPreviousCurrentTime;
-		long time;
+		double diffTime = systemClockCurrentTime - this.systemPreviousCurrentTime;
+		double time;
 		
 		if (diffTime >  (1000/frameRate) && this.systemPreviousCurrentTime !=0){
 			 time =  0;//(1000/frameRate);			 
@@ -137,7 +137,7 @@ public class VideoPlayer implements MouseListener {
 		}		
 		
 			try {
-				Thread.sleep(time );
+				Thread.sleep((long) time );
 			} catch (InterruptedException e) {				
 				e.printStackTrace();
 			}

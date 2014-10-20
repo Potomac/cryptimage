@@ -32,7 +32,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.Buffer;
 
 import com.ib.cryptimage.gui.VideoPlayer;
 import com.xuggle.mediatool.IMediaReader;
@@ -51,7 +50,7 @@ public class CryptVideo {
 	
 	private VideoRecorder vid;
 	private int videoLengthFrames;
-	private int timeBase;
+	private double timeBase;
 	private int frameCount;
 	private int audienceLevel;
 	
@@ -97,7 +96,7 @@ public class CryptVideo {
 		reader.readPacket();
 		this.width =reader.getContainer().getStream(0).getStreamCoder().getWidth();
 		this.height = reader.getContainer().getStream(0).getStreamCoder().getHeight();
-		int frameRate = (int) reader.getContainer().getStream(0).getStreamCoder().getFrameRate().getValue();
+		double frameRate =  reader.getContainer().getStream(0).getStreamCoder().getFrameRate().getValue();
 		
 		if (frmv.getJob().isWantPlay()){
 			vidPlayer = new VideoPlayer(frameRate);
@@ -105,7 +104,7 @@ public class CryptVideo {
 		
 		//System.out.println((reader.getContainer().getDuration()/1000/1000)*frameRate);
 		
-		this.timeBase = 1000/frameRate;		
+		this.timeBase = 1000d/frameRate;		
 		
 		String info = "_crypt_";
 		 if (this.isDecoding){
@@ -113,13 +112,13 @@ public class CryptVideo {
 		 }
 		
 		 if(this.strictMode){ // we use "stric mode discret 11", so we resize the video to 768x576 pixels
-			 this.width = 768;
+			 this.width = frmv.getJob().getsWidth();
 			 this.height = 576;
 		 }
 		 
 		if (this.strictMode) {
 			discret = new Discret11(this.keyWord, mode, this.audienceLevel,
-					this.perc1, this.perc2);
+					this.perc1, this.perc2, this.width);
 		} else {
 			simpleDiscret = new SimpleDiscret11(this.keyWord, mode,
 					this.height, this.width);
@@ -128,7 +127,8 @@ public class CryptVideo {
 		if(frmv.getJob().isWantPlay() !=true){
 	    vid = new VideoRecorder(outputFilename + info + keyWord + "_audience_" 
 		+ this.audienceLevel + ".mp4", width,
-				height, frmv.getJob().getVideoBitrate(), frmv.getJob().getVideoCodec());
+				height, frmv.getJob().getVideoBitrate(), frmv.getJob().getVideoCodec(),
+				frmv.getJob().getsWidth(), frameRate);
 		}
 	}
 	
@@ -141,7 +141,7 @@ public class CryptVideo {
 		
 		if(this.strictMode){
 			bi = this.discret.transform(buff);
-			save = getScaledImage(save, 768, 576);
+			save = getScaledImage(save, this.width, 576);
 		}
 		else
 		{
@@ -160,9 +160,9 @@ public class CryptVideo {
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 	}
 	
-	public void addDisplayFrameDec(BufferedImage buff, int pos, int timingFrame){
+	public void addDisplayFrameDec(BufferedImage buff, int pos, int timingFrame){		
 		
-		BufferedImage save;
+		BufferedImage save;		
 		save = deepCopy(buff);
 		
 		frameCount++;
@@ -176,8 +176,8 @@ public class CryptVideo {
 		}
 		else{
 		BufferedImage bi;		
-		if(this.strictMode){
-			bi = this.discret.transform(buff);
+		if(this.strictMode){			
+			bi = this.discret.transform(buff);		
 			//save = getScaledImage(save, 768, 576);
 		}
 		else
@@ -365,9 +365,31 @@ public class CryptVideo {
 	    int finalw = w;
 	    int finalh = h;
 	    double factor = 1.0d;
+	    
+	    double shiftw = 1d;
+	    
+	    if(src.getWidth()==720 && src.getHeight()==576){
+	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
+	    }
+	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
+	    	shiftw = (double)src.getWidth()/720d;	    	
+	    	//shiftw = 768d/(double)src.getWidth();
+	    	//finalw = (int)(finalh * shiftw);
+	    }
+	    else if(src.getWidth()==720 && src.getHeight()!=576){
+	    	//shiftw = (double)src.getWidth()/768d;	    	
+	    	shiftw = 768d/(double)src.getWidth();
+	    	//finalw = (int)(finalh * shiftw);
+	    }
+	    else if(w ==720){
+	    	//shiftw = (double)src.getWidth()/768d;	    	
+	    	shiftw = 768d/720d;
+	    	//finalw = (int)(finalh * shiftw);
+	    }
+	    
 	    if(src.getWidth() > src.getHeight()){
 	        factor = ((double)src.getHeight()/(double)src.getWidth());
-	        finalh = (int)(finalw * factor);                
+	        finalh = (int)(finalw * factor * shiftw);	       
 	    }else{
 	        factor = ((double)src.getWidth()/(double)src.getHeight());
 	        finalw = (int)(finalh * factor);
