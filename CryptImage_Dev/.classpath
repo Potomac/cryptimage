@@ -9,11 +9,10 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/home/cesar/telechargements/java/slf4j-api-1.7.7.jar"/>
 	<classpathentry kind="lib" path="/home/cesar/telechargements/java/slf4j-simple-1.7.7.jar"/>
-	<classpathentry kind="lib" path="/home/cesar/telechargements/java/xuggle-xuggler-noarch-5.4.jar">
+	<classpathentry kind="lib" path="/home/cesar/telechargements/java/xuggle-xuggler-5.4.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://www.xuggle.com/public/documentation/java/api/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/cesar/telechargements/java/xuggle-xuggler-arch-x86_64-pc-linux-gnu.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

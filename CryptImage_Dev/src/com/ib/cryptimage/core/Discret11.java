@@ -303,10 +303,10 @@ public class Discret11 {
 	 * @param perc2 the percentage value of retard 2
 	 */
 	private void initDecaPixels(double perc1, double perc2){
-		
+						
 		decaPixels[0] = 0;
-		decaPixels[1] = (int)(Math.round(perc1 * this.sWidth)); // previous value : 0.018 0.0167 0.0167
-		decaPixels[2] = (int)(Math.round(perc2 * this.sWidth)); // previous value : 0.036 0.0347 0.0334
+		decaPixels[1] = (int)(Math.round(perc1 * this.sWidth )); // previous value : 0.018 0.0167 0.0167
+		decaPixels[2] = (int)(Math.round(perc2 * this.sWidth )); // previous value : 0.036 0.0347 0.0334
 		
 		if (decaPixels[1] == 0){
 			decaPixels[1] = 1;
@@ -502,8 +502,8 @@ public class Discret11 {
 			tempCptArray = cptArray;
 			tempSeqFrame = this.seqFrame;
 			if (this.isDec == true && (temp2 == decaPixels[1])) {
-				shift = (this.decaPixels[2] - this.decaPixels[1])
-						- this.decaPixels[1];
+//				shift = (this.decaPixels[2] - this.decaPixels[1])
+//						- this.decaPixels[1];
 			}
 			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
 				// digital image ) or if next line is 623 ( 576 in digital image )
@@ -578,8 +578,8 @@ public class Discret11 {
 			tempCptArray = cptArray;
 			tempSeqFrame = this.seqFrame;
 			if (this.isDec == true && (temp2 == decaPixels[1])) {
-				shift = (this.decaPixels[2] - this.decaPixels[1])
-						- this.decaPixels[1];
+//				shift = (this.decaPixels[2] - this.decaPixels[1])
+//						- this.decaPixels[1];
 			}
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
@@ -653,7 +653,7 @@ public class Discret11 {
 	    double factor = 1.00d;
 	    double shiftw = 1d;
 	    
-	    if(src.getWidth()==720 && src.getHeight()==576){
+	    if(src.getWidth()==720 && src.getHeight()==576 ){
 	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
 	    }
 	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
@@ -661,7 +661,7 @@ public class Discret11 {
 	    	//shiftw = 768d/(double)src.getWidth();
 	    	//finalw = (int)(finalh * shiftw);
 	    }
-	    else if(src.getWidth()==720 && src.getHeight()!=576){
+	    else if(src.getWidth()==720 && src.getHeight()!=576 && w == 720){
 	    	//shiftw = (double)src.getWidth()/768d;	    	
 	    	shiftw = 768d/(double)src.getWidth();
 	    	//finalw = (int)(finalh * shiftw);

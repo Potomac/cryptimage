@@ -364,11 +364,10 @@ public class CryptVideo {
 	private BufferedImage getScaledImage(BufferedImage src, int w, int h){
 	    int finalw = w;
 	    int finalh = h;
-	    double factor = 1.0d;
-	    
+	    double factor = 1.0d;	    
 	    double shiftw = 1d;
 	    
-	    if(src.getWidth()==720 && src.getHeight()==576){
+	    if(src.getWidth()==720 && src.getHeight()==576 ){
 	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
 	    }
 	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
@@ -376,7 +375,7 @@ public class CryptVideo {
 	    	//shiftw = 768d/(double)src.getWidth();
 	    	//finalw = (int)(finalh * shiftw);
 	    }
-	    else if(src.getWidth()==720 && src.getHeight()!=576){
+	    else if(src.getWidth()==720 && src.getHeight()!=576 && w == 720){
 	    	//shiftw = (double)src.getWidth()/768d;	    	
 	    	shiftw = 768d/(double)src.getWidth();
 	    	//finalw = (int)(finalh * shiftw);
