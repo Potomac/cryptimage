@@ -53,8 +53,32 @@ public class FramesPlayer {
 		
 	
 	public void readFrame(){
-		while(imgListen.getCount()< job.getVideo_frame()){		
-			mediaReader.readPacket();		
+		try {
+			while(imgListen.getCount()< job.getVideo_frame() && job.isStop() != true){		
+				mediaReader.readPacket();		
+			}
+			if(job.isStop() && !job.isWantPlay()){
+				job.getGui().getTextInfos().setText(
+						job.getGui().getTextInfos().getText()
+						+ "\n\r"
+						+ "Opération interrompue par l'utilisateur");
+				imgListen.getCryptVid().closeVideo();
+				imgListen.getCryptVid().saveDatFileVideo();
+				job.getGui().getBtnEnter().setEnabled(true);
+				job.getGui().getBtnCancel().setEnabled(false);
+				job.getGui().getBtnExit().setEnabled(true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(job.isHasGUI()){
+				job.getGui().getTextInfos().setText(
+						job.getGui().getTextInfos().getText()
+						+ "\n\r"
+						+ e.getMessage());
+			}
+			job.setVideo_frame(imgListen.getCount()-1);
+			imgListen.getCryptVid().closeVideo();
+			imgListen.getCryptVid().saveDatFileVideo();
 		}		
 	}
 	
@@ -102,6 +126,11 @@ public class FramesPlayer {
 
 	public JobConfig getJob() {
 		return job;
+	}
+
+
+	public ImageSnapListener getImgListen() {
+		return imgListen;
 	}
 
 }

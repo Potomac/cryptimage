@@ -20,6 +20,8 @@
 
 package com.ib.cryptimage.core;
 
+import com.ib.cryptimage.gui.MainGui;
+
 public class JobConfig {
 
 	private String input_file = "";
@@ -38,6 +40,10 @@ public class JobConfig {
 	private double perc1 = 0.0167;
 	private double perc2 = 0.0334;	
 	private int sWidth = 768;
+	private boolean hasGUI = false;
+	private MainGui gui;
+	private boolean isStop = false;
+	
 
 	public JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -170,7 +176,28 @@ public class JobConfig {
 	public void setsWidth(int sWidth) {
 		this.sWidth = sWidth;
 	}
-
-
 	
+	public boolean isHasGUI() {
+		return hasGUI;
+	}
+
+	public void setHasGUI(boolean hasGUI) {
+		this.hasGUI = hasGUI;
+	}
+
+	public MainGui getGui() {
+		return gui;
+	}
+
+	public void setGui(MainGui gui) {
+		this.gui = gui;
+	}
+
+	public boolean isStop() {
+		return isStop;
+	}
+
+	public void setStop(boolean isStop) {
+		this.isStop = isStop;
+	}	
 }

@@ -37,6 +37,8 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;  
 import org.apache.commons.cli.ParseException;  
 
+import com.ib.cryptimage.gui.MainGui;
+
 import javax.imageio.ImageIO;
 
 
@@ -44,6 +46,11 @@ public class Application {
 
 	public static void main(String[] args) {
 		JobConfig job = new JobConfig();
+		
+		if(args.length == 0){
+			createGUI(job);
+		}
+		else{
 				
 		CommandLineParser cmdLinePosixParser = new PosixParser() ; 
 		Options posixOptions = constructPosixOptions(); 
@@ -51,12 +58,13 @@ public class Application {
 		CommandLine commandLine;  
 	      try  
 	      {  
-	         commandLine = cmdLinePosixParser.parse(posixOptions, args, false);	         
-	          
+	         commandLine = cmdLinePosixParser.parse(posixOptions, args, false);         
+	     
+	         
 	         if ( commandLine.hasOption("v") && args.length == 1 )  
 	         {  
-	        	System.out.println("CryptImage v0.0.3");
-	 			System.out.println("Copyright (C) 2014-09-28 Mannix54");
+	        	System.out.println("CryptImage v0.0.5");
+	 			System.out.println("Copyright (C) 2014-10-28 Mannix54");
 	 			printLicense();
 	 			System.exit(0);
 	         }
@@ -143,7 +151,7 @@ public class Application {
 	        	System.out.println("missing argument -c or -d");
 	        	printUsage("cryptimage.jar", posixOptions, System.out);
 	 			System.exit(0);
-	         }	  
+	         }	         
 	         
 	      }  
 	      catch (ParseException parseException)  // checked exception  
@@ -183,8 +191,15 @@ public class Application {
 		}
 		else if(job.isModePhoto() && job.isWantDec()!=true){
 			encPhoto(img, job);
-		}	
+		}
+	}
 		
+	}
+	
+	public static void createGUI(JobConfig job){
+		job.setHasGUI(true);
+		MainGui mainUI = new MainGui(job);
+   	 	mainUI.showUI();   	 	
 	}
 	
 	

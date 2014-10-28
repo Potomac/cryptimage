@@ -21,71 +21,93 @@
 
 package com.ib.cryptimage.gui;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.WindowConstants;
+import javax.swing.plaf.SliderUI;
 
 import com.ib.cryptimage.core.JobConfig;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
 
-public class VideoPlayer implements MouseListener {
+public class VideoPlayer  implements MouseListener, ActionListener, WindowListener {
 
 	private JLabel label;
 	private JLabel labelState;
 	private ImageIcon icon;
-	private JFrame frame;
+	private JDialog frame;
 	private JPanel panLabel;
 	private JPanel panBtn;
 	
 	private JButton btnInverse;
+	private JButton btnExit;
 	private double frameRate;
 	private long systemPreviousCurrentTime = 0;	
 	private boolean inverse;
+	private JobConfig job;
 	
 
-	public VideoPlayer(double frameRate) {
-		frame = new JFrame();
+	public VideoPlayer(double frameRate, JobConfig job) {		
+		this.job = job;
+		frame = new JDialog();	
+		frame.addWindowListener(this);
+			
+		
+		
 		this.frame.setLayout(new BorderLayout());
 		this.frameRate = frameRate;
 		this.inverse = false;
-		icon = new ImageIcon();
-		frame = new JFrame();
+		icon = new ImageIcon();		
 		label = new JLabel(icon);
 		panLabel = new JPanel();
 		panLabel.add(label);
 		panLabel.setSize(icon.getIconWidth()+10, icon.getIconHeight()+10);
 			
 		
-		this.btnInverse = new JButton("On/Off");		
+		this.btnInverse = new JButton("On/Off");
+		this.btnExit = new JButton("Fermer");
 		panBtn = new JPanel();
-		panBtn.setLayout(new BoxLayout(panBtn, BoxLayout.LINE_AXIS));
-		panBtn.add(btnInverse);
+		panBtn.setLayout(new BorderLayout());
+		panBtn.add(btnInverse, BorderLayout.WEST);
 		
 		labelState = new JLabel("Device is On");
 		labelState.setForeground(Color.green);
-		panBtn.add(labelState);
+		panBtn.add(labelState,BorderLayout.CENTER);
+		panBtn.add(btnExit,BorderLayout.EAST);
 		
-		this.btnInverse.addMouseListener(this);
+		this.btnInverse.addActionListener(this);
+		this.btnExit.addActionListener(this);
 		
 		frame.getContentPane().add(panLabel, BorderLayout.NORTH);
 		frame.getContentPane().add(panBtn,BorderLayout.SOUTH);
 		
+		
 		frame.setSize(panLabel.getWidth(), panLabel.getHeight() + 60);
 		
-		frame.setAutoRequestFocus(false);
+		//frame.setAutoRequestFocus(true);
+		frame.setAlwaysOnTop(true);
+		//frame.setModal(true);
 		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		
 	}
 
 	public void addImage(BufferedImage img) {		
@@ -148,6 +170,11 @@ public class VideoPlayer implements MouseListener {
 		
 		this.systemPreviousCurrentTime = System.currentTimeMillis();
 	}
+	
+	public void close(){
+		this.frame.dispose();
+	}
+	
 
 	public boolean isInverse() {
 		return inverse;
@@ -155,17 +182,8 @@ public class VideoPlayer implements MouseListener {
 	
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {		
-		if(inverse == true){
-			this.inverse = false;
-			this.labelState.setText("Device is On");
-			labelState.setForeground(Color.green);
-		}
-		else{
-			this.inverse = true;
-			this.labelState.setText("Device is Off");
-			labelState.setForeground(Color.red);
-		}		
+	public void mouseClicked(MouseEvent arg0) {			
+
 	}
 
 	@Override
@@ -190,6 +208,79 @@ public class VideoPlayer implements MouseListener {
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object src = e.getSource();
+		if ((src instanceof JButton)) {
+			if(src.equals(this.btnInverse)){
+				if(inverse == true){
+					this.inverse = false;
+					this.labelState.setText("Device is On");
+					labelState.setForeground(Color.green);
+				}
+				else{
+					this.inverse = true;
+					this.labelState.setText("Device is Off");
+					labelState.setForeground(Color.red);
+					}				
+			} else if(src.equals(this.btnExit)){
+				if(this.job.isStop()==false){
+					this.job.setStop(true);			
+					}
+					else {				
+						this.frame.dispose();
+					}						
+			}
+		}		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {		
+		// TODO Auto-generated method stub
+		
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {		
+		if(this.job.isStop()==false){
+			this.job.setStop(true);			
+			}
+			else {				
+				this.frame.dispose();
+			}
 	}
 
 }

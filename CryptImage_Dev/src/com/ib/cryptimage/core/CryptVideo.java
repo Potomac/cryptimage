@@ -65,6 +65,7 @@ public class CryptVideo {
 	private int step60 = 0;
 	private int step80 = 0;
 	private int step100 = 0;
+	private FramesPlayer frmv;
 	
 	
 	private VideoPlayer vidPlayer;	
@@ -81,7 +82,7 @@ public class CryptVideo {
 		this.videoLengthFrames = frmv.getJob().getVideo_frame();
 		this.perc1 = frmv.getJob().getPerc1();
 		this.perc2 = frmv.getJob().getPerc2();		
-		
+		this.frmv = frmv;
 		
 		int mode;
 		if(this.isDecoding){
@@ -99,7 +100,7 @@ public class CryptVideo {
 		double frameRate =  reader.getContainer().getStream(0).getStreamCoder().getFrameRate().getValue();
 		
 		if (frmv.getJob().isWantPlay()){
-			vidPlayer = new VideoPlayer(frameRate);
+			vidPlayer = new VideoPlayer(frameRate, this.frmv.getJob());
 		}
 		
 		//System.out.println((reader.getContainer().getDuration()/1000/1000)*frameRate);
@@ -112,13 +113,13 @@ public class CryptVideo {
 		 }
 		
 		 if(this.strictMode){ // we use "stric mode discret 11", so we resize the video to 768x576 pixels
-			 this.width = frmv.getJob().getsWidth();
+			 this.width = 768;//frmv.getJob().getsWidth();
 			 this.height = 576;
 		 }
 		 
 		if (this.strictMode) {
 			discret = new Discret11(this.keyWord, mode, this.audienceLevel,
-					this.perc1, this.perc2, this.width);
+					this.perc1, this.perc2);
 		} else {
 			simpleDiscret = new SimpleDiscret11(this.keyWord, mode,
 					this.height, this.width);
@@ -137,6 +138,15 @@ public class CryptVideo {
 		save = deepCopy(buff);	
 		
 		frameCount++;
+		if (frameCount < this.positionSynchro){
+			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
+			//vid.addFrame(buff,this.timeBase * timingFrame);
+			vidPlayer.addImage(buff);
+			vidPlayer.showImage();
+			updateProgress("encoded");
+			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		}
+		else{
 		BufferedImage bi;
 		
 		if(this.strictMode){
@@ -156,8 +166,12 @@ public class CryptVideo {
 		}
 		
 		vidPlayer.showImage();
+		if(this.frmv.getJob().isStop()){
+			vidPlayer.close();
+		}
 		updateProgress("encoded");
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		}
 	}
 	
 	public void addDisplayFrameDec(BufferedImage buff, int pos, int timingFrame){		
@@ -193,6 +207,9 @@ public class CryptVideo {
 		}
 		
 		vidPlayer.showImage();
+		if(this.frmv.getJob().isStop()){
+			vidPlayer.close();
+		}
 		updateProgress("decoded");
 		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
@@ -200,8 +217,18 @@ public class CryptVideo {
 	
 	
 	
-	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){		
+	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){			
 		frameCount++;
+		if (frameCount < this.positionSynchro){
+			if(this.strictMode){
+				buff = getScaledImage(buff, 768,576);
+			}
+			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
+			vid.addFrame(buff,this.timeBase * ( timingFrame  ));
+			updateProgress("Encoded");
+			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		}
+		else {
 		BufferedImage bi;
 		if(this.strictMode){
 			bi = this.discret.transform(buff);
@@ -213,13 +240,16 @@ public class CryptVideo {
 		//bi = new CryptImage(buff, pos, this.strictMode).getCryptDiscret11(keyWord);		
 		vid.addFrame(bi, this.timeBase * ( timingFrame ));
 		updateProgress("encoded");
+		}
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 	}
 	
-	public void addFrameDec(BufferedImage buff, int pos, int timingFrame){
-		
+	public void addFrameDec(BufferedImage buff, int pos, int timingFrame){		
 		frameCount++;
 		if (frameCount < this.positionSynchro){
+			if(this.strictMode){
+				buff = getScaledImage(buff, 768,576);
+			}
 			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
 			vid.addFrame(buff,this.timeBase * ( timingFrame  ));
 			updateProgress("decoded");
@@ -244,11 +274,25 @@ public class CryptVideo {
 	public void closeVideo(){
 		vid.closeVideo();
 		if(isDecoding){
+			if(this.frmv.getJob().isHasGUI()){
+				this.frmv.getJob().getGui().getTextInfos()
+				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
+						+ "\n\r"
+						+ "Decrypted video file : " + this.outputFilename +"_decrypt_" +
+						this.keyWord + "_audience_" + this.audienceLevel +".mp4");
+			}
 			System.out.println("Decrypted video file : " + this.outputFilename +"_decrypt_" +
 					this.keyWord + "_audience_" + this.audienceLevel +".mp4");
 		}
 		else
 		{
+			if(this.frmv.getJob().isHasGUI()){
+				this.frmv.getJob().getGui().getTextInfos()
+				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
+						+ "\n\r"
+						+ "Crypted video file : " + this.outputFilename + "_crypt_" +
+						this.keyWord + "_audience_" + this.audienceLevel + ".mp4");
+			}
 			System.out.println("Crypted video file : " + this.outputFilename + "_crypt_" +
 		this.keyWord + "_audience_" + this.audienceLevel + ".mp4");
 		}		
@@ -284,6 +328,14 @@ public class CryptVideo {
 					this.keyWord + "_audience_" + this.audienceLevel + ".mp4" +"\r\n");
 			bfw.write("debug lines : " + "\r\n" + messDebug);
 			bfw.close();
+			if(this.frmv.getJob().isHasGUI()){
+				this.frmv.getJob().getGui().getTextInfos()
+				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
+						+ "\n\r"
+						+ "Data report : " + this.outputFilename
+						+ "_crypt_" + this.keyWord + "_audience_" 
+						+ this.audienceLevel + ".txt");
+			}
 			System.out.println("Data report : " + this.outputFilename
 					+ "_crypt_" + this.keyWord + "_audience_" 
 					+ this.audienceLevel + ".txt");
@@ -301,32 +353,71 @@ public class CryptVideo {
 	 * @param step the type of process ( encoded or decoded )
 	 */
 	private void updateProgress(String step){
-		int progress = (int)(((double)this.frameCount/(double)this.videoLengthFrames) * 100);
-		
-		if (progress == 1 && step1 == 0) {
-			System.out.println("Frames " + step + " 1%");
-			step1 = 1;
-		}
+		int progress = (int) (((double) this.frameCount / (double) this.videoLengthFrames) * 100);
 
-		if (progress == 20 && step20 == 0) {
-			System.out.println("Frames " + step + " 20%");
-			step20 = 1;
+		if (this.frmv.getJob().isHasGUI() == true) {
+			frmv.getJob().getGui().getProgress().setValue(this.frameCount );
+			frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " " + frameCount +"/" + this.videoLengthFrames);
+//			if (progress == 1 && step1 == 0) {
+//				frmv.getJob().getGui().getProgress().setValue((int) (0.01 * this.videoLengthFrames));
+//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 1%");
+//				step1 = 1;	
+//			}
+//
+//			if (progress == 20 && step20 == 0) {
+//				frmv.getJob().getGui().getProgress().setValue((int) (0.20 * this.videoLengthFrames));
+//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 20%");				
+//				step20 = 1;	
+//			}
+//			if (progress == 40 && step40 == 0) {
+//				frmv.getJob().getGui().getProgress().setValue((int) (0.40 * this.videoLengthFrames));
+//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 40%");				
+//				step40 = 1;	
+//			}
+//			if (progress == 60 && step60 == 0) {
+//				frmv.getJob().getGui().getProgress().setValue((int) (0.60 * this.videoLengthFrames));
+//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 60%");				
+//				step60 = 1;
+//				frmv.getJob().getGui().getFrame().repaint();
+//				frmv.getJob().getGui().getFrame().revalidate();
+//			}
+//			if (progress == 80 && step80 == 0) {
+//				frmv.getJob().getGui().getProgress().setValue((int) (0.80 * this.videoLengthFrames));
+//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 80%");				
+//				step80 = 1;		
+//			}
+//			if (progress == 100 && step100 == 0) {
+//				frmv.getJob().getGui().getProgress().setValue((int) (1 * this.videoLengthFrames));
+//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 100%");				
+//				step100 = 1;
+//			}			
 		}
-		if (progress == 40 && step40 == 0) {
-			System.out.println("Frames " + step + " 40%");
-			step40 = 1;
-		}
-		if (progress == 60 && step60 == 0) {
-			System.out.println("Frames " + step + " 60%");
-			step60 = 1;
-		}
-		if (progress == 80 && step80 == 0) {
-			System.out.println("Frames " + step + " 80%");
-			step80 = 1;
-		}
-		if (progress == 100 && step100 == 0) {
-			System.out.println("Frames " + step + " 100%");
-			step100 = 1;
+		else {
+			if (progress == 1 && step1 == 0) {
+				System.out.println("Frames " + step + " 1%");
+				step1 = 1;
+			}
+
+			if (progress == 20 && step20 == 0) {
+				System.out.println("Frames " + step + " 20%");
+				step20 = 1;
+			}
+			if (progress == 40 && step40 == 0) {
+				System.out.println("Frames " + step + " 40%");
+				step40 = 1;
+			}
+			if (progress == 60 && step60 == 0) {
+				System.out.println("Frames " + step + " 60%");
+				step60 = 1;
+			}
+			if (progress == 80 && step80 == 0) {
+				System.out.println("Frames " + step + " 80%");
+				step80 = 1;
+			}
+			if (progress == 100 && step100 == 0) {
+				System.out.println("Frames " + step + " 100%");
+				step100 = 1;
+			}
 		}
 	}
 	
@@ -370,21 +461,21 @@ public class CryptVideo {
 	    if(src.getWidth()==720 && src.getHeight()==576 ){
 	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
 	    }
-	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
-	    	shiftw = (double)src.getWidth()/720d;	    	
-	    	//shiftw = 768d/(double)src.getWidth();
-	    	//finalw = (int)(finalh * shiftw);
-	    }
-	    else if(src.getWidth()==720 && src.getHeight()!=576 && w == 720){
-	    	//shiftw = (double)src.getWidth()/768d;	    	
-	    	shiftw = 768d/(double)src.getWidth();
-	    	//finalw = (int)(finalh * shiftw);
-	    }
-	    else if(w ==720){
-	    	//shiftw = (double)src.getWidth()/768d;	    	
-	    	shiftw = 768d/720d;
-	    	//finalw = (int)(finalh * shiftw);
-	    }
+//	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
+//	    	shiftw = (double)src.getWidth()/720d;	    	
+//	    	//shiftw = 768d/(double)src.getWidth();
+//	    	//finalw = (int)(finalh * shiftw);
+//	    }
+//	    else if(src.getWidth()==720 && src.getHeight()!=576 && w == 720){
+//	    	//shiftw = (double)src.getWidth()/768d;	    	
+//	    	shiftw = 768d/(double)src.getWidth();
+//	    	//finalw = (int)(finalh * shiftw);
+//	    }
+//	    else if(w ==720){
+//	    	//shiftw = (double)src.getWidth()/768d;	    	
+//	    	shiftw = 768d/720d;
+//	    	//finalw = (int)(finalh * shiftw);
+//	    }
 	    
 	    if(src.getWidth() > src.getHeight()){
 	        factor = ((double)src.getHeight()/(double)src.getWidth());
@@ -408,6 +499,31 @@ public class CryptVideo {
 	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
 		    
 	    return target;
+	}
+	
+	/**
+	 * Convert a source image to a desired BufferedImage type
+	 * @param sourceImage the image source
+	 * @param targetType the target type
+	 * @return a converted BufferedImage
+	 */
+	private  BufferedImage convertToType(BufferedImage sourceImage,
+			int targetType) {
+		BufferedImage image;
+
+		// if the source image is already the target type, return the source
+		// image
+		if (sourceImage.getType() == targetType) {
+			image = sourceImage;
+		}
+		// otherwise create a new image of the target type and draw the new
+		// image
+		else {
+			image = new BufferedImage(sourceImage.getWidth(),
+					sourceImage.getHeight(), targetType);
+			image.getGraphics().drawImage(sourceImage, 0, 0, null);
+		}
+		return image;
 	}
 	
 }

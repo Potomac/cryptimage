@@ -20,6 +20,9 @@
 
 
 package com.ib.cryptimage.core;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +46,7 @@ public class VideoRecorder {
 		
 		if(sWidth== 720){
 			this.is720 = true;
+			width = 720;
 		}
 		
 		writer = ToolFactory.makeWriter(outputFilename);
@@ -122,6 +126,9 @@ public class VideoRecorder {
 	}
 	
 	public void addFrame(BufferedImage buff, double timeMilliseconds){
+		if(this.is720){
+			buff = getScaledImage(buff, 720, 576);			
+		}
 		 writer.encodeVideo(0, buff,(int)(timeMilliseconds *1000d),TimeUnit.MICROSECONDS);
 		
 	}
@@ -133,8 +140,67 @@ public class VideoRecorder {
 		}		
 		writer.close();
 	}
+	
+	
+	/**
+	 * Scale an image to a new size
+	 * @param src the image source
+	 * @param w the new width
+	 * @param h the new height
+	 * @return the resized image
+	 */
+	private BufferedImage getScaledImage(BufferedImage src, int w, int h){
+	    int finalw = w;
+	    int finalh = h;
+	    double factor = 1.0d;	    
+	    double shiftw = 1d;
+	    
+	    if(src.getWidth()==720 && src.getHeight()==576 ){
+	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
+	    }
+	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
+	    	shiftw = (double)src.getWidth()/720d;	    	
+	    	//shiftw = 768d/(double)src.getWidth();
+	    	//finalw = (int)(finalh * shiftw);
+	    }
+	    else if(src.getWidth()==720 && src.getHeight()!=576 && w == 720){
+	    	//shiftw = (double)src.getWidth()/768d;	    	
+	    	shiftw = 768d/(double)src.getWidth();
+	    	//finalw = (int)(finalh * shiftw);
+	    }
+//	    else if(w ==720){
+//	    	//shiftw = (double)src.getWidth()/768d;	    	
+//	    	shiftw = 768d/720d;
+//	    	//finalw = (int)(finalh * shiftw);
+//	    }
+	    
+	    if(src.getWidth() > src.getHeight()){
+	        factor = ((double)src.getHeight()/(double)src.getWidth());
+	        finalh = (int)(finalw * factor * shiftw);	       
+	    }else{
+	        factor = ((double)src.getWidth()/(double)src.getHeight());
+	        finalw = (int)(finalh * factor);
+	    }   
+
+	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TRANSLUCENT);
+	    Graphics2D g2 = resizedImg.createGraphics();
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.drawImage(src, 0, 0, finalw, finalh, null);
+	    g2.dispose();
+	    
+	    //step 2 create a bufferedimage with exact size
+	    
+	    BufferedImage target = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+	    
+	    Graphics g3 = target.getGraphics();	    
+	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
+		    
+	    return target;
+	}
 
 }
+
+
 
 //class RateChange extends MediaListenerAdapter {
 //

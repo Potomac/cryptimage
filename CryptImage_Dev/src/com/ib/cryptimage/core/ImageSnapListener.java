@@ -53,12 +53,14 @@ public class ImageSnapListener extends MediaListenerAdapter {
 
 	public void onVideoPicture(IVideoPictureEvent event)  {	 	
 		dumpFrameToBufferedImage(event.getImage());
-		count = count + 1;
+		count = count + 1;	
 	 
 	if(count == cryptVid.getVideoLengthFrames() && frmV.getJob().isWantPlay() !=true){		
 		cryptVid.closeVideo();
 		cryptVid.saveDatFileVideo();    
-	}
+	} else if(count == cryptVid.getVideoLengthFrames()){
+		this.frmV.getJob().setStop(true);
+		}
    }
 
 	public void dumpFrameToBufferedImage(BufferedImage image) {		
@@ -109,6 +111,11 @@ public class ImageSnapListener extends MediaListenerAdapter {
 
 	public void setCount(int count) {
 		this.count = count;
-	}   
+	}
+
+	public CryptVideo getCryptVid() {
+		return cryptVid;
+	}
+	
    
  }

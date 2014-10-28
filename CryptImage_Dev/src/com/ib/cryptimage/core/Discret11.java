@@ -113,7 +113,7 @@ public class Discret11 {
 	/**
 	 * the default width of the image which is 768
 	 */
-	private int sWidth = 768;
+	private final int sWidth = 768;
 	
 	
 	/**
@@ -131,26 +131,8 @@ public class Discret11 {
 		initTruthTable();
 		initDecaPixels(0.0167,0.0334);
 		initDelayArray();
-	}
-	
-	/**
-	 * create a new Discret11 object
-	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
-	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
-	 * @param audienceLevel the audience Level ( 1 to 7 )
-	 * @param width the width of the transformed image
-	 */
-	public Discret11(int key11bits, int mode, int audienceLevel, int width){		
-		this.key11bits = key11bits;		
-		this.audienceLevel = audienceLevel;
-		this.sWidth = width;
-		initMode(mode);
-		initPolyLFSR(key11bits);
-		// choose the right truth table and feed the array delay
-		initTruthTable();
-		initDecaPixels(0.0167,0.0334);
-		initDelayArray();
-	}
+	}	
+
 	
 	/**
 	 * create a new Discret11 object with redefined percentages for the delay 1 and 2
@@ -170,29 +152,8 @@ public class Discret11 {
 		initTruthTable();
 		initDecaPixels(perc1,perc2);
 		initDelayArray();
-	}
-	
-	/**
-	 * create a new Discret11 object with redefined percentages for the delay 1 and 2
-	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
-	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
-	 * @param audienceLevel the audience Level ( 1 to 7 )
-	 * @param perc1 the percentage level for delay 1
-	 * @param perc2 the percentage level for delay 2
-	 * @param width the width of the transformed image
-	 */
-	public Discret11(int key11bits, int mode, int audienceLevel, 
-			double perc1, double perc2, int width){		
-		this.key11bits = key11bits;		
-		this.audienceLevel = audienceLevel;
-		this.sWidth = width;
-		initMode(mode);
-		initPolyLFSR(key11bits);
-		// choose the right truth table and feed the array delay
-		initTruthTable();
-		initDecaPixels(perc1,perc2);
-		initDelayArray();
-	}
+	}	
+
 	
 	/**
 	 * initialize the current mode ( 0 for encoding, 1 for decoding )
@@ -656,21 +617,21 @@ public class Discret11 {
 	    if(src.getWidth()==720 && src.getHeight()==576 ){
 	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
 	    }
-	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
-	    	shiftw = (double)src.getWidth()/720d;	    	
-	    	//shiftw = 768d/(double)src.getWidth();
-	    	//finalw = (int)(finalh * shiftw);
-	    }
-	    else if(src.getWidth()==720 && src.getHeight()!=576 && w == 720){
-	    	//shiftw = (double)src.getWidth()/768d;	    	
-	    	shiftw = 768d/(double)src.getWidth();
-	    	//finalw = (int)(finalh * shiftw);
-	    }
-	    else if(w ==720){
-	    	//shiftw = (double)src.getWidth()/768d;	    	
-	    	shiftw = 768d/720d;
-	    	//finalw = (int)(finalh * shiftw);
-	    }
+//	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
+//	    	shiftw = (double)src.getWidth()/720d;	    	
+//	    	//shiftw = 768d/(double)src.getWidth();
+//	    	//finalw = (int)(finalh * shiftw);
+//	    }
+//	    else if(src.getWidth()==720 && src.getHeight()!=576 && w == 720){
+//	    	//shiftw = (double)src.getWidth()/768d;	    	
+//	    	shiftw = 768d/(double)src.getWidth();
+//	    	//finalw = (int)(finalh * shiftw);
+//	    }
+//	    else if(w ==720){
+//	    	//shiftw = (double)src.getWidth()/768d;	    	
+//	    	shiftw = 768d/720d;
+//	    	//finalw = (int)(finalh * shiftw);
+//	    }
 	    
 	    if(src.getWidth() > src.getHeight()){
 	        factor = ((double)src.getHeight()/(double)src.getWidth());
