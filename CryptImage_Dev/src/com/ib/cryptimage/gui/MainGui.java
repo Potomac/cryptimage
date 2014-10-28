@@ -51,6 +51,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerListModel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
@@ -125,11 +127,29 @@ public class MainGui {
 		this.job = job;
 		this.job.setGui(this);
 		
+		 try {
+	            // Set cross-platform Java L&F (also called "Metal")
+	        UIManager.setLookAndFeel(
+	        		"com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+	    } 
+	    catch (UnsupportedLookAndFeelException e) {
+	       // handle exception
+	    }
+	    catch (ClassNotFoundException e) {
+	       // handle exception
+	    }
+	    catch (InstantiationException e) {
+	       // handle exception
+	    }
+	    catch (IllegalAccessException e) {
+	       // handle exception
+	    }
+		
 		frame = new JFrame("CryptImage v0.0.5");			
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		//panGlobal.setLayout(new BoxLayout(panGlobal,BoxLayout.LINE_AXIS));
-		frame.setSize(600,760);
+		frame.setSize(600,780);
 		frame.setAutoRequestFocus(true);
 		frame.setResizable(false);		
 		

@@ -129,7 +129,7 @@ public class CryptVideo {
 	    vid = new VideoRecorder(outputFilename + info + keyWord + "_audience_" 
 		+ this.audienceLevel + ".mp4", width,
 				height, frmv.getJob().getVideoBitrate(), frmv.getJob().getVideoCodec(),
-				frmv.getJob().getsWidth(), frameRate);
+				frmv.getJob().getsWidth(), frmv.getJob().isStrictMode(), frameRate);
 		}
 	}
 	
@@ -458,7 +458,7 @@ public class CryptVideo {
 	    double factor = 1.0d;	    
 	    double shiftw = 1d;
 	    
-	    if(src.getWidth()==720 && src.getHeight()==576 ){
+	    if(src.getWidth()==720  && src.getHeight()==576 ){
 	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
 	    }
 //	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){

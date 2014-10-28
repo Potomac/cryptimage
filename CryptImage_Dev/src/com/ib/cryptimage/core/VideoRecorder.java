@@ -42,9 +42,9 @@ public class VideoRecorder {
 	private boolean is720 = false;
 	
 	public VideoRecorder(String outputFilename, int width, int height,
-			int videoBitrate, int videoCodec, int sWidth, double framerate) {		
+			int videoBitrate, int videoCodec, int sWidth, boolean isStrictMode, double framerate) {		
 		
-		if(sWidth== 720){
+		if(sWidth== 720 && isStrictMode == true ){
 			this.is720 = true;
 			width = 720;
 		}
