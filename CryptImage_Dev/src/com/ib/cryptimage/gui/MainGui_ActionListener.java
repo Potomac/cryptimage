@@ -318,17 +318,27 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		dialogue.setFileFilter(filter);
 
 		if (dialogue.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			file = dialogue.getSelectedFile();			
-			if (mainGui.getRdiVideo().isSelected()) {
-				setVideosInfos(file.getAbsolutePath());
-				mainGui.getTxtOutputFile().setText(file.getParent());
-				mainGui.getBtnOutputFile().setEnabled(true);
-			}
-			else {
-				mainGui.getTxtInputFile().setText(file.getAbsolutePath());
-				mainGui.getTxtOutputFile().setText(file.getParent());
-				mainGui.getBtnOutputFile().setEnabled(true);
-				mainGui.getBtnEnter().setEnabled(true);
+			file = dialogue.getSelectedFile();
+
+			if (!file.canRead()) {
+				JOptionPane
+						.showMessageDialog(
+								dialogue,
+								"Le fichier n'est pas accessible en lecture ou bien est endommagé",
+								"erreur de lecture de fichier",
+								JOptionPane.ERROR_MESSAGE);
+			} else {
+
+				if (mainGui.getRdiVideo().isSelected()) {
+					setVideosInfos(file.getAbsolutePath());
+					mainGui.getTxtOutputFile().setText(file.getParent());
+					mainGui.getBtnOutputFile().setEnabled(true);
+				} else {
+					mainGui.getTxtInputFile().setText(file.getAbsolutePath());
+					mainGui.getTxtOutputFile().setText(file.getParent());
+					mainGui.getBtnOutputFile().setEnabled(true);
+					mainGui.getBtnEnter().setEnabled(true);
+				}
 			}
 		}
 	}
