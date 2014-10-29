@@ -279,7 +279,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 	private void manageSave() {
 		JFileChooser dialogue = new JFileChooser();
 		dialogue.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
+		dialogue.setDialogTitle("Sélectionnez le répertoire où sera enregistré le fichier");
+		
 		File file;
 		if (dialogue.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			file = dialogue.getSelectedFile();
@@ -289,7 +290,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 								dialogue,
 								"Le répertoire tapé n'existe pas, veuillez le créer d'abord.",
 								"répertoire non existant",
-								JOptionPane.ERROR_MESSAGE);
+								JOptionPane.WARNING_MESSAGE);
 			} else {
 				mainGui.getTxtOutputFile().setText(file.getAbsolutePath());
 			}
@@ -298,6 +299,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 	
 	private void manageFileOpen() {
 		JFileChooser dialogue = new JFileChooser();
+		dialogue.setDialogTitle("Selectionnez le fichier d'entrée");
 		File file;
 
 		FileNameExtensionFilter filter;

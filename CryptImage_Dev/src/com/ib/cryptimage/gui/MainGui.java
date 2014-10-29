@@ -224,8 +224,10 @@ public class MainGui {
 		rdiVideo = new JRadioButton("Vidéo");
 		rdiVideo.setSelected(true);
 		rdiVideo.addActionListener(new MainGui_ActionListener(this));
+		rdiVideo.setToolTipText("pour coder ou décoder des fichiers vidéos");
 		rdiPhoto = new JRadioButton("Photo");
 		rdiPhoto.addActionListener(new MainGui_ActionListener(this));
+		rdiPhoto.setToolTipText("pour coder ou décoder des fichiers images");
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(rdiVideo);
 		btnGroup.add(rdiPhoto);
@@ -233,6 +235,11 @@ public class MainGui {
 		chkStrictMode = new JCheckBox("Respect de la norme");		
 		chkStrictMode.addActionListener(new MainGui_ActionListener(this));
 		chkStrictMode.setSelected(true);
+		chkStrictMode.setToolTipText("<html>-si option activée : gestion des lignes 310/622,"
+				+ "<br/>redimensionnement automatique vers le format 4/3 720x576 ou 768x576<br/>"
+				+ "-si option désactivée : pas de gestion des lignes 310/622 et "
+				+ "la vidéo garde sa résolution originale</html>");
+		
 		
 		
 		GridBagLayout gbl = new GridBagLayout();
@@ -278,9 +285,10 @@ public class MainGui {
 		txtOutputFile.setEditable(false);
 		btnInputFile = new JButton("Ouvrir");
 		btnInputFile.addActionListener(new MainGui_ActionListener(this));
-		btnOutputFile = new JButton("Destination");
+		btnOutputFile = new JButton("Dossier");
 		btnOutputFile.setEnabled(false);
 		btnOutputFile.addActionListener(new MainGui_ActionListener(this));
+		btnOutputFile.setToolTipText("le dossier de travail où seront stockés les fichiers générés");
 		
 //		panFile.setLayout(new GridLayout(2,2));
 //		panFile.add(txtInputFile);
@@ -435,6 +443,7 @@ public class MainGui {
 		    
 		labFrameStart = new JLabel("démarrer à la trame ");
 		slideFrameStart = new JSlider(JSlider.HORIZONTAL,1,2000,1);
+		slideFrameStart.setToolTipText("permet de commencer le codage/décodage qu'à partir d'un numéro de trame précis");
 		jspFrameStart = new JSpinner();	
 		jspFrameStart.addChangeListener(new MainGui_ActionListener(this));		
 		JSpinner.NumberEditor spinnerEditor2 = new JSpinner.NumberEditor(jspFrameStart);
@@ -625,6 +634,7 @@ public class MainGui {
 		
 		chkPlayer = new JCheckBox("mode lecteur");
 		chkPlayer.addActionListener(new MainGui_ActionListener(this));
+		chkPlayer.setToolTipText("permet de regarder le résultat dans une fenêtre au lieu de créer la vidéo");
 		
 		
 		String[] tab = {"h264","mpeg2","divx"};
