@@ -145,7 +145,7 @@ public class CryptVideo {
 			//vid.addFrame(buff,this.timeBase * timingFrame);
 			vidPlayer.addImage(buff);
 			vidPlayer.showImage();
-			updateProgress("encoded");
+			updateProgress("codage");
 			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 		else{
@@ -168,10 +168,10 @@ public class CryptVideo {
 		}
 		
 		vidPlayer.showImage();
-		if(this.frmv.getJob().isStop()){
+		if(this.frmv.getJob().isStop() || this.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();
 		}
-		updateProgress("encoded");
+		updateProgress("codage");
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 	}
@@ -187,7 +187,7 @@ public class CryptVideo {
 			//vid.addFrame(buff,this.timeBase * timingFrame);
 			vidPlayer.addImage(buff);
 			vidPlayer.showImage();
-			updateProgress("decoded");
+			updateProgress("décodage");
 			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 		else{
@@ -209,10 +209,10 @@ public class CryptVideo {
 		}
 		
 		vidPlayer.showImage();
-		if(this.frmv.getJob().isStop()){
+		if(this.frmv.getJob().isStop() || this.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();
 		}
-		updateProgress("decoded");
+		updateProgress("décodage");
 		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 	}
@@ -227,7 +227,7 @@ public class CryptVideo {
 			}
 			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
 			vid.addFrame(buff,this.timeBase * ( timingFrame  ));
-			updateProgress("Encoded");
+			updateProgress("codage");
 			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 		else {
@@ -241,7 +241,7 @@ public class CryptVideo {
 		}
 		//bi = new CryptImage(buff, pos, this.strictMode).getCryptDiscret11(keyWord);		
 		vid.addFrame(bi, this.timeBase * ( timingFrame ));
-		updateProgress("encoded");
+		updateProgress("codage");
 		}
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 	}
@@ -254,7 +254,7 @@ public class CryptVideo {
 			}
 			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
 			vid.addFrame(buff,this.timeBase * ( timingFrame  ));
-			updateProgress("decoded");
+			updateProgress("décodage");
 			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 		else{
@@ -268,7 +268,7 @@ public class CryptVideo {
 		}
 		//bi = new CryptImage(buff, pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
 		vid.addFrame(bi, this.timeBase * timingFrame);
-		updateProgress("decoded");
+		updateProgress("décodage");
 		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 	}
@@ -356,50 +356,30 @@ public class CryptVideo {
 
 	
 	/**
-	 * update the status in the console for encoding/decoding process creation of the video
-	 * @param step the type of process ( encoded or decoded )
+	 * update the status in the console for encoding/decoding process creation
+	 * of the video
+	 * 
+	 * @param step
+	 *            the type of process ( encoded or decoded )
 	 */
-	private void updateProgress(String step){
+	private void updateProgress(String step) {
 		int progress = (int) (((double) this.frameCount / (double) this.videoLengthFrames) * 100);
 
 		if (this.frmv.getJob().isHasGUI() == true) {
-			frmv.getJob().getGui().getProgress().setValue(this.frameCount );
-			frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " " + frameCount +"/" + this.videoLengthFrames);
-//			if (progress == 1 && step1 == 0) {
-//				frmv.getJob().getGui().getProgress().setValue((int) (0.01 * this.videoLengthFrames));
-//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 1%");
-//				step1 = 1;	
-//			}
-//
-//			if (progress == 20 && step20 == 0) {
-//				frmv.getJob().getGui().getProgress().setValue((int) (0.20 * this.videoLengthFrames));
-//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 20%");				
-//				step20 = 1;	
-//			}
-//			if (progress == 40 && step40 == 0) {
-//				frmv.getJob().getGui().getProgress().setValue((int) (0.40 * this.videoLengthFrames));
-//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 40%");				
-//				step40 = 1;	
-//			}
-//			if (progress == 60 && step60 == 0) {
-//				frmv.getJob().getGui().getProgress().setValue((int) (0.60 * this.videoLengthFrames));
-//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 60%");				
-//				step60 = 1;
-//				frmv.getJob().getGui().getFrame().repaint();
-//				frmv.getJob().getGui().getFrame().revalidate();
-//			}
-//			if (progress == 80 && step80 == 0) {
-//				frmv.getJob().getGui().getProgress().setValue((int) (0.80 * this.videoLengthFrames));
-//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 80%");				
-//				step80 = 1;		
-//			}
-//			if (progress == 100 && step100 == 0) {
-//				frmv.getJob().getGui().getProgress().setValue((int) (1 * this.videoLengthFrames));
-//				frmv.getJob().getGui().getTextInfos().setText("Frames " + step + " 100%");				
-//				step100 = 1;
-//			}			
-		}
-		else {
+			frmv.getJob().getGui().getProgress().setValue(this.frameCount);
+			frmv.getJob()
+					.getGui()
+					.getTextInfos()
+					.setText(
+							"Trames en cours de " + step + " " + frameCount
+									+ "/" + this.videoLengthFrames);
+
+		} else {
+			if (step == "codage") {
+				step = "encoded";
+			} else {
+				step = "decoded";
+			}
 			if (progress == 1 && step1 == 0) {
 				System.out.println("Frames " + step + " 1%");
 				step1 = 1;
@@ -427,7 +407,7 @@ public class CryptVideo {
 			}
 		}
 	}
-	
+
 	public int getVideoLengthFrames() {
 		return videoLengthFrames;
 	}

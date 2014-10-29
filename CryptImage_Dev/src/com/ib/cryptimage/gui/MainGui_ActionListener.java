@@ -266,9 +266,32 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		if(src.equals(mainGui.getBtnExit())){
 			System.exit(0);
 		} else if(src.equals(mainGui.getBtnInputFile())){
-			manageFileOpen();
+			try {
+				manageFileOpen();
+			} catch (Exception e) {
+				JOptionPane
+				.showMessageDialog(
+						mainGui.getFrame(),
+						"Une erreur de type exception s'est produite :" +
+						e.getMessage(),
+						"Erreur du programme",
+						JOptionPane.ERROR_MESSAGE);
+				System.exit(1);
+			}
+			
 		} else if(src.equals(mainGui.getBtnEnter())){
-			manageEnter();
+			try {
+				manageEnter();
+			} catch (Exception e) {
+				JOptionPane
+				.showMessageDialog(
+						mainGui.getFrame(),
+						"Une erreur de type exception s'est produite :" +
+						e.getMessage(),
+						"Erreur du programme",
+						JOptionPane.ERROR_MESSAGE);
+				System.exit(1);
+			}			
 		} else if(src.equals(mainGui.getBtnCancel())){
 			manageCancel();
 		} else if(src.equals(mainGui.getBtnOutputFile())){
@@ -308,11 +331,11 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		if (mainGui.getRdiVideo().isSelected()) {
 			extension = new String[] { "avi", "mp4", "mpeg", "mkv", "mpeg2",
 					"ts", "m2t" };
-			filter = new FileNameExtensionFilter("fichiers vidéos", extension);
+			filter = new FileNameExtensionFilter("vidéos *.avi *.mp4 *.mpeg *.mpeg2 *.mkv", extension);
 		} else {
 			extension = new String[] { "jpeg", "jpg", "bmp", "gif", "png",
 					"tiff" };
-			filter = new FileNameExtensionFilter("fichiers images", extension);
+			filter = new FileNameExtensionFilter("images *.jpeg *.jpg *.bmp *.gif *.png", extension);
 		}
 
 		dialogue.setFileFilter(filter);
