@@ -83,7 +83,7 @@ public class VideoRecorder {
 		IStreamCoder coder = writer.getContainer().getStream(0).getStreamCoder();
 		coder.setFrameRate(frame_rate);
 		System.out.println("frame rate: " + framerate);
-	
+		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(30);
 		
 /*		IRational ratio = IRational.make(4,3);		
 		writer.getContainer().getStream(0).setSampleAspectRatio(ratio);*/
@@ -120,12 +120,12 @@ public class VideoRecorder {
 	           System.out.println("Property " + j + " = " + testname + "  Value = " + test);
 	           j++;
 	       }*/
-		
-
+		writer.getContainer().getStream(0).getStreamCoder().open(null, null);
+		writer.getContainer().writeHeader();
 		
 	}
 	
-	public void addFrame(BufferedImage buff, double timeMilliseconds){
+	public void addFrame(BufferedImage buff, double timeMilliseconds){		
 		if(this.is720){
 			buff = getScaledImage(buff, 720, 576);			
 		}
@@ -137,7 +137,12 @@ public class VideoRecorder {
 		if(this.is720){
 			IRational ratio = IRational.make(16,15);			 
 			writer.getContainer().getStream(0).setSampleAspectRatio(ratio);
-		}		
+		}
+		//writer.getContainer().getStream(0).getStreamCoder().close();
+		//writer.getContainer().getStream(0).getContainer().writeTrailer();
+		
+		//writer.getContainer().writeTrailer();
+		//writer.getContainer().close();
 		writer.close();
 	}
 	

@@ -149,7 +149,7 @@ public class MainGui {
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		//panGlobal.setLayout(new BoxLayout(panGlobal,BoxLayout.LINE_AXIS));
-		frame.setSize(600,780);
+		frame.setSize(605,780);
 		frame.setAutoRequestFocus(true);
 		frame.setResizable(false);		
 		
@@ -653,7 +653,7 @@ public class MainGui {
 		slidBitrate.setLabelTable(labelTable);
 		slidBitrate.setPaintLabels(true);		
 		//slidBitrate.setPaintTicks(true);
-		txtBitrate = new JTextField();
+		txtBitrate = new JTextField(4);
 		txtBitrate.setEditable(false);
 		txtBitrate.setText("10000");
 		

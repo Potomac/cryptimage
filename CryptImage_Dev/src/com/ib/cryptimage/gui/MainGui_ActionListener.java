@@ -364,7 +364,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		} 
 		else {
 			File fic = new File(mainGui.getTxtInputFile().getText());			
-		mainGui.getJob().setOutput_file(mainGui.getTxtOutputFile().getText() + "/" 
+		mainGui.getJob().setOutput_file(mainGui.getTxtOutputFile().getText() + File.separator 
 				+fic.getName());
 		}
 		mainGui.getJob().setDiscret11Word(Integer.valueOf(mainGui.getTxt11bitsWord().getText()));
