@@ -299,7 +299,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 	
 	private void manageFileOpen() {
 		JFileChooser dialogue = new JFileChooser();
-		dialogue.setDialogTitle("Selectionnez le fichier d'entrée");
+		dialogue.setDialogTitle("Sélectionnez le fichier d'entrée");
 		File file;
 
 		FileNameExtensionFilter filter;
