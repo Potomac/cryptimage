@@ -768,8 +768,9 @@ public class MainGui {
 		
 		textInfos = new JTextArea(5,40);
 		textInfos.setEditable(false);
-		textInfos.setAutoscrolls(true);		
-		JScrollPane scrollPane = new JScrollPane(textInfos,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		textInfos.setAutoscrolls(true);
+		textInfos.setLineWrap(true);
+		JScrollPane scrollPane = new JScrollPane(textInfos,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		//textInfos.setSize(frame.getWidth(), 50);
 		//scrollPane.setSize(500, 100);
 		

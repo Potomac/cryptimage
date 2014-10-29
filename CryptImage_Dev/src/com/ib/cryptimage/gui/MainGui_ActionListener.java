@@ -34,9 +34,11 @@ import java.util.Hashtable;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
@@ -274,12 +276,23 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		}
 	}
 	
-	private void manageSave(){
+	private void manageSave() {
 		JFileChooser dialogue = new JFileChooser();
+		dialogue.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
 		File file;
 		if (dialogue.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-			file = dialogue.getSelectedFile();			
-			mainGui.getTxtOutputFile().setText(file.getAbsolutePath());
+			file = dialogue.getSelectedFile();
+			if (!file.canRead()) {
+				JOptionPane
+						.showMessageDialog(
+								dialogue,
+								"Le répertoire tapé n'existe pas, veuillez le créer d'abord.",
+								"répertoire non existant",
+								JOptionPane.ERROR_MESSAGE);
+			} else {
+				mainGui.getTxtOutputFile().setText(file.getAbsolutePath());
+			}
 		}
 	}
 	
@@ -306,10 +319,12 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 			file = dialogue.getSelectedFile();			
 			if (mainGui.getRdiVideo().isSelected()) {
 				setVideosInfos(file.getAbsolutePath());
+				mainGui.getTxtOutputFile().setText(file.getParent());
 				mainGui.getBtnOutputFile().setEnabled(true);
 			}
 			else {
 				mainGui.getTxtInputFile().setText(file.getAbsolutePath());
+				mainGui.getTxtOutputFile().setText(file.getParent());
 				mainGui.getBtnOutputFile().setEnabled(true);
 				mainGui.getBtnEnter().setEnabled(true);
 			}
@@ -328,13 +343,17 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		mainGui.getBtnEnter().setEnabled(false);
 		mainGui.getBtnCancel().setEnabled(true);
 		mainGui.getBtnExit().setEnabled(false);
+		mainGui.getBtnInputFile().setEnabled(false);
+		mainGui.getBtnOutputFile().setEnabled(false);
 		
 		mainGui.getJob().setInput_file(mainGui.getTxtInputFile().getText());
-		if(mainGui.getTxtOutputFile().getText().equals("")){
+		if(mainGui.getTxtOutputFile().getText().equals("")){			
 			mainGui.getJob().setOutput_file(mainGui.getTxtInputFile().getText());
 		} 
 		else {
-		mainGui.getJob().setOutput_file(mainGui.getTxtOutputFile().getText());
+			File fic = new File(mainGui.getTxtInputFile().getText());			
+		mainGui.getJob().setOutput_file(mainGui.getTxtOutputFile().getText() + "/" 
+				+fic.getName());
 		}
 		mainGui.getJob().setDiscret11Word(Integer.valueOf(mainGui.getTxt11bitsWord().getText()));
 		mainGui.getJob().setVideo_frame(Integer.valueOf(mainGui.getTxtNbFrames().getText()));
@@ -343,17 +362,26 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		mainGui.getJob().setWantDec(mainGui.getRdiDecoding().isSelected());
 		mainGui.getJob().setWantPlay(mainGui.getChkPlayer().isSelected());
 		mainGui.getJob().setModePhoto(mainGui.getRdiPhoto().isSelected());
-		mainGui.getJob().setAudienceLevel(mainGui.getCombAudience().getSelectedIndex() + 1);
+		
+		if(mainGui.getChkStrictMode().isSelected()== false){			
+			mainGui.getJob().setAudienceLevel(0);
+		}
+		else{
+			mainGui.getJob().setAudienceLevel(mainGui.getCombAudience().getSelectedIndex() + 1);
+		}		
+		
 		mainGui.getJob().setVideoBitrate(Integer.valueOf(mainGui.getTxtBitrate().getText()));
 		mainGui.getJob().setVideoCodec(mainGui.getCombCodec().getSelectedIndex() +1);
 		mainGui.getJob().setPerc1(Double.valueOf(mainGui.getTxtDelay1().getText().replace("%", ""))/100d);
 		mainGui.getJob().setPerc2(Double.valueOf(mainGui.getTxtDelay2().getText().replace("%", ""))/100d);
+		
 		if(mainGui.getRdi720().isSelected()){
 			mainGui.getJob().setsWidth(720);
 		}
 		if(mainGui.getRdi768().isSelected()){
 			mainGui.getJob().setsWidth(768);
 		}
+		
 		mainGui.getJob().setStop(false);
 		
 		mainGui.getProgress().setMaximum(Integer.valueOf(mainGui.getTxtNbFrames().getText()));
@@ -370,6 +398,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 							mainGui.getBtnEnter().setEnabled(true);
 							mainGui.getBtnCancel().setEnabled(false);
 							mainGui.getBtnExit().setEnabled(true);
+							mainGui.getBtnInputFile().setEnabled(true);
+							mainGui.getBtnOutputFile().setEnabled(true);
 							mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
 				});
@@ -387,6 +417,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 					mainGui.getBtnEnter().setEnabled(true);
 					mainGui.getBtnCancel().setEnabled(false);
 					mainGui.getBtnExit().setEnabled(true);
+					mainGui.getBtnInputFile().setEnabled(true);
+					mainGui.getBtnOutputFile().setEnabled(true);
 					mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
@@ -474,7 +506,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		mainGui.getSlidFrames().setPaintLabels(true);		
 		mainGui.getSlidFrames().setPaintTicks(true);
 		
-		mainGui.getTxtInputFile().setText(path);
+		mainGui.getTxtInputFile().setText(path);		
 		
 		mainGui.getProgress().setMaximum(nb_frames_def);
 		

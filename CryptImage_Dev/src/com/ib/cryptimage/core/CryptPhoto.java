@@ -77,26 +77,26 @@ public class CryptPhoto {
 	public  void saveCryptImage(BufferedImage bi) {
 		try {
 			// retrieve image
-			File outputfile = new File(job.getOutput_file() + "_crypt" + job.getDiscret11Word() + ".png");
+			File outputfile = new File(job.getOutput_file() + "_c" + job.getDiscret11Word() + ".png");
 			ImageIO.write(bi, "png", outputfile);
 			if(job.isHasGUI()){
 				job.getGui().getTextInfos().setText(
-						"SimpleDiscret11 crypted image : " + job.getOutput_file()
-						+ "_crypt"+ job.getDiscret11Word() + ".png");
+						"Image codée : " + job.getOutput_file()
+						+ "_c"+ job.getDiscret11Word() + ".png");
 			}
 			System.out.println("SimpleDiscret11 crypted image : " + job.getOutput_file()
-					+ "_crypt"+ job.getDiscret11Word() + ".png");
+					+ "_c"+ job.getDiscret11Word() + ".png");
 		} catch (IOException e) {
 			System.out.println("I/O error during the write of the crypted image");
 			System.exit(1);
 		}
 
 		try {
-			File dataFile = new File(job.getOutput_file() + "_crypt" + job.getDiscret11Word() + ".dat");
+			File dataFile = new File(job.getOutput_file() + "_c" + job.getDiscret11Word() + ".txt");
 			dataFile.createNewFile();
 			FileWriter ffw = new FileWriter(dataFile);	
 			ffw.write("key : " + job.getDiscret11Word() + "\r\n");			
-			ffw.write("file : " + job.getOutput_file() + "_crypt" + job.getDiscret11Word() +
+			ffw.write("file : " + job.getOutput_file() + "_c" + job.getDiscret11Word() +
 			 ".txt");
 			ffw.close();
 			if(job.isHasGUI()){
@@ -104,11 +104,11 @@ public class CryptPhoto {
 						job.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+
-						"Report shift file : " + job.getOutput_file()
-						+ "_crypt" + job.getDiscret11Word() + ".txt");
+						"Rapport : " + job.getOutput_file()
+						+ "_c" + job.getDiscret11Word() + ".txt");
 			}
 			System.out.println("Report shift file : " + job.getOutput_file()
-					+ "_crypt" + job.getDiscret11Word() + ".txt");
+					+ "_c" + job.getDiscret11Word() + ".txt");
 		} catch (IOException e) {
 			System.out
 					.println("I/O error during the write of the report file");
@@ -119,14 +119,14 @@ public class CryptPhoto {
 	public  void saveDecryptFile(BufferedImage bi,String output_file, int key11){
 		try {
 			// retrieve image
-			File outputfile = new File(output_file + "_decrypt_" + key11 + ".png");
+			File outputfile = new File(output_file + "_d" + key11 + ".png");
 			ImageIO.write(bi, "png", outputfile);
 			if(job.isHasGUI()){
 				job.getGui().getTextInfos().setText(
-						"Output File decrypted : " 
-				+ output_file + "_decrypt_" + key11 + ".png");
+						"Image décodée : " 
+				+ output_file + "_d" + key11 + ".png");
 			}
-			System.out.println( "Output File decrypted : " + output_file + "_decrypt_" + key11 + ".png" );
+			System.out.println( "Output File decrypted : " + output_file + "_d" + key11 + ".png" );
 		} catch (IOException e) {
 			System.out.println("I/O error during the write of the decrypted image");			
 			System.exit(1);

@@ -70,7 +70,8 @@ public class CryptVideo {
 	
 	private VideoPlayer vidPlayer;	
 	
-
+	private double framerate;
+	
 	public CryptVideo(FramesPlayer frmv){	
 		this.audienceLevel = frmv.getJob().getAudienceLevel();
 		this.frameCount = 0;
@@ -105,11 +106,12 @@ public class CryptVideo {
 		
 		//System.out.println((reader.getContainer().getDuration()/1000/1000)*frameRate);
 		
-		this.timeBase = 1000d/frameRate;		
+		this.timeBase = 1000d/frameRate;
+		this.framerate = frameRate;
 		
-		String info = "_crypt_";
+		String info = "_c";
 		 if (this.isDecoding){
-			 info = "_decrypt_";
+			 info = "_d";
 		 }
 		
 		 if(this.strictMode){ // we use "stric mode discret 11", so we resize the video to 768x576 pixels
@@ -126,7 +128,7 @@ public class CryptVideo {
 		}
 		
 		if(frmv.getJob().isWantPlay() !=true){
-	    vid = new VideoRecorder(outputFilename + info + keyWord + "_audience_" 
+	    vid = new VideoRecorder(outputFilename + info + keyWord + "_a" 
 		+ this.audienceLevel + ".mp4", width,
 				height, frmv.getJob().getVideoBitrate(), frmv.getJob().getVideoCodec(),
 				frmv.getJob().getsWidth(), frmv.getJob().isStrictMode(), frameRate);
@@ -278,11 +280,11 @@ public class CryptVideo {
 				this.frmv.getJob().getGui().getTextInfos()
 				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
 						+ "\n\r"
-						+ "Decrypted video file : " + this.outputFilename +"_decrypt_" +
-						this.keyWord + "_audience_" + this.audienceLevel +".mp4");
+						+ "Fichier décodé : " + this.outputFilename +"_d" +
+						this.keyWord + "_a" + this.audienceLevel +".mp4");
 			}
-			System.out.println("Decrypted video file : " + this.outputFilename +"_decrypt_" +
-					this.keyWord + "_audience_" + this.audienceLevel +".mp4");
+			System.out.println("Decrypted video file : " + this.outputFilename +"_d" +
+					this.keyWord + "_a" + this.audienceLevel +".mp4");
 		}
 		else
 		{
@@ -290,11 +292,11 @@ public class CryptVideo {
 				this.frmv.getJob().getGui().getTextInfos()
 				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
 						+ "\n\r"
-						+ "Crypted video file : " + this.outputFilename + "_crypt_" +
-						this.keyWord + "_audience_" + this.audienceLevel + ".mp4");
+						+ "Fichier codé : " + this.outputFilename + "_c" +
+						this.keyWord + "_a" + this.audienceLevel + ".mp4");
 			}
-			System.out.println("Crypted video file : " + this.outputFilename + "_crypt_" +
-		this.keyWord + "_audience_" + this.audienceLevel + ".mp4");
+			System.out.println("Crypted video file : " + this.outputFilename + "_c" +
+		this.keyWord + "_a" + this.audienceLevel + ".mp4");
 		}		
 	}
 	
@@ -317,27 +319,32 @@ public class CryptVideo {
 		
 		
 		try {
-			File dataFile = new File(this.outputFilename + "_crypt_" + this.keyWord +
-					"_audience_" + this.audienceLevel + ".txt");
+			File dataFile = new File(this.outputFilename + "_c" + this.keyWord +
+					"_a" + this.audienceLevel + ".txt");
 			dataFile.createNewFile();
 			FileWriter ffw = new FileWriter(dataFile);
 			BufferedWriter bfw = new BufferedWriter(ffw);	
 			bfw.write("11 bits keyword : " + this.keyWord + "\r\n");
 			bfw.write("Audience level : " + this.audienceLevel + "\r\n");
-			bfw.write("File : " + this.outputFilename +"_crypt_" +
-					this.keyWord + "_audience_" + this.audienceLevel + ".mp4" +"\r\n");
-			bfw.write("debug lines : " + "\r\n" + messDebug);
+			bfw.write("P(0) at progressive frame n° : " + this.positionSynchro +"\r\n" );
+			bfw.write("Delay 1 : " + this.perc1 * 100 +"%\r\n" );
+			bfw.write("Delay 2 : " + this.perc2 * 100 +"%\r\n" );
+			bfw.write("Number of frames : " + this.frameCount +"\r\n" );
+			bfw.write("video framerate : " + this.framerate +"\r\n" );
+			bfw.write("File : " + this.outputFilename +"_c" +
+					this.keyWord + "_a" + this.audienceLevel + ".mp4" +"\r\n");			
+			//bfw.write("debug lines : " + "\r\n" + messDebug);
 			bfw.close();
 			if(this.frmv.getJob().isHasGUI()){
 				this.frmv.getJob().getGui().getTextInfos()
 				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
 						+ "\n\r"
-						+ "Data report : " + this.outputFilename
-						+ "_crypt_" + this.keyWord + "_audience_" 
+						+ "Rapport : " + this.outputFilename
+						+ "_c" + this.keyWord + "_a" 
 						+ this.audienceLevel + ".txt");
 			}
 			System.out.println("Data report : " + this.outputFilename
-					+ "_crypt_" + this.keyWord + "_audience_" 
+					+ "_c" + this.keyWord + "_a" 
 					+ this.audienceLevel + ".txt");
 		} catch (IOException e) {
 			System.out

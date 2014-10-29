@@ -285,7 +285,7 @@ public class Application {
 	      			.addOption("o", "output-file", true, "Pathname for the destination file.")	      			
 	      			.addOption("f", "video-frames", true, "The number of frames to capture from the source video.")
 	      			.addOption("s", "strict-mode", false, "Use a true discret11 mode by resizing the image to 768x576 pixels.")
-	      			.addOption("k", "keyframe", true, "Start the decryption with the given key frame position.")
+	      			.addOption("k", "keyframe", true, "Start the crypt/decrypt process with the given key frame position.")
 	      			.addOption("p", "play", false, "Play the result instead of creating a video file.")
 					.addOption("m", "mode-photo", false, "Mode photo, works only with image file.")
 					.addOption("a", "audience-level", true, "Set an audience level, 1 to 7.")
