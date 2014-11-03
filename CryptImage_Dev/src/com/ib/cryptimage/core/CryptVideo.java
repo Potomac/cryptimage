@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import com.ib.cryptimage.gui.VideoPlayer;
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
@@ -72,53 +74,56 @@ public class CryptVideo {
 	
 	private double framerate;
 	
-	public CryptVideo(FramesPlayer frmv){	
+	public CryptVideo(FramesPlayer frmv) {
 		this.audienceLevel = frmv.getJob().getAudienceLevel();
 		this.frameCount = 0;
 		this.positionSynchro = frmv.getJob().getPositionSynchro();
 		this.strictMode = frmv.getJob().isStrictMode();
 		this.outputFilename = frmv.getJob().getOutput_file();
-		this.keyWord = frmv.getJob().getDiscret11Word();		
+		this.keyWord = frmv.getJob().getDiscret11Word();
 		this.isDecoding = frmv.getJob().isWantDec();
 		this.videoLengthFrames = frmv.getJob().getVideo_frame();
 		this.perc1 = frmv.getJob().getPerc1();
-		this.perc2 = frmv.getJob().getPerc2();		
+		this.perc2 = frmv.getJob().getPerc2();
 		this.frmv = frmv;
-		
+
 		int mode;
-		if(this.isDecoding){
+		if (this.isDecoding) {
 			mode = Discret11.MODE_DEC;
+		} else {
+			mode = Discret11.MODE_ENC;
 		}
-		else{
-			mode = Discret11.MODE_ENC;			
-		}
-		
-			
-		IMediaReader reader = ToolFactory.makeReader(frmv.getJob().getInput_file());
+
+		IMediaReader reader = ToolFactory.makeReader(frmv.getJob()
+				.getInput_file());
 		reader.readPacket();
-		this.width =reader.getContainer().getStream(0).getStreamCoder().getWidth();
-		this.height = reader.getContainer().getStream(0).getStreamCoder().getHeight();
-		double frameRate =  reader.getContainer().getStream(0).getStreamCoder().getFrameRate().getValue();
-		
-		if (frmv.getJob().isWantPlay()){
+		this.width = reader.getContainer().getStream(0).getStreamCoder()
+				.getWidth();
+		this.height = reader.getContainer().getStream(0).getStreamCoder()
+				.getHeight();
+		double frameRate = reader.getContainer().getStream(0).getStreamCoder()
+				.getFrameRate().getValue();
+
+		if (frmv.getJob().isWantPlay()) {
 			vidPlayer = new VideoPlayer(frameRate, this.frmv.getJob());
 		}
-		
-		//System.out.println((reader.getContainer().getDuration()/1000/1000)*frameRate);
-		
-		this.timeBase = 1000d/frameRate;
+
+		// System.out.println((reader.getContainer().getDuration()/1000/1000)*frameRate);
+
+		this.timeBase = 1000d / frameRate;
 		this.framerate = frameRate;
-		
+
 		String info = "_c";
-		 if (this.isDecoding){
-			 info = "_d";
-		 }
-		
-		 if(this.strictMode){ // we use "stric mode discret 11", so we resize the video to 768x576 pixels
-			 this.width = 768;//frmv.getJob().getsWidth();
-			 this.height = 576;
-		 }
-		 
+		if (this.isDecoding) {
+			info = "_d";
+		}
+
+		if (this.strictMode) { // we use "stric mode discret 11", so we resize
+								// the video to 768x576 pixels
+			this.width = 768;// frmv.getJob().getsWidth();
+			this.height = 576;
+		}
+
 		if (this.strictMode) {
 			discret = new Discret11(this.keyWord, mode, this.audienceLevel,
 					this.perc1, this.perc2);
@@ -126,12 +131,25 @@ public class CryptVideo {
 			simpleDiscret = new SimpleDiscret11(this.keyWord, mode,
 					this.height, this.width);
 		}
-		
-		if(frmv.getJob().isWantPlay() !=true){
-	    vid = new VideoRecorder(outputFilename + info + keyWord + "_a" 
-		+ this.audienceLevel + ".mp4", width,
-				height, frmv.getJob().getVideoBitrate(), frmv.getJob().getVideoCodec(),
-				frmv.getJob().getsWidth(), frmv.getJob().isStrictMode(), frameRate);
+
+		if (frmv.getJob().isWantPlay() != true) {
+
+			try {
+				vid = new VideoRecorder(outputFilename + info + keyWord + "_a"
+						+ this.audienceLevel + "."
+						+ frmv.getJob().getExtension(), width, height, frmv
+						.getJob().getVideoBitrate(), frmv.getJob()
+						.getVideoCodec(), frmv.getJob().getsWidth(), frmv
+						.getJob().isStrictMode(), frameRate);
+
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(
+						null,
+						"Une erreur de type exception s'est produite :"
+								+ e.getMessage(), "Erreur du programme",
+						JOptionPane.ERROR_MESSAGE);
+				System.exit(1);
+			}
 		}
 	}
 	
@@ -281,10 +299,10 @@ public class CryptVideo {
 				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ "Fichier décodé : " + this.outputFilename +"_d" +
-						this.keyWord + "_a" + this.audienceLevel +".mp4");
+						this.keyWord + "_a" + this.audienceLevel + "." + frmv.getJob().getExtension());
 			}
 			System.out.println("Decrypted video file : " + this.outputFilename +"_d" +
-					this.keyWord + "_a" + this.audienceLevel +".mp4");
+					this.keyWord + "_a" + this.audienceLevel + "." + frmv.getJob().getExtension());
 		}
 		else
 		{
@@ -293,10 +311,10 @@ public class CryptVideo {
 				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ "Fichier codé : " + this.outputFilename + "_c" +
-						this.keyWord + "_a" + this.audienceLevel + ".mp4");
+						this.keyWord + "_a" + this.audienceLevel + "." + frmv.getJob().getExtension());
 			}
 			System.out.println("Crypted video file : " + this.outputFilename + "_c" +
-		this.keyWord + "_a" + this.audienceLevel + ".mp4");
+		this.keyWord + "_a" + this.audienceLevel + "." + frmv.getJob().getExtension());
 		}		
 	}
 	
@@ -332,7 +350,7 @@ public class CryptVideo {
 			bfw.write("Number of frames : " + this.frameCount +"\r\n" );
 			bfw.write("video framerate : " + this.framerate +"\r\n" );
 			bfw.write("File : " + this.outputFilename +"_c" +
-					this.keyWord + "_a" + this.audienceLevel + ".mp4" +"\r\n");			
+					this.keyWord + "_a" + this.audienceLevel + "." + frmv.getJob().getExtension() +"\r\n");			
 			//bfw.write("debug lines : " + "\r\n" + messDebug);
 			bfw.close();
 			if(this.frmv.getJob().isHasGUI()){

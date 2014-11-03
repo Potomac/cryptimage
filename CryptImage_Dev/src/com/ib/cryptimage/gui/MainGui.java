@@ -121,6 +121,9 @@ public class MainGui {
 	private JButton btnExit;
 	private JButton btnCancel;
 	
+	private JLabel lblExtension;
+	private JComboBox<String> jcbExtension;
+	
 	private JobConfig job;
 	
 	public MainGui(JobConfig job){
@@ -149,9 +152,10 @@ public class MainGui {
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		//panGlobal.setLayout(new BoxLayout(panGlobal,BoxLayout.LINE_AXIS));
-		frame.setSize(605,780);
+		frame.setSize(670,780);
 		frame.setAutoRequestFocus(true);
-		frame.setResizable(false);		
+		frame.setMinimumSize(new Dimension(670, 780));
+		frame.setResizable(true);		
 		
 		createPanMode();
 		createPanFile();
@@ -667,10 +671,16 @@ public class MainGui {
 		slidFrames.setLabelTable(labelTable2);
 		slidFrames.setPaintLabels(true);		
 		slidFrames.setPaintTicks(true);
-		labNbFrames = new JLabel("Nombre de trames");
+		labNbFrames = new JLabel("Nb trames");
 		txtNbFrames = new JTextField(10);		
 		txtNbFrames.setEditable(false);
 		txtNbFrames.setText("2000");
+		
+		lblExtension = new JLabel("extension");		
+		String[] tabExtension = {"mp4","avi","mkv", "mpeg", "ts"};
+		jcbExtension = new JComboBox<String>(tabExtension);
+		jcbExtension.setSelectedIndex(0);
+		jcbExtension.addActionListener(new MainGui_ActionListener(this));
 		
 		
 		this.placerComposants(panVideoOptions,
@@ -739,7 +749,7 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
-				labNbFrames,
+				lblExtension,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 2,
 				1,1,
@@ -747,19 +757,35 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
-				slidFrames,
+				jcbExtension,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				1, 2,
-				3,1,
-				75,50,
+				1,1,
+				5,50,
+				1, 1,1,1);		
+		this.placerComposants(panVideoOptions,
+				gbl,
+				labNbFrames,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 2,
+				1,1,
+				5,50,
+				1, 1,1,1);
+		this.placerComposants(panVideoOptions,
+				gbl,
+				slidFrames,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				3, 2,
+				2,1,
+				80,50,
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
 				txtNbFrames,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				4, 2,
-				2,1,
-				20,50,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				5, 2,
+				1,1,
+				5,50,
 				1, 1,1,1);		
 	}
 	
@@ -1043,6 +1069,10 @@ public class MainGui {
 
 	public JPanel getPanVideoOptions() {
 		return panVideoOptions;
+	}
+
+	public JComboBox<String> getJcbExtension() {
+		return jcbExtension;
 	}
 
 }

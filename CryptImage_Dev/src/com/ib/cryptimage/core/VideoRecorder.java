@@ -24,10 +24,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.xuggle.xuggler.ICodec;
+import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IRational;
+import com.xuggle.xuggler.IStream.Direction;
 import com.xuggle.xuggler.IStreamCoder;
 //import com.xuggle.xuggler.IProperty;
 //import com.xuggle.xuggler.IStreamCoder;
@@ -51,24 +55,25 @@ public class VideoRecorder {
 		
 		writer = ToolFactory.makeWriter(outputFilename);
 		//writer.addListener(new RateChange());
+		IRational frame_rate = IRational.make(framerate);		
 		
 		
 		switch (videoCodec) {
 		case 1:
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264, width, height);
+			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
 //			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
 //			writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(25);
 			
 			break;
 		case 2:
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, width, height);
+			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO,frame_rate, width, height);
 			/*IRational frameRate = IRational.make(1, 25);
 			writer.getContainer().getStream(0).getStreamCoder().setFrameRate(frameRate);
 			//writer.getContainer().getStream(0).getStreamCoder().setTimeBase(IRational.make(frameRate.getDenominator(),
 			//		frameRate.getNumerator()));
 */			break;
 		case 3:
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4, width, height);
+			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4,frame_rate, width, height);
 			break;
 		default:
 			break;
@@ -77,11 +82,30 @@ public class VideoRecorder {
 		//writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,
         //        width, height);
 				
+		
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(videoBitrate*1024);
-		IRational frame_rate = IRational.make(framerate);
-		writer.getContainer().getStream(0).getStreamCoder().setFrameRate(frame_rate);
+		/*int prop = writer.getContainer().getStream(0).getStreamCoder().getNumProperties();
+		Collection<String> tab = writer.getContainer().getStream(0).getStreamCoder().getPropertyNames();
+		
+		System.out.println("props " + prop);
+		for (Iterator iterator = tab.iterator(); iterator.hasNext();) {
+			String string = (String) iterator.next();
+			System.out.println(string + " : " + writer.getContainer().getStream(0).getStreamCoder().getPropertyAsLong(string));
+			
+		}*/
+		//writer.getContainer().getStream(0).getStreamCoder().setProperty("qmin", -1);
+		//writer.getContainer().getStream(0).getStreamCoder().setBitRate(1000);
+//		writer.getContainer().getStream(0).getStreamCoder().setProperty("b", videoBitrate*1000);
+//		writer.getContainer().getStream(0).getStreamCoder().setProperty("ab", videoBitrate*1000);
+//		writer.getContainer().getStream(0).getStreamCoder().setProperty("bufsize", (videoBitrate*1000 )/10);
+//		writer.getContainer().getStream(0).getStreamCoder().setProperty("minrate", videoBitrate*1000);
+//		writer.getContainer().getStream(0).getStreamCoder().setProperty("maxrate", videoBitrate*1000);
+		//System.out.println(writer.getContainer().getStream(0).getStreamCoder().getPropertyAsLong("qmax"));
+		
+		//IRational frame_rate = IRational.make(framerate);
+		//writer.getContainer().getStream(0).getStreamCoder().setFrameRate(frame_rate);
 		IStreamCoder coder = writer.getContainer().getStream(0).getStreamCoder();
-		coder.setFrameRate(frame_rate);
+		//coder.setFrameRate(frame_rate);
 		System.out.println("frame rate: " + framerate);
 		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(30);
 		
@@ -130,7 +154,6 @@ public class VideoRecorder {
 			buff = getScaledImage(buff, 720, 576);			
 		}
 		 writer.encodeVideo(0, buff,(int)(timeMilliseconds *1000d),TimeUnit.MICROSECONDS);
-		
 	}
 	
 	public void closeVideo(){

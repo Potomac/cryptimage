@@ -43,6 +43,7 @@ public class JobConfig {
 	private boolean hasGUI = false;
 	private MainGui gui;
 	private boolean isStop = false;
+	private String extension = "mp4";
 	
 
 	public JobConfig() {
@@ -199,5 +200,13 @@ public class JobConfig {
 
 	public void setStop(boolean isStop) {
 		this.isStop = isStop;
+	}
+
+	public String getExtension() {
+		return extension;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
 	}	
 }

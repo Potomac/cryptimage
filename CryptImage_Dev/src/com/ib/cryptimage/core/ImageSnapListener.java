@@ -22,9 +22,11 @@
 package com.ib.cryptimage.core;
 import java.awt.image.BufferedImage;
 
-
 import com.xuggle.mediatool.MediaListenerAdapter;
+import com.xuggle.mediatool.event.IAudioSamplesEvent;
+import com.xuggle.mediatool.event.IReadPacketEvent;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
+import com.xuggle.xuggler.IAudioSamples;
 
 
 public class ImageSnapListener extends MediaListenerAdapter {
@@ -50,8 +52,17 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		this.isDec = frmV.isbDec();
 		
 	}
+	
+	public void onAudioSamples(IAudioSamplesEvent event){
+		
+	}
 
-	public void onVideoPicture(IVideoPictureEvent event)  {	 	
+	public void onReadPacket(IReadPacketEvent event){
+		
+	}
+	
+
+	public void onVideoPicture(IVideoPictureEvent event)  {			
 		dumpFrameToBufferedImage(event.getImage());
 		count = count + 1;	
 	 

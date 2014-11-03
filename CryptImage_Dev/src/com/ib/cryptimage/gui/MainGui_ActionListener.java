@@ -104,7 +104,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 			else
 			{
 				mainGui.getChkAudience7().setEnabled(false);
-				mainGui.getCombAudience().setEnabled(false);
+				mainGui.getCombAudience().setEnabled(false);				
 				mainGui.getRdi720().setEnabled(false);
 				mainGui.getRdi768().setEnabled(false);
 			}				
@@ -122,12 +122,14 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 			if(src.isSelected()){
 				mainGui.getSlidBitrate().setEnabled(false);
 				mainGui.getTxtBitrate().setEnabled(false);				
-				mainGui.getCombCodec().setEnabled(false);				
+				mainGui.getCombCodec().setEnabled(false);
+				mainGui.getJcbExtension().setEnabled(false);
 			}
 			else if(mainGui.getRdiPhoto().isSelected() != true){				
 				mainGui.getSlidBitrate().setEnabled(true);
 				mainGui.getTxtBitrate().setEnabled(true);				
-				mainGui.getCombCodec().setEnabled(true);	
+				mainGui.getCombCodec().setEnabled(true);
+				mainGui.getJcbExtension().setEnabled(true);
 			}
 		}
 	}
@@ -142,16 +144,23 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		
 	}
 
-	private void manageComboBoxes(JComboBox src) {		
-		if(src.equals(mainGui.getCombAudience())){			
-			if(src.getSelectedIndex()!=6 ){				
+	private void manageComboBoxes(JComboBox<String> src) {
+		if (src.equals(mainGui.getCombAudience())) {
+			if (src.getSelectedIndex() != 6) {
 				mainGui.getChkAudience7().setSelected(false);
-			} else	if(src.getSelectedIndex()==6 && 
-					(int)mainGui.getJsp11bitKeyword().getValue()==1337){
+			} else if (src.getSelectedIndex() == 6
+					&& (int) mainGui.getJsp11bitKeyword().getValue() == 1337) {
 				mainGui.getChkAudience7().setSelected(true);
 			}
+		} else if (src.equals(mainGui.getJcbExtension())) {
+			if (src.getSelectedIndex() == 3 || src.getSelectedIndex() == 4 ) {
+				mainGui.getCombCodec().setSelectedIndex(1);
+				mainGui.getCombCodec().setEnabled(false);
+			} else {
+				mainGui.getCombCodec().setEnabled(true);
+			}
 		}
-		
+
 	}
 
 	private void manageSliders(JSlider src) {		
@@ -214,7 +223,9 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 				mainGui.getSlidBitrate().setEnabled(false);
 				mainGui.getTxtBitrate().setEnabled(false);				
 				mainGui.getCombCodec().setEnabled(false);
+				mainGui.getJcbExtension().setEnabled(false);
 				mainGui.getSlidFrames().setEnabled(false);
+				mainGui.getTxtNbFrames().setEnabled(false);
 				mainGui.getChkStrictMode().setSelected(false);
 				mainGui.getChkStrictMode().setEnabled(false);
 				mainGui.getCombAudience().setEnabled(false);
@@ -232,7 +243,9 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 				mainGui.getSlidBitrate().setEnabled(true);
 				mainGui.getTxtBitrate().setEnabled(true);				
 				mainGui.getCombCodec().setEnabled(true);
+				mainGui.getJcbExtension().setEnabled(true);
 				mainGui.getSlidFrames().setEnabled(true);
+				mainGui.getTxtNbFrames().setEnabled(true);
 				mainGui.getChkStrictMode().setEnabled(true);
 				mainGui.getChkStrictMode().setSelected(true);
 				mainGui.getCombAudience().setEnabled(true);
@@ -331,11 +344,11 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		if (mainGui.getRdiVideo().isSelected()) {
 			extension = new String[] { "avi", "mp4", "mpeg", "mkv", "mpeg2",
 					"ts", "m2t" };
-			filter = new FileNameExtensionFilter("vidéos *.avi *.mp4 *.mpeg *.mpeg2 *.mkv", extension);
+			filter = new FileNameExtensionFilter("vidéos *.avi *.mp4 *.mpeg *.mpeg2 *.mkv *.ts *.m2t", extension);
 		} else {
 			extension = new String[] { "jpeg", "jpg", "bmp", "gif", "png",
 					"tiff" };
-			filter = new FileNameExtensionFilter("images *.jpeg *.jpg *.bmp *.gif *.png", extension);
+			filter = new FileNameExtensionFilter("images *.jpeg *.jpg *.bmp *.gif *.png *.tiff", extension);
 		}
 
 		dialogue.setFileFilter(filter);
@@ -397,6 +410,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		mainGui.getJob().setWantDec(mainGui.getRdiDecoding().isSelected());
 		mainGui.getJob().setWantPlay(mainGui.getChkPlayer().isSelected());
 		mainGui.getJob().setModePhoto(mainGui.getRdiPhoto().isSelected());
+		mainGui.getJob().setExtension(mainGui.getJcbExtension().getSelectedItem().toString());
 		
 		if(mainGui.getChkStrictMode().isSelected()== false){			
 			mainGui.getJob().setAudienceLevel(0);
