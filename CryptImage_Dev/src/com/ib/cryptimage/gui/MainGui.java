@@ -111,6 +111,7 @@ public class MainGui {
 	private JSlider slidBitrate;
 	private JRadioButton rdi720;
 	private JRadioButton rdi768;
+	private JCheckBox chkSound;
 	
 	private JPanel panProgress;
 	private JProgressBar progress;
@@ -640,6 +641,7 @@ public class MainGui {
 		chkPlayer.addActionListener(new MainGui_ActionListener(this));
 		chkPlayer.setToolTipText("permet de regarder le résultat dans une fenêtre au lieu de créer la vidéo");
 		
+		chkSound = new JCheckBox("activer le son");		
 		
 		String[] tab = {"h264","mpeg2","divx"};
 		combCodec = new JComboBox<String>(tab);	
@@ -688,24 +690,32 @@ public class MainGui {
 				rdi720,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 0,
-				1,1,
-				33,50,
+				2,1,
+				25,50,
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
 				rdi768,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 0,
+				2, 0,
 				1,1,
-				33,50,
+				25,50,
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
 				chkPlayer,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				3, 0,
+				1,1,
+				25,50,
+				1, 1,1,1);
+		this.placerComposants(panVideoOptions,
+				gbl,
+				chkSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				2, 0,
-				4,1,
-				33,50,
+				4, 0,
+				1,1,
+				25,50,
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
@@ -1073,6 +1083,10 @@ public class MainGui {
 
 	public JComboBox<String> getJcbExtension() {
 		return jcbExtension;
+	}
+
+	public JCheckBox getChkSound() {
+		return chkSound;
 	}
 
 }

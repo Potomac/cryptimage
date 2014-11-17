@@ -23,9 +23,11 @@ package com.ib.cryptimage.core;
 import java.awt.image.BufferedImage;
 
 import com.xuggle.mediatool.MediaListenerAdapter;
+import com.xuggle.mediatool.event.AudioSamplesEvent;
 import com.xuggle.mediatool.event.IAudioSamplesEvent;
 import com.xuggle.mediatool.event.IReadPacketEvent;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
+import com.xuggle.xuggler.IAudioResampler;
 import com.xuggle.xuggler.IAudioSamples;
 
 
@@ -37,7 +39,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	private int posFrame;
 	private boolean isDec;
 	private FramesPlayer frmV;
-		
+	private IAudioResampler audioResampler = null;
 
 	/**
 	 * constructor
@@ -55,6 +57,40 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	
 	public void onAudioSamples(IAudioSamplesEvent event){
 		
+		if ( frmV.getJob().isWantSound() == true) {
+			IAudioSamples samples = event.getAudioSamples();
+
+//			IAudioResampler audioResampler = IAudioResampler.make(2,
+//					samples.getChannels(), 48000, samples.getSampleRate());
+			
+			if(audioResampler == null){
+			 audioResampler = IAudioResampler.make(2,
+					samples.getChannels(), 48000, samples.getSampleRate(),
+					IAudioSamples.Format.FMT_S16, samples.getFormat(),
+					1024,
+					1024,
+					true,
+					0
+					);
+			}
+		
+			
+
+			if (event.getAudioSamples().getNumSamples() > 0) {
+				IAudioSamples out = IAudioSamples.make(samples.getNumSamples(),
+						2);
+				audioResampler.resample(out, samples, samples.getNumSamples());
+				cryptVid.addAudioFrame(out);
+
+				// AudioSamplesEvent asc = new
+				// AudioSamplesEvent(event.getSource(),
+				// out, event.getStreamIndex());
+				// super.onAudioSamples(asc);
+
+				out.delete();
+			}
+		}
+
 	}
 
 	public void onReadPacket(IReadPacketEvent event){
@@ -66,7 +102,9 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		dumpFrameToBufferedImage(event.getImage());
 		count = count + 1;	
 	 
-	if(count == cryptVid.getVideoLengthFrames() && frmV.getJob().isWantPlay() !=true){		
+	if(count == cryptVid.getVideoLengthFrames() 
+			&& frmV.getJob().isWantPlay() !=true
+			 ){		
 		cryptVid.closeVideo();
 		cryptVid.saveDatFileVideo();    
 	} else if(count == cryptVid.getVideoLengthFrames()){

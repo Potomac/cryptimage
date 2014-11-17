@@ -45,7 +45,9 @@ public class FramesPlayer {
 		this.mediaReader = ToolFactory.makeReader(job.getInput_file());
 		mediaReader
 				.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
-
+		
+		
+		
 		this.imgListen = new ImageSnapListener(job.getVideo_frame(), this);
 		mediaReader.addListener(imgListen);
 		//mediaReader.getContainer().getStream(0).getContainer().setForcedVideoCodec(ICodec.ID.CODEC_ID_H264);		

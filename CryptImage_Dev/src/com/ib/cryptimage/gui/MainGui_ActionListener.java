@@ -124,12 +124,14 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 				mainGui.getTxtBitrate().setEnabled(false);				
 				mainGui.getCombCodec().setEnabled(false);
 				mainGui.getJcbExtension().setEnabled(false);
+				//mainGui.getChkSound().setEnabled(false);
 			}
 			else if(mainGui.getRdiPhoto().isSelected() != true){				
 				mainGui.getSlidBitrate().setEnabled(true);
 				mainGui.getTxtBitrate().setEnabled(true);				
 				mainGui.getCombCodec().setEnabled(true);
 				mainGui.getJcbExtension().setEnabled(true);
+				mainGui.getChkSound().setEnabled(true);
 			}
 		}
 	}
@@ -232,6 +234,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 				mainGui.getRdi720().setEnabled(false);
 				mainGui.getRdi768().setEnabled(false);
 				mainGui.getChkPlayer().setEnabled(false);
+				mainGui.getChkSound().setEnabled(false);
 				
 			}
 		} else if(src.equals(mainGui.getRdiVideo())){
@@ -252,6 +255,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
+				mainGui.getChkSound().setEnabled(true);
 				
 				
 			} else if(src.isSelected()){
@@ -265,6 +269,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
+				//mainGui.getChkSound().setEnabled(true);
 				
 			}
 		}
@@ -411,6 +416,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		mainGui.getJob().setWantPlay(mainGui.getChkPlayer().isSelected());
 		mainGui.getJob().setModePhoto(mainGui.getRdiPhoto().isSelected());
 		mainGui.getJob().setExtension(mainGui.getJcbExtension().getSelectedItem().toString());
+		mainGui.getJob().setWantSound(mainGui.getChkSound().isSelected());
+		
 		
 		if(mainGui.getChkStrictMode().isSelected()== false){			
 			mainGui.getJob().setAudienceLevel(0);

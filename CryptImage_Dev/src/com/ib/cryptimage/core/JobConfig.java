@@ -44,6 +44,7 @@ public class JobConfig {
 	private MainGui gui;
 	private boolean isStop = false;
 	private String extension = "mp4";
+	private boolean wantSound = true;
 	
 
 	public JobConfig() {
@@ -208,5 +209,13 @@ public class JobConfig {
 
 	public void setExtension(String extension) {
 		this.extension = extension;
+	}
+
+	public boolean isWantSound() {
+		return wantSound;
+	}
+
+	public void setWantSound(boolean wantSound) {
+		this.wantSound = wantSound;
 	}	
 }

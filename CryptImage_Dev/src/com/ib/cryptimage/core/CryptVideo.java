@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 import com.ib.cryptimage.gui.VideoPlayer;
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
+import com.xuggle.xuggler.IAudioSamples;
 
 
 public class CryptVideo {		
@@ -140,7 +141,7 @@ public class CryptVideo {
 						+ frmv.getJob().getExtension(), width, height, frmv
 						.getJob().getVideoBitrate(), frmv.getJob()
 						.getVideoCodec(), frmv.getJob().getsWidth(), frmv
-						.getJob().isStrictMode(), frameRate);
+						.getJob().isStrictMode(), frameRate, frmv.getJob().isWantSound());
 
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(
@@ -161,21 +162,24 @@ public class CryptVideo {
 		if (frameCount < this.positionSynchro){
 			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
 			//vid.addFrame(buff,this.timeBase * timingFrame);
-			vidPlayer.addImage(buff);
+			vidPlayer.addImage(buff);			
 			vidPlayer.showImage();
 			updateProgress("codage");
 			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 		else{
-		BufferedImage bi;
+		BufferedImage bi = save;
 		
 		if(this.strictMode){
-			bi = this.discret.transform(buff);
 			save = getScaledImage(save, this.width, 576);
+			if( vidPlayer.isInverse() == false){	
+			bi = this.discret.transform(buff);
+			}			
 		}
 		else
-		{
-			bi = this.simpleDiscret.transform(buff);
+		{	if( vidPlayer.isInverse() == false){	
+				bi = this.simpleDiscret.transform(buff);
+			}
 		}
 			
 		if( vidPlayer.isInverse() == true){	
@@ -188,6 +192,7 @@ public class CryptVideo {
 		vidPlayer.showImage();
 		if(this.frmv.getJob().isStop() || this.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();
+			vidPlayer.closeJavaSound();
 		}
 		updateProgress("codage");
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
@@ -211,12 +216,13 @@ public class CryptVideo {
 		else{
 		BufferedImage bi;		
 		if(this.strictMode){			
-			bi = this.discret.transform(buff);		
+			bi = this.discret.transform(buff);			
 			//save = getScaledImage(save, 768, 576);
 		}
 		else
-		{
+		{  
 			bi = this.simpleDiscret.transform(buff);
+			
 		}
 		
 		if(vidPlayer.isInverse() == true){
@@ -229,13 +235,21 @@ public class CryptVideo {
 		vidPlayer.showImage();
 		if(this.frmv.getJob().isStop() || this.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();
+			vidPlayer.closeJavaSound();
 		}
 		updateProgress("décodage");
 		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
 		}
 	}
-	
-	
+
+	public void addAudioFrame(IAudioSamples sample) {
+		if (!this.frmv.getJob().isWantPlay() && this.frmv.getJob().isWantSound()) {
+			vid.addAudioFrame(sample);
+		} else if (this.frmv.getJob().isWantPlay() 
+				&&	this.frmv.getJob().isWantSound()){
+			vidPlayer.playJavaSound(sample);			
+		}
+	}
 	
 	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){			
 		frameCount++;

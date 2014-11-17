@@ -28,8 +28,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPixelFormat;
+import com.xuggle.xuggler.IProperty;
 import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStream.Direction;
 import com.xuggle.xuggler.IStreamCoder;
@@ -46,7 +48,8 @@ public class VideoRecorder {
 	private boolean is720 = false;
 	
 	public VideoRecorder(String outputFilename, int width, int height,
-			int videoBitrate, int videoCodec, int sWidth, boolean isStrictMode, double framerate) {		
+			int videoBitrate, int videoCodec, int sWidth, 
+			boolean isStrictMode, double framerate, boolean wantSound) {		
 		
 		if(sWidth== 720 && isStrictMode == true ){
 			this.is720 = true;
@@ -82,6 +85,17 @@ public class VideoRecorder {
 		//writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,
         //        width, height);
 				
+		if( wantSound == true){
+		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2, 48000);
+		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);
+		writer.getContainer().getStream(1).getContainer().getStream(0).getStreamCoder().setBitRate(192000);
+		//writer.getContainer().getStream(1).getStreamCoder().setSampleFormat(IAudioSamples.Format.FMT_S16);
+		//writer.getContainer().getStream(1).getStreamCoder().setSampleRate(48000);
+		//writer.getContainer().getStream(1).getStreamCoder().setProperty("frame_size", "576");
+		//writer.getContainer().getStream(1).getStreamCoder().setProperty("frame_bits", "5760000");
+		//writer.getContainer().getStream(1).getStreamCoder().setDefaultAudioFrameSize(1152);
+		//System.out.println(writer.getContainer().getStream(1).getStreamCoder().getDefaultAudioFrameSize());
+		}
 		
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(videoBitrate*1024);
 		/*int prop = writer.getContainer().getStream(0).getStreamCoder().getNumProperties();
@@ -120,31 +134,37 @@ public class VideoRecorder {
 //		writer.getContainer().getStream(0).getStreamCoder().setProperty("qcomp", 0.6);
 		//writer.getContainer().getStream(0).getStreamCoder().setGlobalQuality(5000000);
 		
-		/* int j = 0;
+	/*	 int j = 0;
 	       String test;
 	       
-	       IStreamCoder coder = writer.getContainer().getStream(0).getStreamCoder();
-	       ICodec codec = ICodec.findEncodingCodec(ICodec.ID.CODEC_ID_H264);
+	       IStreamCoder coder3 = writer.getContainer().getStream(1).getStreamCoder();
+	      // ICodec codec = ICodec.findEncodingCodec(ICodec.ID.CODEC_ID_H264);
 	       
-	       String codecname = codec.getLongName();
-	       System.out.println("Codec Name: " + codecname);
+	       //String codecname = codec.getLongName();
+	       //System.out.println("Codec Name: " + codecname);
 	       
-	       int numproperties = coder.getNumProperties();
-	       System.out.println("Number of Properties: " + numproperties);
+	       int numproperties = coder3.getNumProperties();
+	       //System.out.println("Number of Properties: " + numproperties);
 	       
 	       
 	       
-	       IProperty testProperty = coder.getPropertyMetaData(j);
+	       IProperty testProperty = coder3.getPropertyMetaData(j);
 	     
 	       while (j < numproperties)
 	       {
-	           testProperty = coder.getPropertyMetaData(j);
+	           testProperty = coder3.getPropertyMetaData(j);
 	           String testname = testProperty.getName();
 	           test = coder.getPropertyAsString(testname);
 	           System.out.println("Property " + j + " = " + testname + "  Value = " + test);
 	           j++;
 	       }*/
+	       
+	       
 		writer.getContainer().getStream(0).getStreamCoder().open(null, null);
+		if (wantSound == true) {
+			writer.getContainer().getStream(1).getStreamCoder()
+					.open(null, null);
+		}
 		writer.getContainer().writeHeader();
 		
 	}
@@ -156,6 +176,10 @@ public class VideoRecorder {
 		 writer.encodeVideo(0, buff,(int)(timeMilliseconds *1000d),TimeUnit.MICROSECONDS);
 	}
 	
+	public void addAudioFrame(IAudioSamples sample){	
+		 writer.encodeAudio(1, sample);
+	}
+	
 	public void closeVideo(){
 		if(this.is720){
 			IRational ratio = IRational.make(16,15);			 
@@ -163,7 +187,8 @@ public class VideoRecorder {
 		}
 		//writer.getContainer().getStream(0).getStreamCoder().close();
 		//writer.getContainer().getStream(0).getContainer().writeTrailer();
-		
+		//writer.getContainer().getStream(0).getStreamCoder().close();
+		//writer.getContainer().getStream(1).getStreamCoder().close();
 		//writer.getContainer().writeTrailer();
 		//writer.getContainer().close();
 		writer.close();
