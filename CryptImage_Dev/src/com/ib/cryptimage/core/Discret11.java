@@ -665,13 +665,13 @@ public class Discret11 {
 		switch (this.audienceLevel) {
 		case 1:
 			if (this.seqFrame == 1) {
-				setWhite622Line(buff);
+				setBlack622Line(buff);
 			}
 			if (this.seqFrame == 3) {
 				setBlack622Line(buff);
 			}
 			if (this.seqFrame == 5) {
-				setBlack622Line(buff);
+				setWhite622Line(buff);
 			}
 			break;
 		case 2:
@@ -687,24 +687,24 @@ public class Discret11 {
 			break;
 		case 3:
 			if (this.seqFrame == 1) {
-				setWhite622Line(buff);
+				setBlack622Line(buff);
 			}
 			if (this.seqFrame == 3) {
 				setWhite622Line(buff);
 			}
 			if (this.seqFrame == 5) {
-				setBlack622Line(buff);
+				setWhite622Line(buff);
 			}
 			break;
 		case 4:
 			if (this.seqFrame == 1) {
-				setBlack622Line(buff);
+				setWhite622Line(buff);
 			}
 			if (this.seqFrame == 3) {
 				setBlack622Line(buff);
 			}
 			if (this.seqFrame == 5) {
-				setWhite622Line(buff);
+				setBlack622Line(buff);
 			}
 			break;
 		case 5:
@@ -720,13 +720,13 @@ public class Discret11 {
 			break;
 		case 6:
 			if (this.seqFrame == 1) {
-				setBlack622Line(buff);
+				setWhite622Line(buff);
 			}
 			if (this.seqFrame == 3) {
 				setWhite622Line(buff);
 			}
 			if (this.seqFrame == 5) {
-				setWhite622Line(buff);
+				setBlack622Line(buff);
 			}
 			break;
 		case 7:

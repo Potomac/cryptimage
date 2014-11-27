@@ -149,7 +149,7 @@ public class MainGui {
 	       // handle exception
 	    }
 		
-		frame = new JFrame("CryptImage v0.0.5");			
+		frame = new JFrame("CryptImage v0.0.6");			
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		//panGlobal.setLayout(new BoxLayout(panGlobal,BoxLayout.LINE_AXIS));
