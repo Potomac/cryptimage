@@ -98,7 +98,8 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	}
 	
 
-	public void onVideoPicture(IVideoPictureEvent event)  {			
+	public void onVideoPicture(IVideoPictureEvent event)  {
+
 		dumpFrameToBufferedImage(event.getImage());
 		count = count + 1;	
 	 

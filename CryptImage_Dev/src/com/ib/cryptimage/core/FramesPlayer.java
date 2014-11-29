@@ -42,7 +42,12 @@ public class FramesPlayer {
 	 */
 	public FramesPlayer( JobConfig job) {
 		this.job = job;
+		
+		StreamsFinder streamFinder = new StreamsFinder(job.getInput_file());
+		
 		this.mediaReader = ToolFactory.makeReader(job.getInput_file());
+		//this.mediaReader = ToolFactory.makeReader(streamFinder.getContainer());
+		
 		mediaReader
 				.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 		

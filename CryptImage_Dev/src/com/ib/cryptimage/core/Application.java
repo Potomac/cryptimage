@@ -63,7 +63,7 @@ public class Application {
 	         
 	         if ( commandLine.hasOption("v") && args.length == 1 )  
 	         {  
-	        	System.out.println("CryptImage v0.0.6");
+	        	System.out.println("CryptImage v0.0.7");
 	 			System.out.println("Copyright (C) 2014-10-28 Mannix54");
 	 			printLicense();
 	 			System.exit(0);
