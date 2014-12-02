@@ -40,19 +40,23 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	private boolean isDec;
 	private FramesPlayer frmV;
 	private IAudioResampler audioResampler = null;
+	private int videoIndex;
+	private int audioIndex;
 
 	/**
 	 * constructor
 	 * @param nbFrames number of frames to extract from the video
 	 */
-	public ImageSnapListener(int nbFrames, FramesPlayer frmV) {
+	public ImageSnapListener(int nbFrames, FramesPlayer frmV,
+			int videoIndex, int audioIndex) {
 		super();
 		this.frmV = frmV;
 		this.count = 0;
 		cryptVid = new CryptVideo(frmV);
 		posFrame = 0;
 		this.isDec = frmV.isbDec();
-		
+		this.videoIndex = videoIndex;
+		this.audioIndex = audioIndex;		
 	}
 	
 	public void onAudioSamples(IAudioSamplesEvent event){
@@ -64,8 +68,8 @@ public class ImageSnapListener extends MediaListenerAdapter {
 //					samples.getChannels(), 48000, samples.getSampleRate());
 			
 			if(audioResampler == null){
-			 audioResampler = IAudioResampler.make(2,
-					samples.getChannels(), 48000, samples.getSampleRate(),
+			 audioResampler = IAudioResampler.make(1,
+					samples.getChannels(), 44100, samples.getSampleRate(),
 					IAudioSamples.Format.FMT_S16, samples.getFormat(),
 					1024,
 					1024,
@@ -78,7 +82,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 
 			if (event.getAudioSamples().getNumSamples() > 0) {
 				IAudioSamples out = IAudioSamples.make(samples.getNumSamples(),
-						2);
+						1);
 				audioResampler.resample(out, samples, samples.getNumSamples());
 				cryptVid.addAudioFrame(out);
 

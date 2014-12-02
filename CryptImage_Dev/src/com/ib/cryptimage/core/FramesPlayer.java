@@ -25,6 +25,7 @@ import java.awt.image.BufferedImage;
 
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
+import com.xuggle.xuggler.IStream;
 
 
 public class FramesPlayer {
@@ -51,9 +52,11 @@ public class FramesPlayer {
 		mediaReader
 				.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 		
+		IStream stream = streamFinder.getContainer()
+				.getStream(streamFinder.getStreamsVideo()[0]);		
 		
-		
-		this.imgListen = new ImageSnapListener(job.getVideo_frame(), this);
+		this.imgListen = new ImageSnapListener(job.getVideo_frame(), this,
+				streamFinder.getStreamsVideo()[0], streamFinder.getStreamsAudio()[0]);
 		mediaReader.addListener(imgListen);
 		//mediaReader.getContainer().getStream(0).getContainer().setForcedVideoCodec(ICodec.ID.CODEC_ID_H264);		
 	}

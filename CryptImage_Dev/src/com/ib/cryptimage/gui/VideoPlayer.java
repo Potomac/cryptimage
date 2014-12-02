@@ -36,6 +36,7 @@ import javax.swing.WindowConstants;
 import javax.swing.plaf.SliderUI;
 
 import com.ib.cryptimage.core.JobConfig;
+import com.ib.cryptimage.core.SoundCrypt;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.IStreamCoder;
 
@@ -225,6 +226,17 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 	     * We're just going to dump all the samples into the line.
 	     */
 	    byte[] rawBytes = aSamples.getData().getByteArray(0, aSamples.getSize());
+	  /*  int size = aSamples.getByteBuffer().asDoubleBuffer().capacity();
+	    double[] tab = new double[size];
+	    
+	    for(int i=0;i<size;i++){
+	    	tab[i] = aSamples.getByteBuffer().asDoubleBuffer().get(i);
+	    }
+	    
+	    
+	   SoundCrypt soundCrypt = new SoundCrypt(48000);
+	    tab = soundCrypt.transform(tab);*/
+	    
 	    mLine.write(rawBytes, 0, aSamples.getSize());
 	  }
 

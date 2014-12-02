@@ -141,7 +141,8 @@ public class CryptVideo {
 						+ frmv.getJob().getExtension(), width, height, frmv
 						.getJob().getVideoBitrate(), frmv.getJob()
 						.getVideoCodec(), frmv.getJob().getsWidth(), frmv
-						.getJob().isStrictMode(), frameRate, frmv.getJob().isWantSound());
+						.getJob().isStrictMode(), frameRate, frmv.getJob().isWantSound(),
+						frmv.getJob().isWantDec());
 
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(

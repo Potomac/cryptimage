@@ -34,49 +34,52 @@ import com.xuggle.xuggler.IStreamCoder;
 public class StreamsFinder {
 
 	private IContainer container;	
+	private int[] numStreamsAudio;
+	private int[] numStreamsVideo;
+	private int numStreams = 0;
 	
 	public StreamsFinder(String filename){
 		container = IContainer.make();
 		if (container.open(filename, IContainer.Type.READ, null) < 0)
-		      throw new IllegalArgumentException("could not open file: " + filename);		
+		      throw new IllegalArgumentException("could not open file: " + filename);
+		numStreamsAudio = new int[container.getNumStreams()];
+		numStreamsVideo = new int[container.getNumStreams()];
+		searchStreams();
+		
 	}
 	
 	public int getNumStreams(){
-		return container.getNumStreams();
+		return this.numStreams;
+	}
+	
+	public int[] getStreamsAudio(){
+		return this.numStreamsAudio;
+	}
+	
+	public int[] getStreamsVideo(){
+		return this.numStreamsVideo;
 	}
 	
 	public IContainer getContainer(){
-		int numStreams = container.getNumStreams();
+		return this.container;
+	}
 
-		  int streamVideo = 0;
-		  int streamAudio = 0;
-		  boolean audio = false;
-		  boolean video = false;
-		  
-		  //find the first video stream
-		  for(int i = 0; i < numStreams; i++)
-		    {
-			  IStream stream = container.getStream(i);
-			  IStreamCoder coder = stream.getStreamCoder();
-			  if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO)
-		      {
-				  if(audio == false) {
-					  streamAudio = i;
-					  audio = true;
-				  }
-		      }
-			  else if(coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO)
-		      {
-				  if(video == false) {
-					  streamVideo = i;
-					  video = true;
-				  }
-		      }		      
-		    }		  
-		  
-		  IContainer container2 = IContainer.make();
-		  container2.addNewStream(container.getStream(streamVideo).getStreamCoder());
-		  container2.addNewStream(container.getStream(streamAudio).getStreamCoder());
-		  return container2;
+	private void searchStreams() {
+		int numStreams = container.getNumStreams();
+		int comptAudio = 0;
+		int comptVideo = 0;
+
+		// find the first video stream
+		for (int i = 0; i < numStreams; i++) {
+			IStream stream = container.getStream(i);
+			IStreamCoder coder = stream.getStreamCoder();
+			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
+				numStreamsAudio[comptAudio] = i;
+				comptAudio++;
+			} else if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
+				numStreamsVideo[comptVideo] = i;
+				comptVideo++;
+			}
+		}
 	}
 }

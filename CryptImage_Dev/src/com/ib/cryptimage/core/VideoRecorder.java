@@ -26,6 +26,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import com.xuggle.xuggler.IAudioSamples;
@@ -35,6 +36,7 @@ import com.xuggle.xuggler.IProperty;
 import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStream.Direction;
 import com.xuggle.xuggler.IStreamCoder;
+import com.xuggle.ferry.IBuffer;
 //import com.xuggle.xuggler.IProperty;
 //import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.mediatool.IMediaWriter;
@@ -46,10 +48,14 @@ public class VideoRecorder {
 	
 	private IMediaWriter writer;
 	private boolean is720 = false;
+	private boolean wantDec = false;
 	
 	public VideoRecorder(String outputFilename, int width, int height,
 			int videoBitrate, int videoCodec, int sWidth, 
-			boolean isStrictMode, double framerate, boolean wantSound) {		
+			boolean isStrictMode, double framerate, boolean wantSound,
+			boolean wantDec) {	
+		
+		this.wantDec = wantDec;
 		
 		if(sWidth== 720 && isStrictMode == true ){
 			this.is720 = true;
@@ -86,7 +92,7 @@ public class VideoRecorder {
         //        width, height);
 				
 		if( wantSound == true){
-		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2, 48000);
+		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 1, 44100);
 		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);
 		writer.getContainer().getStream(1).getContainer().getStream(0).getStreamCoder().setBitRate(192000);
 		//writer.getContainer().getStream(1).getStreamCoder().setSampleFormat(IAudioSamples.Format.FMT_S16);
@@ -176,8 +182,50 @@ public class VideoRecorder {
 		 writer.encodeVideo(0, buff,(int)(timeMilliseconds *1000d),TimeUnit.MICROSECONDS);
 	}
 	
-	public void addAudioFrame(IAudioSamples sample){	
-		 writer.encodeAudio(1, sample);
+	public void addAudioFrame(IAudioSamples sample){
+		/* SoundCrypt soundCrypt = new SoundCrypt(48000);
+		 byte[] rawBytes = sample.getData().getByteArray(0, sample.getSize());
+		 rawBytes = soundCrypt.transform(rawBytes, (int)sample.getNumSamples());*/
+	/*	 byte[] rawBytes = sample.getData().getByteArray(0, sample.getSize());
+		 IBuffer iBuf = IBuffer.make(null,rawBytes,0,rawBytes.length); 
+		 IAudioSamples smp = IAudioSamples.make(iBuf, 1,IAudioSamples.Format.FMT_S16);
+		 smp.setComplete(true, sample.getNumSamples(), 48000, 2,
+				 IAudioSamples.Format.FMT_S16, sample.getPts());*/
+		
+		int size = (int)(sample.getNumSamples());
+		double[] tabL = new double[size];
+		//double[] tabR = new double[size];
+		
+		/*sample.setComplete(true, sample.getNumSamples(), 48000, 2, 
+				IAudioSamples.Format.FMT_S16, sample.getPts());*/
+		
+		for (int i = 0; i < size; i++) {			
+			tabL[i] = sample.getSample(i, 0, IAudioSamples.Format.FMT_S16);
+			//tabR[i] = sample.getSample(i, 1, IAudioSamples.Format.FMT_S16);
+		}
+		
+		
+		
+		SoundCrypt soundCrypt = new SoundCrypt(44100, this.wantDec );
+		tabL = soundCrypt.transform(tabL);
+		//tabR = soundCrypt.transform(tabR);
+		
+		byte[] rawBytes = new byte[ sample.getSize()];
+		IBuffer iBuf = IBuffer.make(null,rawBytes,0,rawBytes.length ); 
+		//IAudioSamples smp = IAudioSamples.make(iBuf, 1,IAudioSamples.Format.FMT_S16);
+		IAudioSamples smp = IAudioSamples.make(sample.getNumSamples(),1);
+		
+		
+		
+		for (int i = 0; i < size; i++) {					
+			smp.setSample(i, 0, IAudioSamples.Format.FMT_S16, (int)tabL[i]);
+			//smp.setSample(i, 1, IAudioSamples.Format.FMT_S16, (int)tabR[i]);
+			
+		}
+		
+		smp.setComplete(true, sample.getNumSamples(), 44100, 1, 
+				IAudioSamples.Format.FMT_S16, sample.getPts());
+		 writer.encodeAudio(1, smp);
 	}
 	
 	public void closeVideo(){
