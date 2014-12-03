@@ -42,9 +42,9 @@ public class SoundCrypt {
 	private double[] coeff_pre = new double[5];
 	private double[] coeff_post = new double[8];
 	private int m_nPitch;
-	private int m_nPrefilter=0;
-	private int m_nPostfilter=0;
-	private double m_nGain = 1;
+	private int m_nPrefilter=1;
+	private int m_nPostfilter=1;
+	private double m_nGain = 10;
 	private int boost;
 	private double b = Math.PI / 2d;
 	private double decy;
@@ -58,6 +58,7 @@ public class SoundCrypt {
 		if(dec == true){
 			m_nPrefilter = 1;
 			m_nPostfilter = 1;
+			m_nGain = 1;
 		}
 		initFilterParams(rate);	
 	}
@@ -112,17 +113,17 @@ public class SoundCrypt {
 			coeff_pre[0] = 6.310833714;
 			coeff_pre[1] = -0.0622354481;
 			coeff_pre[2] = -0.0826699057;
-			coeff_pre[3] = -0.7552376542;
-			coeff_pre[4] = -0.6351796968;
+//			coeff_pre[3] = -0.7552376542;
+//			coeff_pre[4] = -0.6351796968;
 
 			coeff_post[0] = 2.211596484e+02;
 			coeff_post[1] = 0.0935164959;
-			coeff_post[2] = -0.4657366789;
-			coeff_post[3] = 1.2531881677;
-			coeff_post[4] = -2.2854956347;
-			coeff_post[5] = 2.9413622606;
-			coeff_post[6] = -2.9346526015;
-			coeff_post[7] = 1.8190505669;
+//			coeff_post[2] = -0.4657366789;
+//			coeff_post[3] = 1.2531881677;
+//			coeff_post[4] = -2.2854956347;
+//			coeff_post[5] = 2.9413622606;
+//			coeff_post[6] = -2.9346526015;
+//			coeff_post[7] = 1.8190505669;
 
 			boost = 2;// don't work with low Frequency
 		} else if (rate < 72000) {
