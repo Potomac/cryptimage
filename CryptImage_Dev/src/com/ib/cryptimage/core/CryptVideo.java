@@ -478,6 +478,12 @@ public class CryptVideo {
 	    double factor = 1.0d;	    
 	    double shiftw = 1d;
 	    
+	    if(this.strictMode){
+	    	if(src.getHeight()== 576 && src.getWidth() == 768){
+	    		return src;
+	    	}
+	    }
+	    
 	    if(src.getWidth()==720  && src.getHeight()==576 ){
 	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
 	    }

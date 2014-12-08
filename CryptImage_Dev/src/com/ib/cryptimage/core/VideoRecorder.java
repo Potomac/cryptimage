@@ -24,11 +24,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
+
+import com.xuggle.xuggler.IAudioResampler;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPixelFormat;
@@ -49,6 +54,14 @@ public class VideoRecorder {
 	private IMediaWriter writer;
 	private boolean is720 = false;
 	private boolean wantDec = false;
+	private static int AUDIORATE = 44100;
+	private static int BUFFERSIZE = 44100;
+	
+	private SoundCrypt soundCrypt;
+	private double[] tabSound;
+	private int samplesCount = 0;
+	private long audioPTS = (long)((1d/AUDIORATE) * 1E06) * -1;
+	
 	
 	public VideoRecorder(String outputFilename, int width, int height,
 			int videoBitrate, int videoCodec, int sWidth, 
@@ -56,6 +69,13 @@ public class VideoRecorder {
 			boolean wantDec) {	
 		
 		this.wantDec = wantDec;
+		
+		if(wantSound){
+			soundCrypt = new SoundCrypt(AUDIORATE, this.wantDec);
+			tabSound = new double[BUFFERSIZE];
+		}
+		
+		
 		
 		if(sWidth== 720 && isStrictMode == true ){
 			this.is720 = true;
@@ -84,6 +104,9 @@ public class VideoRecorder {
 		case 3:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4,frame_rate, width, height);
 			break;
+		case 4:
+			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFVHUFF,frame_rate, width, height);
+			break;
 		default:
 			break;
 		}
@@ -92,7 +115,7 @@ public class VideoRecorder {
         //        width, height);
 				
 		if( wantSound == true){
-		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 1, 44100);
+		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 1,AUDIORATE);
 		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);
 		writer.getContainer().getStream(1).getContainer().getStream(0).getStreamCoder().setBitRate(192000);
 		//writer.getContainer().getStream(1).getStreamCoder().setSampleFormat(IAudioSamples.Format.FMT_S16);
@@ -104,6 +127,11 @@ public class VideoRecorder {
 		}
 		
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(videoBitrate*1024);
+		
+		if(videoCodec != 3){		
+			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);
+		}		
+		
 		/*int prop = writer.getContainer().getStream(0).getStreamCoder().getNumProperties();
 		Collection<String> tab = writer.getContainer().getStream(0).getStreamCoder().getPropertyNames();
 		
@@ -179,10 +207,104 @@ public class VideoRecorder {
 		if(this.is720){
 			buff = getScaledImage(buff, 720, 576);			
 		}
+			
+//		File outputfile = new File("/home/cesar/vms/test/debug_images/image_" + timeMilliseconds + ".png");
+//		try {
+//			ImageIO.write(buff, "png", outputfile);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		//buff = convertToType(buff, BufferedImage.TYPE_4BYTE_ABGR);
+		
 		 writer.encodeVideo(0, buff,(int)(timeMilliseconds *1000d),TimeUnit.MICROSECONDS);
+	}
+		
+
+	private void feedSoundTab(IAudioSamples sample) {
+
+		int ajout, reste = 0;
+
+		int size = (int) sample.getNumSamples();
+
+		int tot = size + samplesCount;
+
+		if (tot < BUFFERSIZE) {
+			ajout = size;
+			for (int i = 0; i < sample.getNumSamples(); i++) {
+				tabSound[i + this.samplesCount] = sample.getSample(i, 0,
+						IAudioSamples.Format.FMT_S16);
+			}
+			samplesCount += ajout;
+
+		} else if (tot > BUFFERSIZE) {
+			ajout = BUFFERSIZE - samplesCount;
+			reste = tot - BUFFERSIZE;
+			for (int i = 0; i < ajout; i++) {
+				tabSound[i + this.samplesCount] = sample.getSample(i, 0,
+						IAudioSamples.Format.FMT_S16);
+			}
+			samplesCount += ajout;
+			// on a atteint BUFFERSIZE
+			encodeAudioFrame();
+			resetTabSound();
+			//on ajoute le reste
+			for (int i = 0; i < reste; i++) {
+				tabSound[i + this.samplesCount] = sample.getSample(i, 0,
+						IAudioSamples.Format.FMT_S16);
+			}
+			samplesCount += reste;
+		}
+		
+		if(samplesCount == BUFFERSIZE){
+			encodeAudioFrame();
+			resetTabSound();
+		}
+
+	}
+	
+	private void resetTabSound(){
+		for (int i = 0; i < tabSound.length; i++) {
+			tabSound[i] = 0;
+		}
+		samplesCount = 0;
+	}
+	
+	private void encodeAudioFrame(){
+		
+		System.out.println("debut recherche zero");
+		for (int i = 0; i < tabSound.length; i++) {			
+			if (tabSound[i] == 0) {
+				System.out.println("zéro1" + " " + i + " sur " + tabSound.length);
+			}
+		}
+		System.out.println("fin recherche zero");
+		
+		tabSound = soundCrypt.transform(tabSound);
+		
+		IAudioSamples smp = IAudioSamples.make(BUFFERSIZE,1);		
+		
+		System.out.println("debut recherche zero2");
+		for (int i = 0; i < tabSound.length; i++) {					
+			smp.setSample(i,0, IAudioSamples.Format.FMT_S16, (int)tabSound[i]);
+			if (tabSound[i] == 0) {
+				System.out.println("zéro2" + " " + i+ " sur " + tabSound.length);
+			}
+		}
+		System.out.println("fin recherche zero2");
+		
+		this.audioPTS += (1d/AUDIORATE) * 1E06 * BUFFERSIZE/AUDIORATE;
+		
+		smp.setComplete(true, tabSound.length, AUDIORATE, 1, 
+				IAudioSamples.Format.FMT_S16, this.audioPTS);		 
+		
+		writer.encodeAudio(1, smp);		
+		
 	}
 	
 	public void addAudioFrame(IAudioSamples sample){
+
 		/* SoundCrypt soundCrypt = new SoundCrypt(48000);
 		 byte[] rawBytes = sample.getData().getByteArray(0, sample.getSize());
 		 rawBytes = soundCrypt.transform(rawBytes, (int)sample.getNumSamples());*/
@@ -192,40 +314,186 @@ public class VideoRecorder {
 		 smp.setComplete(true, sample.getNumSamples(), 48000, 2,
 				 IAudioSamples.Format.FMT_S16, sample.getPts());*/
 		
-		int size = (int)(sample.getNumSamples());
-		double[] tabL = new double[size];
-		//double[] tabR = new double[size];
+		if(sample.isComplete()){
+		    //feedSoundTab(sample);
+		 addAudioFrameTemp(sample);
+		}
+		else {
+		System.out.println("pas complet");
+		}
+//		sample.setComplete(true, sample.getNumSamples(), AUDIORATE, 1, 
+//				IAudioSamples.Format.FMT_S16, sample.getPts());
+//		
+//		int size = (int)(sample.getNumSamples());
+//		double[] tabL = new double[size];
+//		//double[] tabR = new double[size];
+//
+//		
+//		sample.setComplete(true, sample.getNumSamples(), AUDIORATE, 1, 
+//				IAudioSamples.Format.FMT_S16, sample.getPts());
+//		
+//		for (int i = 0; i < size; i++) {			
+//			tabL[i] = sample.getSample(i, 0, IAudioSamples.Format.FMT_S16);
+//			//tabR[i] = sample.getSample(i, 1, IAudioSamples.Format.FMT_S16);
+//		}
+//		
+//		
+//		tabL = soundCrypt.transform(tabL);
+//		//tabR = soundCrypt.transform(tabR);
+//		
+////		byte[] rawBytes = new byte[ sample.getSize()];
+////		IBuffer iBuf = IBuffer.make(null,rawBytes,0,rawBytes.length ); 
+////		IAudioSamples smp = IAudioSamples.make(iBuf, 1,IAudioSamples.Format.FMT_S16);
+////		
+//		
+//		
+//		IAudioSamples smp = IAudioSamples.make(sample.getNumSamples(),1);
+//		
+//		
+//		
+//		for (int i = 0; i < size; i++) {					
+//			smp.setSample(i,0, IAudioSamples.Format.FMT_S16, (int)tabL[i]);
+////			smp.setComplete(false, size, AUDIORATE, 1, 
+////			IAudioSamples.Format.FMT_S16, sample.getPts());
+//			//smp.setSample(i, 1, IAudioSamples.Format.FMT_S16, (int)tabR[i]);
+//			
+//		}
+//		
+//		smp.setComplete(true, size, AUDIORATE, 1, 
+//				IAudioSamples.Format.FMT_S16, sample.getPts());
+//		//System.out.println(size + " - " + smp.getNumSamples() + " - " + sample.getPts());
+//		 
+//		
+//		writer.encodeAudio(1, smp);		
 		
-		/*sample.setComplete(true, sample.getNumSamples(), 48000, 2, 
-				IAudioSamples.Format.FMT_S16, sample.getPts());*/
+	}
+	
+	private void addAudioFrameTemp(IAudioSamples sample) {
+//		sample.setComplete(true, sample.getNumSamples(), AUDIORATE, 1,
+//				IAudioSamples.Format.FMT_S16, sample.getPts());
 		
-		for (int i = 0; i < size; i++) {			
-			tabL[i] = sample.getSample(i, 0, IAudioSamples.Format.FMT_S16);
-			//tabR[i] = sample.getSample(i, 1, IAudioSamples.Format.FMT_S16);
+//		 byte[] rawBytes = new byte[ sample.getSize()];
+//		 IBuffer iBuf = IBuffer.make(null,rawBytes,0,rawBytes.length );
+//		
+//		 
+//		 IAudioSamples smp2 = IAudioSamples.make(iBuf,
+//		 1,IAudioSamples.Format.FMT_S16);	
+		
+//	    IAudioResampler resample = IAudioResampler.make(1, 1, AUDIORATE,
+//	    		AUDIORATE,
+//	    		IAudioSamples.Format.FMT_S16, sample.getFormat());
+//	    
+//	    IAudioSamples test = IAudioSamples.make(5000, 1);
+//	    
+//	    resample.resample(test, sample, sample.getNumSamples());
+//	    
+	    
+		
+		int badSample = 0;
+		int goodSample = 0;
+
+		int[] size = new int[(int)sample.getNumSamples()];
+		double[] tabL = new double[(int)sample.getNumSamples()];
+		
+		for (int i = 0; i < sample.getNumSamples(); i++) {
+			if (sample.getSample(i, 0, IAudioSamples.Format.FMT_S16) != 0){
+				//size[i] = i;
+				tabL[i] = sample.getSample(i, 0, IAudioSamples.Format.FMT_S16);
+				goodSample++;
+			}
+			else {
+				tabL[i] = -100000;
+				//size[i] = -100000;
+				badSample++;
+			}
 		}
 		
+		System.out.println("bad sample :" + badSample);
+//		double[] tabL = new double[goodSample];
+		// double[] tabR = new double[size];
+		
+		//System.out.println("sample complet --- : " + sample.isComplete());
+
+//		sample.setComplete(true, sample.getNumSamples(), AUDIORATE, 1,
+//				IAudioSamples.Format.FMT_S16, sample.getPts());
+
+//		int count = 0;
+//		for (int i = 0; i < size.length; i++) {
+//			if (size[i] !=-100000){
+//				tabL[count] = sample.getSample(size[i], 0, IAudioSamples.Format.FMT_S16);				
+//				count++;
+//			}			
+//		}
+		
+		//lissage en cas de badSample
+		for (int i = 0; i < tabL.length; i++) {
+			if(tabL[i] == -100000 && i< tabL.length -2 && i > 0){
+				tabL[i] = (int) ((tabL[i+1] + tabL[i-1])/2d);
+				System.out.println("correctif zéro : " + tabL[i]);
+			} else if (tabL[i] == -100000 && i< tabL.length -2 && i == 0){
+				tabL[i] = (int) ((tabL[i+1] + tabL[i+2])/2d);
+				System.out.println("correctif zéro : " + tabL[i]);
+			} else if (tabL[i] == -100000 && i< tabL.length -1 && i > 0){
+				tabL[i] = (int) ((tabL[i-1] + tabL[i+1])/2d);
+				System.out.println("correctif zéro : " + tabL[i]);
+			}else if (tabL[i] == -100000 && i< tabL.length  && i > 0){
+				tabL[i] = (int) ((tabL[i-1] + tabL[i-2])/2d);
+				System.out.println("correctif zéro : " + tabL[i]);
+			}else if (tabL[i] == -100000 ){
+				tabL[i] = 0;
+				System.out.println("correctif zéro !!");				
+			}
+			if(tabL[i] < - 32768){
+				tabL[i] = 0;
+				System.out.println("--------re-correctif zéro !!");		
+			}			
+		}		
 		
 		
-		SoundCrypt soundCrypt = new SoundCrypt(44100, this.wantDec );
+
 		tabL = soundCrypt.transform(tabL);
-		//tabR = soundCrypt.transform(tabR);
+		// tabR = soundCrypt.transform(tabR);
+
+		// byte[] rawBytes = new byte[ sample.getSize()];
+		// IBuffer iBuf = IBuffer.make(null,rawBytes,0,rawBytes.length );
+		// IAudioSamples smp = IAudioSamples.make(iBuf,
+		// 1,IAudioSamples.Format.FMT_S16);
+		//
+
+
 		
-		byte[] rawBytes = new byte[ sample.getSize()];
-		IBuffer iBuf = IBuffer.make(null,rawBytes,0,rawBytes.length ); 
-		//IAudioSamples smp = IAudioSamples.make(iBuf, 1,IAudioSamples.Format.FMT_S16);
-		IAudioSamples smp = IAudioSamples.make(sample.getNumSamples(),1);
+		int total = (int)sample.getNumSamples() - badSample;
 		
+		System.out.println("good samples : " + total + " table length: " + tabL.length );
 		
-		
-		for (int i = 0; i < size; i++) {					
-			smp.setSample(i, 0, IAudioSamples.Format.FMT_S16, (int)tabL[i]);
-			//smp.setSample(i, 1, IAudioSamples.Format.FMT_S16, (int)tabR[i]);
-			
+		IAudioSamples smp = IAudioSamples.make(tabL.length, 1);
+
+		for (int i = 0; i < tabL.length; i++) {
+			if (tabL[i] != -100000) {
+				smp.setSample(i, 0, IAudioSamples.Format.FMT_S16, (int) tabL[i]);				
+			}
+			else{
+				System.out.println("correctif");
+				smp.setSample(i, 0,IAudioSamples.Format.FMT_S16, 
+						0);
+//				smp.setSample(i, 0,IAudioSamples.Format.FMT_S16, 
+//						(int) ((tabL[i-2] + tabL[i-1])/2d));
+			}
+			//sample.setSample(i, 0, IAudioSamples.Format.FMT_S16, (int) tabL[i]);
+			// smp.setComplete(false, size, AUDIORATE, 1,
+			// IAudioSamples.Format.FMT_S16, sample.getPts());
+			// smp.setSample(i, 1, IAudioSamples.Format.FMT_S16, (int)tabR[i]);
+
 		}
+
 		
-		smp.setComplete(true, sample.getNumSamples(), 44100, 1, 
-				IAudioSamples.Format.FMT_S16, sample.getPts());
-		 writer.encodeAudio(1, smp);
+		
+		smp.setComplete(true, tabL.length, AUDIORATE, 1, IAudioSamples.Format.FMT_S16,
+				sample.getPts());
+		// System.out.println(size + " - " + smp.getNumSamples() + " - " +
+		// sample.getPts());
+
+		writer.encodeAudio(1, smp);
 	}
 	
 	public void closeVideo(){
@@ -297,6 +565,31 @@ public class VideoRecorder {
 	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
 		    
 	    return target;
+	}
+	
+	/**
+	 * Convert a source image to a desired BufferedImage type
+	 * @param sourceImage the image source
+	 * @param targetType the target type
+	 * @return a converted BufferedImage
+	 */
+	private  BufferedImage convertToType(BufferedImage sourceImage,
+			int targetType) {
+		BufferedImage image;
+
+		// if the source image is already the target type, return the source
+		// image
+		if (sourceImage.getType() == targetType) {
+			image = sourceImage;
+		}
+		// otherwise create a new image of the target type and draw the new
+		// image
+		else {
+			image = new BufferedImage(sourceImage.getWidth(),
+					sourceImage.getHeight(), targetType);
+			image.getGraphics().drawImage(sourceImage, 0, 0, null);
+		}
+		return image;
 	}
 
 }

@@ -643,7 +643,7 @@ public class MainGui {
 		
 		chkSound = new JCheckBox("activer le son");		
 		
-		String[] tab = {"h264","mpeg2","divx"};
+		String[] tab = {"h264","mpeg2","divx", "huffyuv"};
 		combCodec = new JComboBox<String>(tab);	
 		combCodec.addActionListener(new MainGui_ActionListener(this));				
 		labCodec = new JLabel("codec");

@@ -155,14 +155,22 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 				mainGui.getChkAudience7().setSelected(true);
 			}
 		} else if (src.equals(mainGui.getJcbExtension())) {
-			if (src.getSelectedIndex() == 3 || src.getSelectedIndex() == 4 ) {
+			if (src.getSelectedIndex() == 0
+					&& this.mainGui.getCombCodec().getSelectedIndex() == 3) {				
+				this.mainGui.getCombCodec().setSelectedIndex(0);
+			}
+			if (src.getSelectedIndex() == 3 || src.getSelectedIndex() == 4) {
 				mainGui.getCombCodec().setSelectedIndex(1);
 				mainGui.getCombCodec().setEnabled(false);
 			} else {
 				mainGui.getCombCodec().setEnabled(true);
 			}
+		} else if (src.equals(mainGui.getCombCodec())) {
+			if (src.getSelectedIndex() == 3
+					&& this.mainGui.getJcbExtension().getSelectedIndex() == 0) {
+				this.mainGui.getJcbExtension().setSelectedIndex(1);
+			}
 		}
-
 	}
 
 	private void manageSliders(JSlider src) {		

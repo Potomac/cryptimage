@@ -436,14 +436,16 @@ public class Discret11 {
 	private BufferedImage modifyEvenFrame(BufferedImage image, int z){	
 		BufferedImage bi = new BufferedImage(this.sWidth,576,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR			
+											// BufferedImage.TYPE_INT_BGR	
+		
+		//bi = setBlackImage(bi);
 		
 		Raster raster1 = bi.getRaster();
 		WritableRaster raster2 = image.getRaster();		
 		
 //
         long temps1 = System.currentTimeMillis();
-		int shift = 0;
+		
 		int valDelay;
 		boolean stop = false;
 		int temp = 0;
@@ -455,27 +457,24 @@ public class Discret11 {
 			if(cptArray == 286){
 				this.cptArray = 0;
 			}
-			shift = 0;
+			
 			stop = true;
 			temp = cptPoly;
 			//valDelay = getDelay(poly[cptPoly], z);
 			temp2 = delayArray[this.seqFrame][cptArray];
 			tempCptArray = cptArray;
 			tempSeqFrame = this.seqFrame;
-			if (this.isDec == true && (temp2 == decaPixels[1])) {
-//				shift = (this.decaPixels[2] - this.decaPixels[1])
-//						- this.decaPixels[1];
-			}
+
 			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
 				// digital image ) or if next line is 623 ( 576 in digital image )
-				raster2.setPixels(temp2 + shift, y, this.sWidth
-						- temp2 - shift, 1, raster2.getPixels(0,
-						y, this.sWidth - temp2 - shift, 1,
-						new int[(this.sWidth - temp2 - shift) * 3]));
+				raster2.setPixels(temp2 , y, this.sWidth
+						- temp2 , 1, raster2.getPixels(0,
+						y, this.sWidth - temp2 , 1,
+						new int[(this.sWidth - temp2) * 3]));
 				//draw black line at start of delay
-				raster2.setPixels(0, y, temp2 + shift, 1, raster1.getPixels(0,
-						y, temp2 + shift, 1,
-						new int[(temp2 + shift) * 3]));
+				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
+						y, temp2 , 1,
+						new int[temp2  * 3]));
 				stop = false;				
 				cptPoly++; // we increment the count of poly array
 				cptArray++;
@@ -510,12 +509,13 @@ public class Discret11 {
 		BufferedImage bi = new BufferedImage(this.sWidth,576,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
 											// BufferedImage.TYPE_INT_BGR			
+		//bi = setBlackImage(bi);
 		
 		Raster raster1 = bi.getRaster();
 		WritableRaster raster2 = image.getRaster();				
 
 		 long temps1 = System.currentTimeMillis();
-		int shift = 0;
+		
 		int valDelay;
 		boolean stop = false;
 		int temp = 0;
@@ -528,7 +528,7 @@ public class Discret11 {
 			if(cptArray == 286){
 				this.cptArray = 0;
 			}
-			shift = 0;
+			
 			stop = true;
 			if(cptPoly == 1716){
 				cptPoly = 0;				
@@ -538,20 +538,17 @@ public class Discret11 {
 			temp2 = delayArray[this.seqFrame][cptArray];
 			tempCptArray = cptArray;
 			tempSeqFrame = this.seqFrame;
-			if (this.isDec == true && (temp2 == decaPixels[1])) {
-//				shift = (this.decaPixels[2] - this.decaPixels[1])
-//						- this.decaPixels[1];
-			}
+
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
-				raster2.setPixels(temp2 + shift, y, this.sWidth
-						- temp2 - shift, 1, raster2.getPixels(0,
-						y, this.sWidth - temp2 - shift, 1,
-						new int[(this.sWidth - temp2 - shift) * 3]));
+				raster2.setPixels(temp2 , y, this.sWidth
+						- temp2 , 1, raster2.getPixels(0,
+						y, this.sWidth - temp2, 1,
+						new int[(this.sWidth - temp2 ) * 3]));
 				//draw black line at start of delay
-				raster2.setPixels(0, y, temp2 + shift, 1, raster1.getPixels(0,
-						y, temp2 + shift, 1,
-						new int[(temp2 + shift) * 3]));
+				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
+						y, temp2 , 1,
+						new int[temp2  * 3]));
 				stop = false;
 				cptPoly++; // we increment the count of poly array
 				cptArray++;
@@ -612,7 +609,7 @@ public class Discret11 {
 	    int finalw = w;
 	    int finalh = h;
 	    double factor = 1.00d;
-	    double shiftw = 1d;
+	    double shiftw = 1d;	 
 	    
 	    if(src.getWidth()==720 && src.getHeight()==576 ){
 	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
@@ -793,7 +790,19 @@ public class Discret11 {
 		return buff;		
 	}
 	
-
+	/**
+	 * set to black an image
+	 * @param buff the BufferedImage
+	 * @return a black image
+	 */
+	private BufferedImage setBlackImage(BufferedImage buff){
+		for (int j = 0; j < buff.getHeight(); j++) {
+			for (int i = 0; i < buff.getWidth(); i++) {
+				buff.setRGB(i, j, new Color(255,255, 255).getRGB());
+			}
+		}		
+		return buff;		
+	}
 	
 	
 	

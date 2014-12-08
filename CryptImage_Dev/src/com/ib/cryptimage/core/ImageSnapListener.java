@@ -42,6 +42,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	private IAudioResampler audioResampler = null;
 	private int videoIndex;
 	private int audioIndex;
+	private static int AUDIORATE = 44100;
 
 	/**
 	 * constructor
@@ -59,42 +60,54 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		this.audioIndex = audioIndex;		
 	}
 	
-	public void onAudioSamples(IAudioSamplesEvent event){
-		
-		if ( frmV.getJob().isWantSound() == true) {
-			IAudioSamples samples = event.getAudioSamples();
+	public void onAudioSamples(IAudioSamplesEvent event) {
 
-//			IAudioResampler audioResampler = IAudioResampler.make(2,
-//					samples.getChannels(), 48000, samples.getSampleRate());
-			
-			if(audioResampler == null){
-			 audioResampler = IAudioResampler.make(1,
-					samples.getChannels(), 44100, samples.getSampleRate(),
-					IAudioSamples.Format.FMT_S16, samples.getFormat(),
-					1024,
-					1024,
-					true,
-					0
-					);
-			}
-		
-			
+		if (event.getAudioSamples().isComplete()) {
 
-			if (event.getAudioSamples().getNumSamples() > 0) {
-				IAudioSamples out = IAudioSamples.make(samples.getNumSamples(),
-						1);
-				audioResampler.resample(out, samples, samples.getNumSamples());
-				cryptVid.addAudioFrame(out);
+			if (frmV.getJob().isWantSound() == true) {
+				IAudioSamples samples = event.getAudioSamples();
 
-				// AudioSamplesEvent asc = new
-				// AudioSamplesEvent(event.getSource(),
-				// out, event.getStreamIndex());
-				// super.onAudioSamples(asc);
+				// IAudioResampler audioResampler = IAudioResampler.make(2,
+				// samples.getChannels(), 48000, samples.getSampleRate());
 
-				out.delete();
+				if (audioResampler == null) {
+					audioResampler = IAudioResampler.make(1,
+							samples.getChannels(), AUDIORATE,
+							samples.getSampleRate(),
+							IAudioSamples.Format.FMT_S16, samples.getFormat());
+				}
+
+				// if(audioResampler == null){
+				// audioResampler = IAudioResampler.make(1,
+				// samples.getChannels(), AUDIORATE, samples.getSampleRate(),
+				// IAudioSamples.Format.FMT_S16, samples.getFormat(),
+				// 2048,
+				// 1024,
+				// true,
+				// (double)AUDIORATE/2d
+				// );
+				// }
+
+				if (event.getAudioSamples().getNumSamples() > 0) {
+					IAudioSamples out = IAudioSamples.make(
+							samples.getNumSamples(), 1); //samples.getNumSamples(), 1);
+					audioResampler.resample(out, samples,
+							samples.getNumSamples());
+
+					cryptVid.addAudioFrame(out);
+					//cryptVid.addAudioFrame(event.getAudioSamples());
+					// AudioSamplesEvent asc = new
+					// AudioSamplesEvent(event.getSource(),
+					// out, event.getStreamIndex());
+					// super.onAudioSamples(asc);
+
+					out.delete();
+				}
 			}
 		}
-
+		else{
+			System.out.println("paquet non complet init");
+		}
 	}
 
 	public void onReadPacket(IReadPacketEvent event){
