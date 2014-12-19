@@ -90,7 +90,7 @@ public class VideoRecorder {
 		switch (videoCodec) {
 		case 1:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
-//			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
+			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
 //			writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(25);
 			
 			break;
@@ -106,6 +106,11 @@ public class VideoRecorder {
 			break;
 		case 4:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFVHUFF,frame_rate, width, height);
+			//writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);
+			break;
+		case 5:
+			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
+			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);			
 			break;
 		default:
 			break;
@@ -116,8 +121,10 @@ public class VideoRecorder {
 				
 		if( wantSound == true){
 		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 1,AUDIORATE);
+		//writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 1,AUDIORATE);
+	    //writer.getContainer().getStream(1).getStreamCoder().setFlag(IStreamCoder.Flags.FLAG_QSCALE, false);
 		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);
-		writer.getContainer().getStream(1).getContainer().getStream(0).getStreamCoder().setBitRate(192000);
+		//writer.getContainer().getStream(1).getContainer().getStream(0).getStreamCoder().setBitRate(192000);
 		//writer.getContainer().getStream(1).getStreamCoder().setSampleFormat(IAudioSamples.Format.FMT_S16);
 		//writer.getContainer().getStream(1).getStreamCoder().setSampleRate(48000);
 		//writer.getContainer().getStream(1).getStreamCoder().setProperty("frame_size", "576");
@@ -129,7 +136,7 @@ public class VideoRecorder {
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(videoBitrate*1024);
 		
 		if(videoCodec != 3){		
-			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);
+			//writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);
 		}		
 		
 		/*int prop = writer.getContainer().getStream(0).getStreamCoder().getNumProperties();

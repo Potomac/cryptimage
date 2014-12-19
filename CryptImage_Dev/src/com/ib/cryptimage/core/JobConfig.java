@@ -45,6 +45,7 @@ public class JobConfig {
 	private boolean isStop = false;
 	private String extension = "mp4";
 	private boolean wantSound = true;
+	private int word16bits = 0;
 	
 
 	public JobConfig() {

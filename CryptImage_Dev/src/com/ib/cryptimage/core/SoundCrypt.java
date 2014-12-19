@@ -54,6 +54,8 @@ public class SoundCrypt {
 	private int sampleCount = 0;
 	private boolean initCheby = false;
 	private boolean initButterWorth = false;
+	private boolean initButterWorthChorus = false;
+	private boolean initChebyChorus = false;
 	
 	private int NZEROS_butterWorth;
     private int NPOLES_butterWorth;
@@ -66,6 +68,20 @@ public class SoundCrypt {
 	private double gain_cheby;
 	private double[] xv_cheby;
 	private double[] yv_cheby;
+	
+	//low pass butterWorth Chorus2
+	private int nzeros_butterChorus;
+    private int npoles_butterChorus;
+	private double gain_buttterChorus;
+	private double[] xv_butterChorus;
+	private double[] yv_butterChorus;
+	
+	//init cheby chorus
+	private int nzeros_chebyChorus;
+    private int npoles_chebyChorus;
+	private double gain_chebyChorus;
+	private double[] xv_chebyChorus;
+	private double[] yv_chebyChorus;
 	
 	
 	/**
@@ -263,14 +279,14 @@ public class SoundCrypt {
 	if(this.dec){
 		//sound = preFilter(sound, 2);
 		
-		sound = lowPassButterWorth(sound); //default
-		//sound = lowPassButterWorthChorus(sound);
+		//sound = lowPassButterWorth(sound); //default
+		sound = lowPassButterWorthChorus2(sound);
 	}
 	else {
 		//sound = postFilter(sound);
 		//sound = highPassButterWorth(sound);
-		sound = lowPassChebyshev(sound); //default
-		//sound = lowPassChebyShevChorus(sound);
+		//sound = lowPassChebyshev(sound); //default
+		sound = lowPassChebyShevChorus(sound);
 	}
 	
 	//sound = lowPass(sound, 12800);
@@ -280,14 +296,14 @@ public class SoundCrypt {
 	if(this.dec){
 		//sound = postFilter(sound);
 		//sound = highPassButterWorth(sound);
-		sound = lowPassChebyshev(sound); //default
-		//sound = lowPassChebyShevChorus(sound); //chorus prefilter
+		//sound = lowPassChebyshev(sound); //default
+		sound = lowPassChebyShevChorus(sound); //chorus prefilter
 	}
 	else {
 		//sound = preFilter(sound, 2);
-		sound = lowPassButterWorth(sound); //default
+		//sound = lowPassButterWorth(sound); //default
 		
-		//sound = lowPassButterWorthChorus(sound);
+		sound = lowPassButterWorthChorus2(sound);
 		
 	}
 //	//sound = lowPass(sound, 12800);
@@ -664,16 +680,43 @@ private double[] bandPassChebyshev(double[] sound){
 	    {
 	    	
 	    	double input = sound[i];	    	
-	    	xv_cheby[0] = xv_cheby[1]; xv_cheby[1] = xv_cheby[2]; xv_cheby[2] = xv_cheby[3]; xv_cheby[3] = xv_cheby[4]; xv_cheby[4] = xv_cheby[5]; xv_cheby[5] = xv_cheby[6]; xv_cheby[6] = xv_cheby[7]; xv_cheby[7] = xv_cheby[8]; xv_cheby[8] = xv_cheby[9]; xv_cheby[9] = xv_cheby[10]; 
+	    	xv_cheby[0] = xv_cheby[1];
+	    	xv_cheby[1] = xv_cheby[2];
+	    	xv_cheby[2] = xv_cheby[3];
+	    	xv_cheby[3] = xv_cheby[4];
+	    	xv_cheby[4] = xv_cheby[5];
+	    	xv_cheby[5] = xv_cheby[6];
+	    	xv_cheby[6] = xv_cheby[7];
+	    	xv_cheby[7] = xv_cheby[8];
+	    	xv_cheby[8] = xv_cheby[9];
+	    	xv_cheby[9] = xv_cheby[10]; 
 	        xv_cheby[10] = input / gain_cheby;
-	        yv_cheby[0] = yv_cheby[1]; yv_cheby[1] = yv_cheby[2]; yv_cheby[2] = yv_cheby[3]; yv_cheby[3] = yv_cheby[4]; yv_cheby[4] = yv_cheby[5]; yv_cheby[5] = yv_cheby[6]; yv_cheby[6] = yv_cheby[7]; yv_cheby[7] = yv_cheby[8]; yv_cheby[8] = yv_cheby[9]; yv_cheby[9] = yv_cheby[10]; 
-	        yv_cheby[10] =   (xv_cheby[0] + xv_cheby[10]) + 10 * (xv_cheby[1] + xv_cheby[9]) + 45 * (xv_cheby[2] + xv_cheby[8])
-	                     + 120 * (xv_cheby[3] + xv_cheby[7]) + 210 * (xv_cheby[4] + xv_cheby[6]) + 252 * xv_cheby[5]
-	                     + ( -0.2720064188 * yv_cheby[0]) + (  1.6419605469 * yv_cheby[1])
-	                     + ( -5.3209688540 * yv_cheby[2]) + ( 11.7240523930 * yv_cheby[3])
-	                     + (-19.1851097200 * yv_cheby[4]) + ( 24.2219019850 * yv_cheby[5])
-	                     + (-23.9026057280 * yv_cheby[6]) + ( 18.2997001200 * yv_cheby[7])
-	                     + (-10.5625140400 * yv_cheby[8]) + (  4.2358746938 * yv_cheby[9]);
+	        yv_cheby[0] = yv_cheby[1];
+	        yv_cheby[1] = yv_cheby[2];
+	        yv_cheby[2] = yv_cheby[3];
+	        yv_cheby[3] = yv_cheby[4];
+	        yv_cheby[4] = yv_cheby[5];
+	        yv_cheby[5] = yv_cheby[6];
+	        yv_cheby[6] = yv_cheby[7];
+	        yv_cheby[7] = yv_cheby[8];
+	        yv_cheby[8] = yv_cheby[9];
+	        yv_cheby[9] = yv_cheby[10]; 
+	        yv_cheby[10] =   (xv_cheby[0] + xv_cheby[10]) 
+	        		+ 10 * (xv_cheby[1] + xv_cheby[9]) 
+	        		+ 45 * (xv_cheby[2] + xv_cheby[8])
+	                     + 120 * (xv_cheby[3] + xv_cheby[7]) 
+	                     + 210 * (xv_cheby[4] + xv_cheby[6]) 
+	                     + 252 * xv_cheby[5]
+	                     + ( -0.2720064188 * yv_cheby[0]) 
+	                     + (  1.6419605469 * yv_cheby[1])
+	                     + ( -5.3209688540 * yv_cheby[2]) 
+	                     + ( 11.7240523930 * yv_cheby[3])
+	                     + (-19.1851097200 * yv_cheby[4]) 
+	                     + ( 24.2219019850 * yv_cheby[5])
+	                     + (-23.9026057280 * yv_cheby[6]) 
+	                     + ( 18.2997001200 * yv_cheby[7])
+	                     + (-10.5625140400 * yv_cheby[8]) 
+	                     + (  4.2358746938 * yv_cheby[9]);
 	        
 	        
 	        	sound[i] = yv_cheby[10];
@@ -692,37 +735,40 @@ private double[] bandPassChebyshev(double[] sound){
 	 */
 	private double[] lowPassChebyShevChorus(double[] sound){
 		//init
-		int NZEROS = 10;
-        int NPOLES = 10;
-		double GAIN  =  7.432679797e+02;
-		double[] xv = new double[NZEROS+1];
-		double[] yv = new double[NPOLES+1];
+		if (this.initChebyChorus == false) {
+			 nzeros_chebyChorus = 10;
+			 npoles_chebyChorus = 10;
+			 gain_chebyChorus = 7.432679797e+02;
+			 xv_chebyChorus = new double[nzeros_chebyChorus + 1];
+			 yv_chebyChorus = new double[npoles_chebyChorus + 1];
+			 this.initChebyChorus = true;
+		}
 		
 	    for (int i=0;i<sound.length;i++)
 	    {
 	    	double input = sound[i];
-	    	xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3];
-			xv[3] = xv[4]; xv[4] = xv[5]; xv[5] = xv[6];
-			xv[6] = xv[7]; xv[7] = xv[8]; xv[8] = xv[9];
-			xv[9] = xv[10];
+	    	xv_chebyChorus[0] = xv_chebyChorus[1]; xv_chebyChorus[1] = xv_chebyChorus[2]; xv_chebyChorus[2] = xv_chebyChorus[3];
+			xv_chebyChorus[3] = xv_chebyChorus[4]; xv_chebyChorus[4] = xv_chebyChorus[5]; xv_chebyChorus[5] = xv_chebyChorus[6];
+			xv_chebyChorus[6] = xv_chebyChorus[7]; xv_chebyChorus[7] = xv_chebyChorus[8]; xv_chebyChorus[8] = xv_chebyChorus[9];
+			xv_chebyChorus[9] = xv_chebyChorus[10];
 			
-			xv[10] = input / GAIN;
+			xv_chebyChorus[10] = input / gain_chebyChorus;
 			
-			yv[0] = yv[1]; yv[1] = yv[2]; yv[2] = yv[3];
-			yv[3] = yv[4]; yv[4] = yv[5]; yv[5] = yv[6];
-			yv[6] = yv[7]; yv[7] = yv[8]; yv[8] = yv[9];
-			yv[9] = yv[10];
+			yv_chebyChorus[0] = yv_chebyChorus[1]; yv_chebyChorus[1] = yv_chebyChorus[2]; yv_chebyChorus[2] = yv_chebyChorus[3];
+			yv_chebyChorus[3] = yv_chebyChorus[4]; yv_chebyChorus[4] = yv_chebyChorus[5]; yv_chebyChorus[5] = yv_chebyChorus[6];
+			yv_chebyChorus[6] = yv_chebyChorus[7]; yv_chebyChorus[7] = yv_chebyChorus[8]; yv_chebyChorus[8] = yv_chebyChorus[9];
+			yv_chebyChorus[9] = yv_chebyChorus[10];
 			
-			yv[10] =   ((xv[0] + xv[10])
-				+ 10 * (xv[1] + xv[9]) + 45 * (xv[2] + xv[8])
-				+ 120 * (xv[3] + xv[7]) + 210 * (xv[4] + xv[6])
-				+ 252 * xv[5]
-				+ ( -0.0000357500 * yv[0]) + (  0.0006094904 * yv[1])
-				+ ( -0.0061672448 * yv[2]) + (  0.0298428117 * yv[3])
-				+ ( -0.1344215690 * yv[4]) + (  0.3160380663 * yv[5])
-				+ ( -0.8283557827 * yv[6]) + (  1.0214778438 * yv[7])
-				+ ( -1.7026748890 * yv[8]) + (  0.9259874211 * yv[9]));
-			sound[i]=yv[10];
+			yv_chebyChorus[10] =   ((xv_chebyChorus[0] + xv_chebyChorus[10])
+				+ 10 * (xv_chebyChorus[1] + xv_chebyChorus[9]) + 45 * (xv_chebyChorus[2] + xv_chebyChorus[8])
+				+ 120 * (xv_chebyChorus[3] + xv_chebyChorus[7]) + 210 * (xv_chebyChorus[4] + xv_chebyChorus[6])
+				+ 252 * xv_chebyChorus[5]
+				+ ( -0.0000357500 * yv_chebyChorus[0]) + (  0.0006094904 * yv_chebyChorus[1])
+				+ ( -0.0061672448 * yv_chebyChorus[2]) + (  0.0298428117 * yv_chebyChorus[3])
+				+ ( -0.1344215690 * yv_chebyChorus[4]) + (  0.3160380663 * yv_chebyChorus[5])
+				+ ( -0.8283557827 * yv_chebyChorus[6]) + (  1.0214778438 * yv_chebyChorus[7])
+				+ ( -1.7026748890 * yv_chebyChorus[8]) + (  0.9259874211 * yv_chebyChorus[9]));
+			sound[i]=yv_chebyChorus[10];
 	    	
 	    }	
 		
@@ -785,28 +831,32 @@ private double[] bandPassChebyshev(double[] sound){
 	 */
 	private double[] lowPassButterWorthChorus2(double[] sound){
 		//init
-		int NZEROS =5;
-        int NPOLES = 5;
-		double GAIN  =  8.513711711;
-		double[] xv = new double[NZEROS+1];
-		double[] yv = new double[NPOLES+1];
+		if(this.initButterWorthChorus == false){
+		nzeros_butterChorus =5;
+        npoles_butterChorus = 5;
+		gain_buttterChorus  =  8.513711711;
+		xv_butterChorus = new double[nzeros_butterChorus+1];
+		yv_butterChorus = new double[npoles_butterChorus+1];
+		this.initButterWorthChorus = true;
+		}
+		
 		
 	    for (int i=0;i<sound.length;i++)
 	    {
 	    	double input = sound[i];
-			xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3];
-			xv[3] = xv[4]; xv[4] = xv[5];
-			xv[5] =input/ GAIN;
+			xv_butterChorus[0] = xv_butterChorus[1]; xv_butterChorus[1] = xv_butterChorus[2]; xv_butterChorus[2] = xv_butterChorus[3];
+			xv_butterChorus[3] = xv_butterChorus[4]; xv_butterChorus[4] = xv_butterChorus[5];
+			xv_butterChorus[5] =input/ gain_buttterChorus;
 			
-			yv[0] = yv[1]; yv[1] = yv[2]; yv[2] = yv[3];
-			yv[3] = yv[4]; yv[4] = yv[5];
-			yv[5] =(float)  ((xv[0] + xv[5])
-				+ 5 * (xv[1] + xv[4]) + 10 * (xv[2] + xv[3])
-				+ ( -0.0134199638 * yv[0]) + ( -0.1268802975 * yv[1])
-				+ ( -0.4492748641 * yv[2]) + ( -1.0628245463 * yv[3])
-				+ ( -1.1062429845 * yv[4]));//GDS
+			yv_butterChorus[0] = yv_butterChorus[1]; yv_butterChorus[1] = yv_butterChorus[2]; yv_butterChorus[2] = yv_butterChorus[3];
+			yv_butterChorus[3] = yv_butterChorus[4]; yv_butterChorus[4] = yv_butterChorus[5];
+			yv_butterChorus[5] =(float)  ((xv_butterChorus[0] + xv_butterChorus[5])
+				+ 5 * (xv_butterChorus[1] + xv_butterChorus[4]) + 10 * (xv_butterChorus[2] + xv_butterChorus[3])
+				+ ( -0.0134199638 * yv_butterChorus[0]) + ( -0.1268802975 * yv_butterChorus[1])
+				+ ( -0.4492748641 * yv_butterChorus[2]) + ( -1.0628245463 * yv_butterChorus[3])
+				+ ( -1.1062429845 * yv_butterChorus[4]));//GDS
 			
-			sound[i] = yv[5];
+			sound[i] = yv_butterChorus[5];
 	    }			
 		return sound;		
 	}
