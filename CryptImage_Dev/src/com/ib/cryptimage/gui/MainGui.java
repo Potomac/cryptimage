@@ -22,15 +22,13 @@
 package com.ib.cryptimage.gui;
 
 
-import java.awt.BorderLayout;
-import java.awt.Color;
+
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.text.NumberFormat;
-import java.text.ParseException;
+
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
@@ -50,11 +48,11 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SpinnerListModel;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.MaskFormatter;
+
 
 import com.ib.cryptimage.core.JobConfig;
 
@@ -81,14 +79,13 @@ public class MainGui {
 	private JRadioButton rdiCoding;
 	private JRadioButton rdiDecoding;
 	private JLabel lab11bitsWord;
-	private JTextField txt11bitsWord;
-	private JSlider slid11bitsWord;
+	private JTextField txt16bitsWord;
+	private JSlider slid16bitsWord;
 	private JLabel labAudience;
 	private JComboBox<String> combAudience;
 	private JLabel labNbFrames;
 	private JTextField txtNbFrames;
-	private JSlider slidFrames;
-	private JCheckBox chkAudience7;
+	private JSlider slidFrames;	
 	private JCheckBox chkPlayer;
 	private JCheckBox chkStrictMode;
 	private JLabel labDelay1;
@@ -98,7 +95,7 @@ public class MainGui {
 	private JTextField txtDelay2;
 	private JSlider slidDelay2;
 	private JCheckBox chkDelay;
-	private JSpinner jsp11bitKeyword;
+	private JSpinner jsp16bitKeyword;
 	private JLabel labFrameStart;
 	private JSpinner jspFrameStart;
 	private JSlider slideFrameStart;
@@ -117,7 +114,7 @@ public class MainGui {
 	private JProgressBar progress;
 	private JTextArea textInfos;
 	
-	private JPanel panButtons;
+
 	private JButton btnEnter;
 	private JButton btnExit;
 	private JButton btnCancel;
@@ -353,33 +350,33 @@ public class MainGui {
 		btnGroup.add(rdiCoding);
 		btnGroup.add(rdiDecoding);
 		
-		lab11bitsWord = new JLabel("mot de 11 bits");
-		slid11bitsWord = new JSlider(JSlider.HORIZONTAL,1,2047,1337);
-		slid11bitsWord.addChangeListener(new MainGui_ActionListener(this));			
+		lab11bitsWord = new JLabel("mot de 16 bits");
+		slid16bitsWord = new JSlider(JSlider.HORIZONTAL,1,65535,58158);
+		slid16bitsWord.addChangeListener(new MainGui_ActionListener(this));			
 		
 		//slid11bitsWord.setMaximum(2047);
 		//slid11bitsWord.setMinimum(1);
-		slid11bitsWord.setValue(1337);
-		slid11bitsWord.setMajorTickSpacing(500);
-		slid11bitsWord.setMinorTickSpacing(100);
+		slid16bitsWord.setValue(58158);
+		slid16bitsWord.setMajorTickSpacing(10000);
+		slid16bitsWord.setMinorTickSpacing(5000);
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		labelTable.put( new Integer( 1 ), new JLabel("1"));
-		labelTable.put( new Integer( 2047 ), new JLabel("2047"));
-		labelTable.put( new Integer( 1000 ), new JLabel("1000"));
-		labelTable.put( new Integer( 500 ), new JLabel("500"));
-		labelTable.put( new Integer( 1500 ), new JLabel("1500"));
-		slid11bitsWord.setLabelTable(labelTable);
-		slid11bitsWord.setPaintLabels(true);
+		labelTable.put( new Integer( 65535 ), new JLabel("65535"));
+		labelTable.put( new Integer( 32768 ), new JLabel("32768"));
+		//labelTable.put( new Integer( 5000 ), new JLabel("5000"));
+		//labelTable.put( new Integer( 10000 ), new JLabel("10000"));
+		slid16bitsWord.setLabelTable(labelTable);
+		slid16bitsWord.setPaintLabels(true);
 		
 		
-		slid11bitsWord.setPaintTicks(true);
+		slid16bitsWord.setPaintTicks(true);
 		//slid11bitsWord.setPaintLabels(true);	
 	
 		
-		txt11bitsWord = new JTextField();
+		txt16bitsWord = new JTextField();
 		
-		txt11bitsWord.setEditable(false);
-		txt11bitsWord.setText(String.valueOf(slid11bitsWord.getValue()));
+		txt16bitsWord.setEditable(false);
+		txt16bitsWord.setText(String.valueOf(slid16bitsWord.getValue()));
 		
 		labAudience = new JLabel("Audience");		
 		String[] tab = {"niveau 1","niveau 2","niveau 3","niveau 4",
@@ -388,10 +385,7 @@ public class MainGui {
 		combAudience.setSelectedIndex(6);
 		combAudience.addActionListener(new MainGui_ActionListener(this));
 		
-		chkAudience7 = new JCheckBox("code de fin de mois");
-		chkAudience7.setSelected(true);
-		chkAudience7.addActionListener(new MainGui_ActionListener(this));
-		
+			
 
 		
 		chkDelay = new JCheckBox("Retards par défaut");
@@ -433,16 +427,16 @@ public class MainGui {
 		
 		
 		
-		jsp11bitKeyword = new JSpinner();
-		jsp11bitKeyword.addChangeListener(new MainGui_ActionListener(this));
-		JSpinner.NumberEditor spinnerEditor = new JSpinner.NumberEditor(jsp11bitKeyword);
-		jsp11bitKeyword.setEditor(spinnerEditor);
+		jsp16bitKeyword = new JSpinner();
+		jsp16bitKeyword.addChangeListener(new MainGui_ActionListener(this));
+		JSpinner.NumberEditor spinnerEditor = new JSpinner.NumberEditor(jsp16bitKeyword);
+		jsp16bitKeyword.setEditor(spinnerEditor);
 		spinnerEditor.getModel().setMinimum(1);
-		spinnerEditor.getModel().setMaximum(2047);
+		spinnerEditor.getModel().setMaximum(65536);
 		spinnerEditor.getModel().setStepSize(1);
-		spinnerEditor.getModel().setValue(1337);
+		spinnerEditor.getModel().setValue(58158);
 	
-		 JFormattedTextField tf = ((JSpinner.DefaultEditor) jsp11bitKeyword.getEditor()).getTextField();
+		 JFormattedTextField tf = ((JSpinner.DefaultEditor) jsp16bitKeyword.getEditor()).getTextField();
 		    tf.setEditable(false);
 		   // tf.setBackground(Color.GRAY);
 		    
@@ -501,7 +495,7 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				slid11bitsWord,
+				slid16bitsWord,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				1, 1,
 				1,1,
@@ -509,7 +503,7 @@ public class MainGui {
 				1, 1,1,1);		
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				jsp11bitKeyword,
+				jsp16bitKeyword,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				2, 1,
 				1,1,
@@ -531,19 +525,12 @@ public class MainGui {
 				1,1,
 				70,25,
 				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				chkAudience7,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 3,
-				1,1,
-				100,25,
-				1, 1,1,1);		
+		
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				labDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 4,
+				0, 3,
 				1,1,
 				5,25,
 				1, 1,1,1);
@@ -551,7 +538,7 @@ public class MainGui {
 				gbl,
 				slidDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 4,
+				1, 3,
 				1,1,
 				85,25,
 				1, 1,1,1);
@@ -559,7 +546,7 @@ public class MainGui {
 				gbl,
 				txtDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 4,
+				2, 3,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -567,7 +554,7 @@ public class MainGui {
 				gbl,
 				labDelay2,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 5,
+				0, 4,
 				1,1,
 				5,25,
 				1, 1,1,1);
@@ -575,7 +562,7 @@ public class MainGui {
 				gbl,
 				slidDelay2,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 5,
+				1, 4,
 				1,1,
 				85,25,
 				1, 1,1,1);
@@ -583,7 +570,7 @@ public class MainGui {
 				gbl,
 				txtDelay2,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 5,
+				2, 4,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -591,7 +578,7 @@ public class MainGui {
 				gbl,
 				chkDelay,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 6,
+				0, 5,
 				1,1,
 				100,25,
 				1, 1,1,1);
@@ -599,7 +586,7 @@ public class MainGui {
 				gbl,
 				labFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 7,
+				0, 6,
 				1,1,
 				5,25,
 				1, 1,1,1);
@@ -607,7 +594,7 @@ public class MainGui {
 				gbl,
 				slideFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 7,
+				1, 6,
 				1,1,
 				85,25,
 				1, 1,1,1);
@@ -615,7 +602,7 @@ public class MainGui {
 				gbl,
 				jspFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 7,
+				2, 6,
 				1,1,
 				10,25,
 				1, 1,1,1);	
@@ -969,12 +956,12 @@ public class MainGui {
 		return rdiDecoding;
 	}
 
-	public JTextField getTxt11bitsWord() {
-		return txt11bitsWord;
+	public JTextField getTxt16bitsWord() {
+		return txt16bitsWord;
 	}
 
-	public JSlider getSlid11bitsWord() {
-		return slid11bitsWord;
+	public JSlider getSlid16bitsWord() {
+		return slid16bitsWord;
 	}
 
 	public JComboBox<String> getCombAudience() {
@@ -987,10 +974,6 @@ public class MainGui {
 
 	public JSlider getSlidFrames() {
 		return slidFrames;
-	}
-
-	public JCheckBox getChkAudience7() {
-		return chkAudience7;
 	}
 
 	public JCheckBox getChkPlayer() {
@@ -1057,8 +1040,8 @@ public class MainGui {
 		return chkDelay;
 	}
 
-	public JSpinner getJsp11bitKeyword() {
-		return jsp11bitKeyword;
+	public JSpinner getJsp16bitKeyword() {
+		return jsp16bitKeyword;
 	}
 
 	public JButton getBtnCancel() {

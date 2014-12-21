@@ -21,23 +21,23 @@
 
 package com.ib.cryptimage.gui;
 
-import java.awt.Component;
+
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.io.FileFilter;
+
 import java.util.Hashtable;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
+
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
@@ -53,7 +53,7 @@ import com.ib.cryptimage.core.CryptPhoto;
 import com.ib.cryptimage.core.FramesPlayer;
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.Global;
+
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IStream;
@@ -81,8 +81,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 			this.manageTxtFields((JTextField) src);
 		} else if (src instanceof JRadioButton) {
 			this.manageRadioButton((JRadioButton) src);
-		} else if (src instanceof JComboBox) {
-			this.manageComboBoxes((JComboBox) src);
+		} else if (src instanceof JComboBox<?>) {
+			this.manageComboBoxes((JComboBox<?>) src);
 		} else if (src instanceof JCheckBox) {
 			this.manageCheckBoxes((JCheckBox) src);
 		} else if (src instanceof JProgressBar) {
@@ -95,25 +95,16 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 
 	private void manageCheckBoxes(JCheckBox src) {
 		if(src.equals(this.mainGui.getChkStrictMode())){
-			if(src.isSelected()){
-				mainGui.getChkAudience7().setEnabled(true);
-				mainGui.getCombAudience().setEnabled(true);
+			if(src.isSelected()){				
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 				}
 			else
-			{
-				mainGui.getChkAudience7().setEnabled(false);
-				mainGui.getCombAudience().setEnabled(false);				
+			{   								
 				mainGui.getRdi720().setEnabled(false);
 				mainGui.getRdi768().setEnabled(false);
 			}				
-		}else if(src.equals(this.mainGui.getChkAudience7())){
-			if(src.isSelected()){
-				mainGui.getSlid11bitsWord().setValue(1337);
-				mainGui.getCombAudience().setSelectedIndex(6);
-			}			
-		} else if(src.equals(this.mainGui.getChkDelay())){
+		}else if(src.equals(this.mainGui.getChkDelay())){
 			if(src.isSelected()){
 				mainGui.getSlidDelay1().setValue(1670);
 				mainGui.getSlidDelay2().setValue(3340);
@@ -146,17 +137,10 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		
 	}
 
-	private void manageComboBoxes(JComboBox<String> src) {
-		if (src.equals(mainGui.getCombAudience())) {
-			if (src.getSelectedIndex() != 6) {
-				mainGui.getChkAudience7().setSelected(false);
-			} else if (src.getSelectedIndex() == 6
-					&& (int) mainGui.getJsp11bitKeyword().getValue() == 1337) {
-				mainGui.getChkAudience7().setSelected(true);
-			}
-		} else if (src.equals(mainGui.getJcbExtension())) {
+	private void manageComboBoxes(JComboBox<?> src) {
+		if (src.equals(mainGui.getJcbExtension())) {
 			if (src.getSelectedIndex() == 0
-					&& this.mainGui.getCombCodec().getSelectedIndex() == 3) {				
+					&& this.mainGui.getCombCodec().getSelectedIndex() == 3) {
 				this.mainGui.getCombCodec().setSelectedIndex(0);
 			}
 			if (src.getSelectedIndex() == 3 || src.getSelectedIndex() == 4) {
@@ -174,17 +158,11 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 	}
 
 	private void manageSliders(JSlider src) {		
-		if(src.equals(this.mainGui.getSlid11bitsWord())){
-			if(src.getValue()!=1337){
-				mainGui.getChkAudience7().setSelected(false);
-			} else if(src.getValue()==1337 &&
-					mainGui.getCombAudience().getSelectedIndex()==6){
-				mainGui.getChkAudience7().setSelected(true);
-			}
-			mainGui.getTxt11bitsWord().setText(String.valueOf(
-					mainGui.getSlid11bitsWord().getValue()));
-			mainGui.getJsp11bitKeyword().setValue(
-					mainGui.getSlid11bitsWord().getValue());
+		if(src.equals(this.mainGui.getSlid16bitsWord())){	
+			mainGui.getTxt16bitsWord().setText(String.valueOf(
+					mainGui.getSlid16bitsWord().getValue()));
+			mainGui.getJsp16bitKeyword().setValue(
+					mainGui.getSlid16bitsWord().getValue());			
 		}  else if(src.equals(this.mainGui.getSlidDelay1())){
 			if(src.getValue()!=1670){
 				mainGui.getChkDelay().setSelected(false);
@@ -214,9 +192,9 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 	}
 	
 	private void manageSpinners(JSpinner src){
-		if(src.equals(this.mainGui.getJsp11bitKeyword())){
-			mainGui.getSlid11bitsWord().setValue(
-					(int) src.getValue());
+		if(src.equals(this.mainGui.getJsp16bitKeyword())){
+			mainGui.getSlid16bitsWord().setValue(
+					(int) src.getValue());			
 		} else if(src.equals(this.mainGui.getJspFrameStart())){
 			mainGui.getSlideFrameStart().setValue(
 					(int) src.getValue());
@@ -416,7 +394,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		mainGui.getJob().setOutput_file(mainGui.getTxtOutputFile().getText() + File.separator 
 				+fic.getName());
 		}
-		mainGui.getJob().setDiscret11Word(Integer.valueOf(mainGui.getTxt11bitsWord().getText()));
+		mainGui.getJob().setWord16bits(Integer.valueOf(mainGui.getTxt16bitsWord().getText()));
+		
 		mainGui.getJob().setVideo_frame(Integer.valueOf(mainGui.getTxtNbFrames().getText()));
 		mainGui.getJob().setStrictMode(mainGui.getChkStrictMode().isSelected());
 		mainGui.getJob().setPositionSynchro((int)mainGui.getJspFrameStart().getValue());
@@ -427,12 +406,9 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		mainGui.getJob().setWantSound(mainGui.getChkSound().isSelected());
 		
 		
-		if(mainGui.getChkStrictMode().isSelected()== false){			
-			mainGui.getJob().setAudienceLevel(0);
-		}
-		else{
-			mainGui.getJob().setAudienceLevel(mainGui.getCombAudience().getSelectedIndex() + 1);
-		}		
+		
+		mainGui.getJob().setAudienceLevel(mainGui.getCombAudience().getSelectedIndex() + 1);
+			
 		
 		mainGui.getJob().setVideoBitrate(Integer.valueOf(mainGui.getTxtBitrate().getText()));
 		mainGui.getJob().setVideoCodec(mainGui.getCombCodec().getSelectedIndex() +1);
@@ -506,8 +482,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		int videoStreamId = -1;
 		IContainer container = reader.getContainer();
 		double timeBase = 0;
-		int width = 0;
-		int height =0;
+//		int width = 0;
+//		int height =0;
 		double frameRate = 0;
 		long nbFrames = 0;
 		long duration = 0;
@@ -528,9 +504,9 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		                frameRate = stream.getFrameRate().getValue();
 		                nbFrames = stream.getNumFrames();
 		                duration = stream.getDuration();
-		                height = stream.getStreamCoder().getHeight();
+		                //height = stream.getStreamCoder().getHeight();
 		                alt_nbframes = ((stream.getStreamCoder().getStream().getContainer().getDuration())/1000d/1000d) * frameRate ;
-		                width = stream.getStreamCoder().getWidth();
+		                //width = stream.getStreamCoder().getWidth();
 		                calc = (duration* timeBase);
 		                frames_nb = calc * frameRate;		              
 		                break;
@@ -578,7 +554,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		if(e.getSource().equals(mainGui.getJsp11bitKeyword()) 
+		if(e.getSource().equals(mainGui.getJsp16bitKeyword()) 
 				|| e.getSource().equals(mainGui.getJspFrameStart())){
 			JSpinner spi = (JSpinner)e.getSource();
 			manageSpinners(spi);

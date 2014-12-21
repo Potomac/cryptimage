@@ -52,6 +52,12 @@ public class Discret11 {
 	 * store the current audience level
 	 */
 	private int audienceLevel;
+	
+	/**
+	 * store the 7 11 bit words according to the audience level
+	 */
+	private int[] key11BitsTab = new int[7];
+	
 	/**
 	 * store the current operation mode ( 0 : encoding, 1: decoding )
 	 */
@@ -118,12 +124,14 @@ public class Discret11 {
 	
 	/**
 	 * create a new Discret11 object
-	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
+	 * @param key11bit the 16 bits key word to initialize the Discret11 object
 	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
 	 * @param audienceLevel the audience Level ( 1 to 7 )
 	 */
-	public Discret11(int key11bits, int mode, int audienceLevel){		
-		this.key11bits = key11bits;		
+	public Discret11(int key16bits, int mode, int audienceLevel){		
+		this.initKey11BitsTab(key16bits);			
+		this.key11bits = this.key11BitsTab[audienceLevel - 1];
+		
 		this.audienceLevel = audienceLevel;
 		initMode(mode);
 		initPolyLFSR(key11bits);
@@ -136,15 +144,17 @@ public class Discret11 {
 	
 	/**
 	 * create a new Discret11 object with redefined percentages for the delay 1 and 2
-	 * @param key11bit the 11 bits key word to initialize the Discret11 object ( 1-2047 )
+	 * @param key16bit the 16 bits key word to initialize the Discret11 object
 	 * @param mode the operational mode ( 0 for encoding, 1 for decoding )
 	 * @param audienceLevel the audience Level ( 1 to 7 )
 	 * @param perc1 the percentage level for delay 1
 	 * @param perc2 the percentage level for delay 2
 	 */
-	public Discret11(int key11bits, int mode, int audienceLevel, 
+	public Discret11(int key16bits, int mode, int audienceLevel, 
 			double perc1, double perc2){		
-		this.key11bits = key11bits;		
+		this.initKey11BitsTab(key16bits);			
+		this.key11bits = this.key11BitsTab[audienceLevel - 1];
+		
 		this.audienceLevel = audienceLevel;
 		initMode(mode);
 		initPolyLFSR(key11bits);
@@ -171,6 +181,43 @@ public class Discret11 {
 		}
 	}
 	
+	/**
+	 * initialize the key11BitsTab
+	 * @param key16bits the 16 bits keyword
+	 */
+	private void initKey11BitsTab(int key16bits){
+		String word = String.format
+				("%16s", Integer.toBinaryString(key16bits)).replace(" ", "0");
+		//word = new StringBuilder(word).reverse().toString();
+		
+		//audience 1
+		String audience1 = word.substring(0, 11);
+		this.key11BitsTab[0] = Integer.parseInt(audience1,2);
+		
+		//audience 2
+		String audience2 = word.substring(3, 14);
+		this.key11BitsTab[1] = Integer.parseInt(audience2,2);
+		
+		//audience 3
+		String audience3 = word.substring(6, 16) + word.charAt(0);
+		this.key11BitsTab[2] = Integer.parseInt(audience3,2);
+		
+		//audience 4
+		String audience4 =  word.substring(9, 16) + word.substring(0, 4);
+		this.key11BitsTab[3] = Integer.parseInt(audience4,2);
+		
+		//audience 5
+		String audience5 = word.substring(12, 16) +  word.substring(0, 7);
+		this.key11BitsTab[4] = Integer.parseInt(audience5,2);
+		
+		//audience 6
+		String audience6 =  word.charAt(15) + word.substring(0, 10) ;
+		this.key11BitsTab[5] = Integer.parseInt(audience6,2);
+		
+		//audience 7		
+		this.key11BitsTab[6] = 1337;
+		
+	}
 	/**
 	 * initialize the array of LFSR values
 	 * @param key11bits the 11 bits key word
@@ -875,7 +922,7 @@ public class Discret11 {
 	}
 
 	public int getKey11bits() {
-		return key11bits;
+		return this.key11bits;
 	}
 
 	public boolean isEnc() {

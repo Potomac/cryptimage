@@ -204,42 +204,44 @@ public class Application {
 	
 	
 	public static void decPhoto(BufferedImage img, JobConfig job){
-		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getDiscret11Word(),
+		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getWord16bits(),
+				job.getAudienceLevel(),
 				SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
 		BufferedImage imgRes = simpleDiscret.transform(img);
-		saveDecryptFile(imgRes, job.getOutput_file(), job.getDiscret11Word());		
+		saveDecryptFile(imgRes, job.getOutput_file(), job.getWord16bits());		
 	}
 	
 	public static void encPhoto(BufferedImage img, JobConfig job){
-		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getDiscret11Word(),
+		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getWord16bits(),
+				job.getAudienceLevel(),
 				SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
 		BufferedImage imgRes = simpleDiscret.transform(img);
-		saveCryptImage(imgRes, simpleDiscret, job.getOutput_file(), job.getDiscret11Word());		
+		saveCryptImage(imgRes, simpleDiscret, job.getOutput_file(), job.getWord16bits());		
 	}
 	
 	public static void saveCryptImage(BufferedImage bi, SimpleDiscret11 cryptImg,
-			String output_file, int key11) {
+			String output_file, int key16) {
 		try {
 			// retrieve image
-			File outputfile = new File(output_file + "_crypt" + key11 + ".png");
+			File outputfile = new File(output_file + "_crypt" + key16 + ".png");
 			ImageIO.write(bi, "png", outputfile);
 			System.out.println("SimpleDiscret11 crypted image : " + output_file
-					+ "_crypt"+ key11 + ".png");
+					+ "_crypt"+ key16 + ".png");
 		} catch (IOException e) {
 			System.out.println("I/O error during the write of the crypted image");
 			System.exit(1);
 		}
 
 		try {
-			File dataFile = new File(output_file + "_crypt" + key11 + ".dat");
+			File dataFile = new File(output_file + "_crypt" + key16 + ".dat");
 			dataFile.createNewFile();
 			FileWriter ffw = new FileWriter(dataFile);	
-			ffw.write("key : " + key11 + "\r\n");			
-			ffw.write("file : " + output_file + "_crypt" + key11 +
+			ffw.write("key 16 bits : " + key16 + "\r\n");			
+			ffw.write("file : " + output_file + "_crypt" + key16 +
 			 ".txt");
 			ffw.close();
 			System.out.println("Report shift file : " + output_file
-					+ "_crypt" + key11 + ".txt");
+					+ "_crypt" + key16 + ".txt");
 		} catch (IOException e) {
 			System.out
 					.println("I/O error during the write of the report file");

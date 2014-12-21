@@ -35,6 +35,7 @@ import javax.imageio.ImageIO;
 public class CryptPhoto {
 	
 	private JobConfig job;
+	private int key11bits;
 	
 	public CryptPhoto(JobConfig job){
 		this.job = job;			
@@ -61,15 +62,19 @@ public class CryptPhoto {
 	
 	public  void decPhoto(BufferedImage img){
 		
-		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getDiscret11Word(),
+		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getWord16bits(),
+				job.getAudienceLevel(),
 				SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
+		this.key11bits = simpleDiscret.getKey11bits();
 		BufferedImage imgRes = simpleDiscret.transform(img);
-		saveDecryptFile(imgRes, job.getOutput_file(), job.getDiscret11Word());		
+		saveDecryptFile(imgRes, job.getOutput_file(), this.key11bits);		
 	}
 	
 	public  void encPhoto(BufferedImage img){
-		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getDiscret11Word(),
+		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getWord16bits(),
+				job.getAudienceLevel(),
 				SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
+		this.key11bits = simpleDiscret.getKey11bits();
 		BufferedImage imgRes = simpleDiscret.transform(img);
 		saveCryptImage(imgRes);		
 	}
@@ -77,26 +82,28 @@ public class CryptPhoto {
 	public  void saveCryptImage(BufferedImage bi) {
 		try {
 			// retrieve image
-			File outputfile = new File(job.getOutput_file() + "_c" + job.getDiscret11Word() + ".png");
+			File outputfile = new File(job.getOutput_file() + "_c" + this.key11bits + ".png");
 			ImageIO.write(bi, "png", outputfile);
 			if(job.isHasGUI()){
 				job.getGui().getTextInfos().setText(
 						"Image codée : " + job.getOutput_file()
-						+ "_c"+ job.getDiscret11Word() + ".png");
+						+ "_c"+ this.key11bits + ".png");
 			}
 			System.out.println("SimpleDiscret11 crypted image : " + job.getOutput_file()
-					+ "_c"+ job.getDiscret11Word() + ".png");
+					+ "_c"+ this.key11bits + ".png");
 		} catch (IOException e) {
 			System.out.println("I/O error during the write of the crypted image");
 			System.exit(1);
 		}
 
 		try {
-			File dataFile = new File(job.getOutput_file() + "_c" + job.getDiscret11Word() + ".txt");
+			File dataFile = new File(job.getOutput_file() + "_c" + this.key11bits + ".txt");
 			dataFile.createNewFile();
-			FileWriter ffw = new FileWriter(dataFile);	
-			ffw.write("key : " + job.getDiscret11Word() + "\r\n");			
-			ffw.write("file : " + job.getOutput_file() + "_c" + job.getDiscret11Word() +
+			FileWriter ffw = new FileWriter(dataFile);
+			ffw.write("key 16 bits : " + this.job.getWord16bits() + "\r\n");
+			ffw.write("Audience level : " + this.job.getAudienceLevel() + "\r\n");
+			ffw.write("key 11 bits : " + this.key11bits + "\r\n");			
+			ffw.write("file : " + job.getOutput_file() + "_c" + this.key11bits +
 			 ".txt");
 			ffw.close();
 			if(job.isHasGUI()){
@@ -105,10 +112,10 @@ public class CryptPhoto {
 						+ "\n\r"
 						+
 						"Rapport : " + job.getOutput_file()
-						+ "_c" + job.getDiscret11Word() + ".txt");
+						+ "_c" + this.key11bits + ".txt");
 			}
 			System.out.println("Report shift file : " + job.getOutput_file()
-					+ "_c" + job.getDiscret11Word() + ".txt");
+					+ "_c" + this.key11bits + ".txt");
 		} catch (IOException e) {
 			System.out
 					.println("I/O error during the write of the report file");

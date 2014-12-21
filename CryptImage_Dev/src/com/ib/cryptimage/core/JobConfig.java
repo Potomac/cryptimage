@@ -218,5 +218,13 @@ public class JobConfig {
 
 	public void setWantSound(boolean wantSound) {
 		this.wantSound = wantSound;
+	}
+
+	public int getWord16bits() {
+		return word16bits;
+	}
+
+	public void setWord16bits(int word16bits) {
+		this.word16bits = word16bits;
 	}	
 }
