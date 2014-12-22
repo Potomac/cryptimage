@@ -23,12 +23,16 @@ package com.ib.cryptimage.gui;
 
 
 
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
@@ -48,11 +52,11 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
-
+import javax.swing.text.DefaultFormatter;
+import javax.swing.text.MaskFormatter;
 
 import com.ib.cryptimage.core.JobConfig;
 
@@ -76,10 +80,11 @@ public class MainGui {
 	private JButton btnOutputFile;
 	
 	private JPanel panOptionsDiscret11;
+	private JPanel panKeyboardCode;
 	private JRadioButton rdiCoding;
 	private JRadioButton rdiDecoding;
-	private JLabel lab11bitsWord;
-	private JTextField txt16bitsWord;
+	private JLabel lab16bitsWord;
+	private JFormattedTextField txt16bitsWord;
 	private JSlider slid16bitsWord;
 	private JLabel labAudience;
 	private JComboBox<String> combAudience;
@@ -99,6 +104,20 @@ public class MainGui {
 	private JLabel labFrameStart;
 	private JSpinner jspFrameStart;
 	private JSlider slideFrameStart;
+	private JCheckBox chkAutorisation1;
+	private JCheckBox chkAutorisation2;
+	private JCheckBox chkAutorisation3;
+	private JCheckBox chkAutorisation4;
+	private JCheckBox chkAutorisation5;
+	private JCheckBox chkAutorisation6;
+	private JLabel labSerial;
+	private JFormattedTextField txtSerial;
+	private JLabel labCode;
+	private JTextField txtCode;
+	private JCheckBox chkSound;
+	
+
+	
 
 	private JPanel panVideoOptions;
 	private JLabel labCodec;
@@ -108,7 +127,7 @@ public class MainGui {
 	private JSlider slidBitrate;
 	private JRadioButton rdi720;
 	private JRadioButton rdi768;
-	private JCheckBox chkSound;
+	private JCheckBox chkHorodatage;
 	
 	private JPanel panProgress;
 	private JProgressBar progress;
@@ -150,14 +169,15 @@ public class MainGui {
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		//panGlobal.setLayout(new BoxLayout(panGlobal,BoxLayout.LINE_AXIS));
-		frame.setSize(670,780);
+		frame.setSize(700,780);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(670, 780));
+		frame.setMinimumSize(new Dimension(700, 780));
 		frame.setResizable(true);		
 		
 		createPanMode();
 		createPanFile();
-		createPanDiscret11();
+		createPanKeyboardCode();
+		createPanDiscret11();	
 		createPanVideo();
 		createPanLog();
 		
@@ -189,19 +209,27 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panGlobal,
 				gbl,
-				panVideoOptions,
+				panKeyboardCode,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 3,
 				1,1,
-				100,20,
+				100,30,
+				1, 1,1,1);
+		this.placerComposants(panGlobal,
+				gbl,
+				panVideoOptions,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 4,
+				1,1,
+				100,5,
 				1, 1,1,1);
 		this.placerComposants(panGlobal,
 				gbl,
 				panProgress,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 4,
+				0, 5,
 				1,1,
-				100,30,
+				100,15,
 				1, 1,1,1);
 
 		
@@ -334,6 +362,149 @@ public class MainGui {
 		
 	}
 	
+	private void createPanKeyboardCode(){
+		panKeyboardCode = new JPanel();
+		TitledBorder title;
+		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Code clavier décodeur");
+		panKeyboardCode.setBorder(title);
+		
+		GridBagLayout gbl = new GridBagLayout();
+		
+		chkAutorisation1 = new JCheckBox("A1");
+		chkAutorisation1.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation2 = new JCheckBox("A2");
+		chkAutorisation2.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation3 = new JCheckBox("A3");
+		chkAutorisation3.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation4 = new JCheckBox("A4");
+		chkAutorisation4.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation5 = new JCheckBox("A5");
+		chkAutorisation5.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation6 = new JCheckBox("A6");
+		chkAutorisation6.addActionListener(new MainGui_ActionListener(this));
+		
+		chkAutorisation1.setSelected(true);
+		chkAutorisation2.setSelected(true);
+		chkAutorisation3.setSelected(true);
+		chkAutorisation4.setSelected(true);
+		chkAutorisation5.setSelected(true);
+		chkAutorisation6.setSelected(true);
+		
+		
+		labSerial = new JLabel("numéro de série:");		
+		labCode = new JLabel("code clavier:");
+		
+		MaskFormatter mask;
+		
+		try {
+			mask = new MaskFormatter("########");		
+			mask.setPlaceholderCharacter('0');
+			txtSerial = new JFormattedTextField(mask);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		txtSerial.setColumns(8);
+		txtSerial.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);	
+		txtSerial.setHorizontalAlignment(JTextField.RIGHT);
+		
+		//txtSerial.setCaretPosition(8);
+		//txtSerial.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+			
+		txtSerial.getDocument().addDocumentListener(new MainGui_ActionListener(this));
+		//txtSerial.addKeyListener(new MainGui_ActionListener(this));
+		//txtSerial.setText("0");
+		txtCode = new JTextField(8);
+		txtCode.setEditable(false);
+		txtCode.setHorizontalAlignment(JTextField.RIGHT);
+		
+		
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				chkAutorisation1,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				chkAutorisation2,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				chkAutorisation3,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				chkAutorisation4,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				3, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				chkAutorisation5,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				4, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				chkAutorisation6,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				5, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				labSerial,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				6, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				txtSerial,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				7, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				labCode,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				8, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panKeyboardCode,
+				gbl,
+				txtCode,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				9, 0,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		
+		
+	}
+	
 	private void createPanDiscret11(){
 		panOptionsDiscret11 = new JPanel();
 		TitledBorder title;
@@ -350,7 +521,7 @@ public class MainGui {
 		btnGroup.add(rdiCoding);
 		btnGroup.add(rdiDecoding);
 		
-		lab11bitsWord = new JLabel("mot de 16 bits");
+		lab16bitsWord = new JLabel("mot de 16 bits");
 		slid16bitsWord = new JSlider(JSlider.HORIZONTAL,1,65535,58158);
 		slid16bitsWord.addChangeListener(new MainGui_ActionListener(this));			
 		
@@ -372,11 +543,25 @@ public class MainGui {
 		slid16bitsWord.setPaintTicks(true);
 		//slid11bitsWord.setPaintLabels(true);	
 	
+			
+		MaskFormatter mask;
 		
-		txt16bitsWord = new JTextField();
-		
-		txt16bitsWord.setEditable(false);
+		try {
+			mask = new MaskFormatter("#####");		
+			mask.setPlaceholderCharacter('0');
+			txt16bitsWord = new JFormattedTextField(mask);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		txt16bitsWord.setText(String.valueOf(slid16bitsWord.getValue()));
+		
+		txt16bitsWord.setEditable(true);
+		//txt16bitsWord.getDocument().addDocumentListener(new Key16bits_DocumentListener(this)); 
+		//txt16bitsWord.addActionListener(new MainGui_ActionListener(this));
+				
+		txt16bitsWord.setColumns(10);
+
 		
 		labAudience = new JLabel("Audience");		
 		String[] tab = {"niveau 1","niveau 2","niveau 3","niveau 4",
@@ -468,7 +653,13 @@ public class MainGui {
 		slideFrameStart.setPaintLabels(true);		
 		slideFrameStart.setPaintTicks(true);
 		
+		chkSound = new JCheckBox("Traiter le son");
+		chkSound.setSelected(true);		
 		
+		//initialisation serial decoder
+		txtSerial.setText("12345678");
+		
+		//selection mode
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				rdiCoding,
@@ -485,9 +676,10 @@ public class MainGui {
 				1,1,
 				20,25,
 				1, 1,1,1);
+		//selection 16 bits keyword
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				lab11bitsWord,
+				lab16bitsWord,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 1,
 				1,1,
@@ -503,12 +695,13 @@ public class MainGui {
 				1, 1,1,1);		
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				jsp16bitKeyword,
+				jsp16bitKeyword, //txt16bitsWord, //jsp16bitKeyword,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				2, 1,
 				1,1,
 				10,25,
 				1, 1,1,1);
+		//audience level
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				labAudience,
@@ -526,33 +719,13 @@ public class MainGui {
 				70,25,
 				1, 1,1,1);
 		
+		//keyboard code
+	
+		
+		//delay1
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				labDelay1,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 3,
-				1,1,
-				5,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				slidDelay1,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 3,
-				1,1,
-				85,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				txtDelay1,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 3,
-				1,1,
-				10,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				labDelay2,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 4,
 				1,1,
@@ -560,7 +733,7 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				slidDelay2,
+				slidDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				1, 4,
 				1,1,
@@ -568,25 +741,63 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				txtDelay2,
+				txtDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				2, 4,
 				1,1,
 				10,25,
 				1, 1,1,1);
+		//delay2
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				labDelay2,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 5,
+				1,1,
+				5,25,
+				1, 1,1,1);
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				slidDelay2,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 5,
+				1,1,
+				85,25,
+				1, 1,1,1);
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				txtDelay2,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 5,
+				1,1,
+				10,25,
+				1, 1,1,1);
+		//delay by default
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				chkDelay,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 5,
+				0, 6,
 				1,1,
-				100,25,
+				50,25,
 				1, 1,1,1);
+		
+		//check sound
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				chkSound,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 6,
+				1,1,
+				50,25,
+				1, 1,1,1);
+		
+		//frame start
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				labFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 6,
+				0, 7,
 				1,1,
 				5,25,
 				1, 1,1,1);
@@ -594,7 +805,7 @@ public class MainGui {
 				gbl,
 				slideFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 6,
+				1, 7,
 				1,1,
 				85,25,
 				1, 1,1,1);
@@ -602,7 +813,7 @@ public class MainGui {
 				gbl,
 				jspFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 6,
+				2, 7,
 				1,1,
 				10,25,
 				1, 1,1,1);	
@@ -628,7 +839,8 @@ public class MainGui {
 		chkPlayer.addActionListener(new MainGui_ActionListener(this));
 		chkPlayer.setToolTipText("permet de regarder le résultat dans une fenêtre au lieu de créer la vidéo");
 		
-		chkSound = new JCheckBox("activer le son");		
+		chkHorodatage = new JCheckBox("horodatage");		
+		chkHorodatage.setToolTipText("préfixe le nom de fichier avec une date et une heure");
 		
 		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2"};
 		combCodec = new JComboBox<String>(tab);	
@@ -698,7 +910,7 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
-				chkSound,
+				chkHorodatage,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				4, 0,
 				1,1,
@@ -956,7 +1168,7 @@ public class MainGui {
 		return rdiDecoding;
 	}
 
-	public JTextField getTxt16bitsWord() {
+	public JFormattedTextField getTxt16bitsWord() {
 		return txt16bitsWord;
 	}
 
@@ -1070,6 +1282,78 @@ public class MainGui {
 
 	public JCheckBox getChkSound() {
 		return chkSound;
+	}
+
+	public JCheckBox getChkAutorisation1() {
+		return chkAutorisation1;
+	}
+
+	public void setChkAutorisation1(JCheckBox chkAutorisation1) {
+		this.chkAutorisation1 = chkAutorisation1;
+	}
+
+	public JCheckBox getChkAutorisation2() {
+		return chkAutorisation2;
+	}
+
+	public void setChkAutorisation2(JCheckBox chkAutorisation2) {
+		this.chkAutorisation2 = chkAutorisation2;
+	}
+
+	public JCheckBox getChkAutorisation3() {
+		return chkAutorisation3;
+	}
+
+	public void setChkAutorisation3(JCheckBox chkAutorisation3) {
+		this.chkAutorisation3 = chkAutorisation3;
+	}
+
+	public JCheckBox getChkAutorisation4() {
+		return chkAutorisation4;
+	}
+
+	public void setChkAutorisation4(JCheckBox chkAutorisation4) {
+		this.chkAutorisation4 = chkAutorisation4;
+	}
+
+	public JCheckBox getChkAutorisation5() {
+		return chkAutorisation5;
+	}
+
+	public void setChkAutorisation5(JCheckBox chkAutorisation5) {
+		this.chkAutorisation5 = chkAutorisation5;
+	}
+
+	public JCheckBox getChkAutorisation6() {
+		return chkAutorisation6;
+	}
+
+	public void setChkAutorisation6(JCheckBox chkAutorisation6) {
+		this.chkAutorisation6 = chkAutorisation6;
+	}
+
+	public JFormattedTextField getTxtSerial() {
+		return txtSerial;
+	}
+
+	public void setTxtSerial(JFormattedTextField txtSerial) {
+		this.txtSerial = txtSerial;
+	}
+
+	public JTextField getTxtCode() {
+		return txtCode;
+	}
+
+	public void setTxtCode(JTextField txtCode) {
+		this.txtCode = txtCode;
+	}
+
+	public JCheckBox getChkHorodatage() {
+		return chkHorodatage;
+	}
+
+	public void setChkHorodatage(JCheckBox chkHorodatage) {
+		this.chkHorodatage = chkHorodatage;
 	}
 
 }

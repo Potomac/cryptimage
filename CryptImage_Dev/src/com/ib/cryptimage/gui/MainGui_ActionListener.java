@@ -22,22 +22,25 @@
 package com.ib.cryptimage.gui;
 
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-
 import java.util.Hashtable;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
@@ -47,13 +50,16 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
 
 import com.ib.cryptimage.core.CryptPhoto;
 import com.ib.cryptimage.core.FramesPlayer;
+import com.ib.cryptimage.core.KeyboardCode;
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
-
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IStream;
@@ -63,7 +69,8 @@ import com.xuggle.xuggler.IStreamCoder;
  * @author Mannix54
  *
  */
-public class MainGui_ActionListener implements ActionListener, ChangeListener, MouseListener {
+public class MainGui_ActionListener implements ActionListener, ChangeListener,
+DocumentListener, FocusListener, KeyListener, MouseListener {
 	
 	private MainGui mainGui;
 	private Thread thread = null; 
@@ -79,6 +86,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 				this.manageButtons((JButton) src);			
 		} else if (src instanceof JTextField) {
 			this.manageTxtFields((JTextField) src);
+		} else if (src instanceof JFormattedTextField) {
+			this.manageFormatedTxtFields((JFormattedTextField) src);	
 		} else if (src instanceof JRadioButton) {
 			this.manageRadioButton((JRadioButton) src);
 		} else if (src instanceof JComboBox<?>) {
@@ -93,42 +102,64 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 		
 	}
 
+
+	private void manageFormatedTxtFields(JFormattedTextField src) {
+		// TODO Auto-generated method stub		
+		
+	}
+
 	private void manageCheckBoxes(JCheckBox src) {
-		if(src.equals(this.mainGui.getChkStrictMode())){
-			if(src.isSelected()){				
+		if (src.equals(this.mainGui.getChkStrictMode())) {
+			if (src.isSelected()) {
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
-				}
-			else
-			{   								
+			} else {
 				mainGui.getRdi720().setEnabled(false);
 				mainGui.getRdi768().setEnabled(false);
-			}				
-		}else if(src.equals(this.mainGui.getChkDelay())){
-			if(src.isSelected()){
+			}
+		} else if (src.equals(this.mainGui.getChkDelay())) {
+			if (src.isSelected()) {
 				mainGui.getSlidDelay1().setValue(1670);
 				mainGui.getSlidDelay2().setValue(3340);
-			}			
-		} else if(src.equals(this.mainGui.getChkPlayer())){
-			if(src.isSelected()){
+			}
+		} else if (src.equals(this.mainGui.getChkPlayer())) {
+			if (src.isSelected()) {
 				mainGui.getSlidBitrate().setEnabled(false);
-				mainGui.getTxtBitrate().setEnabled(false);				
+				mainGui.getTxtBitrate().setEnabled(false);
 				mainGui.getCombCodec().setEnabled(false);
 				mainGui.getJcbExtension().setEnabled(false);
-				//mainGui.getChkSound().setEnabled(false);
-			}
-			else if(mainGui.getRdiPhoto().isSelected() != true){				
+				// mainGui.getChkSound().setEnabled(false);
+			} else if (mainGui.getRdiPhoto().isSelected() != true) {
 				mainGui.getSlidBitrate().setEnabled(true);
-				mainGui.getTxtBitrate().setEnabled(true);				
+				mainGui.getTxtBitrate().setEnabled(true);
 				mainGui.getCombCodec().setEnabled(true);
 				mainGui.getJcbExtension().setEnabled(true);
 				mainGui.getChkSound().setEnabled(true);
 			}
+		} else if (src.equals(this.mainGui.getChkAutorisation1())) {
+			// update code
+			updateKeyboardCode(mainGui.getTxtSerial().getText());
+		} else if (src.equals(this.mainGui.getChkAutorisation2())) {
+			// update code
+			updateKeyboardCode(mainGui.getTxtSerial().getText());
+		} else if (src.equals(this.mainGui.getChkAutorisation3())) {
+			// update code
+			updateKeyboardCode(mainGui.getTxtSerial().getText());
+		} else if (src.equals(this.mainGui.getChkAutorisation4())) {
+			// update code
+			updateKeyboardCode(mainGui.getTxtSerial().getText());
+		} else if (src.equals(this.mainGui.getChkAutorisation5())) {
+			// update code
+			updateKeyboardCode(mainGui.getTxtSerial().getText());
+		} else if (src.equals(this.mainGui.getChkAutorisation6())) {
+			// update code
+			updateKeyboardCode(mainGui.getTxtSerial().getText());
 		}
 	}
 
 	private void manageTextArea(JTextArea src) {
 		// TODO Auto-generated method stub
+	
 		
 	}
 
@@ -159,10 +190,12 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 
 	private void manageSliders(JSlider src) {		
 		if(src.equals(this.mainGui.getSlid16bitsWord())){	
-			mainGui.getTxt16bitsWord().setText(String.valueOf(
+			mainGui.getTxt16bitsWord().setText(String.format("%05d",
 					mainGui.getSlid16bitsWord().getValue()));
 			mainGui.getJsp16bitKeyword().setValue(
-					mainGui.getSlid16bitsWord().getValue());			
+					mainGui.getSlid16bitsWord().getValue());
+			//update code
+			updateKeyboardCode(mainGui.getTxtSerial().getText());
 		}  else if(src.equals(this.mainGui.getSlidDelay1())){
 			if(src.getValue()!=1670){
 				mainGui.getChkDelay().setSelected(false);
@@ -263,7 +296,7 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 
 	private void manageTxtFields(JTextField src) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("ok2 __");
 	}
 
 	private void manageButtons(JButton src) {
@@ -553,7 +586,8 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 	}
 	
 	@Override
-	public void stateChanged(ChangeEvent e) {
+	public void stateChanged(ChangeEvent e) {			
+		
 		if(e.getSource().equals(mainGui.getJsp16bitKeyword()) 
 				|| e.getSource().equals(mainGui.getJspFrameStart())){
 			JSpinner spi = (JSpinner)e.getSource();
@@ -595,6 +629,121 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener, M
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent arg0) {
+		
+		
+	}
+
+	private boolean[] getAutorisationTab(){
+		boolean[] autorisation = new boolean[6];
+		
+		autorisation[0] = mainGui.getChkAutorisation1().isSelected();
+		autorisation[1] = mainGui.getChkAutorisation2().isSelected();
+		autorisation[2] = mainGui.getChkAutorisation3().isSelected();
+		autorisation[3] = mainGui.getChkAutorisation4().isSelected();
+		autorisation[4] = mainGui.getChkAutorisation5().isSelected();
+		autorisation[5] = mainGui.getChkAutorisation6().isSelected();
+		
+		return autorisation;
+		
+	}
+	
+	private void updateKeyboardCode( String serialString){
+		
+		serialString = serialString.replace(" ", "");
+		
+		if (serialString.equals("")){
+			serialString = "0";
+		}
+		
+		int serial = Integer.valueOf(serialString);
+	
+		System.out.println("serial updateKeyboardCode :" + serial );
+		
+		
+		KeyboardCode code = new KeyboardCode(serial,
+				Integer.valueOf(mainGui.getTxt16bitsWord().getText()),
+				getAutorisationTab());
+		mainGui.getTxtCode().setText(code.getKeyboardCode());
+	}
+	
+	@Override
+	public void insertUpdate(DocumentEvent arg0) {		
+		try {
+			String  value = arg0.getDocument().getText(0, arg0.getDocument().getLength());
+						
+
+			updateKeyboardCode(value);
+			
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent arg0) {		
+		
+		try {
+			String  value = arg0.getDocument().getText(0, arg0.getDocument().getLength());
+						
+			updateKeyboardCode(value);
+				
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void focusGained(FocusEvent arg0) {
+		// TODO Auto-generated method stub
+		mainGui.getTxtSerial().setText(mainGui.getTxtSerial().getText().replace(" ", ""));
+	}
+
+	@Override
+	public void focusLost(FocusEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+			
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+//		if(arg0.getKeyCode() == 127){
+//			mainGui.getTxtSerial().setText(mainGui.getTxtSerial().getText().replace(" ", ""));
+//		}
+//				
+		
+//		if(mainGui.getTxtSerial().getText().trim().length() < 8){
+//			mainGui.getTxtSerial().setForeground(Color.red);
+//		}
+//		else
+//		{
+//		mainGui.getTxtSerial().setForeground(Color.BLACK);
+//		}
+		//mainGui.getTxtSerial().setText(mainGui.getTxtSerial().getText().trim());
+//		int value = Integer.valueOf(mainGui.getTxtSerial().getText().trim());
+//		String sValue = String.format("%08d", value);
+//		mainGui.getTxtSerial().setText(sValue);
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
