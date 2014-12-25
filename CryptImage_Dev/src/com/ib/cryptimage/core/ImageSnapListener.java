@@ -63,8 +63,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	public void onAudioSamples(IAudioSamplesEvent event) {
 
 		if (event.getAudioSamples().isComplete()) {
-
-			if (frmV.getJob().isWantSound() == true) {
+			
 				IAudioSamples samples = event.getAudioSamples();
 
 				// IAudioResampler audioResampler = IAudioResampler.make(2,
@@ -102,8 +101,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 					// super.onAudioSamples(asc);
 
 					out.delete();
-				}
-			}
+				}			
 		}
 		else{
 			System.out.println("paquet non complet init");

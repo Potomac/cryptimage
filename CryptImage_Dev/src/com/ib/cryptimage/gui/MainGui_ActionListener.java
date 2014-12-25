@@ -32,6 +32,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.Hashtable;
 
@@ -70,7 +72,7 @@ import com.xuggle.xuggler.IStreamCoder;
  *
  */
 public class MainGui_ActionListener implements ActionListener, ChangeListener,
-DocumentListener, FocusListener, KeyListener, MouseListener {
+DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private MainGui mainGui;
 	private Thread thread = null; 
@@ -135,6 +137,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 				mainGui.getCombCodec().setEnabled(true);
 				mainGui.getJcbExtension().setEnabled(true);
 				mainGui.getChkSound().setEnabled(true);
+				mainGui.getChkHorodatage().setEnabled(true);
 			}
 		} else if (src.equals(this.mainGui.getChkAutorisation1())) {
 			// update code
@@ -154,6 +157,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 		} else if (src.equals(this.mainGui.getChkAutorisation6())) {
 			// update code
 			updateKeyboardCode(mainGui.getTxtSerial().getText());
+		}else if (src.equals(this.mainGui.getChkHorodatage())) {			
+			mainGui.getJob().setHorodatage(mainGui.getChkHorodatage().isSelected());
 		}
 	}
 
@@ -185,6 +190,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 					&& this.mainGui.getJcbExtension().getSelectedIndex() == 0) {
 				this.mainGui.getJcbExtension().setSelectedIndex(1);
 			}
+		} else if(src.equals(mainGui.getCombAudience())){
+			get11bitsKeyWord(mainGui.getSlid16bitsWord().getValue(),
+					mainGui.getCombAudience().getSelectedIndex());
 		}
 	}
 
@@ -196,6 +204,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 					mainGui.getSlid16bitsWord().getValue());
 			//update code
 			updateKeyboardCode(mainGui.getTxtSerial().getText());
+			get11bitsKeyWord(mainGui.getSlid16bitsWord().getValue(),
+					mainGui.getCombAudience().getSelectedIndex());
 		}  else if(src.equals(this.mainGui.getSlidDelay1())){
 			if(src.getValue()!=1670){
 				mainGui.getChkDelay().setSelected(false);
@@ -254,7 +264,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 				mainGui.getRdi768().setEnabled(false);
 				mainGui.getChkPlayer().setEnabled(false);
 				mainGui.getChkSound().setEnabled(false);
-				
+				mainGui.getChkHorodatage().setEnabled(false);				
 			}
 		} else if(src.equals(mainGui.getRdiVideo())){
 			if(src.isSelected() && mainGui.getChkPlayer().isSelected()!=true){
@@ -275,7 +285,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
 				mainGui.getChkSound().setEnabled(true);
-				
+				mainGui.getChkHorodatage().setEnabled(true);				
 				
 			} else if(src.isSelected()){
 				mainGui.getTxtInputFile().setText("");
@@ -288,6 +298,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
+				mainGui.getChkHorodatage().setEnabled(true);
 				//mainGui.getChkSound().setEnabled(true);
 				
 			}
@@ -301,6 +312,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 
 	private void manageButtons(JButton src) {
 		if(src.equals(mainGui.getBtnExit())){
+			System.out.println(String.valueOf(saveConfig()));
 			System.exit(0);
 		} else if(src.equals(mainGui.getBtnInputFile())){
 			try {
@@ -419,13 +431,23 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 		mainGui.getBtnOutputFile().setEnabled(false);
 		
 		mainGui.getJob().setInput_file(mainGui.getTxtInputFile().getText());
-		if(mainGui.getTxtOutputFile().getText().equals("")){			
-			mainGui.getJob().setOutput_file(mainGui.getTxtInputFile().getText());
-		} 
-		else {
-			File fic = new File(mainGui.getTxtInputFile().getText());			
-		mainGui.getJob().setOutput_file(mainGui.getTxtOutputFile().getText() + File.separator 
-				+fic.getName());
+		if (mainGui.getTxtOutputFile().getText().equals("")) {
+			mainGui.getJob()
+					.setOutput_file(mainGui.getTxtInputFile().getText());
+		} else {
+			File fic = new File(mainGui.getTxtInputFile().getText());
+			if (fic.getName().lastIndexOf(".") != -1) {
+				mainGui.getJob().setOutput_file(
+						mainGui.getTxtOutputFile().getText()
+								+ File.separator
+								+ fic.getName().substring(0,
+										fic.getName().lastIndexOf(".")));
+			} else {
+				mainGui.getJob().setOutput_file(
+						mainGui.getTxtOutputFile().getText()
+								+ File.separator
+								+ fic.getName());
+			}
 		}
 		mainGui.getJob().setWord16bits(Integer.valueOf(mainGui.getTxt16bitsWord().getText()));
 		
@@ -455,6 +477,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 			mainGui.getJob().setsWidth(768);
 		}
 		
+		mainGui.getJob().setSerial(mainGui.getTxtSerial().getText());
+		mainGui.getJob().setCode(mainGui.getTxtCode().getText());
+				
 		mainGui.getJob().setStop(false);
 		
 		mainGui.getProgress().setMaximum(Integer.valueOf(mainGui.getTxtNbFrames().getText()));
@@ -746,6 +771,118 @@ DocumentListener, FocusListener, KeyListener, MouseListener {
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * get the 11 bits keyword
+	 * @param key16bits the 16 bits keyword
+	 */
+	private void get11bitsKeyWord(int key16bits, int index){
+		String word = String.format
+				("%16s", Integer.toBinaryString(key16bits)).replace(" ", "0");
+		//word = new StringBuilder(word).reverse().toString();
+		
+		switch (index) {
+		case 0:
+			//audience 1
+			String audience1 = word.substring(0, 11);
+			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience1,2)));
+			break;
+		case 1:
+			//audience 2
+			String audience2 = word.substring(3, 14);
+			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience2,2)));
+			break;
+		case 2:
+			//audience 3
+			String audience3 = word.substring(6, 16) + word.charAt(0);
+			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience3,2)));
+			break;
+		case 3:
+			//audience 4
+			String audience4 =  word.substring(9, 16) + word.substring(0, 4);
+			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience4,2)));
+			break;
+		case 4:
+			//audience 5
+			String audience5 = word.substring(12, 16) +  word.substring(0, 7);
+			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience5,2)));
+			break;
+		case 5:
+			//audience 6
+			String audience6 =  word.charAt(15) + word.substring(0, 10) ;
+			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience6,2)));
+			break;
+		case 6:
+			//audience 7		
+			mainGui.getLbl11bitsInfo().setText("mot 11 bits: 1337");
+			break;
+		default:
+			break;	
+		}		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+		System.out.println(String.valueOf(saveConfig()));
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private Boolean saveConfig(){
+		return this.mainGui.getJob().saveConfig(
+				this.mainGui.getSlid16bitsWord().getValue(),
+				this.mainGui.getCombAudience().getSelectedIndex(),
+				(double)(this.mainGui.getSlidDelay1().getValue())/100000d,
+				(double)(this.mainGui.getSlidDelay2().getValue())/100000d,
+				this.mainGui.getTxtSerial().getText(),
+				this.mainGui.getChkHorodatage().isSelected(),
+				this.mainGui.getCombCodec().getSelectedIndex(),
+				this.mainGui.getSlidBitrate().getValue(),
+				(String)this.mainGui.getJcbExtension().getSelectedItem());
 	}
 
 }

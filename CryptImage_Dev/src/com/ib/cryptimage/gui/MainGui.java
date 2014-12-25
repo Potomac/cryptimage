@@ -115,6 +115,7 @@ public class MainGui {
 	private JLabel labCode;
 	private JTextField txtCode;
 	private JCheckBox chkSound;
+	private JLabel lbl11bitsInfo;
 	
 
 	
@@ -165,13 +166,14 @@ public class MainGui {
 	       // handle exception
 	    }
 		
-		frame = new JFrame("CryptImage v0.0.7");			
+		frame = new JFrame("CryptImage v0.0.7");
+		frame.addWindowListener(new MainGui_ActionListener(this));
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		//panGlobal.setLayout(new BoxLayout(panGlobal,BoxLayout.LINE_AXIS));
-		frame.setSize(700,780);
+		frame.setSize(700,800);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(700, 780));
+		frame.setMinimumSize(new Dimension(700, 800));
 		frame.setResizable(true);		
 		
 		createPanMode();
@@ -232,7 +234,36 @@ public class MainGui {
 				100,15,
 				1, 1,1,1);
 
-		
+		//load config
+		if(job.loadConfig()){
+			this.slid16bitsWord.setValue(job.getWord16bits());
+			this.combAudience.setSelectedIndex(job.getAudienceLevel());
+			this.slidDelay1.setValue((int) (job.getPerc1() * 100000d));
+			this.slidDelay2.setValue((int) (job.getPerc2() * 100000d));
+			this.txtSerial.setText(job.getSerial());
+			this.chkHorodatage.setSelected(job.isHorodatage());
+			this.combCodec.setSelectedIndex(job.getVideoCodec());
+			this.slidBitrate.setValue(job.getVideoBitrate());
+			switch (job.getExtension()) {
+			case "mp4":
+				this.jcbExtension.setSelectedIndex(0);
+				break;
+			case "avi":
+				this.jcbExtension.setSelectedIndex(1);
+				break;
+			case "mkv":
+				this.jcbExtension.setSelectedIndex(2);
+				break;
+			case "mpeg":
+				this.jcbExtension.setSelectedIndex(3);
+				break;
+			case "ts":
+				this.jcbExtension.setSelectedIndex(4);
+				break;
+			default:
+				break;
+			}
+		}
 		
 		//panGlobal.add(panMode);
 		//panGlobal.add(panFile);
@@ -522,7 +553,7 @@ public class MainGui {
 		btnGroup.add(rdiDecoding);
 		
 		lab16bitsWord = new JLabel("mot de 16 bits");
-		slid16bitsWord = new JSlider(JSlider.HORIZONTAL,1,65535,58158);
+		slid16bitsWord = new JSlider(JSlider.HORIZONTAL,32,65535,58158);
 		slid16bitsWord.addChangeListener(new MainGui_ActionListener(this));			
 		
 		//slid11bitsWord.setMaximum(2047);
@@ -531,7 +562,7 @@ public class MainGui {
 		slid16bitsWord.setMajorTickSpacing(10000);
 		slid16bitsWord.setMinorTickSpacing(5000);
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-		labelTable.put( new Integer( 1 ), new JLabel("1"));
+		labelTable.put( new Integer( 32 ), new JLabel("32"));
 		labelTable.put( new Integer( 65535 ), new JLabel("65535"));
 		labelTable.put( new Integer( 32768 ), new JLabel("32768"));
 		//labelTable.put( new Integer( 5000 ), new JLabel("5000"));
@@ -567,10 +598,10 @@ public class MainGui {
 		String[] tab = {"niveau 1","niveau 2","niveau 3","niveau 4",
 				"niveau 5","niveau 6","niveau 7"};
 		combAudience = new JComboBox<String>(tab);
-		combAudience.setSelectedIndex(6);
+		combAudience.setSelectedIndex(0);
 		combAudience.addActionListener(new MainGui_ActionListener(this));
 		
-			
+		lbl11bitsInfo = new JLabel();
 
 		
 		chkDelay = new JCheckBox("Retards par défaut");
@@ -616,7 +647,7 @@ public class MainGui {
 		jsp16bitKeyword.addChangeListener(new MainGui_ActionListener(this));
 		JSpinner.NumberEditor spinnerEditor = new JSpinner.NumberEditor(jsp16bitKeyword);
 		jsp16bitKeyword.setEditor(spinnerEditor);
-		spinnerEditor.getModel().setMinimum(1);
+		spinnerEditor.getModel().setMinimum(32);
 		spinnerEditor.getModel().setMaximum(65536);
 		spinnerEditor.getModel().setStepSize(1);
 		spinnerEditor.getModel().setValue(58158);
@@ -716,7 +747,17 @@ public class MainGui {
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				1, 2,
 				1,1,
-				70,25,
+				60,25,
+				1, 1,1,1);
+		
+		//rappel mot de 11 bits
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				lbl11bitsInfo,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 2,
+				1,1,
+				10,25,
 				1, 1,1,1);
 		
 		//keyboard code
@@ -841,7 +882,8 @@ public class MainGui {
 		
 		chkHorodatage = new JCheckBox("horodatage");		
 		chkHorodatage.setToolTipText("préfixe le nom de fichier avec une date et une heure");
-		
+		chkHorodatage.addActionListener(new MainGui_ActionListener(this));
+				
 		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2"};
 		combCodec = new JComboBox<String>(tab);	
 		combCodec.addActionListener(new MainGui_ActionListener(this));				
@@ -1354,6 +1396,14 @@ public class MainGui {
 
 	public void setChkHorodatage(JCheckBox chkHorodatage) {
 		this.chkHorodatage = chkHorodatage;
+	}
+
+	public JLabel getLbl11bitsInfo() {
+		return lbl11bitsInfo;
+	}
+
+	public void setLbl11bitsInfo(JLabel lbl11bitsInfo) {
+		this.lbl11bitsInfo = lbl11bitsInfo;
 	}
 
 }

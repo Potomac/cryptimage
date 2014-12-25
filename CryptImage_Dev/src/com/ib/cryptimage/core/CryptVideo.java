@@ -81,7 +81,16 @@ public class CryptVideo {
 		this.frameCount = 0;
 		this.positionSynchro = frmv.getJob().getPositionSynchro();
 		this.strictMode = frmv.getJob().isStrictMode();
-		this.outputFilename = frmv.getJob().getOutput_file();
+		
+		if(frmv.getJob().isHorodatage()){			
+			File file = new File(frmv.getJob().getOutput_file());
+			String fileName = frmv.getJob().getDateTime() + "_" +
+					file.getName();			
+			this.outputFilename = file.getParent() + File.separator + fileName;
+		}
+		else{
+			this.outputFilename = frmv.getJob().getOutput_file();
+		}
 		this.keyWord = frmv.getJob().getWord16bits();
 		this.isDecoding = frmv.getJob().isWantDec();
 		this.videoLengthFrames = frmv.getJob().getVideo_frame();
@@ -142,7 +151,9 @@ public class CryptVideo {
 				vid = new VideoRecorder(outputFilename + info + keyWord + "-" 
 			+ this.keyWord11 
 						+ "_a"
-						+ this.audienceLevel + "."
+						+ this.audienceLevel + "_k" +
+						frmv.getJob().getCode()
+						+ "."
 						+ frmv.getJob().getExtension(), width, height, frmv
 						.getJob().getVideoBitrate(), frmv.getJob()
 						.getVideoCodec(), frmv.getJob().getsWidth(), frmv
@@ -249,11 +260,10 @@ public class CryptVideo {
 	}
 
 	public void addAudioFrame(IAudioSamples sample) {
-		if (!this.frmv.getJob().isWantPlay() && this.frmv.getJob().isWantSound()) {
+		if (!this.frmv.getJob().isWantPlay()) {
 			vid.addAudioFrame(sample);
-		} else if (this.frmv.getJob().isWantPlay() 
-				&&	this.frmv.getJob().isWantSound()){
-			vidPlayer.playJavaSound(sample);			
+		} else if (this.frmv.getJob().isWantPlay() ){
+			//vidPlayer.playJavaSound(sample);			
 		}
 	}
 	
@@ -320,11 +330,14 @@ public class CryptVideo {
 						+ "\n\r"
 						+ "Fichier décodé : " + this.outputFilename +"_d" +
 						this.keyWord + "-" + this.keyWord11 +
-						"_a" + this.audienceLevel + "." + frmv.getJob().getExtension());
+						"_a" + this.audienceLevel + "_k" +
+						frmv.getJob().getCode() + "." + frmv.getJob().getExtension());
 			}
 			System.out.println("Decrypted video file : " + this.outputFilename +"_d" +
 					this.keyWord + "-" + this.keyWord11 +
-					"_a" + this.audienceLevel + "." + frmv.getJob().getExtension());
+					"_a" + this.audienceLevel + "_k" +
+							frmv.getJob().getCode()
+							+  "." + frmv.getJob().getExtension());
 		}
 		else
 		{
@@ -334,11 +347,15 @@ public class CryptVideo {
 						+ "\n\r"
 						+ "Fichier codé : " + this.outputFilename + "_c" +
 						this.keyWord + "-" + this.keyWord11 +
-						"_a" + this.audienceLevel + "." + frmv.getJob().getExtension());
+						"_a" + this.audienceLevel + "_k" +
+								frmv.getJob().getCode()
+								+  "." + frmv.getJob().getExtension());
 			}
 			System.out.println("Crypted video file : " + this.outputFilename + "_c" +
 		this.keyWord + "-" + this.keyWord11 + "_a" 
-					+ this.audienceLevel + "." + frmv.getJob().getExtension());
+					+ this.audienceLevel + "_k" +
+							frmv.getJob().getCode()
+							+  "." + frmv.getJob().getExtension());
 		}		
 	}
 	
@@ -363,13 +380,17 @@ public class CryptVideo {
 		try {
 			File dataFile = new File(this.outputFilename + "_c" + this.keyWord +
 					"-" + this.keyWord11 +
-					"_a" + this.audienceLevel + ".txt");
+					"_a" + this.audienceLevel + "_k" +
+					frmv.getJob().getCode()
+					+  ".txt");
 			dataFile.createNewFile();
 			FileWriter ffw = new FileWriter(dataFile);
 			BufferedWriter bfw = new BufferedWriter(ffw);	
 			bfw.write("16 bits keyword : " + this.keyWord + "\r\n");
 			bfw.write("Audience level : " + this.audienceLevel + "\r\n");
 			bfw.write("11 bits keyword : " + this.keyWord11 + "\r\n");
+			bfw.write("serial eprom : " + this.frmv.getJob().getSerial() + "\r\n");
+			bfw.write("keyboard code : " + this.frmv.getJob().getCode() + "\r\n");
 			bfw.write("P(0) at progressive frame n° : " + this.positionSynchro +"\r\n" );
 			bfw.write("Delay 1 : " + this.perc1 * 100 +"%\r\n" );
 			bfw.write("Delay 2 : " + this.perc2 * 100 +"%\r\n" );
@@ -377,8 +398,9 @@ public class CryptVideo {
 			bfw.write("video framerate : " + this.framerate +"\r\n" );
 			bfw.write("File : " + this.outputFilename +"_c" +
 					this.keyWord + 
-					"-" + this.keyWord11 + "_a" + this.audienceLevel +
-					"." + frmv.getJob().getExtension() +"\r\n");			
+					"-" + this.keyWord11 + "_a" + this.audienceLevel + "_k" +
+							frmv.getJob().getCode()	+ "." 
+					+ frmv.getJob().getExtension() +"\r\n");			
 			//bfw.write("debug lines : " + "\r\n" + messDebug);
 			bfw.close();
 			if(this.frmv.getJob().isHasGUI()){
@@ -389,12 +411,16 @@ public class CryptVideo {
 						+ "_c" + this.keyWord 
 						+ "-" + this.keyWord11 
 						+ "_a" 
-						+ this.audienceLevel + ".txt");
+						+ this.audienceLevel + "_k" +
+						frmv.getJob().getCode()
+						+  ".txt");
 			}
 			System.out.println("Data report : " + this.outputFilename
 					+ "_c" + this.keyWord +
 					"-" + this.keyWord11 + "_a" 
-					+ this.audienceLevel + ".txt");
+					+ this.audienceLevel + "_k" +
+					frmv.getJob().getCode()
+					+ ".txt");
 		} catch (IOException e) {
 			System.out
 					.println("I/O error during the write of the report file");

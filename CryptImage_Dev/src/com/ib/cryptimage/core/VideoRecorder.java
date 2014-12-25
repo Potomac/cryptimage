@@ -54,6 +54,7 @@ public class VideoRecorder {
 	private IMediaWriter writer;
 	private boolean is720 = false;
 	private boolean wantDec = false;
+	private boolean wantSoundCryptDecrypt = false;
 	private static int AUDIORATE = 44100;
 	private static int BUFFERSIZE = 44100;
 	
@@ -69,8 +70,9 @@ public class VideoRecorder {
 			boolean wantDec) {	
 		
 		this.wantDec = wantDec;
+		this.wantSoundCryptDecrypt = wantSound;
 		
-		if(wantSound){
+		if(wantSoundCryptDecrypt){
 			soundCrypt = new SoundCrypt(AUDIORATE, this.wantDec);
 			tabSound = new double[BUFFERSIZE];
 		}
@@ -119,7 +121,7 @@ public class VideoRecorder {
 		//writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,
         //        width, height);
 				
-		if( wantSound == true){
+		//if( wantSound == true){
 		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 1,AUDIORATE);
 		//writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 1,AUDIORATE);
 	    //writer.getContainer().getStream(1).getStreamCoder().setFlag(IStreamCoder.Flags.FLAG_QSCALE, false);
@@ -131,7 +133,7 @@ public class VideoRecorder {
 		//writer.getContainer().getStream(1).getStreamCoder().setProperty("frame_bits", "5760000");
 		//writer.getContainer().getStream(1).getStreamCoder().setDefaultAudioFrameSize(1152);
 		//System.out.println(writer.getContainer().getStream(1).getStreamCoder().getDefaultAudioFrameSize());
-		}
+		//}
 		
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(videoBitrate*1024);
 		
@@ -202,10 +204,10 @@ public class VideoRecorder {
 	       
 	       
 		writer.getContainer().getStream(0).getStreamCoder().open(null, null);
-		if (wantSound == true) {
+		//if (wantSound == true) {
 			writer.getContainer().getStream(1).getStreamCoder()
 					.open(null, null);
-		}
+		//}
 		writer.getContainer().writeHeader();
 		
 	}
@@ -323,7 +325,12 @@ public class VideoRecorder {
 		
 		if(sample.isComplete()){
 		    //feedSoundTab(sample);
+			if(this.wantSoundCryptDecrypt){
 		 addAudioFrameTemp(sample);
+			}
+			else{				
+				writer.encodeAudio(1, sample);	
+			}			
 		}
 		else {
 		System.out.println("pas complet");
