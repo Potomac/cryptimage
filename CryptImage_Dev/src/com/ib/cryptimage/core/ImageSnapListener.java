@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 29 sept. 2014 Author Mannix54
  */
@@ -22,8 +22,9 @@
 package com.ib.cryptimage.core;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JOptionPane;
+
 import com.xuggle.mediatool.MediaListenerAdapter;
-import com.xuggle.mediatool.event.AudioSamplesEvent;
 import com.xuggle.mediatool.event.IAudioSamplesEvent;
 import com.xuggle.mediatool.event.IReadPacketEvent;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
@@ -40,8 +41,6 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	private boolean isDec;
 	private FramesPlayer frmV;
 	private IAudioResampler audioResampler = null;
-	private int videoIndex;
-	private int audioIndex;
 	private static int AUDIORATE = 44100;
 
 	/**
@@ -55,57 +54,69 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		this.count = 0;
 		cryptVid = new CryptVideo(frmV);
 		posFrame = 0;
-		this.isDec = frmV.isbDec();
-		this.videoIndex = videoIndex;
-		this.audioIndex = audioIndex;		
+		this.isDec = frmV.isbDec();	
 	}
 	
 	public void onAudioSamples(IAudioSamplesEvent event) {
 
-		if (event.getAudioSamples().isComplete()) {
-			
+		if (frmV.getJob().isDisableSound() == false) {
+			if (event.getAudioSamples().isComplete()) {
+
 				IAudioSamples samples = event.getAudioSamples();
 
-				// IAudioResampler audioResampler = IAudioResampler.make(2,
-				// samples.getChannels(), 48000, samples.getSampleRate());
+				if (samples.getChannels() > 2) {
+					showWarningSound();
+				} else {
 
-				if (audioResampler == null) {
-					audioResampler = IAudioResampler.make(1,
-							samples.getChannels(), AUDIORATE,
-							samples.getSampleRate(),
-							IAudioSamples.Format.FMT_S16, samples.getFormat());
+					// IAudioResampler audioResampler = IAudioResampler.make(2,
+					// samples.getChannels(), 48000, samples.getSampleRate());
+
+					if (audioResampler == null) {
+						audioResampler = IAudioResampler.make(1,
+								samples.getChannels(), AUDIORATE,
+								samples.getSampleRate(),
+								IAudioSamples.Format.FMT_S16,
+								samples.getFormat());
+					}
+
+					// if(audioResampler == null){
+					// audioResampler = IAudioResampler.make(1,
+					// samples.getChannels(), AUDIORATE,
+					// samples.getSampleRate(),
+					// IAudioSamples.Format.FMT_S16, samples.getFormat(),
+					// 2048,
+					// 1024,
+					// true,
+					// (double)AUDIORATE/2d
+					// );
+					// }
+
+					if (event.getAudioSamples().getNumSamples() > 0) {
+						IAudioSamples out = IAudioSamples.make(
+								samples.getNumSamples(), 1); // samples.getNumSamples(),
+																// 1);
+						audioResampler.resample(out, samples,
+								samples.getNumSamples());
+
+						cryptVid.addAudioFrame(out);						
+
+						out.delete();
+					}
 				}
-
-				// if(audioResampler == null){
-				// audioResampler = IAudioResampler.make(1,
-				// samples.getChannels(), AUDIORATE, samples.getSampleRate(),
-				// IAudioSamples.Format.FMT_S16, samples.getFormat(),
-				// 2048,
-				// 1024,
-				// true,
-				// (double)AUDIORATE/2d
-				// );
-				// }
-
-				if (event.getAudioSamples().getNumSamples() > 0) {
-					IAudioSamples out = IAudioSamples.make(
-							samples.getNumSamples(), 1); //samples.getNumSamples(), 1);
-					audioResampler.resample(out, samples,
-							samples.getNumSamples());
-
-					cryptVid.addAudioFrame(out);
-					//cryptVid.addAudioFrame(event.getAudioSamples());
-					// AudioSamplesEvent asc = new
-					// AudioSamplesEvent(event.getSource(),
-					// out, event.getStreamIndex());
-					// super.onAudioSamples(asc);
-
-					out.delete();
-				}			
+			} else {
+				System.out.println("paquet non complet init");
+			}
 		}
-		else{
-			System.out.println("paquet non complet init");
-		}
+	}
+
+	private void showWarningSound(){
+		JOptionPane
+		.showMessageDialog(
+				null,
+				"présence de son multicanal non compatible avec cryptimage, la gestion du son sera désactivée",
+				"son multicanal détecté",
+				JOptionPane.WARNING_MESSAGE);
+		frmV.getJob().setDisableSound(true);
 	}
 
 	public void onReadPacket(IReadPacketEvent event){

@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 28 sept. 2014 Author Mannix54
  */
@@ -25,7 +25,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
@@ -112,10 +111,10 @@ public class Discret11 {
 	 */
 	private String sDebugLines = "";
 	
-	/**
-	 * the current image processed by the Direct11 object
-	 */
-	private BufferedImage imgRef;
+//	/**
+//	 * the current image processed by the Direct11 object
+//	 */
+//	private BufferedImage imgRef;
 	/**
 	 * the default width of the image which is 768
 	 */
@@ -235,17 +234,8 @@ public class Discret11 {
 			key = getXorPoly(key);
 			poly[i] = key;
 		}
-		
-//		Lfsr gen = new Lfsr(word,9); // TODO
-//		
-//		gen.resetLFSR();
-//		
-//		for (int i = 0; i < poly.length; i++) {
-//			gen.generate(i);
-//			poly[i] = Integer.parseInt(gen.toString(), 2);
-//			gen.resetLFSR();
-//		}		
 	}
+	
 	/**
 	 * initialize the delay table, 
 	 * we choose the right truth table to be compatible with
@@ -276,33 +266,7 @@ public class Discret11 {
 			break;
 		default:
 			break;
-		}
-		
-/*		switch (this.currentMode) {
-		case 0: //encoding mode
-			truthTable[0][0][0] = 0;
-			truthTable[0][0][1] = 1;
-			truthTable[0][1][0] = 2;
-			truthTable[0][1][1] = 2;
-			truthTable[1][0][0] = 2;
-			truthTable[1][0][1] = 0;
-			truthTable[1][1][0] = 0;
-			truthTable[1][1][1] = 1;			
-			break;
-		case 1: //decoding mode
-			truthTable[0][0][0] = 2;
-			truthTable[0][0][1] = 1;
-			truthTable[0][1][0] = 0;
-			truthTable[0][1][1] = 0;
-			truthTable[1][0][0] = 0;
-			truthTable[1][0][1] = 2;
-			truthTable[1][1][0] = 2;
-			truthTable[1][1][1] = 1;
-			break;
-		default:
-			break;
-		}*/
-		
+		}		
 	}
 	
 	/**
@@ -413,7 +377,7 @@ public class Discret11 {
 		if(image.getWidth() != this.sWidth || image.getHeight() != 576){
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
-		this.imgRef = image;
+//		this.imgRef = image;
 		
 		int z = 0;
 		//this.seqFrame++;	
@@ -483,34 +447,20 @@ public class Discret11 {
 	private BufferedImage modifyEvenFrame(BufferedImage image, int z){	
 		BufferedImage bi = new BufferedImage(this.sWidth,576,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR	
-		
-		//bi = setBlackImage(bi);
+											// BufferedImage.TYPE_INT_BGR			
 		
 		Raster raster1 = bi.getRaster();
 		WritableRaster raster2 = image.getRaster();		
 		
-//
-        long temps1 = System.currentTimeMillis();
-		
-		int valDelay;
-		boolean stop = false;
-		int temp = 0;
 		int temp2 = 0;
-		int tempCptArray = 0;
-		int tempSeqFrame = 0;
 		
 		for (int y = 1; y < 576; y++) {
 			if(cptArray == 286){
 				this.cptArray = 0;
 			}
 			
-			stop = true;
-			temp = cptPoly;
-			//valDelay = getDelay(poly[cptPoly], z);
 			temp2 = delayArray[this.seqFrame][cptArray];
-			tempCptArray = cptArray;
-			tempSeqFrame = this.seqFrame;
+			
 
 			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
 				// digital image ) or if next line is 623 ( 576 in digital image )
@@ -521,28 +471,12 @@ public class Discret11 {
 				//draw black line at start of delay
 				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
 						y, temp2 , 1,
-						new int[temp2  * 3]));
-				stop = false;				
+						new int[temp2  * 3]));							
 				cptPoly++; // we increment the count of poly array
 				cptArray++;
 			}
-//			if (Debug.nbDebug < 1726) {
-//				Debug.cptArray = tempCptArray;
-//				Debug.delayPixels = temp2;
-//				Debug.lfsr = temp;
-//				Debug.poly = poly[temp];
-//				Debug.digitalLine = y;
-//				Debug.z = z;
-//				Debug.stop = stop;
-//				Debug.seqFrame = tempSeqFrame;
-//				Debug.nbDebug++;
-//				debugFrame();
-//			}			
 			y++; // add one to y in order to have only even lines frame
 		}		
-			
-		 long temps2 = System.currentTimeMillis();
-		 //System.out.println("temps frame paire : " + (temps2 - temps1));	
 		return image;		
 	}
 	
@@ -555,20 +489,12 @@ public class Discret11 {
 	private BufferedImage modifyOddFrame(BufferedImage image, int z){	
 		BufferedImage bi = new BufferedImage(this.sWidth,576,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR			
-		//bi = setBlackImage(bi);
+											// BufferedImage.TYPE_INT_BGR		
 		
 		Raster raster1 = bi.getRaster();
-		WritableRaster raster2 = image.getRaster();				
+		WritableRaster raster2 = image.getRaster();	
 
-		 long temps1 = System.currentTimeMillis();
-		
-		int valDelay;
-		boolean stop = false;
-		int temp = 0;
-		int temp2 = 0;
-		int tempCptArray = 0;
-		int tempSeqFrame = 0;		
+		int temp2 = 0;	
 
 	
 		for (int y = 2; y < 576; y++) {
@@ -576,15 +502,10 @@ public class Discret11 {
 				this.cptArray = 0;
 			}
 			
-			stop = true;
 			if(cptPoly == 1716){
 				cptPoly = 0;				
-			}
-			temp = cptPoly;
-			//valDelay = getDelay(poly[cptPoly], z);
+			}			
 			temp2 = delayArray[this.seqFrame][cptArray];
-			tempCptArray = cptArray;
-			tempSeqFrame = this.seqFrame;
 
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
@@ -595,28 +516,12 @@ public class Discret11 {
 				//draw black line at start of delay
 				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
 						y, temp2 , 1,
-						new int[temp2  * 3]));
-				stop = false;
+						new int[temp2  * 3]));				
 				cptPoly++; // we increment the count of poly array
 				cptArray++;
 			}
-//			if (Debug.nbDebug < 1726) {
-//				Debug.cptArray = tempCptArray;
-//				Debug.delayPixels = temp2;
-//				Debug.lfsr = temp;
-//				Debug.poly = poly[temp];
-//				Debug.digitalLine = y;
-//				Debug.z = z;
-//				Debug.stop = stop;
-//				Debug.seqFrame = tempSeqFrame;
-//				Debug.nbDebug++;
-//				debugFrame();
-//			}
 			y++; // add one to y in order to have only odd lines frame
-		}			
-		 long temps2 = System.currentTimeMillis();
-		 //System.out.println("temps frame impaire : " + (temps2 - temps1));
-
+		}
 		return image;			
 	}
 	
@@ -835,55 +740,7 @@ public class Discret11 {
 			buff.setRGB(i, 573, new Color(255,255, 255).getRGB());
 		}
 		return buff;		
-	}
-	
-	/**
-	 * set to black an image
-	 * @param buff the BufferedImage
-	 * @return a black image
-	 */
-	private BufferedImage setBlackImage(BufferedImage buff){
-		for (int j = 0; j < buff.getHeight(); j++) {
-			for (int i = 0; i < buff.getWidth(); i++) {
-				buff.setRGB(i, j, new Color(255,255, 255).getRGB());
-			}
-		}		
-		return buff;		
-	}
-	
-	
-	
-//	private void debugFrame(){
-//		String bloque = "P yes";
-//		
-//		if(Debug.stop){
-//			bloque = "P no ";
-//		}
-//		
-//		String message = "trame " +  (Debug.seqFrame +1) + "; ligne " 
-//				+ String.format("%03d",(Debug.digitalLine + 1)) + "; analog "
-//				+ String.format("%03d",convertLine(Debug.digitalLine + 1)) 
-//				+ "; (P" + String.format("%04d",Debug.lfsr)
-//				+ "); " + bloque
-//				+ " ; (retard: " + Debug.delayPixels  
-//				+"); LFSR " + String.format("%04d",Debug.poly) 
-//				+ " 0x" + Integer.toHexString(Debug.poly)
-//				+ "; z: " + Debug.z
-//				+"); LFSR2 " + String.format("%04d",
-//						poly[Debug.seqFrame *286 + Debug.cptArray]) 
-//				+ " 0x" + Integer.toHexString(
-//						poly[Debug.seqFrame *286 + Debug.cptArray]) 
-//				+ "; cptArray " + Debug.cptArray;
-//		this.sDebugLines += message +" \r\n";
-//				//System.out.println(message);
-//	}
-	
-	private int inverseWord(int val){
-		String word = String.format
-				("%11s", Integer.toBinaryString(val)).replace(" ", "0");
-		word = new StringBuilder(word).reverse().toString();
-		return Integer.parseInt(word,2);
-	}
+	}	
 
 	/**
 	 * return a message about debug infos of all modified lines for frames
@@ -892,26 +749,7 @@ public class Discret11 {
 	 */
 	public String getsDebugLines() {
 		return sDebugLines;
-	}
-	
-	/**
-	 * convert a 576i line to his analog value
-	 * @param frame_line the line number of a 576i image
-	 * @return the analog line equivalent
-	 */
-	private int convertLine(int frame_line) {
-		float res = (float) ((float) (frame_line) / 2);
-		float diff = res - (int)res;
-
-		if (diff != 0) { //frame impaire
-			int val = (int)res + 23;
-			return val;
-		}
-		else {
-			return (int)(res + 335);
-		}
-	}
-	
+	}	
 	
 	public int getAudienceLevel() {
 		return audienceLevel;
@@ -947,32 +785,8 @@ public class Discret11 {
 
 	public int[] getDecaPixels() {
 		return decaPixels;
-	}
-	
-	/**
-	 * clone a BufferedImage
-	 * @param bi the BufferedImage to clone
-	 * @return a cloned BufferedImage
-	 */
-	private BufferedImage deepCopy(BufferedImage bi) {
-		ColorModel cm = bi.getColorModel();
-		boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-		WritableRaster raster = bi.copyData(null);
-		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-	}
-	
-//	final static class Debug{
-//		private static int cptArray = 0;
-//		private static int lfsr = 0;
-//		private static int poly = 0;
-//		private static int delayPixels = 0;
-//		private static int digitalLine = 0;	
-//		private static int z = 0;
-//		private static boolean stop = false;
-//		private static int seqFrame = 0;
-//		private static int nbDebug = 0;
-//	
-//	}
+	}		
+
 }
 
 

@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 26 oct. 2014 Author Mannix54
  */
@@ -23,15 +23,11 @@ package com.ib.cryptimage.gui;
 
 
 
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Hashtable;
 
@@ -55,7 +51,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.DefaultFormatter;
 import javax.swing.text.MaskFormatter;
 
 import com.ib.cryptimage.core.JobConfig;
@@ -72,6 +67,7 @@ public class MainGui {
 	private JPanel panMode;
 	private JRadioButton rdiVideo;
 	private JRadioButton rdiPhoto;
+	private JButton btnAbout;
 	
 	private JPanel panFile;
 	private JTextField txtInputFile;
@@ -116,6 +112,7 @@ public class MainGui {
 	private JTextField txtCode;
 	private JCheckBox chkSound;
 	private JLabel lbl11bitsInfo;
+	private JCheckBox chkDisableSound;
 	
 
 	
@@ -148,8 +145,7 @@ public class MainGui {
 		this.job = job;
 		this.job.setGui(this);
 		
-		 try {
-	            // Set cross-platform Java L&F (also called "Metal")
+		 try {	            
 	        UIManager.setLookAndFeel(
 	        		"com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 	    } 
@@ -170,8 +166,9 @@ public class MainGui {
 		frame.addWindowListener(new MainGui_ActionListener(this));
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
-		//panGlobal.setLayout(new BoxLayout(panGlobal,BoxLayout.LINE_AXIS));
+		
 		frame.setSize(700,800);
+		frame.setLocationRelativeTo(null);
 		frame.setAutoRequestFocus(true);
 		frame.setMinimumSize(new Dimension(700, 800));
 		frame.setResizable(true);		
@@ -263,10 +260,10 @@ public class MainGui {
 			default:
 				break;
 			}
+			this.txtOutputFile.setText(job.getOutput_file());
 		}
 		
-		//panGlobal.add(panMode);
-		//panGlobal.add(panFile);
+
 		frame.setLayout(new GridLayout(1,0));
 		frame.getContentPane().add(panGlobal);		
 		frame.setVisible(true);
@@ -301,7 +298,8 @@ public class MainGui {
 				+ "-si option désactivée : pas de gestion des lignes 310/622 et "
 				+ "la vidéo garde sa résolution originale</html>");
 		
-		
+		btnAbout = new JButton("À propos...");	
+		btnAbout.addActionListener(new MainGui_ActionListener(this));
 		
 		GridBagLayout gbl = new GridBagLayout();
 		
@@ -312,7 +310,7 @@ public class MainGui {
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 0,
 				1,1,
-				33,0.5,
+				25,0.5,
 				1, 1,1,1);	
 		this.placerComposants(panMode,
 				gbl,
@@ -320,7 +318,7 @@ public class MainGui {
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				1, 0,
 				1,1,
-				33,0.5,
+				25,0.5,
 				1, 1,1,1);
 		this.placerComposants(panMode,
 				gbl,
@@ -328,13 +326,21 @@ public class MainGui {
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				2, 0,
 				1,1,
-				33,0.5,
-				1, 1,1,1);		
+				25,0.5,
+				1, 1,1,1);
+		this.placerComposants(panMode,
+				gbl,
+				btnAbout,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				3, 0,
+				1,1,
+				25,0.5,
+				1, 1,1,1);	
 	}
 	
 	private void createPanFile(){
 		panFile = new JPanel();
-		//panFile.setSize(frame.getWidth(), 200);
+		
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 				"Fichiers");
@@ -347,15 +353,10 @@ public class MainGui {
 		btnInputFile = new JButton("Ouvrir");
 		btnInputFile.addActionListener(new MainGui_ActionListener(this));
 		btnOutputFile = new JButton("Dossier");
-		btnOutputFile.setEnabled(false);
+		btnOutputFile.setEnabled(true);
 		btnOutputFile.addActionListener(new MainGui_ActionListener(this));
 		btnOutputFile.setToolTipText("le dossier de travail où seront stockés les fichiers générés");
 		
-//		panFile.setLayout(new GridLayout(2,2));
-//		panFile.add(txtInputFile);
-//		panFile.add(btnInputFile);
-//		panFile.add(txtOutputFile);
-//		panFile.add(btnOutputFile);
 		
 		GridBagLayout gbl = new GridBagLayout();
 		this.placerComposants(panFile,
@@ -441,12 +442,9 @@ public class MainGui {
 		txtSerial.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);	
 		txtSerial.setHorizontalAlignment(JTextField.RIGHT);
 		
-		//txtSerial.setCaretPosition(8);
-		//txtSerial.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+	
 			
-		txtSerial.getDocument().addDocumentListener(new MainGui_ActionListener(this));
-		//txtSerial.addKeyListener(new MainGui_ActionListener(this));
-		//txtSerial.setText("0");
+		txtSerial.getDocument().addDocumentListener(new MainGui_ActionListener(this));		
 		txtCode = new JTextField(8);
 		txtCode.setEditable(false);
 		txtCode.setHorizontalAlignment(JTextField.RIGHT);
@@ -552,12 +550,15 @@ public class MainGui {
 		btnGroup.add(rdiCoding);
 		btnGroup.add(rdiDecoding);
 		
+		//init 16 bits word slider
+		JPanel pan16bits = new JPanel();
+		GridBagLayout gbl_pan16bits = new GridBagLayout();
+		
 		lab16bitsWord = new JLabel("mot de 16 bits");
 		slid16bitsWord = new JSlider(JSlider.HORIZONTAL,32,65535,58158);
 		slid16bitsWord.addChangeListener(new MainGui_ActionListener(this));			
 		
-		//slid11bitsWord.setMaximum(2047);
-		//slid11bitsWord.setMinimum(1);
+		
 		slid16bitsWord.setValue(58158);
 		slid16bitsWord.setMajorTickSpacing(10000);
 		slid16bitsWord.setMinorTickSpacing(5000);
@@ -565,14 +566,12 @@ public class MainGui {
 		labelTable.put( new Integer( 32 ), new JLabel("32"));
 		labelTable.put( new Integer( 65535 ), new JLabel("65535"));
 		labelTable.put( new Integer( 32768 ), new JLabel("32768"));
-		//labelTable.put( new Integer( 5000 ), new JLabel("5000"));
-		//labelTable.put( new Integer( 10000 ), new JLabel("10000"));
+
 		slid16bitsWord.setLabelTable(labelTable);
 		slid16bitsWord.setPaintLabels(true);
 		
 		
-		slid16bitsWord.setPaintTicks(true);
-		//slid11bitsWord.setPaintLabels(true);	
+		slid16bitsWord.setPaintTicks(true);	
 	
 			
 		MaskFormatter mask;
@@ -587,12 +586,55 @@ public class MainGui {
 		}
 		txt16bitsWord.setText(String.valueOf(slid16bitsWord.getValue()));
 		
-		txt16bitsWord.setEditable(true);
-		//txt16bitsWord.getDocument().addDocumentListener(new Key16bits_DocumentListener(this)); 
-		//txt16bitsWord.addActionListener(new MainGui_ActionListener(this));
+		txt16bitsWord.setEditable(true);		
 				
 		txt16bitsWord.setColumns(10);
-
+		
+		jsp16bitKeyword = new JSpinner();
+		
+		
+		JSpinner.NumberEditor spinnerEditor = new JSpinner.NumberEditor(jsp16bitKeyword);
+		jsp16bitKeyword.setEditor(spinnerEditor);
+		
+		JComponent editor1 = jsp16bitKeyword.getEditor();
+		JFormattedTextField tf = ((JSpinner.DefaultEditor) editor1).getTextField();
+		tf.setColumns(5);
+		tf.setEditable(false);
+		
+		spinnerEditor.getModel().setMinimum(32);
+		spinnerEditor.getModel().setMaximum(65536);
+		spinnerEditor.getModel().setStepSize(1);
+		spinnerEditor.getModel().setValue(58158);	
+		  
+		    this.placerComposants(pan16bits,
+					gbl_pan16bits,
+					lab16bitsWord,
+					GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+					0, 0,
+					1,1,
+					10,33,
+					1, 1,1,1);
+		    this.placerComposants(pan16bits,
+					gbl_pan16bits,
+					slid16bitsWord,
+					GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+					1, 0,
+					1,1,
+					70,33,
+					1, 1,1,1);
+		    this.placerComposants(pan16bits,
+					gbl_pan16bits,
+					jsp16bitKeyword,
+					GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+					2, 0,
+					1,1,
+					20,33,
+					1, 1,1,1);
+		
+		//init audience
+		JPanel panAudience = new JPanel();
+		GridBagLayout gblAudience = new GridBagLayout();
+				
 		
 		labAudience = new JLabel("Audience");		
 		String[] tab = {"niveau 1","niveau 2","niveau 3","niveau 4",
@@ -603,7 +645,32 @@ public class MainGui {
 		
 		lbl11bitsInfo = new JLabel();
 
+	    this.placerComposants(panAudience,
+				gblAudience,
+				labAudience,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				10,33,
+				1, 1,1,15);
+	    this.placerComposants(panAudience,
+				gblAudience,
+				combAudience,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				10,33,
+				1, 1,1,15);
+	    this.placerComposants(panAudience,
+				gblAudience,
+				lbl11bitsInfo,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 0,
+				1,1,
+				10,33,
+				1, 1,1,1);		
 		
+		  
 		chkDelay = new JCheckBox("Retards par défaut");
 		chkDelay.setSelected(true);
 		chkDelay.addActionListener(new MainGui_ActionListener(this));
@@ -641,23 +708,67 @@ public class MainGui {
 		txtDelay1.setText(String.valueOf(slidDelay1.getValue()/1000d) +"%");
 		txtDelay2.setText(String.valueOf(slidDelay2.getValue()/1000d) + "%");
 		
+		//init delay1	    
+	    JPanel panDelay1 = new JPanel();
+	    JPanel panDelay2 = new JPanel();
+	    GridBagLayout gbl_delay1 = new GridBagLayout();
+	    GridBagLayout gbl_delay2 = new GridBagLayout();
+	    
+	    this.placerComposants(panDelay1,
+				gbl_delay1,
+				labDelay1,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				10,33,
+				1, 1,1,15);
+	    this.placerComposants(panDelay1,
+				gbl_delay1,
+				slidDelay1,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 0,
+				1,1,
+				70,33,
+				1, 1,1,15);
+	    this.placerComposants(panDelay1,
+				gbl_delay1,
+				txtDelay1,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				2, 0,
+				1,1,
+				20,33,
+				1, 1,1,15);
+	    
+	  //init delay2
+	    this.placerComposants(panDelay2,
+				gbl_delay2,
+				labDelay2,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				10,33,
+				1, 1,1,15);
+	    this.placerComposants(panDelay2,
+				gbl_delay2,
+				slidDelay2,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 0,
+				1,1,
+				70,33,
+				1, 1,1,15);
+	    this.placerComposants(panDelay2,
+				gbl_delay2,
+				txtDelay2,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				2, 0,
+				1,1,
+				20,33,
+				1, 1,1,15);
 		
 		
-		jsp16bitKeyword = new JSpinner();
-		jsp16bitKeyword.addChangeListener(new MainGui_ActionListener(this));
-		JSpinner.NumberEditor spinnerEditor = new JSpinner.NumberEditor(jsp16bitKeyword);
-		jsp16bitKeyword.setEditor(spinnerEditor);
-		spinnerEditor.getModel().setMinimum(32);
-		spinnerEditor.getModel().setMaximum(65536);
-		spinnerEditor.getModel().setStepSize(1);
-		spinnerEditor.getModel().setValue(58158);
-	
-		 JFormattedTextField tf = ((JSpinner.DefaultEditor) jsp16bitKeyword.getEditor()).getTextField();
-		    tf.setEditable(false);
-		   // tf.setBackground(Color.GRAY);
-		    
+		//frame start    
 		labFrameStart = new JLabel("démarrer à la trame ");
-		slideFrameStart = new JSlider(JSlider.HORIZONTAL,1,2000,1);
+		slideFrameStart = new JSlider(JSlider.HORIZONTAL,1,200000,1);
 		slideFrameStart.setToolTipText("permet de commencer le codage/décodage qu'à partir d'un numéro de trame précis");
 		jspFrameStart = new JSpinner();	
 		jspFrameStart.addChangeListener(new MainGui_ActionListener(this));		
@@ -668,24 +779,60 @@ public class MainGui {
 		tf2.setColumns(5);
 		tf2.setEditable(false);
 		spinnerEditor2.getModel().setMinimum(1);
-		spinnerEditor2.getModel().setMaximum(2000);
+		spinnerEditor2.getModel().setMaximum(200000);
 		spinnerEditor2.getModel().setStepSize(1);
 		spinnerEditor2.getModel().setValue(1);
 		
 		
 		slideFrameStart.addChangeListener(new MainGui_ActionListener(this));			
 		slideFrameStart.setValue(1);
-		slideFrameStart.setMajorTickSpacing(1000);
-		slideFrameStart.setMinorTickSpacing(100);
+		slideFrameStart.setMajorTickSpacing(50000);
+		slideFrameStart.setMinorTickSpacing(10000);
 		Hashtable<Integer, JLabel> labelTable3 = new Hashtable<Integer, JLabel>();
 		labelTable3.put( new Integer( 1 ), new JLabel("1"));		
-		labelTable3.put( new Integer( 2000 ), new JLabel("2000"));
+		labelTable3.put( new Integer( 200000 ), new JLabel("200000"));
 		slideFrameStart.setLabelTable(labelTable3);
 		slideFrameStart.setPaintLabels(true);		
 		slideFrameStart.setPaintTicks(true);
 		
+		JPanel panFrameStart = new JPanel();
+		GridBagLayout gblFrameStart = new GridBagLayout();
+		
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				labFrameStart,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				10,25,
+				1, 1,1,1);
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				slideFrameStart,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 0,
+				1,1,
+				70,25,
+				1, 1,1,1);
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				jspFrameStart,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				2, 0,
+				1,1,
+				20,25,
+				1, 1,1,1);
+		
+		
 		chkSound = new JCheckBox("Traiter le son");
-		chkSound.setSelected(true);		
+		chkSound.setSelected(true);
+		chkSound.setToolTipText("<html>permet de crypter/décrypter le son,<br/>"
+				+ "si décochée le son sera présent mais non traité par le codeur/décodeur</html>");
+		
+		chkDisableSound = new JCheckBox("Désactiver le son");		
+		chkDisableSound.setSelected(false);
+		chkDisableSound.setToolTipText("Désactive la piste son, la vidéo sera muette.");
+		chkDisableSound.addActionListener(new MainGui_ActionListener(this));
 		
 		//initialisation serial decoder
 		txtSerial.setText("12345678");
@@ -707,112 +854,49 @@ public class MainGui {
 				1,1,
 				20,25,
 				1, 1,1,1);
+		
+		
 		//selection 16 bits keyword
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				lab16bitsWord,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				pan16bits,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 1,
-				1,1,
-				5,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				slid16bitsWord,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 1,
-				1,1,
-				85,25,
+				3,1,
+				100,25,
 				1, 1,1,1);		
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				jsp16bitKeyword, //txt16bitsWord, //jsp16bitKeyword,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				2, 1,
-				1,1,
-				10,25,
-				1, 1,1,1);
+		
 		//audience level
+		
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				labAudience,
+				panAudience,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 2,
 				1,1,
-				30,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				combAudience,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 2,
-				1,1,
-				60,25,
-				1, 1,1,1);
-		
-		//rappel mot de 11 bits
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				lbl11bitsInfo,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 2,
-				1,1,
-				10,25,
-				1, 1,1,1);
-		
-		//keyboard code
+				100,25,
+				1, 1,1,1);		
 	
 		
 		//delay1
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				labDelay1,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 4,
-				1,1,
-				5,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				slidDelay1,
+				panDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 4,
-				1,1,
-				85,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				txtDelay1,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 4,
-				1,1,
-				10,25,
+				0, 4,
+				3,1,
+				100,25,
 				1, 1,1,1);
 		//delay2
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				labDelay2,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 5,
-				1,1,
-				5,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				slidDelay2,
+				panDelay2,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 5,
-				1,1,
-				85,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				txtDelay2,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 5,
-				1,1,
-				10,25,
-				1, 1,1,1);
+				0, 5,
+				3,1,
+				100,25,
+				1, 1,1,1);		
+
 		//delay by default
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
@@ -820,7 +904,7 @@ public class MainGui {
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 6,
 				1,1,
-				50,25,
+				33,25,
 				1, 1,1,1);
 		
 		//check sound
@@ -830,34 +914,29 @@ public class MainGui {
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				1, 6,
 				1,1,
-				50,25,
+				33,25,
+				1, 1,1,1);
+		//disable sound
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				chkDisableSound,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 6,
+				1,1,
+				33,25,
 				1, 1,1,1);
 		
 		//frame start
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				labFrameStart,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				panFrameStart,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 7,
-				1,1,
-				5,25,
+				3,1,
+				100,25,
 				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				slideFrameStart,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 7,
-				1,1,
-				85,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				jspFrameStart,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 7,
-				1,1,
-				10,25,
-				1, 1,1,1);	
+		
+		jsp16bitKeyword.addChangeListener(new MainGui_ActionListener(this));
 	}
 	
 	private void createPanVideo(){
@@ -878,7 +957,9 @@ public class MainGui {
 		
 		chkPlayer = new JCheckBox("mode lecteur");
 		chkPlayer.addActionListener(new MainGui_ActionListener(this));
-		chkPlayer.setToolTipText("permet de regarder le résultat dans une fenêtre au lieu de créer la vidéo");
+		chkPlayer.setToolTipText("<html>Permet de regarder le résultat dans "
+				+ "une fenêtre au lieu de créer la vidéo,<br/>"
+				+ "c'est un simple aperçu visuel sans le son.</html>");
 		
 		chkHorodatage = new JCheckBox("horodatage");		
 		chkHorodatage.setToolTipText("préfixe le nom de fichier avec une date et une heure");
@@ -904,20 +985,21 @@ public class MainGui {
 		txtBitrate.setEditable(false);
 		txtBitrate.setText("10000");
 		
-		slidFrames = new JSlider(JSlider.HORIZONTAL,1,2000,2000);
+		slidFrames = new JSlider(JSlider.HORIZONTAL,1,200000,200000);
 		slidFrames.addChangeListener(new MainGui_ActionListener(this));	
-		slidFrames.setMajorTickSpacing(500);
-		slidFrames.setMinorTickSpacing(100);
+		slidFrames.setMajorTickSpacing(50000);
+		slidFrames.setMinorTickSpacing(10000);
 		Hashtable<Integer, JLabel> labelTable2 = new Hashtable<Integer, JLabel>();
 		labelTable2.put( new Integer( 1 ), new JLabel("1"));		
-		labelTable2.put( new Integer( 2000 ), new JLabel("2000"));
+		labelTable2.put( new Integer( 200000 ), new JLabel("200000"));
 		slidFrames.setLabelTable(labelTable2);
 		slidFrames.setPaintLabels(true);		
 		slidFrames.setPaintTicks(true);
 		labNbFrames = new JLabel("Nb trames");
 		txtNbFrames = new JTextField(10);		
-		txtNbFrames.setEditable(false);
-		txtNbFrames.setText("2000");
+		txtNbFrames.setEditable(false);		
+		txtNbFrames.setText("200000");
+		
 		
 		lblExtension = new JLabel("extension");		
 		String[] tabExtension = {"mp4","avi","mkv", "mpeg", "ts"};
@@ -925,6 +1007,97 @@ public class MainGui {
 		jcbExtension.setSelectedIndex(0);
 		jcbExtension.addActionListener(new MainGui_ActionListener(this));
 		
+		//init codec video panel
+		JPanel panVideoCodec = new JPanel();
+		GridBagLayout gblCodecVideo = new GridBagLayout();
+		
+		this.placerComposants(panVideoCodec,
+				gblCodecVideo,
+				labCodec,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				10,50,
+				1, 1,1,1);
+		this.placerComposants(panVideoCodec,
+				gblCodecVideo,
+				combCodec,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				15,50,
+				1, 1,1,1);
+		this.placerComposants(panVideoCodec,
+				gblCodecVideo,
+				labBitrate,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 0,
+				1,1,
+				5,50,
+				1, 1,1,1);
+		this.placerComposants(panVideoCodec,
+				gblCodecVideo,
+				slidBitrate,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				3, 0,
+				1,1,
+				60,50,
+				1, 1,1,1);
+		this.placerComposants(panVideoCodec,
+				gblCodecVideo,
+				txtBitrate,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				4, 0,
+				1,1,
+				10,50,
+				1, 1,1,1);
+		
+		//init video extension panel
+		JPanel panExtensionVideo = new JPanel();
+		GridBagLayout gblExtension = new GridBagLayout();
+		
+		this.placerComposants(panExtensionVideo,
+				gblExtension,
+				lblExtension,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				10,50,
+				1, 1,1,1);
+		this.placerComposants(panExtensionVideo,
+				gblExtension,
+				jcbExtension,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				15,50,
+				1, 1,1,1);
+		this.placerComposants(panExtensionVideo,
+				gblExtension,
+				labNbFrames,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 0,
+				1,1,
+				5,50,
+				1, 1,1,1);
+		this.placerComposants(panExtensionVideo,
+				gblExtension,
+				slidFrames,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				3, 0,
+				1,1,
+				60,50,
+				1, 1,1,1);
+		this.placerComposants(panExtensionVideo,
+				gblExtension,
+				txtNbFrames,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				4, 0,
+				1,1,
+				10,50,
+				1, 1,1,1);
+		
+		//init panVideoOption
 		
 		this.placerComposants(panVideoOptions,
 				gbl,
@@ -958,86 +1131,29 @@ public class MainGui {
 				1,1,
 				25,50,
 				1, 1,1,1);
+		
+		//codec video
 		this.placerComposants(panVideoOptions,
 				gbl,
-				labCodec,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				panVideoCodec,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 1,
-				1,1,
-				5,50,
+				6,1,
+				100,50,
 				1, 1,1,1);
+		
+		//extension
 		this.placerComposants(panVideoOptions,
 				gbl,
-				combCodec,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 1,
-				1,1,
-				5,50,
-				1, 1,1,1);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				labBitrate,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 1,
-				1,1,
-				5,50,
-				1, 1,1,1);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				slidBitrate,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				3, 1,
-				2,1,
-				80,50,
-				1, 1,0,0);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				txtBitrate,
+				panExtensionVideo,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				5, 1,
-				1,1,
-				5,50,
-				1, 1,1,1);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				lblExtension,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 2,
-				1,1,
-				5,50,
+				6,1,
+				100,50,
 				1, 1,1,1);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				jcbExtension,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 2,
-				1,1,
-				5,50,
-				1, 1,1,1);		
-		this.placerComposants(panVideoOptions,
-				gbl,
-				labNbFrames,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 2,
-				1,1,
-				5,50,
-				1, 1,1,1);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				slidFrames,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				3, 2,
-				2,1,
-				80,50,
-				1, 1,1,1);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				txtNbFrames,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				5, 2,
-				1,1,
-				5,50,
-				1, 1,1,1);		
+		
+		slidFrames.setValue(199999);
+		slidFrames.setValue(200000);
 	}
 	
 	private void createPanLog(){
@@ -1073,12 +1189,6 @@ public class MainGui {
 		btnCancel.addActionListener(new MainGui_ActionListener(this));
 		btnCancel.addMouseListener(new MainGui_ActionListener(this));
 		btnCancel.setEnabled(false);
-		
-//		panProgress.add(progress, BorderLayout.NORTH);
-//		panProgress.add(textInfos, BorderLayout.CENTER);
-//		panProgress.add(btnExit, BorderLayout.SOUTH);
-//		panProgress.add(btnCancel, BorderLayout.SOUTH);
-//		panProgress.add(btnEnter, BorderLayout.SOUTH);
 		
 		this.placerComposants(panProgress,
 				gbl,
@@ -1404,6 +1514,18 @@ public class MainGui {
 
 	public void setLbl11bitsInfo(JLabel lbl11bitsInfo) {
 		this.lbl11bitsInfo = lbl11bitsInfo;
+	}
+
+	public JCheckBox getChkDisableSound() {
+		return chkDisableSound;
+	}
+
+	public void setChkDisableSound(JCheckBox chkDisableSound) {
+		this.chkDisableSound = chkDisableSound;
+	}
+
+	public JButton getBtnAbout() {
+		return btnAbout;
 	}
 
 }

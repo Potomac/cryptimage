@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 29 sept. 2014 Author Mannix54
  */
@@ -25,8 +25,6 @@ import java.awt.image.BufferedImage;
 
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.IStream;
-
 
 public class FramesPlayer {
 
@@ -46,19 +44,17 @@ public class FramesPlayer {
 		
 		StreamsFinder streamFinder = new StreamsFinder(job.getInput_file());
 		
-		this.mediaReader = ToolFactory.makeReader(job.getInput_file());
-		//this.mediaReader = ToolFactory.makeReader(streamFinder.getContainer());
+		this.mediaReader = ToolFactory.makeReader(job.getInput_file());		
 		
 		mediaReader
 				.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 		
-		IStream stream = streamFinder.getContainer()
-				.getStream(streamFinder.getStreamsVideo()[0]);		
+		
 		
 		this.imgListen = new ImageSnapListener(job.getVideo_frame(), this,
 				streamFinder.getStreamsVideo()[0], streamFinder.getStreamsAudio()[0]);
 		mediaReader.addListener(imgListen);
-		//mediaReader.getContainer().getStream(0).getContainer().setForcedVideoCodec(ICodec.ID.CODEC_ID_H264);		
+		
 	}
 		
 	

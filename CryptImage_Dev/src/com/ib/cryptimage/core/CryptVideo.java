@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 29 sept. 2014 Author Mannix54
  */
@@ -117,9 +117,7 @@ public class CryptVideo {
 
 		if (frmv.getJob().isWantPlay()) {
 			vidPlayer = new VideoPlayer(frameRate, this.frmv.getJob());
-		}
-
-		// System.out.println((reader.getContainer().getDuration()/1000/1000)*frameRate);
+		}		
 
 		this.timeBase = 1000d / frameRate;
 		this.framerate = frameRate;
@@ -158,6 +156,7 @@ public class CryptVideo {
 						.getJob().getVideoBitrate(), frmv.getJob()
 						.getVideoCodec(), frmv.getJob().getsWidth(), frmv
 						.getJob().isStrictMode(), frameRate, frmv.getJob().isWantSound(),
+						frmv.getJob().isDisableSound(),
 						frmv.getJob().isWantDec());
 
 			} catch (Exception e) {
@@ -178,11 +177,9 @@ public class CryptVideo {
 		frameCount++;
 		if (frameCount < this.positionSynchro){
 			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
-			//vid.addFrame(buff,this.timeBase * timingFrame);
 			vidPlayer.addImage(buff);			
 			vidPlayer.showImage();
-			updateProgress("codage");
-			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+			updateProgress("codage");			
 		}
 		else{
 		BufferedImage bi = save;
@@ -224,22 +221,18 @@ public class CryptVideo {
 		frameCount++;
 		if (frameCount < this.positionSynchro){
 			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
-			//vid.addFrame(buff,this.timeBase * timingFrame);
 			vidPlayer.addImage(buff);
 			vidPlayer.showImage();
-			updateProgress("décodage");
-			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+			updateProgress("décodage");			
 		}
 		else{
 		BufferedImage bi;		
 		if(this.strictMode){			
 			bi = this.discret.transform(buff);			
-			//save = getScaledImage(save, 768, 576);
 		}
 		else
 		{  
-			bi = this.simpleDiscret.transform(buff);
-			
+			bi = this.simpleDiscret.transform(buff);			
 		}
 		
 		if(vidPlayer.isInverse() == true){
@@ -254,13 +247,13 @@ public class CryptVideo {
 			vidPlayer.close();
 			vidPlayer.closeJavaSound();
 		}
-		updateProgress("décodage");
-		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		updateProgress("décodage");		
 		}
 	}
 
 	public void addAudioFrame(IAudioSamples sample) {
-		if (!this.frmv.getJob().isWantPlay()) {
+		if (!this.frmv.getJob().isWantPlay() 
+				&& this.frmv.getJob().isDisableSound() == false) {
 			vid.addAudioFrame(sample);
 		} else if (this.frmv.getJob().isWantPlay() ){
 			//vidPlayer.playJavaSound(sample);			
@@ -362,20 +355,7 @@ public class CryptVideo {
 	public void saveDatFileVideo(){		
 		if(isDecoding !=true){
 		buff = new BufferedImage(this.width,
-				this.height, 12);
-		
-		//int [][] delayTab = cryptImg.getDelayTabCrypt();		
-		
-		//save the data file
-		String messDebug = "";
-		if(this.strictMode){
-			messDebug = this.discret.getsDebugLines();
-		}
-		else
-		{
-			messDebug = this.simpleDiscret.getsDebugLines();
-		}
-		
+				this.height, 12);		
 		
 		try {
 			File dataFile = new File(this.outputFilename + "_c" + this.keyWord +
@@ -401,7 +381,7 @@ public class CryptVideo {
 					"-" + this.keyWord11 + "_a" + this.audienceLevel + "_k" +
 							frmv.getJob().getCode()	+ "." 
 					+ frmv.getJob().getExtension() +"\r\n");			
-			//bfw.write("debug lines : " + "\r\n" + messDebug);
+			
 			bfw.close();
 			if(this.frmv.getJob().isHasGUI()){
 				this.frmv.getJob().getGui().getTextInfos()
@@ -529,21 +509,6 @@ public class CryptVideo {
 	    if(src.getWidth()==720  && src.getHeight()==576 ){
 	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
 	    }
-//	    else if(src.getWidth()==768 && src.getHeight() == 576 && w == 720){
-//	    	shiftw = (double)src.getWidth()/720d;	    	
-//	    	//shiftw = 768d/(double)src.getWidth();
-//	    	//finalw = (int)(finalh * shiftw);
-//	    }
-//	    else if(src.getWidth()==720 && src.getHeight()!=576 && w == 720){
-//	    	//shiftw = (double)src.getWidth()/768d;	    	
-//	    	shiftw = 768d/(double)src.getWidth();
-//	    	//finalw = (int)(finalh * shiftw);
-//	    }
-//	    else if(w ==720){
-//	    	//shiftw = (double)src.getWidth()/768d;	    	
-//	    	shiftw = 768d/720d;
-//	    	//finalw = (int)(finalh * shiftw);
-//	    }
 	    
 	    if(src.getWidth() > src.getHeight()){
 	        factor = ((double)src.getHeight()/(double)src.getWidth());
@@ -567,31 +532,5 @@ public class CryptVideo {
 	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
 		    
 	    return target;
-	}
-	
-	/**
-	 * Convert a source image to a desired BufferedImage type
-	 * @param sourceImage the image source
-	 * @param targetType the target type
-	 * @return a converted BufferedImage
-	 */
-	private  BufferedImage convertToType(BufferedImage sourceImage,
-			int targetType) {
-		BufferedImage image;
-
-		// if the source image is already the target type, return the source
-		// image
-		if (sourceImage.getType() == targetType) {
-			image = sourceImage;
-		}
-		// otherwise create a new image of the target type and draw the new
-		// image
-		else {
-			image = new BufferedImage(sourceImage.getWidth(),
-					sourceImage.getHeight(), targetType);
-			image.getGraphics().drawImage(sourceImage, 0, 0, null);
-		}
-		return image;
-	}
-	
+	}	
 }

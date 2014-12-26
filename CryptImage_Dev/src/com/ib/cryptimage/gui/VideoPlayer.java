@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 29 sept. 2014 Author Mannix54
  */
@@ -21,31 +21,22 @@
 
 package com.ib.cryptimage.gui;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
-import javax.swing.WindowConstants;
-import javax.swing.plaf.SliderUI;
 
 import com.ib.cryptimage.core.JobConfig;
-import com.ib.cryptimage.core.SoundCrypt;
 import com.xuggle.xuggler.IAudioSamples;
-import com.xuggle.xuggler.IStreamCoder;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -178,11 +169,7 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 				Thread.sleep((long) time  );
 			} catch (InterruptedException e) {				
 				e.printStackTrace();
-			}
-			
-			double speed = (double)(1000/frameRate);
-			double tot = time + diffTime;
-			int speed_pourc = (int)((speed/tot) * 100);		
+			}							
 		
 		this.systemPreviousCurrentTime = System.currentTimeMillis();
 	}
@@ -193,13 +180,7 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 	}
 	
 	private void openJavaSound()
-	  {
-//	    AudioFormat audioFormat = new AudioFormat(aAudioCoder.getSampleRate(),
-//	        (int)IAudioSamples.findSampleBitDepth(aAudioCoder.getSampleFormat()),
-//	        aAudioCoder.getChannels(),
-//	        true, /* xuggler defaults to signed 16 bit samples */
-//	        false);
-	    
+	  {	    
 	    AudioFormat audioFormat = new AudioFormat(48000, 16, 2, true, false);
 	    DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 	    try
@@ -225,17 +206,7 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 	    /**
 	     * We're just going to dump all the samples into the line.
 	     */
-	    byte[] rawBytes = aSamples.getData().getByteArray(0, aSamples.getSize());
-	  /*  int size = aSamples.getByteBuffer().asDoubleBuffer().capacity();
-	    double[] tab = new double[size];
-	    
-	    for(int i=0;i<size;i++){
-	    	tab[i] = aSamples.getByteBuffer().asDoubleBuffer().get(i);
-	    }
-	    
-	    
-	   SoundCrypt soundCrypt = new SoundCrypt(48000);
-	    tab = soundCrypt.transform(tab);*/
+	    byte[] rawBytes = aSamples.getData().getByteArray(0, aSamples.getSize());	 
 	    
 	    mLine.write(rawBytes, 0, aSamples.getSize());
 	  }

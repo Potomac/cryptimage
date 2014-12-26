@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 27 oct. 2014 Author Mannix54
  */
@@ -20,7 +20,6 @@
 
 
 package com.ib.cryptimage.gui;
-
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -159,7 +158,17 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			updateKeyboardCode(mainGui.getTxtSerial().getText());
 		}else if (src.equals(this.mainGui.getChkHorodatage())) {			
 			mainGui.getJob().setHorodatage(mainGui.getChkHorodatage().isSelected());
+		}else if (src.equals(this.mainGui.getChkDisableSound())) {			
+			if(src.isSelected()){
+				mainGui.getChkSound().setSelected(false);
+				mainGui.getChkSound().setEnabled(false);				
+			}
+			else {
+				mainGui.getChkSound().setSelected(true);
+				mainGui.getChkSound().setEnabled(true);
+			}
 		}
+		
 	}
 
 	private void manageTextArea(JTextArea src) {
@@ -230,7 +239,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		} else if(src.equals(mainGui.getSlidBitrate())){
 			mainGui.getTxtBitrate().setText(String.valueOf(src.getValue()));
 		}else if(src.equals(mainGui.getSlidFrames())){
-			mainGui.getTxtNbFrames().setText(String.valueOf(src.getValue()));
+			String time = "";
+			if(this.mainGui.getJob().getFrameRate() > 0){
+				time = getTime((int) (mainGui.getSlidFrames().getValue()/mainGui.getJob().getFrameRate()));
+			}
+			mainGui.getTxtNbFrames().setText(String.valueOf(src.getValue()) + " ("+ time +")");
 		}
 	}
 	
@@ -247,8 +260,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	private void manageRadioButton(JRadioButton src) {
 		if(src.equals(mainGui.getRdiPhoto())){
 			if(src.isSelected()){				
-				mainGui.getTxtInputFile().setText("");
-				mainGui.getTxtOutputFile().setText("");
+				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
 				mainGui.getBtnOutputFile().setEnabled(false);
 				mainGui.getSlidBitrate().setEnabled(false);
@@ -258,8 +270,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getSlidFrames().setEnabled(false);
 				mainGui.getTxtNbFrames().setEnabled(false);
 				mainGui.getChkStrictMode().setSelected(false);
-				mainGui.getChkStrictMode().setEnabled(false);
-				mainGui.getCombAudience().setEnabled(false);
+				mainGui.getChkStrictMode().setEnabled(false);				
 				mainGui.getRdi720().setEnabled(false);
 				mainGui.getRdi768().setEnabled(false);
 				mainGui.getChkPlayer().setEnabled(false);
@@ -268,8 +279,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}
 		} else if(src.equals(mainGui.getRdiVideo())){
 			if(src.isSelected() && mainGui.getChkPlayer().isSelected()!=true){
-				mainGui.getTxtInputFile().setText("");
-				mainGui.getTxtOutputFile().setText("");
+				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
 				mainGui.getBtnOutputFile().setEnabled(false);
 				mainGui.getSlidBitrate().setEnabled(true);
@@ -288,8 +298,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkHorodatage().setEnabled(true);				
 				
 			} else if(src.isSelected()){
-				mainGui.getTxtInputFile().setText("");
-				mainGui.getTxtOutputFile().setText("");
+				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
 				mainGui.getBtnOutputFile().setEnabled(false);
 				mainGui.getSlidFrames().setEnabled(true);
@@ -299,7 +308,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
 				mainGui.getChkHorodatage().setEnabled(true);
-				//mainGui.getChkSound().setEnabled(true);
+				
 				
 			}
 		}
@@ -307,12 +316,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageTxtFields(JTextField src) {
 		// TODO Auto-generated method stub
-		System.out.println("ok2 __");
+		
 	}
 
 	private void manageButtons(JButton src) {
 		if(src.equals(mainGui.getBtnExit())){
-			System.out.println(String.valueOf(saveConfig()));
+			saveConfig();
 			System.exit(0);
 		} else if(src.equals(mainGui.getBtnInputFile())){
 			try {
@@ -345,9 +354,26 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			manageCancel();
 		} else if(src.equals(mainGui.getBtnOutputFile())){
 			manageSave();
+		} else if(src.equals(mainGui.getBtnAbout())){
+			showAbout();
 		}
+		
 	}
 	
+	private void showAbout() {
+		JOptionPane
+		.showMessageDialog(
+				null,
+				"CryptImage v0.0.7" + "\r\n" +
+				"Copyright (C) 2014-12-26 Mannix54 \r\n\r\n" +
+				"License GNU GPL v3 \r\n\r\n" +
+				"CryptImage comes with ABSOLUTELY NO WARRANTY\r\n" +
+				"This is free software, and you are welcome to redistribute it under certain conditions.",
+				"À propos...",
+				JOptionPane.INFORMATION_MESSAGE);
+		
+	}
+
 	private void manageSave() {
 		JFileChooser dialogue = new JFileChooser();
 		dialogue.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -403,11 +429,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 				if (mainGui.getRdiVideo().isSelected()) {
 					setVideosInfos(file.getAbsolutePath());
-					mainGui.getTxtOutputFile().setText(file.getParent());
+					if(mainGui.getTxtOutputFile().getText().equals("")){
+						mainGui.getTxtOutputFile().setText(file.getParent());
+					}					
 					mainGui.getBtnOutputFile().setEnabled(true);
 				} else {
 					mainGui.getTxtInputFile().setText(file.getAbsolutePath());
-					mainGui.getTxtOutputFile().setText(file.getParent());
+					if(mainGui.getTxtOutputFile().getText().equals("")){
+						mainGui.getTxtOutputFile().setText(file.getParent());
+					}
 					mainGui.getBtnOutputFile().setEnabled(true);
 					mainGui.getBtnEnter().setEnabled(true);
 				}
@@ -416,14 +446,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageEnter(){
+		mainGui.getTextInfos().setForeground(Color.black);
+		
 		mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
-//		 for (Component c : mainGui..getComponents()) {
-//             c.setEnabled(true);
-//         }
-		
-		
-		
+				
 		mainGui.getBtnEnter().setEnabled(false);
 		mainGui.getBtnCancel().setEnabled(true);
 		mainGui.getBtnExit().setEnabled(false);
@@ -451,7 +477,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 		mainGui.getJob().setWord16bits(Integer.valueOf(mainGui.getTxt16bitsWord().getText()));
 		
-		mainGui.getJob().setVideo_frame(Integer.valueOf(mainGui.getTxtNbFrames().getText()));
+		mainGui.getJob().setVideo_frame(Integer.valueOf(mainGui.getSlidFrames().getValue()));
 		mainGui.getJob().setStrictMode(mainGui.getChkStrictMode().isSelected());
 		mainGui.getJob().setPositionSynchro((int)mainGui.getJspFrameStart().getValue());
 		mainGui.getJob().setWantDec(mainGui.getRdiDecoding().isSelected());
@@ -459,8 +485,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		mainGui.getJob().setModePhoto(mainGui.getRdiPhoto().isSelected());
 		mainGui.getJob().setExtension(mainGui.getJcbExtension().getSelectedItem().toString());
 		mainGui.getJob().setWantSound(mainGui.getChkSound().isSelected());
-		
-		
+		mainGui.getJob().setDisableSound(mainGui.getChkDisableSound().isSelected());
+				
 		
 		mainGui.getJob().setAudienceLevel(mainGui.getCombAudience().getSelectedIndex() + 1);
 			
@@ -482,7 +508,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				
 		mainGui.getJob().setStop(false);
 		
-		mainGui.getProgress().setMaximum(Integer.valueOf(mainGui.getTxtNbFrames().getText()));
+		mainGui.getProgress().setMaximum(Integer.valueOf(mainGui.getSlidFrames().getValue()));
 		
 		if(mainGui.getJob().isModePhoto()){
 			 this.thread = new Thread(new Runnable() {
@@ -582,6 +608,16 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			nb_frames_def = (int)alt_nbframes;
 		}
 		
+		if(frameRate !=25){
+			alertFrameRate(frameRate);
+		}
+		
+		if(path.substring(path.lastIndexOf(".") + 1, path.length()).equals("ts")
+				|| path.substring(path.lastIndexOf(".") + 1, path.length()).equals("m2t")){
+			alertTsM2t();
+		}
+		
+		mainGui.getJob().setFrameRate(frameRate);
 		mainGui.getBtnEnter().setEnabled(true);
 		
 		mainGui.getSlideFrameStart().setMaximum(nb_frames_def);
@@ -608,6 +644,28 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 		mainGui.getProgress().setMaximum(nb_frames_def);
 		
+	}
+	
+	private void alertTsM2t() {
+		mainGui.getTextInfos().setForeground(Color.red);
+		mainGui.getTextInfos().append("Attention, les vidéos au format TS,"
+				+ " ainsi que les vidéos"
+				+ " au format M2T "
+				+ "génèrent\r\n"
+				+ "un bug"
+				+ " dans la gestion du son avec cryptimage,"
+				+ " en conséquence la gestion du son sera désactivée.");
+		this.mainGui.getChkDisableSound().setSelected(true);
+		this.mainGui.getChkSound().setSelected(false);
+		this.mainGui.getChkSound().setEnabled(false);
+	}
+
+	private void alertFrameRate(double frameRate){
+		mainGui.getTextInfos().setForeground(Color.red);
+		mainGui.getTextInfos().append("Attention, la vidéo a un FPS de " +
+								String.format("%.3f", frameRate) +
+								", \r\nla vidéo traitée ne sera pas pleinement compatible avec"
+								+ " la norme discret11.");		
 	}
 	
 	@Override
@@ -686,10 +744,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			serialString = "0";
 		}
 		
-		int serial = Integer.valueOf(serialString);
-	
-		System.out.println("serial updateKeyboardCode :" + serial );
-		
+		int serial = Integer.valueOf(serialString);		
 		
 		KeyboardCode code = new KeyboardCode(serial,
 				Integer.valueOf(mainGui.getTxt16bitsWord().getText()),
@@ -748,22 +803,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	@Override
 	public void keyReleased(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-//		if(arg0.getKeyCode() == 127){
-//			mainGui.getTxtSerial().setText(mainGui.getTxtSerial().getText().replace(" ", ""));
-//		}
-//				
-		
-//		if(mainGui.getTxtSerial().getText().trim().length() < 8){
-//			mainGui.getTxtSerial().setForeground(Color.red);
-//		}
-//		else
-//		{
-//		mainGui.getTxtSerial().setForeground(Color.BLACK);
-//		}
-		//mainGui.getTxtSerial().setText(mainGui.getTxtSerial().getText().trim());
-//		int value = Integer.valueOf(mainGui.getTxtSerial().getText().trim());
-//		String sValue = String.format("%08d", value);
-//		mainGui.getTxtSerial().setText(sValue);
+
 		
 	}
 
@@ -779,49 +819,48 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	 */
 	private void get11bitsKeyWord(int key16bits, int index){
 		String word = String.format
-				("%16s", Integer.toBinaryString(key16bits)).replace(" ", "0");
-		//word = new StringBuilder(word).reverse().toString();
+				("%16s", Integer.toBinaryString(key16bits)).replace(" ", "0");		
 		
 		switch (index) {
 		case 0:
 			//audience 1
 			String audience1 = word.substring(0, 11);
-			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
-					String.format("%04d", Integer.parseInt(audience1,2)));
+			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience1,2)) + " )");
 			break;
 		case 1:
 			//audience 2
 			String audience2 = word.substring(3, 14);
-			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
-					String.format("%04d", Integer.parseInt(audience2,2)));
+			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience2,2))+ " )");
 			break;
 		case 2:
 			//audience 3
 			String audience3 = word.substring(6, 16) + word.charAt(0);
-			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
-					String.format("%04d", Integer.parseInt(audience3,2)));
+			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience3,2))+ " )");
 			break;
 		case 3:
 			//audience 4
 			String audience4 =  word.substring(9, 16) + word.substring(0, 4);
-			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
-					String.format("%04d", Integer.parseInt(audience4,2)));
+			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience4,2)) + " )");
 			break;
 		case 4:
 			//audience 5
 			String audience5 = word.substring(12, 16) +  word.substring(0, 7);
-			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
-					String.format("%04d", Integer.parseInt(audience5,2)));
+			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience5,2))+ " )");
 			break;
 		case 5:
 			//audience 6
 			String audience6 =  word.charAt(15) + word.substring(0, 10) ;
-			mainGui.getLbl11bitsInfo().setText( "mot 11 bits: " +
-					String.format("%04d", Integer.parseInt(audience6,2)));
+			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+					String.format("%04d", Integer.parseInt(audience6,2))+ " )");
 			break;
 		case 6:
 			//audience 7		
-			mainGui.getLbl11bitsInfo().setText("mot 11 bits: 1337");
+			mainGui.getLbl11bitsInfo().setText("( mot 11 bits: 1337 )");
 			break;
 		default:
 			break;	
@@ -842,10 +881,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-		System.out.println(String.valueOf(saveConfig()));
-		
+		// TODO Auto-generated method stub		
+		saveConfig();		
 	}
 
 	@Override
@@ -875,14 +912,27 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	private Boolean saveConfig(){
 		return this.mainGui.getJob().saveConfig(
 				this.mainGui.getSlid16bitsWord().getValue(),
-				this.mainGui.getCombAudience().getSelectedIndex(),
+				this.mainGui.getCombAudience().getSelectedIndex() + 1,
 				(double)(this.mainGui.getSlidDelay1().getValue())/100000d,
 				(double)(this.mainGui.getSlidDelay2().getValue())/100000d,
 				this.mainGui.getTxtSerial().getText(),
 				this.mainGui.getChkHorodatage().isSelected(),
-				this.mainGui.getCombCodec().getSelectedIndex(),
+				this.mainGui.getCombCodec().getSelectedIndex() + 1,
 				this.mainGui.getSlidBitrate().getValue(),
-				(String)this.mainGui.getJcbExtension().getSelectedItem());
+				(String)this.mainGui.getJcbExtension().getSelectedItem(),
+				this.mainGui.getTxtOutputFile().getText());
+	}
+	
+	private String getTime(int timer){		  
+		    int hours = timer / 3600; // get the amount of hours from the seconds
+		    int remainder = timer % 3600; // get the rest in seconds
+		    int minutes = remainder / 60; // get the amount of minutes from the rest
+		    int seconds = remainder % 60; // get the new rest
+		    String disHour = (hours < 10 ? "0" : "") + hours; // get hours and add "0" before if lower than 10
+		    String disMinu = (minutes < 10 ? "0" : "") + minutes; // get minutes and add "0" before if lower than 10
+		    String disSec = (seconds < 10 ? "0" : "") + seconds; // get seconds and add "0" before if lower than 10
+		    String formattedTime = disHour + ":" + disMinu + ":" + disSec; //get the whole time
+		    return formattedTime;
 	}
 
 }

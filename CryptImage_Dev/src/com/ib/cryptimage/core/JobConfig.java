@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 29 sept. 2014 Author Mannix54
  */
@@ -31,8 +31,6 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import javax.sound.sampled.Line;
 
 import com.ib.cryptimage.gui.MainGui;
 
@@ -57,12 +55,14 @@ public class JobConfig {
 	private boolean hasGUI = false;
 	private MainGui gui;
 	private boolean isStop = false;
-	private String extension = "mp4";
+	private String extension = "mkv";
 	private boolean wantSound = true;
 	private int word16bits = 0;
 	private boolean horodatage = false;
 	private String serial = "";
 	private String code = "";
+	private double frameRate = 25;
+	private boolean disableSound = false;
 	
 	
 
@@ -85,7 +85,7 @@ public class JobConfig {
 				+ File.separator + "cryptimage.conf");
 
 		if (config.exists()) {
-			String[] options = new String[9];
+			String[] options = new String[10];
 			FileInputStream fis;
 			try {
 				fis = new FileInputStream(config);
@@ -97,10 +97,9 @@ public class JobConfig {
 				int compt = 0;
 
 				try {
-					while ((line = br.readLine()) != null && compt < 9) {
+					while ((line = br.readLine()) != null && compt < 10) {
 						options[compt] = line;
-						compt++;
-						System.out.println(line);
+						compt++;						
 					}
 					br.close();
 
@@ -123,7 +122,7 @@ public class JobConfig {
 				// 16 bits key
 				this.setWord16bits(Integer.valueOf(options[0]));
 				// audience
-				this.setAudienceLevel(Integer.valueOf(options[1]));
+				this.setAudienceLevel(Integer.valueOf(options[1]) -1 );
 				// delay 1
 				this.setPerc1(Double.valueOf(options[2]));
 				// delay2
@@ -133,11 +132,13 @@ public class JobConfig {
 				// horodatage
 				this.setHorodatage(Boolean.parseBoolean(options[5]));
 				// codec
-				this.setVideoCodec(Integer.valueOf(options[6]));
+				this.setVideoCodec(Integer.valueOf(options[6]) - 1);
 				// bitrate
 				this.setVideoBitrate(Integer.valueOf(options[7]));
 				// extension
 				this.setExtension(options[8]);
+				//working directory
+				this.setOutput_file(options[9]);				
 			} catch (Exception e) {
 				// TODO: handle exception
 				System.out.println(e.getMessage());
@@ -151,7 +152,7 @@ public class JobConfig {
 	
 	public boolean saveConfig(int key16bits, int audienceIndex, double delay1,
 			double delay2, String serial, boolean horodatage, int codecIndex,
-			int bitrate, String extension) {
+			int bitrate, String extension, String workingDirectory) {
 
 		try {
 
@@ -186,6 +187,7 @@ public class JobConfig {
 				bfw.write(codecIndex + lineSeparator);
 				bfw.write(bitrate + lineSeparator);
 				bfw.write(extension + lineSeparator);
+				bfw.write(workingDirectory + lineSeparator);
 
 				bfw.close();
 
@@ -214,12 +216,12 @@ public class JobConfig {
 		
 		//audience index
 		try {
-			if(Integer.valueOf(options[1]) < 0 
-					|| Integer.valueOf(options[1]) > 6 ) {
-				options[1] = "0";
+			if(Integer.valueOf(options[1]) < 1 
+					|| Integer.valueOf(options[1]) > 7 ) {
+				options[1] = "1";
 			}
 		} catch (Exception e) {
-			options[1] = "0";
+			options[1] = "1";
 		}
 		
 		//delay1
@@ -264,11 +266,11 @@ public class JobConfig {
 		
 		//codec
 		try {
-			if(Integer.valueOf(options[6]) < 0 || Integer.valueOf(options[6]) > 4 ) {
-				options[6] = "0";
+			if(Integer.valueOf(options[6]) < 1 || Integer.valueOf(options[6]) > 5 ) {
+				options[6] = "1";
 			}
 		} catch (Exception e) {
-			options[6] = "0";
+			options[6] = "1";
 		}
 		
 		//bitrate
@@ -287,12 +289,23 @@ public class JobConfig {
 					&& !options[8].equals("mkv")
 					&& !options[8].equals("ts")
 					&& !options[8].equals("mpeg")) {
-				options[8] = "mp4";
+				options[8] = "mkv";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			options[8] = "mp4";
+			options[8] = "mkv";
 		}
+
+		//working directory
+		try {
+			
+			File file = new File(options[9]);
+			if(!file.exists()){
+				options[9]="";
+			}			
+		} catch (Exception e) {
+			options[9] = "";
+		}		
 		
 		return options;
 		
@@ -497,5 +510,21 @@ public class JobConfig {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public double getFrameRate() {
+		return frameRate;
+	}
+
+	public void setFrameRate(double frameRate) {
+		this.frameRate = frameRate;
+	}
+
+	public boolean isDisableSound() {
+		return disableSound;
+	}
+
+	public void setDisableSound(boolean disableSound) {
+		this.disableSound = disableSound;
 	}	
 }

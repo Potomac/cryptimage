@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 6 oct. 2014 Author Mannix54
  */
@@ -22,11 +22,7 @@
 package com.ib.cryptimage.core;
 
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
@@ -40,6 +36,10 @@ public class SimpleDiscret11 {
 	 * store the 11 bits key word
 	 */
 	private int key11bits;
+	/**
+	 * store the 16 bits key word
+	 */
+	private int key16bits;
 	
 	/**
 	 * store the 7 11 bit words according to the audience level
@@ -96,22 +96,7 @@ public class SimpleDiscret11 {
 	 * 3 types of delay
 	 */
 	private int[] decaPixels = new int[3];
-	/**
-	 * the count iterator for poly array
-	 */
-	private int cptPoly = 0;
-	/**
-	 * the count iterator for delay array
-	 */
-	private int cptArray = 0;
-	/**
-	 * a string for storing a debug message about the modified lines in a trame
-	 */
-	private String sDebugLines = "";	
-	/**
-	 * the current image processed by the Direct11 object
-	 */
-	private BufferedImage imgRef;	
+
 	/**
 	 * the height of the image
 	 */
@@ -131,6 +116,7 @@ public class SimpleDiscret11 {
 	 * @param width the width of the image
 	 */
 	public SimpleDiscret11(int key16bits, int audienceLevel, int mode, int height, int width){		
+		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);			
 		this.key11bits = this.key11BitsTab[audienceLevel - 1];
 		
@@ -158,6 +144,7 @@ public class SimpleDiscret11 {
 	 */
 	public SimpleDiscret11(int key16bits, int audienceLevel, int mode, int height, int width,
 			double perc1, double perc2){		
+		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);			
 		this.key11bits = this.key11BitsTab[audienceLevel - 1];
 		
@@ -397,8 +384,7 @@ public class SimpleDiscret11 {
 	public BufferedImage transform(BufferedImage image){
 				
 		//we check the type image and the size
-		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
-		this.imgRef = image;
+		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);		
 		
 		BufferedImage bi = new BufferedImage(this.width,this.height,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
@@ -430,8 +416,7 @@ public class SimpleDiscret11 {
 		this.seqFullFrame++;
 	
 		if (this.seqFullFrame == 3) {
-			this.seqFullFrame = 0;
-			this.cptPoly = 0;
+			this.seqFullFrame = 0;			
 		}
 
 		this.currentframePos++;
@@ -462,101 +447,7 @@ public class SimpleDiscret11 {
 			image.getGraphics().drawImage(sourceImage, 0, 0, null);
 		}
 		return image;
-	}
-	
-	/**
-	 * Scale an image to a new size
-	 * @param src the image source
-	 * @param w the new width
-	 * @param h the new height
-	 * @return the resized image
-	 */
-	private BufferedImage getScaledImage(BufferedImage src, int w, int h){
-	    int finalw = w;
-	    int finalh = h;
-	    double factor = 1.0d;
-	    if(src.getWidth() > src.getHeight()){
-	        factor = ((double)src.getHeight()/(double)src.getWidth());
-	        finalh = (int)(finalw * factor);                
-	    }else{
-	        factor = ((double)src.getWidth()/(double)src.getHeight());
-	        finalw = (int)(finalh * factor);
-	    }   
-
-	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TRANSLUCENT);
-	    Graphics2D g2 = resizedImg.createGraphics();
-	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	    g2.drawImage(src, 0, 0, finalw, finalh, null);
-	    g2.dispose();
-	    
-	    //step 2 create a bufferedimage with exact size
-	    
-	    BufferedImage target = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
-	    
-	    Graphics g3 = target.getGraphics();	    
-	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
-		    
-	    return target;
 	}	
-	
-//	private void debugFrame(){
-//		String bloque = "P yes";
-//		
-//		if(Debug.stop){
-//			bloque = "P no ";
-//		}
-//		
-//		String message = "trame " +  (Debug.seqFrame +1) + "; ligne " 
-//				+ String.format("%03d",(Debug.digitalLine + 1)) + "; analog "
-//				+ String.format("%03d",convertLine(Debug.digitalLine + 1)) 
-//				+ "; (P" + String.format("%04d",Debug.lfsr)
-//				+ "); " + bloque
-//				+ " ; (retard: " + Debug.delayPixels  
-//				+"); LFSR " + String.format("%04d",Debug.poly) 
-//				+ " 0x" + Integer.toHexString(Debug.poly)
-//				+ "; z: " + Debug.z
-//				+"); LFSR2 " + String.format("%04d",
-//						poly[Debug.seqFrame *286 + Debug.cptArray]) 
-//				+ " 0x" + Integer.toHexString(
-//						poly[Debug.seqFrame *286 + Debug.cptArray]) 
-//				+ "; cptArray " + Debug.cptArray;
-//		this.sDebugLines += message +" \r\n";
-//				//System.out.println(message);
-//	}
-	
-	private int inverseWord(int val){
-		String word = String.format
-				("%11s", Integer.toBinaryString(val)).replace(" ", "0");
-		word = new StringBuilder(word).reverse().toString();
-		return Integer.parseInt(word,2);
-	}
-
-	/**
-	 * return a message about debug infos of all modified lines for frames
-	 * who have been computed by the Discret11 object
-	 * @return a string message about debug infos on modified lines
-	 */
-	public String getsDebugLines() {
-		return sDebugLines;
-	}
-	
-	/**
-	 * convert a 576i line to his analog value
-	 * @param frame_line the line number of a 576i image
-	 * @return the analog line equivalent
-	 */
-	private int convertLine(int frame_line) {
-		float res = (float) ((float) (frame_line) / 2);
-		float diff = res - (int)res;
-
-		if (diff != 0) { //frame impaire
-			int val = (int)res + 23;
-			return val;
-		}
-		else {
-			return (int)(res + 335);
-		}
-	}
 
 	public int getKey11bits() {
 		return key11bits;
@@ -585,30 +476,9 @@ public class SimpleDiscret11 {
 	public int[] getDecaPixels() {
 		return decaPixels;
 	}
-	
-	/**
-	 * clone a BufferedImage
-	 * @param bi the BufferedImage to clone
-	 * @return a cloned BufferedImage
-	 */
-	private BufferedImage deepCopy(BufferedImage bi) {
-		ColorModel cm = bi.getColorModel();
-		boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-		WritableRaster raster = bi.copyData(null);
-		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+
+	public int getKey16bits() {
+		return key16bits;
 	}
-	
-//	final static class Debug{
-//		private static int cptArray = 0;
-//		private static int lfsr = 0;
-//		private static int poly = 0;
-//		private static int delayPixels = 0;
-//		private static int digitalLine = 0;	
-//		private static int z = 0;
-//		private static boolean stop = false;
-//		private static int seqFrame = 0;
-//		private static int nbDebug = 0;
-//	
-//	}	
 	
 }
