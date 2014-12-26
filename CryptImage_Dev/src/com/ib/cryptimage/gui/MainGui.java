@@ -167,10 +167,10 @@ public class MainGui {
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		
-		frame.setSize(700,800);
+		frame.setSize(700,810);
 		frame.setLocationRelativeTo(null);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(700, 800));
+		frame.setMinimumSize(new Dimension(700, 810));
 		frame.setResizable(true);		
 		
 		createPanMode();
@@ -212,7 +212,7 @@ public class MainGui {
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 3,
 				1,1,
-				100,30,
+				100,10,
 				1, 1,1,1);
 		this.placerComposants(panGlobal,
 				gbl,
@@ -220,15 +220,15 @@ public class MainGui {
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 4,
 				1,1,
-				100,5,
+				100,15,
 				1, 1,1,1);
 		this.placerComposants(panGlobal,
 				gbl,
 				panProgress,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.LINE_START, GridBagConstraints.BOTH,
 				0, 5,
 				1,1,
-				100,15,
+				100,25,
 				1, 1,1,1);
 
 		//load config
@@ -1201,7 +1201,7 @@ public class MainGui {
 		this.placerComposants(panProgress,
 				gbl,
 				scrollPane,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.LINE_START, GridBagConstraints.BOTH,
 				0, 1,
 				6,1,
 				100,80,

@@ -262,7 +262,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if(src.isSelected()){				
 				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
-				mainGui.getBtnOutputFile().setEnabled(false);
+				//mainGui.getBtnOutputFile().setEnabled(false);
 				mainGui.getSlidBitrate().setEnabled(false);
 				mainGui.getTxtBitrate().setEnabled(false);				
 				mainGui.getCombCodec().setEnabled(false);
@@ -281,7 +281,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if(src.isSelected() && mainGui.getChkPlayer().isSelected()!=true){
 				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
-				mainGui.getBtnOutputFile().setEnabled(false);
+				//mainGui.getBtnOutputFile().setEnabled(false);
 				mainGui.getSlidBitrate().setEnabled(true);
 				mainGui.getTxtBitrate().setEnabled(true);				
 				mainGui.getCombCodec().setEnabled(true);
@@ -300,7 +300,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			} else if(src.isSelected()){
 				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
-				mainGui.getBtnOutputFile().setEnabled(false);
+				//mainGui.getBtnOutputFile().setEnabled(false);
 				mainGui.getSlidFrames().setEnabled(true);
 				mainGui.getChkStrictMode().setEnabled(true);
 				mainGui.getChkStrictMode().setSelected(true);
