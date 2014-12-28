@@ -162,7 +162,7 @@ public class MainGui {
 	       // handle exception
 	    }
 		
-		frame = new JFrame("CryptImage v0.0.7");
+		frame = new JFrame("CryptImage v0.0.8");
 		frame.addWindowListener(new MainGui_ActionListener(this));
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();

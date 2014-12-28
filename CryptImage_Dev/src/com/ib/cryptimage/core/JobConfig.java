@@ -63,6 +63,7 @@ public class JobConfig {
 	private String code = "";
 	private double frameRate = 25;
 	private boolean disableSound = false;
+	private boolean readyTransform = false;
 	
 	
 
@@ -526,5 +527,13 @@ public class JobConfig {
 
 	public void setDisableSound(boolean disableSound) {
 		this.disableSound = disableSound;
+	}
+
+	public boolean isReadyTransform() {
+		return readyTransform;
+	}
+
+	public void setReadyTransform(boolean readyTransform) {
+		this.readyTransform = readyTransform;
 	}	
 }

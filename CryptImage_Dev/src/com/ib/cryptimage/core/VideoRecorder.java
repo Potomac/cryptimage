@@ -43,17 +43,17 @@ public class VideoRecorder {
 	private boolean disableSound;
 	private static int AUDIORATE = 44100;		
 	private SoundCrypt soundCrypt;	
+	private JobConfig job;
 	
 	
 	public VideoRecorder(String outputFilename, int width, int height,
-			int videoBitrate, int videoCodec, int sWidth, 
-			boolean isStrictMode, double framerate, boolean wantSound,
-			boolean disableSound,
-			boolean wantDec) {	
+			double framerate, 
+			JobConfig job) {	
 		
-		this.wantDec = wantDec;
-		this.wantSoundCryptDecrypt = wantSound;
-		this.disableSound = disableSound;
+		this.job = job;
+		this.wantDec = job.isWantDec();
+		this.wantSoundCryptDecrypt = job.isWantSound();
+		this.disableSound = job.isDisableSound();
 		
 		if(wantSoundCryptDecrypt){
 			soundCrypt = new SoundCrypt(AUDIORATE, this.wantDec);			
@@ -61,7 +61,7 @@ public class VideoRecorder {
 		
 		
 		
-		if(sWidth== 720 && isStrictMode == true ){
+		if(job.getsWidth()== 720 && job.isStrictMode() == true ){
 			this.is720 = true;
 			width = 720;
 		}
@@ -70,7 +70,7 @@ public class VideoRecorder {
 		IRational frame_rate = IRational.make(framerate);		
 		
 		
-		switch (videoCodec) {
+		switch (job.getVideoCodec()) {
 		case 1:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
 			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
@@ -99,7 +99,7 @@ public class VideoRecorder {
 		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
 		}
 		
-		writer.getContainer().getStream(0).getStreamCoder().setBitRate(videoBitrate*1024);
+		writer.getContainer().getStream(0).getStreamCoder().setBitRate(job.getVideoBitrate()*1024);
 			
 		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(30);
 		
@@ -127,7 +127,7 @@ public class VideoRecorder {
 	public void addAudioFrame(IAudioSamples sample){	
 		
 		if(sample.isComplete()){		   
-			if(this.wantSoundCryptDecrypt){
+			if(this.wantSoundCryptDecrypt && job.isReadyTransform()){
 		 addAudioFrameTemp(sample);
 			}
 			else{				

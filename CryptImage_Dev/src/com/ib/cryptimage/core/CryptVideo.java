@@ -70,13 +70,13 @@ public class CryptVideo {
 	private int step80 = 0;
 	private int step100 = 0;
 	private FramesPlayer frmv;
-	
+		
 	
 	private VideoPlayer vidPlayer;	
 	
 	private double framerate;
 	
-	public CryptVideo(FramesPlayer frmv) {
+	public CryptVideo(FramesPlayer frmv) {		
 		this.audienceLevel = frmv.getJob().getAudienceLevel();
 		this.frameCount = 0;
 		this.positionSynchro = frmv.getJob().getPositionSynchro();
@@ -96,7 +96,9 @@ public class CryptVideo {
 		this.videoLengthFrames = frmv.getJob().getVideo_frame();
 		this.perc1 = frmv.getJob().getPerc1();
 		this.perc2 = frmv.getJob().getPerc2();
+		
 		this.frmv = frmv;
+		this.frmv.getJob().setReadyTransform(false);
 
 		int mode;
 		if (this.isDecoding) {
@@ -152,12 +154,8 @@ public class CryptVideo {
 						+ this.audienceLevel + "_k" +
 						frmv.getJob().getCode()
 						+ "."
-						+ frmv.getJob().getExtension(), width, height, frmv
-						.getJob().getVideoBitrate(), frmv.getJob()
-						.getVideoCodec(), frmv.getJob().getsWidth(), frmv
-						.getJob().isStrictMode(), frameRate, frmv.getJob().isWantSound(),
-						frmv.getJob().isDisableSound(),
-						frmv.getJob().isWantDec());
+						+ frmv.getJob().getExtension(), width, height,
+						frameRate, frmv.getJob());
 
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(
@@ -262,55 +260,59 @@ public class CryptVideo {
 	
 	public void addFrameEnc(BufferedImage buff, int pos, int timingFrame){			
 		frameCount++;
-		if (frameCount < this.positionSynchro){
-			if(this.strictMode){
-				buff = getScaledImage(buff, 768,576);
+		if (frameCount < this.positionSynchro) {
+			if (this.strictMode) {
+				buff = getScaledImage(buff, 768, 576);
 			}
-			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
-			vid.addFrame(buff,this.timeBase * ( timingFrame  ));
+			// we add a non decrypted frame because we are not at the synchro
+			// frame ( line 310 )
+			vid.addFrame(buff, this.timeBase * (timingFrame));
 			updateProgress("codage");
-			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+			// System.out.println("Frame non decoded : " + (timingFrame+1) +
+			// " /" +this.videoLengthFrames);
+		} else {
+			this.frmv.getJob().setReadyTransform(true);
+			BufferedImage bi;
+			if (this.strictMode) {
+				bi = this.discret.transform(buff);
+			} else {
+				bi = this.simpleDiscret.transform(buff);
+			}
+			// bi = new CryptImage(buff, pos,
+			// this.strictMode).getCryptDiscret11(keyWord);
+			vid.addFrame(bi, this.timeBase * (timingFrame));
+			updateProgress("codage");
 		}
-		else {
-		BufferedImage bi;
-		if(this.strictMode){
-			bi = this.discret.transform(buff);
-		}
-		else
-		{
-			bi = this.simpleDiscret.transform(buff);
-		}
-		//bi = new CryptImage(buff, pos, this.strictMode).getCryptDiscret11(keyWord);		
-		vid.addFrame(bi, this.timeBase * ( timingFrame ));
-		updateProgress("codage");
-		}
-		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+		// System.out.println("Frames encoded : " + (timingFrame+1) + " /"
+		// +this.videoLengthFrames);
 	}
 	
 	public void addFrameDec(BufferedImage buff, int pos, int timingFrame){		
 		frameCount++;
-		if (frameCount < this.positionSynchro){
-			if(this.strictMode){
-				buff = getScaledImage(buff, 768,576);
+		if (frameCount < this.positionSynchro) {
+			if (this.strictMode) {
+				buff = getScaledImage(buff, 768, 576);
 			}
-			//we add a non decrypted frame because we are not at the synchro frame ( line 310 )
-			vid.addFrame(buff,this.timeBase * ( timingFrame  ));
+			// we add a non decrypted frame because we are not at the synchro
+			// frame ( line 310 )
+			vid.addFrame(buff, this.timeBase * (timingFrame));
 			updateProgress("décodage");
-			//System.out.println("Frame non decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
-		}
-		else{
-		BufferedImage bi;
-		if(this.strictMode){
-			bi = this.discret.transform(buff);
-		}
-		else
-		{
-			bi = this.simpleDiscret.transform(buff);
-		}
-		//bi = new CryptImage(buff, pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
-		vid.addFrame(bi, this.timeBase * timingFrame);
-		updateProgress("décodage");
-		//System.out.println("Frames decoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
+			// System.out.println("Frame non decoded : " + (timingFrame+1) +
+			// " /" +this.videoLengthFrames);
+		} else {
+			this.frmv.getJob().setReadyTransform(true);
+			BufferedImage bi;
+			if (this.strictMode) {
+				bi = this.discret.transform(buff);
+			} else {
+				bi = this.simpleDiscret.transform(buff);
+			}
+			// bi = new CryptImage(buff,
+			// pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
+			vid.addFrame(bi, this.timeBase * timingFrame);
+			updateProgress("décodage");
+			// System.out.println("Frames decoded : " + (timingFrame+1) + " /"
+			// +this.videoLengthFrames);
 		}
 	}
 	

@@ -364,11 +364,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		JOptionPane
 		.showMessageDialog(
 				null,
-				"CryptImage v0.0.7" + "\r\n" +
-				"Copyright (C) 2014-12-26 Mannix54 \r\n\r\n" +
-				"License GNU GPL v3 \r\n\r\n" +
+				"CryptImage v0.0.8" + "\r\n" +
+				"Copyright (C) 2014-12-26 Mannix54 \r\n" + 
+				"http://ibsoftware.free.fr/cryptimage.php\r\n\r\n" +
+				"under the GNU GPL v3 license \r\n\r\n" +
 				"CryptImage comes with ABSOLUTELY NO WARRANTY\r\n" +
-				"This is free software, and you are welcome to redistribute it under certain conditions.",
+				"This is free software, and you are welcome to redistribute"
+				+ " it under certain conditions.",
 				"À propos...",
 				JOptionPane.INFORMATION_MESSAGE);
 		
