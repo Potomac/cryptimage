@@ -127,8 +127,8 @@ public class VideoRecorder {
 	public void addAudioFrame(IAudioSamples sample){	
 		
 		if(sample.isComplete()){		   
-			if(this.wantSoundCryptDecrypt && job.isReadyTransform()){
-		 addAudioFrameTemp(sample);
+			if(this.wantSoundCryptDecrypt ){
+		 addAudioFrameTemp(sample,job.isReadyTransform());
 			}
 			else{				
 				writer.encodeAudio(1, sample);				
@@ -139,7 +139,7 @@ public class VideoRecorder {
 		}		
 	}
 	
-	private void addAudioFrameTemp(IAudioSamples sample) {
+	private void addAudioFrameTemp(IAudioSamples sample, boolean enable) {
 		
 		double[] tabL = new double[(int)sample.getNumSamples()];
 		
@@ -170,7 +170,7 @@ public class VideoRecorder {
 			}			
 		}		
 
-		tabL = soundCrypt.transform(tabL);
+		tabL = soundCrypt.transform(tabL, enable);
 		
 		IAudioSamples smp = IAudioSamples.make(tabL.length, 1);
 

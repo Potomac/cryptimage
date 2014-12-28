@@ -85,7 +85,7 @@ public class SoundCrypt {
 		sampleCount = 0;
 	}
 	
-	public double[] transform(double[] sound) {
+	public double[] transform(double[] sound, boolean enable) {
 
 		if (this.dec) {
 			sound = lowPassButterWorthChorus2(sound);
@@ -93,7 +93,7 @@ public class SoundCrypt {
 			sound = lowPassChebyShevChorus(sound);
 		}
 
-		sound = crypt(sound);
+		sound = crypt(sound, enable);
 
 		if (this.dec) {
 			sound = lowPassChebyShevChorus(sound);
@@ -103,14 +103,16 @@ public class SoundCrypt {
 		return sound;
 	}
 	
-	private double[] crypt(double[] sound) {
+	private double[] crypt(double[] sound, boolean enable) {
 
 		for (int i = 0; i < sound.length; i++) {
 			decy = (m_dDeccte * m_dDecy1) - m_dDecy0;
 			m_dDecy0 = m_dDecy1;
 			m_dDecy1 = decy;
 
-			sound[i] = (sound[i] * decy) * m_nGain;
+			if (enable) {
+				sound[i] = (sound[i] * decy) * m_nGain;
+			}
 			sampleCount++;
 
 			if (sampleCount == this.rate) {
