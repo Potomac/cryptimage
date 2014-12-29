@@ -23,6 +23,7 @@ package com.ib.cryptimage.gui;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -39,6 +40,7 @@ import java.util.Hashtable;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -53,6 +55,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 
@@ -362,19 +366,50 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private void showAbout() {
-		JOptionPane
-		.showMessageDialog(
-				null,
-				"CryptImage v0.0.8" + "\r\n" +
-				"Copyright (C) 2014-12-26 Mannix54 \r\n" + 
-				"http://ibsoftware.free.fr/cryptimage.php\r\n\r\n" +
-				"under the GNU GPL v3 license \r\n\r\n" +
-				"CryptImage comes with ABSOLUTELY NO WARRANTY\r\n" +
-				"This is free software, and you are welcome to redistribute"
-				+ " it under certain conditions.",
-				"À propos...",
+		JLabel label = new JLabel();
+
+		String deb = "CryptImage v0.0.8" + "<br/>"
+				+ "Copyright (C) 2014-12-26 Mannix54 <br/>";
+
+		String link = "<a href=\"http://ibsoftware.free.fr/cryptimage.php\">http://ibsoftware.free.fr/cryptimage.php</a>"
+				+ "<br/><br/>";
+
+		String end = "under the GNU GPL v3 license <br/><br/>"
+				+ "CryptImage comes with ABSOLUTELY NO WARRANTY<br/>"
+				+ "This is free software, and you are welcome to redistribute"
+				+ " it under certain conditions.";
+
+		JEditorPane ep = new JEditorPane("text/html", "<html><body>" //
+				+ deb + link + end + "</body></html>");
+
+		// handle link events
+		ep.addHyperlinkListener(new HyperlinkListener() {
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+					// Process.launchUrl(e.getURL().toString()); // roll your
+					// own link launcher or use Desktop if J6+
+					Desktop desktop = Desktop.isDesktopSupported() ? Desktop
+							.getDesktop() : null;
+					if (desktop != null
+							&& desktop.isSupported(Desktop.Action.BROWSE)) {
+						try {
+
+							desktop.browse(e.getURL().toURI());
+						} catch (Exception e2) {
+							e2.printStackTrace();
+						}
+					}
+				}
+			}
+
+		});
+
+		ep.setEditable(false);
+		ep.setBackground(label.getBackground());
+
+		JOptionPane.showMessageDialog(null, ep, "À propos...",
 				JOptionPane.INFORMATION_MESSAGE);
-		
 	}
 
 	private void manageSave() {
