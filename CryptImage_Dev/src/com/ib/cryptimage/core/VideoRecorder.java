@@ -94,7 +94,7 @@ public class VideoRecorder {
 			break;
 		}		
 				
-		if( this.disableSound != true){
+		if( this.disableSound != true && this.job.isVideoHasAudioTrack()){
 		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 1,AUDIORATE);	
 		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
 		}
@@ -106,7 +106,7 @@ public class VideoRecorder {
 	       
 		writer.getContainer().getStream(0).getStreamCoder().open(null, null);
 		
-		if( this.disableSound != true){
+		if( this.disableSound != true && this.job.isVideoHasAudioTrack()){
 			writer.getContainer().getStream(1).getStreamCoder()
 					.open(null, null);
 		}

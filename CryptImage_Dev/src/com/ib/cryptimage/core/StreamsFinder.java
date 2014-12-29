@@ -37,6 +37,9 @@ public class StreamsFinder {
 	private int[] numStreamsAudio;
 	private int[] numStreamsVideo;
 	private int numStreams = 0;
+	private boolean hasVideoTrack = false;
+	private boolean hasAudioTrack = false;
+	
 	
 	public StreamsFinder(String filename){
 		container = IContainer.make();
@@ -46,6 +49,27 @@ public class StreamsFinder {
 		numStreamsVideo = new int[container.getNumStreams()];
 		searchStreams();
 		
+	}
+	
+	private void searchStreams() {
+		int numStreams = container.getNumStreams();
+		int comptAudio = 0;
+		int comptVideo = 0;
+
+		// find the first video stream
+		for (int i = 0; i < numStreams; i++) {
+			IStream stream = container.getStream(i);
+			IStreamCoder coder = stream.getStreamCoder();
+			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
+				this.hasAudioTrack = true;
+				numStreamsAudio[comptAudio] = i;
+				comptAudio++;
+			} else if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
+				this.hasVideoTrack = true;
+				numStreamsVideo[comptVideo] = i;
+				comptVideo++;
+			}
+		}
 	}
 	
 	public int getNumStreams(){
@@ -62,24 +86,13 @@ public class StreamsFinder {
 	
 	public IContainer getContainer(){
 		return this.container;
+	}	
+
+	public boolean isHasVideoTrack() {
+		return hasVideoTrack;
 	}
 
-	private void searchStreams() {
-		int numStreams = container.getNumStreams();
-		int comptAudio = 0;
-		int comptVideo = 0;
-
-		// find the first video stream
-		for (int i = 0; i < numStreams; i++) {
-			IStream stream = container.getStream(i);
-			IStreamCoder coder = stream.getStreamCoder();
-			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
-				numStreamsAudio[comptAudio] = i;
-				comptAudio++;
-			} else if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
-				numStreamsVideo[comptVideo] = i;
-				comptVideo++;
-			}
-		}
+	public boolean isHasAudioTrack() {
+		return hasAudioTrack;
 	}
 }

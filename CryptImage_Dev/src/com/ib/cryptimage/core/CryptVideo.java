@@ -163,6 +163,7 @@ public class CryptVideo {
 						"Une erreur de type exception s'est produite :"
 								+ e.getMessage(), "Erreur du programme",
 						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
 				System.exit(1);
 			}
 		}
@@ -251,7 +252,8 @@ public class CryptVideo {
 
 	public void addAudioFrame(IAudioSamples sample) {
 		if (!this.frmv.getJob().isWantPlay() 
-				&& this.frmv.getJob().isDisableSound() == false) {
+				&& this.frmv.getJob().isDisableSound() == false
+				&& this.frmv.getJob().isVideoHasAudioTrack()) {
 			vid.addAudioFrame(sample);
 		} else if (this.frmv.getJob().isWantPlay() ){
 			//vidPlayer.playJavaSound(sample);			

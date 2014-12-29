@@ -59,7 +59,8 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	
 	public void onAudioSamples(IAudioSamplesEvent event) {
 
-		if (frmV.getJob().isDisableSound() == false) {
+		if (frmV.getJob().isDisableSound() == false 
+				&& frmV.getJob().isVideoHasAudioTrack()) {
 			if (event.getAudioSamples().isComplete()) {
 
 				IAudioSamples samples = event.getAudioSamples();

@@ -64,6 +64,7 @@ public class JobConfig {
 	private double frameRate = 25;
 	private boolean disableSound = false;
 	private boolean readyTransform = false;
+	private boolean videoHasAudioTrack = false;
 	
 	
 
@@ -535,5 +536,13 @@ public class JobConfig {
 
 	public void setReadyTransform(boolean readyTransform) {
 		this.readyTransform = readyTransform;
+	}
+
+	public boolean isVideoHasAudioTrack() {
+		return videoHasAudioTrack;
+	}
+
+	public void setVideoHasAudioTrack(boolean videoHasAudioTrack) {
+		this.videoHasAudioTrack = videoHasAudioTrack;
 	}	
 }

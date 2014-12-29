@@ -59,6 +59,7 @@ import javax.swing.text.BadLocationException;
 import com.ib.cryptimage.core.CryptPhoto;
 import com.ib.cryptimage.core.FramesPlayer;
 import com.ib.cryptimage.core.KeyboardCode;
+import com.ib.cryptimage.core.StreamsFinder;
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
@@ -562,6 +563,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private void setVideosInfos(String path){
+		
+		StreamsFinder findAudio = new StreamsFinder(path);
+		this.mainGui.getJob().setVideoHasAudioTrack(findAudio.isHasAudioTrack());
+		
 		IMediaReader reader = ToolFactory.makeReader(path);
 		reader.readPacket();
 			
