@@ -42,7 +42,8 @@ public class VideoRecorder {
 	private boolean wantSoundCryptDecrypt = false;
 	private boolean disableSound;
 	private static int AUDIORATE = 44100;		
-	private SoundCrypt soundCrypt;	
+	private SoundCrypt soundCryptR;
+	private SoundCrypt soundCryptL;
 	private JobConfig job;
 	
 	
@@ -56,7 +57,8 @@ public class VideoRecorder {
 		this.disableSound = job.isDisableSound();
 		
 		if(wantSoundCryptDecrypt){
-			soundCrypt = new SoundCrypt(AUDIORATE, this.wantDec);			
+			soundCryptR = new SoundCrypt(AUDIORATE, this.wantDec);
+			soundCryptL = new SoundCrypt(AUDIORATE, this.wantDec);
 		}
 		
 		
@@ -95,13 +97,13 @@ public class VideoRecorder {
 		}		
 				
 		if( this.disableSound != true && this.job.isVideoHasAudioTrack()){
-		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 1,AUDIORATE);	
+		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
 		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
 		}
 		
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(job.getVideoBitrate()*1024);
 			
-		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(30);
+		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(25);
 		
 	       
 		writer.getContainer().getStream(0).getStreamCoder().open(null, null);
@@ -143,12 +145,21 @@ public class VideoRecorder {
 		
 		double[] tabL = new double[(int)sample.getNumSamples()];
 		
+		double[] tabR = new double[(int)sample.getNumSamples()];
+		
 		for (int i = 0; i < sample.getNumSamples(); i++) {
 			if (sample.getSample(i, 0, IAudioSamples.Format.FMT_S16) != 0){				
 				tabL[i] = sample.getSample(i, 0, IAudioSamples.Format.FMT_S16);				
 			}
 			else {
 				tabL[i] = -100000;			
+			}
+			
+			if (sample.getSample(i, 1, IAudioSamples.Format.FMT_S16) != 0){				
+				tabR[i] = sample.getSample(i, 1, IAudioSamples.Format.FMT_S16);				
+			}
+			else {
+				tabR[i] = -100000;			
 			}
 		}
 		
@@ -167,25 +178,35 @@ public class VideoRecorder {
 			}
 			if(tabL[i] < - 32768){
 				tabL[i] = 0;					
+			}
+			
+			if(tabR[i] == -100000 && i< tabR.length -2 && i > 0){
+				tabR[i] = (int) ((tabR[i+1] + tabR[i-1])/2d);				
+			} else if (tabR[i] == -100000 && i< tabR.length -2 && i == 0){
+				tabR[i] = (int) ((tabR[i+1] + tabR[i+2])/2d);				
+			} else if (tabR[i] == -100000 && i< tabR.length -1 && i > 0){
+				tabR[i] = (int) ((tabR[i-1] + tabR[i+1])/2d);				
+			}else if (tabR[i] == -100000 && i< tabR.length  && i > 0){
+				tabR[i] = (int) ((tabR[i-1] + tabR[i-2])/2d);				
+			}else if (tabR[i] == -100000 ){
+				tabR[i] = 0;							
+			}
+			if(tabR[i] < - 32768){
+				tabR[i] = 0;					
 			}			
 		}		
 
-		tabL = soundCrypt.transform(tabL, enable);
+		tabL = soundCryptL.transform(tabL, enable);
+		tabR = soundCryptR.transform(tabR, enable);
 		
-		IAudioSamples smp = IAudioSamples.make(tabL.length, 1);
+		IAudioSamples smp = IAudioSamples.make(tabL.length, 2);
 
-		for (int i = 0; i < tabL.length; i++) {
-			if (tabL[i] != -100000) {
-				smp.setSample(i, 0, IAudioSamples.Format.FMT_S16, (int) tabL[i]);				
-			}
-			else{
-				System.out.println("correctif");
-				smp.setSample(i, 0,IAudioSamples.Format.FMT_S16, 
-						0);
-			}
+		for (int i = 0; i < tabL.length; i++) {			
+				smp.setSample(i, 0, IAudioSamples.Format.FMT_S16, (int) tabL[i]);			
+				smp.setSample(i, 1, IAudioSamples.Format.FMT_S16, (int) tabR[i]);				
 		}
 		
-		smp.setComplete(true, tabL.length, AUDIORATE, 1, IAudioSamples.Format.FMT_S16,
+		smp.setComplete(true, tabL.length, AUDIORATE, 2, IAudioSamples.Format.FMT_S16,
 				sample.getPts());
 		writer.encodeAudio(1, smp);
 	}

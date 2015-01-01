@@ -51,7 +51,7 @@ public class Discret11Enc {
 	
 	private int saveIndexUse11bitsKey;
 	
-	private boolean start = false;
+	private boolean start = true;
 
 
 	/**
@@ -455,7 +455,7 @@ public class Discret11Enc {
 					this.indexUse11bitsKey = saveKey;
 				}
 				// we compute only the even part of
-												// the image
+												// the image				
 				image = modifyEvenFrame(image, z);
 				this.seqFrame++;
 				setAudience622Line(image);
@@ -509,6 +509,16 @@ public class Discret11Enc {
 	 */
 	private BufferedImage modifyEvenFrame(BufferedImage image, int z) {
 		if (enable) {
+			
+			//modif even odd if first time
+			if(this.start == true){
+				image = modifyOddFrame2(image, z);
+				cptArray = 0;
+				cptPoly = 0;
+				this.start = false;
+			}
+			
+			
 			BufferedImage bi = new BufferedImage(this.sWidth, 576,
 					BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
 													// BufferedImage.TYPE_INT_BGR

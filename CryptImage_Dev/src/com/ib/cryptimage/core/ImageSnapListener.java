@@ -73,7 +73,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 					// samples.getChannels(), 48000, samples.getSampleRate());
 
 					if (audioResampler == null) {
-						audioResampler = IAudioResampler.make(1,
+						audioResampler = IAudioResampler.make(2,
 								samples.getChannels(), AUDIORATE,
 								samples.getSampleRate(),
 								IAudioSamples.Format.FMT_S16,
@@ -94,7 +94,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 
 					if (event.getAudioSamples().getNumSamples() > 0) {
 						IAudioSamples out = IAudioSamples.make(
-								samples.getNumSamples(), 1); // samples.getNumSamples(),
+								samples.getNumSamples(), 2); // samples.getNumSamples(),
 																// 1);
 						audioResampler.resample(out, samples,
 								samples.getNumSamples());
