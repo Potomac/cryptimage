@@ -381,14 +381,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		JEditorPane ep = new JEditorPane("text/html", "<html><body>" //
 				+ deb + link + end + "</body></html>");
-
-		// handle link events
+		
 		ep.addHyperlinkListener(new HyperlinkListener() {
 			@Override
 			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-					// Process.launchUrl(e.getURL().toString()); // roll your
-					// own link launcher or use Desktop if J6+
+				if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {					
 					Desktop desktop = Desktop.isDesktopSupported() ? Desktop
 							.getDesktop() : null;
 					if (desktop != null

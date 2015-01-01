@@ -268,7 +268,7 @@ public class MainGui {
 		frame.getContentPane().add(panGlobal);		
 		frame.setVisible(true);
 		frame.repaint();		
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);		
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 	
 	private void createPanMode(){

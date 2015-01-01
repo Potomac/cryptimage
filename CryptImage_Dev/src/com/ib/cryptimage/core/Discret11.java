@@ -15,6 +15,7 @@
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 28 sept. 2014 Author Mannix54
+ * http://ibsoftware.free.fr/cryptimage.php
  */
 
 
@@ -416,6 +417,7 @@ public class Discret11 {
 			image = modifyOddFrame(image, z);
 			this.seqFrame++;			
 			setAudience622Line(image);
+			
 			if(this.seqFrame == 6 ){
 				setWhite310Line(image);				
 				this.seqFrame = 0;
