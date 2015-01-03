@@ -21,6 +21,7 @@
 
 package com.ib.cryptimage.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -45,6 +46,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
@@ -403,8 +405,27 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		ep.setEditable(false);
 		ep.setBackground(label.getBackground());
+		
+		JPanel pan = new JPanel();
+		JButton btnLicense = new JButton("Voir la licence");
+		btnLicense.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ShowLicense showLicense = new ShowLicense();
+				showLicense.show();				
+			}
+		});
+		
+		JPanel panBtn = new JPanel();
+		panBtn.setLayout(new BorderLayout());
+		panBtn.add(btnLicense, BorderLayout.WEST);
+		
+		pan.setLayout(new BorderLayout());
+		pan.add(ep, BorderLayout.CENTER);
+		pan.add(panBtn, BorderLayout.SOUTH);
 
-		JOptionPane.showMessageDialog(null, ep, "À propos...",
+		JOptionPane.showMessageDialog(null, pan, "À propos...",
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 

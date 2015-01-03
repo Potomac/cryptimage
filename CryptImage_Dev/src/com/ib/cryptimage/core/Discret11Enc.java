@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 31 déc. 2014 Author Mannix54
  * http://ibsoftware.free.fr/cryptimage.php
@@ -494,13 +494,13 @@ public class Discret11Enc {
 	private BufferedImage modifyEvenFrame(BufferedImage image, int z) {
 		if (enable) {
 			
-			//modif even odd if first time
-			if(this.start == true){
-				image = modifyOddFrame2(image, z);
-				cptArray = 0;
-				cptPoly = 0;
-				this.start = false;
-			}
+//			//modif even odd if first time
+//			if(this.start == true){
+//				image = modifyOddFrame2(image, z);
+//				cptArray = 0;
+//				cptPoly = 0;
+//				this.start = false;
+//			}
 			
 			
 			BufferedImage bi = new BufferedImage(this.sWidth, 576,

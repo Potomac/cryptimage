@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 30 déc. 2014 Author Mannix54
  * http://ibsoftware.free.fr/cryptimage.php
@@ -634,10 +634,10 @@ public class Discret11Dec {
 				// we compute only the even part of
 												// the image
 				image = modifyEvenFrame(image, z);
-				if (this.start == true) {
-					// and we delay to 1800 ns the odd frame
-					image = modifyOddFrame3(image, 1);
-				}
+//				if (this.start == true) {
+//					// and we delay to 1800 ns the odd frame
+//					image = modifyOddFrame3(image, 1);
+//				}
 				this.seqFrame++;
 				this.currentframePos++;
 			} else { // we compute both the odd and even parts of the image (
@@ -801,54 +801,54 @@ public class Discret11Dec {
 		return image;			
 	}
 	
-	/**
-	 * Transform the lines of the odd part of an image ( trame impaire )
-	 * 
-	 * @param image
-	 * @param z the z value for the delay array
-	 * @return
-	 */
-	private BufferedImage modifyOddFrame3(BufferedImage image, int z){	
-		BufferedImage bi = new BufferedImage(this.sWidth,576,
-				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR		
-				
-		Raster raster1 = bi.getRaster();
-		WritableRaster raster2 = image.getRaster();	
-
-		int temp2 = 0;	
-
-	
-		for (int y = 2; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
-			}
-			
-			if(cptPoly == 1716){
-				cptPoly = 0;				
-			}			
-			temp2 = delayArray[index11bitsKey][5][cptArray];
-
-			if (y != 574) { // we don't increment if it's line 310 ( 575 in
-				// digital image )
-				raster2.setPixels(temp2 , y, this.sWidth
-						- temp2 , 1, raster2.getPixels(0,
-						y, this.sWidth - temp2, 1,
-						new int[(this.sWidth - temp2 ) * 3]));
-				//draw black line at start of delay
-				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
-						y, temp2 , 1,
-						new int[temp2  * 3]));				
-				cptPoly++; // we increment the count of poly array
-				cptArray++;
-			}
-			y++; // add one to y in order to have only odd lines frame
-		}
-		cptArray = 0;
-		cptPoly = 0;
-		
-		return image;			
-	}
+//	/**
+//	 * Transform the lines of the odd part of an image ( trame impaire )
+//	 * 
+//	 * @param image
+//	 * @param z the z value for the delay array
+//	 * @return
+//	 */
+//	private BufferedImage modifyOddFrame3(BufferedImage image, int z){	
+//		BufferedImage bi = new BufferedImage(this.sWidth,576,
+//				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
+//											// BufferedImage.TYPE_INT_BGR		
+//				
+//		Raster raster1 = bi.getRaster();
+//		WritableRaster raster2 = image.getRaster();	
+//
+//		int temp2 = 0;	
+//
+//	
+//		for (int y = 2; y < 576; y++) {
+//			if(cptArray == 286){
+//				this.cptArray = 0;
+//			}
+//			
+//			if(cptPoly == 1716){
+//				cptPoly = 0;				
+//			}			
+//			temp2 = delayArray[index11bitsKey][5][cptArray];
+//
+//			if (y != 574) { // we don't increment if it's line 310 ( 575 in
+//				// digital image )
+//				raster2.setPixels(temp2 , y, this.sWidth
+//						- temp2 , 1, raster2.getPixels(0,
+//						y, this.sWidth - temp2, 1,
+//						new int[(this.sWidth - temp2 ) * 3]));
+//				//draw black line at start of delay
+//				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
+//						y, temp2 , 1,
+//						new int[temp2  * 3]));				
+//				cptPoly++; // we increment the count of poly array
+//				cptArray++;
+//			}
+//			y++; // add one to y in order to have only odd lines frame
+//		}
+//		cptArray = 0;
+//		cptPoly = 0;
+//		
+//		return image;			
+//	}
 	
 	
 	private boolean is310WhiteLine(BufferedImage buff) {
