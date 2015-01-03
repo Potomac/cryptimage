@@ -340,14 +340,63 @@ public class Discret11Dec {
 	}
 	
 	private void checkMotif(BufferedImage buff) {
+		
+//		if (is310WhiteLine(buff) && indexPos == 0) {
+//			//System.out.println("ligne blanche " + this.totalFrameCount);
+//			this.synchro = true;			
+//		}
+//
+//		if (indexPos < 3 && synchro == true) {
+//			if (is622WhiteLine(buff)) {
+//				motif = motif + "1";
+//				indexPos++;
+//			} else {
+//				if (is622BlackLine(buff)) {
+//					motif = motif + "0";
+//					indexPos++;
+//				} else {
+//					motif = motif + "2";
+//					indexPos++;
+//				}
+//			}
+//		}	
+//
+//
+//		if (motif.length() == 3) {
+//			//System.out.println("motif: " + motif);
+//			this.queueLines.add(motif);
+//			if (queueLines.size() == 8) {
+//				checkAudience();
+//			}
+//			if(synchro == false  ){
+//				this.start = true;
+//				this.saveIndex11bitsKey = this.index11bitsKey;
+//			}			
+//			motif = "";
+//			indexPos = 0;
+//			this.synchro = false;
+//			
+//		}			
+
+		
 
 		if (is310WhiteLine(buff) && indexPos == 0) {
-			//System.out.println("ligne blanche " + this.totalFrameCount);
+			//System.out.println(indexPos + " ligne 310 blanche pos 1 " + this.totalFrameCount);
 			this.synchro = true;			
 		}
+		if (is310BlackLine(buff) == false && indexPos == 1) {
+			//System.out.println(indexPos + " ligne 310 blanche pos 2 " + this.totalFrameCount);
+			this.synchro = false;
+			//razMotif();
+		}
+		if (is310BlackLine(buff) == false && indexPos == 2) {
+			//System.out.println(indexPos + " ligne 310 blanche pos 3 " + this.totalFrameCount);
+			this.synchro = false;
+			//razMotif();
+		}
 
-		if (indexPos < 3 && synchro == true) {
-			if (is622WhiteLine(buff)) {
+		if ( indexPos < 3 && synchro == true) {
+			if (is622WhiteLine(buff) ) {
 				motif = motif + "1";
 				indexPos++;
 			} else {
@@ -359,10 +408,15 @@ public class Discret11Dec {
 					indexPos++;
 				}
 			}
+		} 
+		else {			
+			if(synchro == false ){
+				razMotif();
+			}
 		}
 
 
-		if (motif.length() == 3) {
+		if (motif.length() == 3 ) {			
 			//System.out.println("motif: " + motif);
 			this.queueLines.add(motif);
 			if (queueLines.size() == 8) {
@@ -371,12 +425,24 @@ public class Discret11Dec {
 			motif = "";
 			indexPos = 0;
 			this.synchro = false;
-		}
+		}	
+		
 	}
 	
-	private void checkAudience() {		
-			System.out.println("vérification après la frame " + totalFrameCount);
-		
+	private void razMotif(){
+		this.enable = false;
+		cptArray = 0;
+		cptPoly = 0;
+		this.seqFrame = 0;
+		this.start = true;
+		this.currentframePos = 0;
+		indexPos = 0;
+		motif = "";
+		this.queueLines.clear();
+		this.saveIndex11bitsKey = this.index11bitsKey;
+	}
+	
+	private void checkAudience() {				
 		
 		int total = 0;
 		//System.out.println("------- check audience");
@@ -396,7 +462,6 @@ public class Discret11Dec {
 		
 		switch (total) {
 		case 1:			
-			System.out.println("----audience 1-------------------");
 			this.currentframePos = 0;
 			if(!enable){
 				this.currentframePos = 0;
@@ -411,7 +476,6 @@ public class Discret11Dec {
 			this.enable = true;			
 			break;
 		case 10:			
-			System.out.println("----audience 2-------------------");
 			this.currentframePos = 0;
 			if(!enable){
 				this.currentframePos = 0;
@@ -428,7 +492,6 @@ public class Discret11Dec {
 			//this.currentframePos = 0;			
 			break;
 		case 11:			
-			System.out.println("----audience 3-------------------");
 			if(!enable){
 				this.currentframePos = 0;
 			}
@@ -442,7 +505,6 @@ public class Discret11Dec {
 			this.enable = true;			
 			break;
 		case 100:			
-			System.out.println("----audience 4-------------------");
 			if(!enable){
 				this.currentframePos = 0;
 			}
@@ -456,7 +518,6 @@ public class Discret11Dec {
 			this.enable = true;					
 			break;
 		case 101:			
-			System.out.println("----audience 5-------------------");
 			if(!enable){
 				this.currentframePos = 0;
 			}
@@ -470,7 +531,6 @@ public class Discret11Dec {
 			this.enable = true;						
 			break;
 		case 110:			
-			System.out.println("----audience 6-------------------");
 			if(!enable){
 				this.currentframePos = 0;
 			}
@@ -483,8 +543,7 @@ public class Discret11Dec {
 			cptPoly = 0;
 			this.enable = true;					
 			break;
-		case 111:
-			System.out.println("----audience 7-------------------");
+		case 111:			
 			this.currentframePos = 0;
 			if(!enable){
 				this.currentframePos = 0;
@@ -498,12 +557,10 @@ public class Discret11Dec {
 			cptPoly = 0;
 			this.enable = true;			
 			break;
-		default:
-			System.out.println("------pas valable-----------------" + this.totalFrameCount);
-			System.out.println(motif);
+		default:			
 //			this.currentframePos = 0;
 //			this.saveIndex11bitsKey = this.index11bitsKey;
-			this.enable = true;
+			//this.enable = true;
 //			this.start = true;
 //			this.currentframePos = 0;
 //			this.seqFrame = 0;
@@ -566,9 +623,7 @@ public class Discret11Dec {
 			}
 
 			if (this.currentframePos == 0) {
-				if (this.start == false) {
-					System.out.println("avant zéro " + this.saveIndex11bitsKey + " " +
-				 + this.index11bitsKey + " " +this.totalFrameCount);
+				if (this.start == false) {					
 					int saveKey = this.index11bitsKey;
 					this.index11bitsKey = this.saveIndex11bitsKey;
 					image = modifyOddFrame2(image, 1);
@@ -608,8 +663,7 @@ public class Discret11Dec {
 			this.start = false;
 			return image;
 		} else {
-			//currentframePos++;
-			System.out.println("pas actif");
+			//currentframePos++;			
 			this.checkMotif(image);
 			return image;
 		}
@@ -712,8 +766,7 @@ public class Discret11Dec {
 		BufferedImage bi = new BufferedImage(this.sWidth,576,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
 											// BufferedImage.TYPE_INT_BGR		
-		
-		System.out.println("odd frame 2");
+				
 		Raster raster1 = bi.getRaster();
 		WritableRaster raster2 = image.getRaster();	
 
@@ -759,8 +812,7 @@ public class Discret11Dec {
 		BufferedImage bi = new BufferedImage(this.sWidth,576,
 				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
 											// BufferedImage.TYPE_INT_BGR		
-		
-		System.out.println("odd frame 3");
+				
 		Raster raster1 = bi.getRaster();
 		WritableRaster raster2 = image.getRaster();	
 
@@ -823,6 +875,36 @@ public class Discret11Dec {
 //		}
 
 		if ((total / sWidth) > 200) {
+			return true;
+		} else {
+			return false;
+		}
+	}	
+	
+	private boolean is310BlackLine(BufferedImage buff) {
+		int val, total = 0;			
+		//int[][] rgb = new int[sWidth][3]; 
+		
+//		alpha = ((rgb >>24 ) & 0xFF);
+//	    rouge = ((rgb >>16 ) & 0xFF);
+//	    vert = ((rgb >>8 ) & 0xFF);
+//	    bleu = (rgb & 0xFF);
+	      
+	    
+		for (int i = 0; i < buff.getWidth(); i++) {
+			val = buff.getRGB(i, 574);			
+//			rgb[i][0] =  ((val >>16 ) & 0xFF);
+//			rgb[i][1] =  ((val >>8 ) & 0xFF);
+//			rgb[i][2] = (val & 0xFF);
+			
+			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
+ 		}
+		
+//		for (int i = 0; i < rgb.length; i++) {
+//			total += ( rgb[i][0] + rgb[i][1] + rgb[i][2])/3;
+//		}
+
+		if ((total / sWidth) < 30) {
 			return true;
 		} else {
 			return false;

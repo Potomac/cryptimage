@@ -176,8 +176,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 	}
 
-	private void manageTextArea(JTextArea src) {
-		// TODO Auto-generated method stub
+	private void manageTextArea(JTextArea src) {		
 	
 		
 	}
@@ -625,7 +624,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		               
 		                timeBase = stream.getTimeBase().getDouble();
 		                frameRate = stream.getFrameRate().getValue();
-		                nbFrames = stream.getNumFrames();
+		                
+		                
+		               	nbFrames = stream.getNumFrames();
+		                
+		                
 		                duration = stream.getDuration();
 		                //height = stream.getStreamCoder().getHeight();
 		                alt_nbframes = ((stream.getStreamCoder().getStream().getContainer().getDuration())/1000d/1000d) * frameRate ;

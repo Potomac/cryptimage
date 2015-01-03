@@ -65,7 +65,7 @@ public class SoundCrypt {
 	public SoundCrypt(int rate, boolean dec){		
 		this.dec = dec;
 		if(this.dec == true){
-			m_nGain = 1.5;
+			m_nGain = 3;
 		}
 		else{
 			m_nGain = 1;
@@ -104,26 +104,27 @@ public class SoundCrypt {
 	}
 	
 	private double[] crypt(double[] sound, boolean enable) {
+	
+			for (int i = 0; i < sound.length; i++) {
+				decy = (m_dDeccte * m_dDecy1) - m_dDecy0;
+				m_dDecy0 = m_dDecy1;
+				m_dDecy1 = decy;
 
-		for (int i = 0; i < sound.length; i++) {
-			decy = (m_dDeccte * m_dDecy1) - m_dDecy0;
-			m_dDecy0 = m_dDecy1;
-			m_dDecy1 = decy;
+				if (enable) {
+					sound[i] = (sound[i] * decy) * m_nGain;
+				}
 
-			if (enable) {
-				sound[i] = (sound[i] * decy) * m_nGain;
-			}
-			sampleCount++;
+				sampleCount++;
 
-			if (sampleCount == this.rate) {
-				m_dDecy0 = Math.cos(2 * w);
-				m_dDecy1 = Math.cos(w);
-				sampleCount = 0;
-			}
-		}
+				if (sampleCount == this.rate) {
+					m_dDecy0 = Math.cos(2 * w);
+					m_dDecy1 = Math.cos(w);
+					sampleCount = 0;
+				}
+			}				
 		return sound;
 	}
-
+	
 	/**
 	 * postfilter chorus
 	 * 

@@ -128,9 +128,9 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	public void onVideoPicture(IVideoPictureEvent event)  {
 
 		dumpFrameToBufferedImage(event.getImage());
-		count = count + 1;	
+		count = count + 1;		
 	 
-	if(count == cryptVid.getVideoLengthFrames() 
+	if(count  == cryptVid.getVideoLengthFrames() 
 			&& frmV.getJob().isWantPlay() !=true
 			 ){		
 		cryptVid.closeVideo();

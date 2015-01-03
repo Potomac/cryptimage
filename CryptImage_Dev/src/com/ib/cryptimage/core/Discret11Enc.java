@@ -193,25 +193,19 @@ public class Discret11Enc {
 		}
 		indexCycle = 0;
 		
-		System.out.println("taille " + audienceList.length);
-		if(cptCycle == audienceList.length){
-			System.out.println("raz cptcycle " + cptCycle);
+		
+		if(cptCycle == audienceList.length){			
 			cptCycle = 0;
 		}
 		this.audienceLevel = audienceList[cptCycle];
 		this.saveIndexUse11bitsKey = indexUse11bitsKey;
 		this.indexUse11bitsKey = this.index11bitsKey;		
-		this.index11bitsKey = audienceList[cptCycle] -1;
-		System.out.println("cptArray " + cptArray + " ");
+		this.index11bitsKey = audienceList[cptCycle] -1;		
 		//cptArray = 0;
 		//cptPoly = 0;
 		//this.seqFrame = 0;
 		this.enable = true;	
-		this.key11bits = this.key11BitsTab[this.indexUse11bitsKey];
-		System.out.println("--------seqframe " + this.seqFrame + " " + this.totalFrameCount + " " +
-		this.saveIndexUse11bitsKey +
-		" " + this.indexUse11bitsKey +
-		" " + this.index11bitsKey);
+		this.key11bits = this.key11BitsTab[this.indexUse11bitsKey];	
 	}
 
 	/**
@@ -398,12 +392,7 @@ public class Discret11Enc {
 	 * @return the transformed image
 	 */
 	public BufferedImage transform(BufferedImage image) {
-		totalFrameCount++;
-		if (enable){
-			System.out.println("++enable " + this.totalFrameCount);
-		}
-		else
-			System.out.println("--disable " + totalFrameCount);
+		totalFrameCount++;		
 		
 		// we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
@@ -441,12 +430,9 @@ public class Discret11Enc {
 				break;
 			}
 
-			if (this.seqFrame == 0) {
-				System.out.println("seqframe 0 ---");
+			if (this.seqFrame == 0) {				
 				image = setWhite310Line(image);	
 				if (this.saveIndexUse11bitsKey != -1 ) {					
-					System.out.println("avant zéro " + this.saveIndexUse11bitsKey + " " +
-				 + this.index11bitsKey + " " +this.totalFrameCount);
 					int saveKey = this.indexUse11bitsKey;
 					this.indexUse11bitsKey = this.saveIndexUse11bitsKey;
 					image = modifyOddFrame2(image, 1);
@@ -479,9 +465,7 @@ public class Discret11Enc {
 					image = setBlack310Line(image);	
 				}
 				
-				if(indexCycle ==  8  ){
-					System.out.println("un cycle terminé " 
-							+ this.seqFrame + " " + indexCycle );
+				if(indexCycle ==  8  ){					
 					changeAudience();
 				}		
 				
@@ -609,8 +593,7 @@ public class Discret11Enc {
 			BufferedImage bi = new BufferedImage(this.sWidth, 576,
 					BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
 													// BufferedImage.TYPE_INT_BGR
-
-			System.out.println("odd frame 2");
+			
 			Raster raster1 = bi.getRaster();
 			WritableRaster raster2 = image.getRaster();
 

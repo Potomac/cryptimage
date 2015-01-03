@@ -25,6 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.TimeUnit;
+
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPixelFormat;
@@ -86,7 +87,7 @@ public class VideoRecorder {
 			break;
 		case 4:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFVHUFF,frame_rate, width, height);
-			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);
+			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);			
 			break;
 		case 5:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
@@ -104,7 +105,6 @@ public class VideoRecorder {
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(job.getVideoBitrate()*1024);
 			
 		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(25);
-		
 	       
 		writer.getContainer().getStream(0).getStreamCoder().open(null, null);
 		
@@ -128,17 +128,16 @@ public class VideoRecorder {
 	
 	public void addAudioFrame(IAudioSamples sample){	
 		
-		if(sample.isComplete()){		   
-			if(this.wantSoundCryptDecrypt ){
-		 addAudioFrameTemp(sample,job.isReadyTransform());
+		if (sample.isComplete()) {
+			if (this.wantSoundCryptDecrypt) {
+				addAudioFrameTemp(sample, job.isReadyTransform());
+			} else {
+				//addAudioFrameTemp(sample, false);
+				writer.encodeAudio(1, sample);
 			}
-			else{				
-				writer.encodeAudio(1, sample);				
-			}			
+		} else {
+			System.out.println("pas complet");
 		}
-		else {
-		System.out.println("pas complet");
-		}		
 	}
 	
 	private void addAudioFrameTemp(IAudioSamples sample, boolean enable) {

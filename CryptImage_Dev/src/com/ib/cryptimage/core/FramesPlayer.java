@@ -52,7 +52,7 @@ public class FramesPlayer {
 		
 		
 		this.imgListen = new ImageSnapListener(job.getVideo_frame(), this,
-				streamFinder.getStreamsVideo()[0], streamFinder.getStreamsAudio()[0]);
+				streamFinder.getStreamsVideo()[0], streamFinder.getStreamsAudio()[0]);		
 		mediaReader.addListener(imgListen);
 		
 	}
@@ -60,9 +60,11 @@ public class FramesPlayer {
 	
 	public void readFrame(){
 		try {
-			while(imgListen.getCount()< job.getVideo_frame() && job.isStop() != true){		
+			while( imgListen.getCount() < job.getVideo_frame()
+					&& job.isStop() != true){				
 				mediaReader.readPacket();		
 			}
+			
 			if(job.isStop() && !job.isWantPlay()){
 				job.getGui().getTextInfos().setText(
 						job.getGui().getTextInfos().getText()
