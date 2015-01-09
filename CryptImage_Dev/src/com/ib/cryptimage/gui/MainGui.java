@@ -23,7 +23,9 @@ package com.ib.cryptimage.gui;
 
 
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -113,7 +115,10 @@ public class MainGui {
 	private JCheckBox chkSound;
 	private JLabel lbl11bitsInfo;
 	private JCheckBox chkDisableSound;
-	
+	private JFormattedTextField txtMultiCode;
+	private JSpinner jspCycle;
+	private JLabel lblMultiAudience;
+	private JLabel lblCycle;
 
 	
 
@@ -261,6 +266,14 @@ public class MainGui {
 				break;
 			}
 			this.txtOutputFile.setText(job.getOutput_file());
+			this.txtMultiCode.setText(job.getMultiCode());
+			this.jspCycle.setValue(job.getCycle());
+			if(job.getResolution() == 1){
+				this.rdi720.setSelected(true);
+			}
+			else{
+				this.rdi768.setSelected(true);
+			}
 		}
 		
 
@@ -269,6 +282,8 @@ public class MainGui {
 		frame.setVisible(true);
 		frame.repaint();		
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.combAudience.setSelectedIndex(0);
+		this.combAudience.setSelectedIndex(job.getAudienceLevel());
 	}
 	
 	private void createPanMode(){
@@ -545,7 +560,10 @@ public class MainGui {
 		rdiCoding = new JRadioButton("coder");
 		rdiCoding.setSelected(true);
 		rdiDecoding = new JRadioButton("décoder");
-				
+		
+		rdiCoding.addActionListener(new MainGui_ActionListener(this));
+		rdiDecoding.addActionListener(new MainGui_ActionListener(this));
+		
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(rdiCoding);
 		btnGroup.add(rdiDecoding);
@@ -633,43 +651,70 @@ public class MainGui {
 		
 		//init audience
 		JPanel panAudience = new JPanel();
-		GridBagLayout gblAudience = new GridBagLayout();
+		//GridBagLayout gblAudience = new GridBagLayout();
 				
 		
 		labAudience = new JLabel("Audience");		
 		String[] tab = {"niveau 1","niveau 2","niveau 3","niveau 4",
-				"niveau 5","niveau 6","niveau 7"};
+				"niveau 5","niveau 6","niveau 7", "multicode"};
 		combAudience = new JComboBox<String>(tab);
 		combAudience.setSelectedIndex(0);
 		combAudience.addActionListener(new MainGui_ActionListener(this));
 		
 		lbl11bitsInfo = new JLabel();
-
-	    this.placerComposants(panAudience,
-				gblAudience,
-				labAudience,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 0,
-				1,1,
-				10,33,
-				1, 1,1,15);
-	    this.placerComposants(panAudience,
-				gblAudience,
-				combAudience,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 0,
-				1,1,
-				10,33,
-				1, 1,1,15);
-	    this.placerComposants(panAudience,
-				gblAudience,
-				lbl11bitsInfo,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 0,
-				1,1,
-				10,33,
-				1, 1,1,1);		
+		lbl11bitsInfo.setFont(new Font("Serif", Font.PLAIN, 10));
 		
+		//multimode components		
+		
+		MaskFormatter maskMultiMode;
+		
+		try {
+			maskMultiMode = new MaskFormatter("##########");
+			maskMultiMode.setPlaceholderCharacter('#');
+			maskMultiMode.setValidCharacters("1234567");
+			
+			txtMultiCode = new JFormattedTextField(maskMultiMode);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		txtMultiCode.setColumns(10);
+		txtMultiCode.setText("6425");
+		txtMultiCode.getDocument().addDocumentListener(new MultiCode_DocumentListener(this));
+		
+		
+		txtMultiCode.setFocusLostBehavior(JFormattedTextField.COMMIT);	
+		//txtMultiCode.setHorizontalAlignment(JTextField.RIGHT);
+		
+		lblMultiAudience = new JLabel("audiences:");
+		lblCycle = new JLabel("cycle:");
+				
+		jspCycle = new JSpinner();
+		
+		JSpinner.NumberEditor spinnerEditorMultiMode = new JSpinner.NumberEditor(jspCycle);
+		jspCycle.setEditor(spinnerEditorMultiMode);
+		
+		JComponent editorMultiMode = jspCycle.getEditor();
+		JFormattedTextField tfMultiMode = ((JSpinner.DefaultEditor) editorMultiMode).getTextField();
+		tfMultiMode.setColumns(2);
+		tfMultiMode.setEditable(false);
+		
+		spinnerEditorMultiMode.getModel().setMinimum(1);
+		spinnerEditorMultiMode.getModel().setMaximum(99);
+		spinnerEditorMultiMode.getModel().setStepSize(1);
+		//spinnerEditorMultiMode.getModel().setValue(1);	
+		
+	
+		panAudience.add(labAudience);
+		panAudience.add(combAudience);		  
+	    
+	    //panAudience.add(lblMultiAudience);
+	    panAudience.add(txtMultiCode);
+	    panAudience.add(lblCycle);
+	    panAudience.add(jspCycle);
+	    panAudience.add(lbl11bitsInfo);	    
+
 		  
 		chkDelay = new JCheckBox("Retards par défaut");
 		chkDelay.setSelected(true);
@@ -873,7 +918,7 @@ public class MainGui {
 				panAudience,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 2,
-				1,1,
+				7,1,
 				100,25,
 				1, 1,1,1);		
 	
@@ -883,7 +928,7 @@ public class MainGui {
 				gbl,
 				panDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 4,
+				0, 3,
 				3,1,
 				100,25,
 				1, 1,1,1);
@@ -892,7 +937,7 @@ public class MainGui {
 				gbl,
 				panDelay2,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 5,
+				0, 4,
 				3,1,
 				100,25,
 				1, 1,1,1);		
@@ -902,9 +947,9 @@ public class MainGui {
 				gbl,
 				chkDelay,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				0, 6,
+				0, 5,
 				1,1,
-				33,25,
+				10,25,
 				1, 1,1,1);
 		
 		//check sound
@@ -912,18 +957,18 @@ public class MainGui {
 				gbl,
 				chkSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 6,
+				1, 5,
 				1,1,
-				33,25,
+				10,25,
 				1, 1,1,1);
 		//disable sound
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				chkDisableSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 6,
+				2, 5,
 				1,1,
-				33,25,
+				10,25,
 				1, 1,1,1);
 		
 		//frame start
@@ -931,7 +976,7 @@ public class MainGui {
 				gbl,
 				panFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 7,
+				0, 6,
 				3,1,
 				100,25,
 				1, 1,1,1);
@@ -1526,6 +1571,26 @@ public class MainGui {
 
 	public JButton getBtnAbout() {
 		return btnAbout;
+	}
+
+	public JFormattedTextField getTxtMultiCode() {
+		return txtMultiCode;
+	}
+
+	public JSpinner getJspCycle() {
+		return jspCycle;
+	}
+
+	public JLabel getLblMultiAudience() {
+		return lblMultiAudience;
+	}
+
+	public JLabel getLblCycle() {
+		return lblCycle;
+	}
+
+	public JLabel getLabAudience() {
+		return labAudience;
 	}
 
 }

@@ -118,10 +118,19 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageCheckBoxes(JCheckBox src) {
 		if (src.equals(this.mainGui.getChkStrictMode())) {
-			if (src.isSelected()) {
+			if (src.isSelected()) {				
+				setMultiCodeComboBox();
+				this.mainGui.getLbl11bitsInfo().setEnabled(true);
+				if(this.mainGui.getRdiDecoding().isSelected()){
+					this.mainGui.getCombAudience().setSelectedIndex(0);
+					disableComboAudience();					
+				}
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 			} else {
+				setNoMultiCodeComboBox();				
+				enableComboAudience();				
+				this.mainGui.getLbl11bitsInfo().setEnabled(true);		
 				mainGui.getRdi720().setEnabled(false);
 				mainGui.getRdi768().setEnabled(false);
 			}
@@ -206,8 +215,21 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getJcbExtension().setSelectedIndex(1);
 			}
 		} else if(src.equals(mainGui.getCombAudience())){
-			get11bitsKeyWord(mainGui.getSlid16bitsWord().getValue(),
-					mainGui.getCombAudience().getSelectedIndex());
+			if (mainGui.getCombAudience().getSelectedIndex() == 7){
+				mainGui.getTxtMultiCode().setEnabled(true);
+				mainGui.getJspCycle().setEnabled(true);
+				mainGui.getLblMultiAudience().setEnabled(true);
+				mainGui.getLblCycle().setEnabled(true);
+				computeAudienceMulti(mainGui.getTxtMultiCode().getText());
+			}
+			else {
+				mainGui.getTxtMultiCode().setEnabled(false);
+				mainGui.getJspCycle().setEnabled(false);
+				mainGui.getLblMultiAudience().setEnabled(false);
+				mainGui.getLblCycle().setEnabled(false);
+				get11bitsKeyWord(mainGui.getSlid16bitsWord().getValue(),
+						mainGui.getCombAudience().getSelectedIndex());				
+			}			
 		}
 	}
 
@@ -218,9 +240,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			mainGui.getJsp16bitKeyword().setValue(
 					mainGui.getSlid16bitsWord().getValue());
 			//update code
-			updateKeyboardCode(mainGui.getTxtSerial().getText());
-			get11bitsKeyWord(mainGui.getSlid16bitsWord().getValue(),
-					mainGui.getCombAudience().getSelectedIndex());
+			updateKeyboardCode(mainGui.getTxtSerial().getText());			
+			if(mainGui.getCombAudience().getSelectedIndex() == 7){
+				computeAudienceMulti(mainGui.getTxtMultiCode().getText());
+			}
+			else {
+				get11bitsKeyWord(mainGui.getSlid16bitsWord().getValue(),
+						mainGui.getCombAudience().getSelectedIndex());
+			}
 		}  else if(src.equals(this.mainGui.getSlidDelay1())){
 			if(src.getValue()!=1670){
 				mainGui.getChkDelay().setSelected(false);
@@ -265,7 +292,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageRadioButton(JRadioButton src) {
 		if(src.equals(mainGui.getRdiPhoto())){
-			if(src.isSelected()){				
+			if(src.isSelected()){
+				setNoMultiCodeComboBox();
+				enableComboAudience();
+				this.mainGui.getLbl11bitsInfo().setEnabled(true);
 				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
 				//mainGui.getBtnOutputFile().setEnabled(false);
@@ -284,6 +314,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkHorodatage().setEnabled(false);				
 			}
 		} else if(src.equals(mainGui.getRdiVideo())){
+			setMultiCodeComboBox();			
+			if(this.mainGui.getRdiDecoding().isSelected()){
+				disableComboAudience();
+				this.mainGui.getLbl11bitsInfo().setEnabled(false);
+			}
 			if(src.isSelected() && mainGui.getChkPlayer().isSelected()!=true){
 				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
@@ -296,7 +331,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getTxtNbFrames().setEnabled(true);
 				mainGui.getChkStrictMode().setEnabled(true);
 				mainGui.getChkStrictMode().setSelected(true);
-				mainGui.getCombAudience().setEnabled(true);
+				//mainGui.getCombAudience().setEnabled(true);
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
@@ -317,6 +352,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				
 				
 			}
+		} else if(src.equals(mainGui.getRdiCoding())){			
+			enableComboAudience();
+			this.mainGui.getLbl11bitsInfo().setEnabled(true);
+		} else if(src.equals(mainGui.getRdiDecoding())){
+			if(this.mainGui.getChkStrictMode().isSelected() == false){
+				if(this.mainGui.getCombAudience().getItemCount() == 7){
+					setNoMultiCodeComboBox();
+				}
+				enableComboAudience();
+			} else {
+				disableComboAudience();
+			}			
 		}
 	}
 
@@ -500,113 +547,145 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 	}
 
-	private void manageEnter(){
-		mainGui.getTextInfos().setForeground(Color.black);
-		
-		mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				
-		mainGui.getBtnEnter().setEnabled(false);
-		mainGui.getBtnCancel().setEnabled(true);
-		mainGui.getBtnExit().setEnabled(false);
-		mainGui.getBtnInputFile().setEnabled(false);
-		mainGui.getBtnOutputFile().setEnabled(false);
-		
-		mainGui.getJob().setInput_file(mainGui.getTxtInputFile().getText());
-		if (mainGui.getTxtOutputFile().getText().equals("")) {
-			mainGui.getJob()
-					.setOutput_file(mainGui.getTxtInputFile().getText());
-		} else {
-			File fic = new File(mainGui.getTxtInputFile().getText());
-			if (fic.getName().lastIndexOf(".") != -1) {
+	private void manageEnter() {
+		if (mainGui.getCombAudience().getSelectedIndex() == 7
+				&& mainGui.getTxtMultiCode().getText().replaceAll("#", "")
+						.replaceAll(" ", "").equals("")) {
+			JOptionPane
+					.showMessageDialog(
+							mainGui.getFrame(),
+							"Vous devez entrer un ou plusieurs niveaux d'audience pour le multicode.",
+							"pas de niveau d'audience pour le multicode",
+							JOptionPane.WARNING_MESSAGE);
+		} 
+		else {
+			mainGui.getTextInfos().setForeground(Color.black);
+
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+			mainGui.getBtnEnter().setEnabled(false);
+			mainGui.getBtnCancel().setEnabled(true);
+			mainGui.getBtnExit().setEnabled(false);
+			mainGui.getBtnInputFile().setEnabled(false);
+			mainGui.getBtnOutputFile().setEnabled(false);
+
+			mainGui.getJob().setInput_file(mainGui.getTxtInputFile().getText());
+			if (mainGui.getTxtOutputFile().getText().equals("")) {
 				mainGui.getJob().setOutput_file(
-						mainGui.getTxtOutputFile().getText()
-								+ File.separator
-								+ fic.getName().substring(0,
-										fic.getName().lastIndexOf(".")));
+						mainGui.getTxtInputFile().getText());
 			} else {
-				mainGui.getJob().setOutput_file(
-						mainGui.getTxtOutputFile().getText()
-								+ File.separator
-								+ fic.getName());
+				File fic = new File(mainGui.getTxtInputFile().getText());
+				if (fic.getName().lastIndexOf(".") != -1) {
+					mainGui.getJob().setOutput_file(
+							mainGui.getTxtOutputFile().getText()
+									+ File.separator
+									+ fic.getName().substring(0,
+											fic.getName().lastIndexOf(".")));
+				} else {
+					mainGui.getJob().setOutput_file(
+							mainGui.getTxtOutputFile().getText()
+									+ File.separator + fic.getName());
+				}
 			}
-		}
-		mainGui.getJob().setWord16bits(Integer.valueOf(mainGui.getTxt16bitsWord().getText()));
-		
-		mainGui.getJob().setVideo_frame(Integer.valueOf(mainGui.getSlidFrames().getValue()));
-		mainGui.getJob().setStrictMode(mainGui.getChkStrictMode().isSelected());
-		mainGui.getJob().setPositionSynchro((int)mainGui.getJspFrameStart().getValue());
-		mainGui.getJob().setWantDec(mainGui.getRdiDecoding().isSelected());
-		mainGui.getJob().setWantPlay(mainGui.getChkPlayer().isSelected());
-		mainGui.getJob().setModePhoto(mainGui.getRdiPhoto().isSelected());
-		mainGui.getJob().setExtension(mainGui.getJcbExtension().getSelectedItem().toString());
-		mainGui.getJob().setWantSound(mainGui.getChkSound().isSelected());
-		mainGui.getJob().setDisableSound(mainGui.getChkDisableSound().isSelected());
-				
-		
-		mainGui.getJob().setAudienceLevel(mainGui.getCombAudience().getSelectedIndex() + 1);
-			
-		
-		mainGui.getJob().setVideoBitrate(Integer.valueOf(mainGui.getTxtBitrate().getText()));
-		mainGui.getJob().setVideoCodec(mainGui.getCombCodec().getSelectedIndex() +1);
-		mainGui.getJob().setPerc1(Double.valueOf(mainGui.getTxtDelay1().getText().replace("%", ""))/100d);
-		mainGui.getJob().setPerc2(Double.valueOf(mainGui.getTxtDelay2().getText().replace("%", ""))/100d);
-		
-		if(mainGui.getRdi720().isSelected()){
-			mainGui.getJob().setsWidth(720);
-		}
-		if(mainGui.getRdi768().isSelected()){
-			mainGui.getJob().setsWidth(768);
-		}
-		
-		mainGui.getJob().setSerial(mainGui.getTxtSerial().getText());
-		mainGui.getJob().setCode(mainGui.getTxtCode().getText());
-				
-		mainGui.getJob().setStop(false);
-		
-		mainGui.getProgress().setMaximum(Integer.valueOf(mainGui.getSlidFrames().getValue()));
-		
-		if(mainGui.getJob().isModePhoto()){
-			 this.thread = new Thread(new Runnable() {
+			mainGui.getJob().setWord16bits(
+					Integer.valueOf(mainGui.getTxt16bitsWord().getText()));
+
+			mainGui.getJob().setVideo_frame(
+					Integer.valueOf(mainGui.getSlidFrames().getValue()));
+			mainGui.getJob().setStrictMode(
+					mainGui.getChkStrictMode().isSelected());
+			mainGui.getJob().setPositionSynchro(
+					(int) mainGui.getJspFrameStart().getValue());
+			mainGui.getJob().setWantDec(mainGui.getRdiDecoding().isSelected());
+			mainGui.getJob().setWantPlay(mainGui.getChkPlayer().isSelected());
+			mainGui.getJob().setModePhoto(mainGui.getRdiPhoto().isSelected());
+			mainGui.getJob().setExtension(
+					mainGui.getJcbExtension().getSelectedItem().toString());
+			mainGui.getJob().setWantSound(mainGui.getChkSound().isSelected());
+			mainGui.getJob().setDisableSound(
+					mainGui.getChkDisableSound().isSelected());
+
+			mainGui.getJob().setAudienceLevel(
+					mainGui.getCombAudience().getSelectedIndex() + 1);
+			mainGui.getJob().setMultiCode(
+					mainGui.getTxtMultiCode().getText().replaceAll("#", "")
+					.replaceAll(" ", ""));
+			mainGui.getJob().setCycle((int)mainGui.getJspCycle().getValue());
+
+			mainGui.getJob().setVideoBitrate(
+					Integer.valueOf(mainGui.getTxtBitrate().getText()));
+			mainGui.getJob().setVideoCodec(
+					mainGui.getCombCodec().getSelectedIndex() + 1);
+			mainGui.getJob().setPerc1(
+					Double.valueOf(mainGui.getTxtDelay1().getText()
+							.replace("%", "")) / 100d);
+			mainGui.getJob().setPerc2(
+					Double.valueOf(mainGui.getTxtDelay2().getText()
+							.replace("%", "")) / 100d);
+
+			if (mainGui.getRdi720().isSelected()) {
+				mainGui.getJob().setsWidth(720);
+			}
+			if (mainGui.getRdi768().isSelected()) {
+				mainGui.getJob().setsWidth(768);
+			}
+
+			mainGui.getJob().setSerial(mainGui.getTxtSerial().getText());
+			mainGui.getJob().setCode(mainGui.getTxtCode().getText());
+
+			mainGui.getJob().setStop(false);
+
+			mainGui.getProgress().setMaximum(
+					Integer.valueOf(mainGui.getSlidFrames().getValue()));
+
+			if (mainGui.getJob().isModePhoto()) {
+				this.thread = new Thread(new Runnable() {
 					@Override
-					public void run() {				
-							CryptPhoto photo = new CryptPhoto(mainGui.getJob());
-							photo.run();
-							mainGui.getProgress().setMaximum(2);
-							mainGui.getProgress().setValue(1);
-							mainGui.getProgress().setValue(2);
-							mainGui.getBtnEnter().setEnabled(true);
-							mainGui.getBtnCancel().setEnabled(false);
-							mainGui.getBtnExit().setEnabled(true);
-							mainGui.getBtnInputFile().setEnabled(true);
-							mainGui.getBtnOutputFile().setEnabled(true);
-							mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					public void run() {
+						CryptPhoto photo = new CryptPhoto(mainGui.getJob());
+						photo.run();
+						mainGui.getProgress().setMaximum(2);
+						mainGui.getProgress().setValue(1);
+						mainGui.getProgress().setValue(2);
+						mainGui.getBtnEnter().setEnabled(true);
+						mainGui.getBtnCancel().setEnabled(false);
+						mainGui.getBtnExit().setEnabled(true);
+						mainGui.getBtnInputFile().setEnabled(true);
+						mainGui.getBtnOutputFile().setEnabled(true);
+						mainGui.getFrame()
+								.setCursor(
+										Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
 				});
-				
+
 				thread.setPriority(5);
-				
+
 				thread.start();
-		}
-		else {
-		 this.thread = new Thread(new Runnable() {
-			@Override
-			public void run() {				
-					FramesPlayer frmVideo = new FramesPlayer(mainGui.getJob());
-					frmVideo.readFrame();
-					mainGui.getBtnEnter().setEnabled(true);
-					mainGui.getBtnCancel().setEnabled(false);
-					mainGui.getBtnExit().setEnabled(true);
-					mainGui.getBtnInputFile().setEnabled(true);
-					mainGui.getBtnOutputFile().setEnabled(true);
-					mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			} else {
+				this.thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						FramesPlayer frmVideo = new FramesPlayer(mainGui
+								.getJob());
+						frmVideo.readFrame();
+						mainGui.getBtnEnter().setEnabled(true);
+						mainGui.getBtnCancel().setEnabled(false);
+						mainGui.getBtnExit().setEnabled(true);
+						mainGui.getBtnInputFile().setEnabled(true);
+						mainGui.getBtnOutputFile().setEnabled(true);
+						mainGui.getFrame()
+								.setCursor(
+										Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					}
+				});
+
+				thread.setPriority(5);
+
+				thread.start();
 			}
-		});
-		
-		thread.setPriority(5);
-		
-		thread.start();
 		}
-	}	
+	}
 	
 	private void manageCancel(){		
 			  mainGui.getBtnCancel().setEnabled(false);
@@ -817,31 +896,29 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	@Override
 	public void insertUpdate(DocumentEvent arg0) {		
-		try {
-			String  value = arg0.getDocument().getText(0, arg0.getDocument().getLength());
-						
+			try {
+				String value = arg0.getDocument().getText(0,
+						arg0.getDocument().getLength());
 
-			updateKeyboardCode(value);
-			
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+				updateKeyboardCode(value);
+
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
 	}
 
 	@Override
-	public void removeUpdate(DocumentEvent arg0) {		
-		
-		try {
-			String  value = arg0.getDocument().getText(0, arg0.getDocument().getLength());
-						
-			updateKeyboardCode(value);
-				
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void removeUpdate(DocumentEvent arg0) {			
+			try {
+				String value = arg0.getDocument().getText(0,
+						arg0.getDocument().getLength());
+				updateKeyboardCode(value);
+
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
 		
 	}
 
@@ -888,47 +965,146 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		case 0:
 			//audience 1
 			String audience1 = word.substring(0, 11);
-			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+			mainGui.getLbl11bitsInfo().setText( "( " +
 					String.format("%04d", Integer.parseInt(audience1,2)) + " )");
 			break;
 		case 1:
 			//audience 2
 			String audience2 = word.substring(3, 14);
-			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+			mainGui.getLbl11bitsInfo().setText( "( " +
 					String.format("%04d", Integer.parseInt(audience2,2))+ " )");
 			break;
 		case 2:
 			//audience 3
 			String audience3 = word.substring(6, 16) + word.charAt(0);
-			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+			mainGui.getLbl11bitsInfo().setText( "( " +
 					String.format("%04d", Integer.parseInt(audience3,2))+ " )");
 			break;
 		case 3:
 			//audience 4
 			String audience4 =  word.substring(9, 16) + word.substring(0, 4);
-			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+			mainGui.getLbl11bitsInfo().setText( "( " +
 					String.format("%04d", Integer.parseInt(audience4,2)) + " )");
 			break;
 		case 4:
 			//audience 5
 			String audience5 = word.substring(12, 16) +  word.substring(0, 7);
-			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+			mainGui.getLbl11bitsInfo().setText( "( " +
 					String.format("%04d", Integer.parseInt(audience5,2))+ " )");
 			break;
 		case 5:
 			//audience 6
 			String audience6 =  word.charAt(15) + word.substring(0, 10) ;
-			mainGui.getLbl11bitsInfo().setText( "( mot 11 bits: " +
+			mainGui.getLbl11bitsInfo().setText( "( " +
 					String.format("%04d", Integer.parseInt(audience6,2))+ " )");
 			break;
 		case 6:
 			//audience 7		
-			mainGui.getLbl11bitsInfo().setText("( mot 11 bits: 1337 )");
+			mainGui.getLbl11bitsInfo().setText("( 1337 )");
 			break;
 		default:
 			break;	
 		}		
 	}
+	
+	private void computeAudienceMulti(String audienceMulti){
+		String word11bits = "(";
+		audienceMulti = audienceMulti.replaceAll("#", "");
+		audienceMulti = audienceMulti.replaceAll(" ", "");		
+		
+		boolean[] audienceTab = new boolean[7];
+		
+		for (int i = 0; i < 7; i++) {
+			audienceTab[i] = false;
+		}
+		
+		for (int i = 0; i < audienceMulti.length(); i++) {
+			switch (Integer.valueOf(audienceMulti.substring(i, i+1))) {
+			case 1:
+				audienceTab[0] = true;
+				break;
+			case 2:
+				audienceTab[1] = true;
+				break;
+			case 3:
+				audienceTab[2] = true;
+				break;
+			case 4:
+				audienceTab[3] = true;
+				break;
+			case 5:
+				audienceTab[4] = true;
+				break;
+			case 6:
+				audienceTab[5] = true;
+				break;
+			case 7:
+				audienceTab[6] = true;
+				break;
+			default:
+				break;
+			}
+		}
+		
+		
+		for (int i = 0; i < 7; i++) {
+			if(audienceTab[i] == true){
+			word11bits = word11bits + " " + ( i + 1 ) + ":" + get11bitsKeyWordMulti(this.mainGui.getSlid16bitsWord().getValue(),
+					i+1);	
+			}
+		}		
+		
+		word11bits = word11bits.trim();
+		word11bits = word11bits + " )";
+		
+		this.mainGui.getLbl11bitsInfo().setText(word11bits);
+	}
+	
+	/**
+	 * get the 11 bits keyword
+	 * @param key16bits the 16 bits keyword
+	 */
+	private String get11bitsKeyWordMulti(int key16bits, int index){
+		String word = String.format
+				("%16s", Integer.toBinaryString(key16bits)).replace(" ", "0");	
+		String audience ="";		
+		
+		switch (index) {
+		case 1:
+			//audience 1
+			 audience = word.substring(0, 11);			
+			break;
+		case 2:
+			//audience 2
+			audience = word.substring(3, 14);			
+			break;
+		case 3:
+			//audience 3
+			audience = word.substring(6, 16) + word.charAt(0);			
+			break;
+		case 4:
+			//audience 4
+			audience =  word.substring(9, 16) + word.substring(0, 4);			
+			break;
+		case 5:
+			//audience 5
+			audience = word.substring(12, 16) +  word.substring(0, 7);			
+			break;
+		case 6:
+			//audience 6
+			audience =  word.charAt(15) + word.substring(0, 10) ;			
+			break;
+		case 7:
+			//audience 7		
+			return "1337";			
+		default:
+			audience = "";
+			break;	
+		}
+		
+		return String.format("%04d", Integer.parseInt(audience,2));
+	}
+
 
 	@Override
 	public void windowActivated(WindowEvent e) {
@@ -983,7 +1159,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getCombCodec().getSelectedIndex() + 1,
 				this.mainGui.getSlidBitrate().getValue(),
 				(String)this.mainGui.getJcbExtension().getSelectedItem(),
-				this.mainGui.getTxtOutputFile().getText());
+				this.mainGui.getTxtOutputFile().getText(),
+				this.mainGui.getTxtMultiCode().getText().replaceAll(" ", "").replaceAll("#", ""),
+				this.mainGui.getJspCycle().getValue().toString(),
+				this.mainGui.getRdi720().isSelected());
+				
 	}
 	
 	private String getTime(int timer){		  
@@ -996,6 +1176,41 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		    String disSec = (seconds < 10 ? "0" : "") + seconds; // get seconds and add "0" before if lower than 10
 		    String formattedTime = disHour + ":" + disMinu + ":" + disSec; //get the whole time
 		    return formattedTime;
+	}
+	
+	private void setNoMultiCodeComboBox(){
+		if(this.mainGui.getCombAudience().getItemCount() == 8){
+			this.mainGui.getCombAudience().removeItemAt(7);
+			this.mainGui.getCombAudience().setSelectedIndex(0);			
+		}		
+	}
+	
+	private void setMultiCodeComboBox(){
+		if(this.mainGui.getCombAudience().getItemCount() == 7){
+			this.mainGui.getCombAudience().addItem("multicode");
+		}
+		this.mainGui.getCombAudience().setSelectedIndex(0);		
+	}
+	
+	private void enableComboAudience(){		
+		this.mainGui.getLabAudience().setEnabled(true);
+		this.mainGui.getCombAudience().setEnabled(true);
+		if(this.mainGui.getCombAudience().getSelectedIndex() == 7){
+			this.mainGui.getTxtMultiCode().setEnabled(true);
+			this.mainGui.getLblCycle().setEnabled(true);
+			this.mainGui.getJspCycle().setEnabled(true);
+			this.mainGui.getLbl11bitsInfo().setEnabled(true);
+		}
+	}
+	
+	private void disableComboAudience(){
+		//this.mainGui.getCombAudience().setSelectedIndex(0);
+		this.mainGui.getLabAudience().setEnabled(false);
+		this.mainGui.getCombAudience().setEnabled(false);
+		this.mainGui.getTxtMultiCode().setEnabled(false);
+		this.mainGui.getLblCycle().setEnabled(false);
+		this.mainGui.getJspCycle().setEnabled(false);
+		this.mainGui.getLbl11bitsInfo().setEnabled(false);
 	}
 
 }

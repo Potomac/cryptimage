@@ -44,7 +44,7 @@ import com.xuggle.xuggler.IAudioSamples;
 public class CryptVideo {		
 	private String outputFilename;
 	private int keyWord;
-	private int keyWord11;
+	private String keyWord11;
 	private BufferedImage buff;
 	private int height;
 	private int width;	
@@ -56,41 +56,60 @@ public class CryptVideo {
 	private int videoLengthFrames;
 	private double timeBase;
 	private int frameCount;
-	private int audienceLevel;
+	private String audienceLevel;
 	
 	//private Discret11 discret;
 	private Discret11Dec discretDec;
 	private Discret11Enc discretEnc;
 	private SimpleDiscret11 simpleDiscret;
 	private double perc1;
-	private double perc2;
+	private double perc2;	
 	
-	private int step1 =0;
-	private int step20 = 0;
-	private int step40 =0;
-	private int step60 = 0;
-	private int step80 = 0;
-	private int step100 = 0;
 	private FramesPlayer frmv;
+	
+	private String codePattern;
+	private int cycle;
+	private String fileAudienceLevel;
 		
 	
 	private VideoPlayer vidPlayer;	
 	
 	private double framerate;
 	
-	public CryptVideo(FramesPlayer frmv) {		
-		this.audienceLevel = frmv.getJob().getAudienceLevel();
+	public CryptVideo(FramesPlayer frmv) {
+
+		this.frmv = frmv;
+
+		if (frmv.getJob().getAudienceLevel() == 8) {
+			this.audienceLevel = "multicode-"
+					+ this.frmv.getJob().getMultiCode();
+			fileAudienceLevel = "_multicode-"
+					+ this.frmv.getJob().getMultiCode() + "_cycle" + 
+					this.frmv.getJob().getCycle();
+			this.codePattern = this.frmv.getJob().getMultiCode();
+			this.cycle = this.frmv.getJob().getCycle();
+		} else {
+			this.audienceLevel = String.valueOf(frmv.getJob()
+					.getAudienceLevel());
+			fileAudienceLevel = "_a"
+					+ String.valueOf(frmv.getJob().getAudienceLevel());
+			this.codePattern = String.valueOf(frmv.getJob().getAudienceLevel());
+			this.cycle = 1;
+		}
+
+		this.keyWord11 = this.computeAudienceMulti(this.codePattern, this.frmv
+				.getJob().getWord16bits());
+
 		this.frameCount = 0;
 		this.positionSynchro = frmv.getJob().getPositionSynchro();
 		this.strictMode = frmv.getJob().isStrictMode();
-		
-		if(frmv.getJob().isHorodatage()){			
+
+		if (frmv.getJob().isHorodatage()) {
 			File file = new File(frmv.getJob().getOutput_file());
-			String fileName = frmv.getJob().getDateTime() + "_" +
-					file.getName();			
+			String fileName = frmv.getJob().getDateTime() + "_"
+					+ file.getName();
 			this.outputFilename = file.getParent() + File.separator + fileName;
-		}
-		else{
+		} else {
 			this.outputFilename = frmv.getJob().getOutput_file();
 		}
 		this.keyWord = frmv.getJob().getWord16bits();
@@ -98,8 +117,7 @@ public class CryptVideo {
 		this.videoLengthFrames = frmv.getJob().getVideo_frame();
 		this.perc1 = frmv.getJob().getPerc1();
 		this.perc2 = frmv.getJob().getPerc2();
-		
-		this.frmv = frmv;
+
 		this.frmv.getJob().setReadyTransform(false);
 
 		int mode;
@@ -121,7 +139,7 @@ public class CryptVideo {
 
 		if (frmv.getJob().isWantPlay()) {
 			vidPlayer = new VideoPlayer(frameRate, this.frmv.getJob());
-		}		
+		}
 
 		this.timeBase = 1000d / frameRate;
 		this.framerate = frameRate;
@@ -138,50 +156,63 @@ public class CryptVideo {
 		}
 
 		if (this.strictMode) {
-//			discret = new Discret11(this.keyWord, mode, this.audienceLevel,
-//					this.perc1, this.perc2);
+			// discret = new Discret11(this.keyWord, mode, this.audienceLevel,
+			// this.perc1, this.perc2);
 			if (this.isDecoding) {
 				discretDec = new Discret11Dec(this.frmv.getJob()
 						.getWord16bits(), this.perc1, this.perc2);
-				this.keyWord11 = discretDec.getKey11bits();
-			}
-			else {
-//				discretEnc = new Discret11Enc(this.frmv.getJob()
-//						.getWord16bits(), String.valueOf(
-//								this.frmv.getJob().getAudienceLevel()),
-//						1, this.perc1, this.perc2);
+				// this.keyWord11 = String.valueOf(discretDec.getKey11bits());
+			} else {
+				// discretEnc = new Discret11Enc(this.frmv.getJob()
+				// .getWord16bits(), String.valueOf(
+				// this.frmv.getJob().getAudienceLevel()),
+				// 1, this.perc1, this.perc2);
 				discretEnc = new Discret11Enc(this.frmv.getJob()
-						.getWord16bits(), "6425",
-						2, this.perc1, this.perc2);
-				this.keyWord11 = discretEnc.getKey11bits();
+						.getWord16bits(), this.codePattern, this.cycle,
+						this.perc1, this.perc2);
+				// this.keyWord11 = discretEnc.getKey11bits();
 			}
-			
+
 		} else {
-			simpleDiscret = new SimpleDiscret11(this.keyWord, this.audienceLevel, mode,
-					this.height, this.width);
-			this.keyWord11 = simpleDiscret.getKey11bits();
+			simpleDiscret = new SimpleDiscret11(this.keyWord,
+					Integer.valueOf(this.audienceLevel), mode, this.height,
+					this.width);
+			// this.keyWord11 = String.valueOf(simpleDiscret.getKey11bits());
 		}
 
 		if (frmv.getJob().isWantPlay() != true) {
+			if (this.isDecoding) {
+				try {
+					vid = new VideoRecorder(outputFilename + "_dec" + "."
+							+ frmv.getJob().getExtension(), width, height,
+							frameRate, frmv.getJob());
 
-			try {
-				vid = new VideoRecorder(outputFilename + info + keyWord + "-" 
-			+ this.keyWord11 
-						+ "_a"
-						+ this.audienceLevel + "_k" +
-						frmv.getJob().getCode()
-						+ "."
-						+ frmv.getJob().getExtension(), width, height,
-						frameRate, frmv.getJob());
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(
+							null,
+							"Une erreur de type exception s'est produite :"
+									+ e.getMessage(), "Erreur du programme",
+							JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+					System.exit(1);
+				}
+			} else {
+				try {
+					vid = new VideoRecorder(outputFilename + info + keyWord
+							+ this.fileAudienceLevel + "_k"
+							+ frmv.getJob().getCode() + "."
+							+ frmv.getJob().getExtension(), width, height,
+							frameRate, frmv.getJob());
 
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(
-						null,
-						"Une erreur de type exception s'est produite :"
-								+ e.getMessage(), "Erreur du programme",
-						JOptionPane.ERROR_MESSAGE);
-				e.printStackTrace();
-				System.exit(1);
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(
+							null,
+							"Une erreur de type exception s'est produite :"
+									+ e.getMessage(), "Erreur du programme",
+							JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+					System.exit(1);
+				}
 			}
 		}
 	}
@@ -312,7 +343,8 @@ public class CryptVideo {
 					this.frmv.getJob().setReadyTransform(discretEnc.isEnable());
 				}
 			} else {
-				bi = this.simpleDiscret.transform(buff);				
+				bi = this.simpleDiscret.transform(buff);
+				this.frmv.getJob().setReadyTransform(true);
 			}
 			// bi = new CryptImage(buff, pos,
 			// this.strictMode).getCryptDiscret11(keyWord);
@@ -362,39 +394,23 @@ public class CryptVideo {
 	
 	public void closeVideo(){
 		vid.closeVideo();
-		if(isDecoding){
-			if(this.frmv.getJob().isHasGUI()){
+		if(isDecoding){		
 				this.frmv.getJob().getGui().getTextInfos()
 				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
 						+ "\n\r"
-						+ "Fichier décodé : " + this.outputFilename +"_d" +
-						this.keyWord + "-" + this.keyWord11 +
-						"_a" + this.audienceLevel + "_k" +
-						frmv.getJob().getCode() + "." + frmv.getJob().getExtension());
-			}
-			System.out.println("Decrypted video file : " + this.outputFilename +"_d" +
-					this.keyWord + "-" + this.keyWord11 +
-					"_a" + this.audienceLevel + "_k" +
-							frmv.getJob().getCode()
-							+  "." + frmv.getJob().getExtension());
+						+ "Fichier décodé : " + this.outputFilename +"_dec" +
+						 "." + frmv.getJob().getExtension());				
 		}
 		else
-		{
-			if(this.frmv.getJob().isHasGUI()){
+		{			
 				this.frmv.getJob().getGui().getTextInfos()
 				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ "Fichier codé : " + this.outputFilename + "_c" +
-						this.keyWord + "-" + this.keyWord11 +
-						"_a" + this.audienceLevel + "_k" +
+						this.keyWord +
+						this.fileAudienceLevel + "_k" +
 								frmv.getJob().getCode()
-								+  "." + frmv.getJob().getExtension());
-			}
-			System.out.println("Crypted video file : " + this.outputFilename + "_c" +
-		this.keyWord + "-" + this.keyWord11 + "_a" 
-					+ this.audienceLevel + "_k" +
-							frmv.getJob().getCode()
-							+  "." + frmv.getJob().getExtension());
+								+  "." + frmv.getJob().getExtension());			
 		}		
 	}
 	
@@ -404,9 +420,8 @@ public class CryptVideo {
 				this.height, 12);		
 		
 		try {
-			File dataFile = new File(this.outputFilename + "_c" + this.keyWord +
-					"-" + this.keyWord11 +
-					"_a" + this.audienceLevel + "_k" +
+			File dataFile = new File(this.outputFilename + "_c" + this.keyWord +					
+					this.fileAudienceLevel  + "_k" +
 					frmv.getJob().getCode()
 					+  ".txt");
 			dataFile.createNewFile();
@@ -415,38 +430,29 @@ public class CryptVideo {
 			bfw.write("16 bits keyword : " + this.keyWord + "\r\n");
 			bfw.write("Audience level : " + this.audienceLevel + "\r\n");
 			bfw.write("11 bits keyword : " + this.keyWord11 + "\r\n");
+			bfw.write("nb cycle : " + this.cycle +"\r\n" );
 			bfw.write("serial eprom : " + this.frmv.getJob().getSerial() + "\r\n");
 			bfw.write("keyboard code : " + this.frmv.getJob().getCode() + "\r\n");
-			bfw.write("P(0) at progressive frame n° : " + this.positionSynchro +"\r\n" );
+			bfw.write("encoder started at frame n° : " + this.positionSynchro +"\r\n" );
 			bfw.write("Delay 1 : " + this.perc1 * 100 +"%\r\n" );
 			bfw.write("Delay 2 : " + this.perc2 * 100 +"%\r\n" );
 			bfw.write("Number of frames : " + this.frameCount +"\r\n" );
-			bfw.write("video framerate : " + this.framerate +"\r\n" );
+			bfw.write("video framerate : " + this.framerate +"\r\n" );			
 			bfw.write("File : " + this.outputFilename +"_c" +
 					this.keyWord + 
-					"-" + this.keyWord11 + "_a" + this.audienceLevel + "_k" +
+					this.fileAudienceLevel + "_k" +
 							frmv.getJob().getCode()	+ "." 
 					+ frmv.getJob().getExtension() +"\r\n");			
 			
-			bfw.close();
-			if(this.frmv.getJob().isHasGUI()){
+			bfw.close();			
 				this.frmv.getJob().getGui().getTextInfos()
 				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ "Rapport : " + this.outputFilename
-						+ "_c" + this.keyWord 
-						+ "-" + this.keyWord11 
-						+ "_a" 
-						+ this.audienceLevel + "_k" +
+						+ "_c" + this.keyWord						
+						+ this.fileAudienceLevel + "_k" +
 						frmv.getJob().getCode()
-						+  ".txt");
-			}
-			System.out.println("Data report : " + this.outputFilename
-					+ "_c" + this.keyWord +
-					"-" + this.keyWord11 + "_a" 
-					+ this.audienceLevel + "_k" +
-					frmv.getJob().getCode()
-					+ ".txt");
+						+  ".txt");						
 		} catch (IOException e) {
 			System.out
 					.println("I/O error during the write of the report file");
@@ -463,50 +469,23 @@ public class CryptVideo {
 	 * @param step
 	 *            the type of process ( encoded or decoded )
 	 */
-	private void updateProgress(String step) {
-		int progress = (int) (((double) this.frameCount / (double) this.videoLengthFrames) * 100);
-
-		if (this.frmv.getJob().isHasGUI() == true) {
+	private void updateProgress(String step) {	
+		String stats = "";
+		if(step.equals("décodage") && this.strictMode){
+			stats = "audience en cours : " + discretDec.getAudienceLevel();
+		}
+		else if (step.equals("codage") && this.strictMode){
+			stats = "audience en cours : " + discretEnc.getAudienceLevel();
+		}
 			frmv.getJob().getGui().getProgress().setValue(this.frameCount);
 			frmv.getJob()
 					.getGui()
 					.getTextInfos()
 					.setText(
 							"Trames en cours de " + step + " " + frameCount
-									+ "/" + this.videoLengthFrames);
-
-		} else {
-			if (step == "codage") {
-				step = "encoded";
-			} else {
-				step = "decoded";
-			}
-			if (progress == 1 && step1 == 0) {
-				System.out.println("Frames " + step + " 1%");
-				step1 = 1;
-			}
-
-			if (progress == 20 && step20 == 0) {
-				System.out.println("Frames " + step + " 20%");
-				step20 = 1;
-			}
-			if (progress == 40 && step40 == 0) {
-				System.out.println("Frames " + step + " 40%");
-				step40 = 1;
-			}
-			if (progress == 60 && step60 == 0) {
-				System.out.println("Frames " + step + " 60%");
-				step60 = 1;
-			}
-			if (progress == 80 && step80 == 0) {
-				System.out.println("Frames " + step + " 80%");
-				step80 = 1;
-			}
-			if (progress == 100 && step100 == 0) {
-				System.out.println("Frames " + step + " 100%");
-				step100 = 1;
-			}
-		}
+									+ "/" + this.videoLengthFrames +
+									"\n\r" + stats);
+		
 	}
 
 	public int getVideoLengthFrames() {
@@ -579,4 +558,103 @@ public class CryptVideo {
 		    
 	    return target;
 	}	
+	
+	private String computeAudienceMulti(String audienceMulti, int key16bits){
+		String word11bits = "(";
+		audienceMulti = audienceMulti.replaceAll("#", "");
+		audienceMulti = audienceMulti.replaceAll(" ", "");		
+		
+		boolean[] audienceTab = new boolean[7];
+		
+		for (int i = 0; i < 7; i++) {
+			audienceTab[i] = false;
+		}
+		
+		for (int i = 0; i < audienceMulti.length(); i++) {
+			switch (Integer.valueOf(audienceMulti.substring(i, i+1))) {
+			case 1:
+				audienceTab[0] = true;
+				break;
+			case 2:
+				audienceTab[1] = true;
+				break;
+			case 3:
+				audienceTab[2] = true;
+				break;
+			case 4:
+				audienceTab[3] = true;
+				break;
+			case 5:
+				audienceTab[4] = true;
+				break;
+			case 6:
+				audienceTab[5] = true;
+				break;
+			case 7:
+				audienceTab[6] = true;
+				break;
+			default:
+				break;
+			}
+		}
+		
+		
+		for (int i = 0; i < 7; i++) {
+			if(audienceTab[i] == true){
+			word11bits = word11bits + " " + ( i+1 ) + ":" + get11bitsKeyWordMulti(key16bits,
+					i+1);	
+			}
+		}		
+		
+		word11bits = word11bits.trim();
+		word11bits = word11bits + " )";
+		
+		return word11bits;
+	}
+	
+	/**
+	 * get the 11 bits keyword
+	 * @param key16bits the 16 bits keyword
+	 */
+	private String get11bitsKeyWordMulti(int key16bits, int index){
+		String word = String.format
+				("%16s", Integer.toBinaryString(key16bits)).replace(" ", "0");	
+		String audience ="";		
+		
+		switch (index) {
+		case 1:
+			//audience 1
+			 audience = word.substring(0, 11);			
+			break;
+		case 2:
+			//audience 2
+			audience = word.substring(3, 14);			
+			break;
+		case 3:
+			//audience 3
+			audience = word.substring(6, 16) + word.charAt(0);			
+			break;
+		case 4:
+			//audience 4
+			audience =  word.substring(9, 16) + word.substring(0, 4);			
+			break;
+		case 5:
+			//audience 5
+			audience = word.substring(12, 16) +  word.substring(0, 7);			
+			break;
+		case 6:
+			//audience 6
+			audience =  word.charAt(15) + word.substring(0, 10) ;			
+			break;
+		case 7:
+			//audience 7		
+			return "1337";
+			//break;
+		default:
+			audience = "";
+			break;	
+		}
+		
+		return String.format("%04d", Integer.parseInt(audience,2));
+	}
 }

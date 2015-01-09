@@ -87,11 +87,11 @@ public class VideoRecorder {
 			break;
 		case 4:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFVHUFF,frame_rate, width, height);
-			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);			
+			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.RGB24);			
 			break;
 		case 5:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
-			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV422P);			
+			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);			
 			break;
 		default:
 			break;

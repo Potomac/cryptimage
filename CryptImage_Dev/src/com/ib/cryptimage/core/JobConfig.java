@@ -65,7 +65,9 @@ public class JobConfig {
 	private boolean disableSound = false;
 	private boolean readyTransform = false;
 	private boolean videoHasAudioTrack = false;
-	
+	private String multiCode = "";
+	private int cycle;
+	private int resolution;
 	
 
 	public JobConfig() {
@@ -87,7 +89,7 @@ public class JobConfig {
 				+ File.separator + "cryptimage.conf");
 
 		if (config.exists()) {
-			String[] options = new String[10];
+			String[] options = new String[13];
 			FileInputStream fis;
 			try {
 				fis = new FileInputStream(config);
@@ -99,7 +101,7 @@ public class JobConfig {
 				int compt = 0;
 
 				try {
-					while ((line = br.readLine()) != null && compt < 10) {
+					while ((line = br.readLine()) != null && compt < 13) {
 						options[compt] = line;
 						compt++;						
 					}
@@ -140,7 +142,18 @@ public class JobConfig {
 				// extension
 				this.setExtension(options[8]);
 				//working directory
-				this.setOutput_file(options[9]);				
+				this.setOutput_file(options[9]);
+				//multimode
+				this.setMultiCode(options[10]);
+				//cycle
+				this.setCycle(Integer.valueOf(options[11]));
+				//resolution
+				if(Integer.valueOf(options[12]) == 1){
+					this.setResolution(1);
+				}
+				else {
+					this.setResolution(2);
+				}
 			} catch (Exception e) {
 				// TODO: handle exception
 				System.out.println(e.getMessage());
@@ -154,7 +167,8 @@ public class JobConfig {
 	
 	public boolean saveConfig(int key16bits, int audienceIndex, double delay1,
 			double delay2, String serial, boolean horodatage, int codecIndex,
-			int bitrate, String extension, String workingDirectory) {
+			int bitrate, String extension, String workingDirectory,
+			String multiMode, String cycle, boolean resolution720) {
 
 		try {
 
@@ -177,7 +191,7 @@ public class JobConfig {
 				FileWriter ffw = new FileWriter(config);
 
 				String lineSeparator = System.getProperty("line.separator");
-				//lineSeparator = "\r\n";
+				// lineSeparator = "\r\n";
 
 				BufferedWriter bfw = new BufferedWriter(ffw);
 				bfw.write(key16bits + lineSeparator);
@@ -190,7 +204,13 @@ public class JobConfig {
 				bfw.write(bitrate + lineSeparator);
 				bfw.write(extension + lineSeparator);
 				bfw.write(workingDirectory + lineSeparator);
-
+				bfw.write(multiMode + lineSeparator);
+				bfw.write(cycle + lineSeparator);
+				if (resolution720) {
+					bfw.write(1 + lineSeparator);
+				} else {
+					bfw.write(2 + lineSeparator);
+				}
 				bfw.close();
 
 				return true;
@@ -219,7 +239,7 @@ public class JobConfig {
 		//audience index
 		try {
 			if(Integer.valueOf(options[1]) < 1 
-					|| Integer.valueOf(options[1]) > 7 ) {
+					|| Integer.valueOf(options[1]) > 8 ) {
 				options[1] = "1";
 			}
 		} catch (Exception e) {
@@ -308,6 +328,50 @@ public class JobConfig {
 		} catch (Exception e) {
 			options[9] = "";
 		}		
+		
+		// multicode
+		try {			
+			if (options[10].length() < 8 && options[10].length() > 0 ) {
+				boolean check = true;
+				for (int i = 0; i < options[10].length(); i++) {
+					if (Integer.valueOf(options[10].substring(i,i+1)) < 1
+						|| Integer.valueOf(options[10].substring(i,i+1)) > 7){
+						check = false;
+						break;
+					}
+				}
+				if (check == false) {
+					options[10] = "6425";
+				}
+			} else {
+				options[10] = "6425";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			options[10] = "6425";
+		}
+		
+		// cycle
+		try {			
+			if (Integer.valueOf(options[11]) < 1
+					|| Integer.valueOf(options[11]) > 99) {
+				options[11] = "1";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			options[11] = "1";
+		}
+		
+		//resolution
+		try {
+			if(Integer.valueOf(options[12]) != 1 && 
+					Integer.valueOf(options[12]) != 2 ) {
+				options[12] = "2";
+			}
+		} catch (Exception e) {
+			options[12] = "2";
+		}
+		
 		
 		return options;
 		
@@ -544,5 +608,29 @@ public class JobConfig {
 
 	public void setVideoHasAudioTrack(boolean videoHasAudioTrack) {
 		this.videoHasAudioTrack = videoHasAudioTrack;
+	}
+
+	public String getMultiCode() {
+		return multiCode;
+	}
+
+	public void setMultiCode(String multiCode) {
+		this.multiCode = multiCode;
+	}
+
+	public int getCycle() {
+		return cycle;
+	}
+
+	public void setCycle(int cycle) {
+		this.cycle = cycle;
+	}
+
+	public int getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(int resolution) {
+		this.resolution = resolution;
 	}	
 }
