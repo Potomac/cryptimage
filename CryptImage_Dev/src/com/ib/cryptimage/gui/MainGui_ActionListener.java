@@ -15,6 +15,7 @@
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 27 oct. 2014 Author Mannix54
+ * http://ibsoftware.free.fr/cryptimage.php
  */
 
 
@@ -417,7 +418,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		JLabel label = new JLabel();
 
 		String deb = "CryptImage v0.0.8" + "<br/>"
-				+ "Copyright (C) 2015-01-08 Mannix54 <br/>";
+				+ "Copyright (C) 2015-01-09 Mannix54 <br/>";
 
 		String link = "<a href=\"http://ibsoftware.free.fr/cryptimage.php\">http://ibsoftware.free.fr/cryptimage.php</a>"
 				+ "<br/><br/>";

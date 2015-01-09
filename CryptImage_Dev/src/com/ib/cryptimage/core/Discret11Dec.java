@@ -35,7 +35,7 @@ import java.util.Queue;
  * @author Mannix54
  *
  */
-public class Discret11Dec {
+public class Discret11Dec extends Discret {
 	/**
 	 * store the 16 bits key word
 	 */
@@ -756,36 +756,13 @@ public class Discret11Dec {
 	}
 	
 	private boolean is310WhiteLine(BufferedImage buff) {
-		int val, total = 0;			
-		//int[][] rgb = new int[sWidth][3]; 
-		
-//		alpha = ((rgb >>24 ) & 0xFF);
-//	    rouge = ((rgb >>16 ) & 0xFF);
-//	    vert = ((rgb >>8 ) & 0xFF);
-//	    bleu = (rgb & 0xFF);
-	      
+		int val, total = 0;	
 	    
 		for (int i = 0; i < buff.getWidth(); i++) {
 			val = buff.getRGB(i, 574);			
-//			rgb[i][0] =  ((val >>16 ) & 0xFF);
-//			rgb[i][1] =  ((val >>8 ) & 0xFF);
-//			rgb[i][2] = (val & 0xFF);
-			
 			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
  		}
 		
-//		for (int i = 0; i < rgb.length; i++) {
-//			total += ( rgb[i][0] + rgb[i][1] + rgb[i][2])/3;
-//		}			
-		
-		
-//		tab = buff.getSubimage(0, 574, 768, 1).getData()
-//				.getPixels(0, 0, 768,1, tab);
-//		
-//		for (int i = 0; i < tab.length; i++) {
-//			total += tab[i];
-//		}		
-
 		if ((total / sWidth) > 200) {
 			return true;
 		} else {
@@ -794,35 +771,12 @@ public class Discret11Dec {
 	}	
 	
 	private boolean is310BlackLine(BufferedImage buff) {
-		int val, total = 0;			
-		//int[][] rgb = new int[sWidth][3]; 
-		
-//		alpha = ((rgb >>24 ) & 0xFF);
-//	    rouge = ((rgb >>16 ) & 0xFF);
-//	    vert = ((rgb >>8 ) & 0xFF);
-//	    bleu = (rgb & 0xFF);
-	      
+		int val, total = 0;
 	    
 		for (int i = 0; i < buff.getWidth(); i++) {
 			val = buff.getRGB(i, 574);			
-//			rgb[i][0] =  ((val >>16 ) & 0xFF);
-//			rgb[i][1] =  ((val >>8 ) & 0xFF);
-//			rgb[i][2] = (val & 0xFF);
-			
 			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
- 		}
-		
-//		for (int i = 0; i < rgb.length; i++) {
-//			total += ( rgb[i][0] + rgb[i][1] + rgb[i][2])/3;
-//		}
-				
-		
-//		tab = buff.getSubimage(0, 574, 768, 1).getData()
-//				.getPixels(0, 0, 768,1, tab);
-//		
-//		for (int i = 0; i < tab.length; i++) {
-//			total += tab[i];
-//		}		
+ 		}	
 
 		if ((total / sWidth) < 30) {
 			return true;
@@ -835,27 +789,10 @@ public class Discret11Dec {
 	private boolean is622WhiteLine(BufferedImage buff){
 		int val, total = 0;
 		
-		//int[][] rgb = new int[sWidth][3]; 
-		
 		for (int i = 0; i < buff.getWidth(); i++) {
 			val = buff.getRGB(i, 573);			
-//			rgb[i][0] =  ((val >>16 ) & 0xFF);
-//			rgb[i][1] =  ((val >>8 ) & 0xFF);
-//			rgb[i][2] = (val & 0xFF);
-			
 			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
-		}
-		
-//		for (int i = 0; i < rgb.length; i++) {
-//			total += ( rgb[i][0] + rgb[i][1] + rgb[i][2])/3;
-//		}			
-		
-//		tab = buff.getSubimage(0, 573, 768, 1).getData()
-//				.getPixels(0, 0, 768,1, tab);
-//		
-//		for (int i = 0; i < tab.length; i++) {
-//			total += tab[i];
-//		}		
+		}		
 
 		if ((total / sWidth) > 200) {
 			return true;
@@ -865,30 +802,12 @@ public class Discret11Dec {
 	}
 	
 	private boolean is622BlackLine(BufferedImage buff){
-		int val, total = 0;
-		
-		//int[][] rgb = new int[sWidth][3]; 
+		int val, total = 0;		
 		
 		for (int i = 0; i < buff.getWidth(); i++) {
-			val = buff.getRGB(i, 573);			
-//			rgb[i][0] =  ((val >>16 ) & 0xFF);
-//			rgb[i][1] =  ((val >>8 ) & 0xFF);
-//			rgb[i][2] = (val & 0xFF);
-			
+			val = buff.getRGB(i, 573);		
 			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
-		}
-		
-//		for (int i = 0; i < rgb.length; i++) {
-//			total += ( rgb[i][0] + rgb[i][1] + rgb[i][2])/3;
-//		}
-				
-		
-//		tab = buff.getSubimage(0, 573, 768, 1).getData()
-//				.getPixels(0, 0, 768,1, tab);
-//		
-//		for (int i = 0; i < tab.length; i++) {
-//			total += tab[i];
-//		}		
+		}	
 
 		if ((total / sWidth) < 30) {
 			return true;

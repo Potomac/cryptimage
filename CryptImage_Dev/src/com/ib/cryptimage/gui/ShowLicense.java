@@ -56,7 +56,7 @@ public class ShowLicense{
 		
 		textArea = new JTextArea();		
 
-		textArea.setColumns(60);
+		textArea.setColumns(80);
 		textArea.setLineWrap(true);
 		textArea.setRows(30);
 		textArea.setWrapStyleWord(true);

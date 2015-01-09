@@ -15,6 +15,7 @@
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 29 sept. 2014 Author Mannix54
+ * http://ibsoftware.free.fr/cryptimage.php
  */
 
 
@@ -59,9 +60,12 @@ public class CryptVideo {
 	private String audienceLevel;
 	
 	//private Discret11 discret;
-	private Discret11Dec discretDec;
-	private Discret11Enc discretEnc;
-	private SimpleDiscret11 simpleDiscret;
+//	private Discret11Dec discretDec;
+//	private Discret11Enc discretEnc;
+//	private SimpleDiscret11 simpleDiscret;
+	
+	private Discret discret;
+	
 	private double perc1;
 	private double perc2;	
 	
@@ -167,7 +171,7 @@ public class CryptVideo {
 			// discret = new Discret11(this.keyWord, mode, this.audienceLevel,
 			// this.perc1, this.perc2);
 			if (this.isDecoding) {
-				discretDec = new Discret11Dec(this.frmv.getJob()
+				discret = new Discret11Dec(this.frmv.getJob()
 						.getWord16bits(), this.perc1, this.perc2);
 				// this.keyWord11 = String.valueOf(discretDec.getKey11bits());
 			} else {
@@ -175,14 +179,14 @@ public class CryptVideo {
 				// .getWord16bits(), String.valueOf(
 				// this.frmv.getJob().getAudienceLevel()),
 				// 1, this.perc1, this.perc2);
-				discretEnc = new Discret11Enc(this.frmv.getJob()
+				discret = new Discret11Enc(this.frmv.getJob()
 						.getWord16bits(), this.codePattern, this.cycle,
 						this.perc1, this.perc2);
 				// this.keyWord11 = discretEnc.getKey11bits();
 			}
 
 		} else {
-			simpleDiscret = new SimpleDiscret11(this.keyWord,
+			discret = new SimpleDiscret11(this.keyWord,
 					Integer.valueOf(this.audienceLevel), mode, this.height,
 					this.width);
 			// this.keyWord11 = String.valueOf(simpleDiscret.getKey11bits());
@@ -240,19 +244,14 @@ public class CryptVideo {
 		
 		if(this.strictMode){
 			save = getScaledImage(save, this.width, 576);
-			if( vidPlayer.isInverse() == false){	
-			//bi = this.discret.transform(buff);
-			if(this.isDecoding){
-				bi = this.discretDec.transform(buff);
-			}
-			else{
-				bi = this.discretEnc.transform(buff);
-			}
+			if( vidPlayer.isInverse() == false){			
+				bi = this.discret.transform(buff);
 			}			
 		}
 		else
 		{	if( vidPlayer.isInverse() == false){	
-				bi = this.simpleDiscret.transform(buff);
+				//bi = this.simpleDiscret.transform(buff);
+				bi = this.discret.transform(buff);
 			}
 		}
 			
@@ -287,18 +286,7 @@ public class CryptVideo {
 		}
 		else{
 		BufferedImage bi;		
-		if(this.strictMode){		
-			if(this.isDecoding){
-				bi = this.discretDec.transform(buff);
-			}
-			else{
-				bi = this.discretEnc.transform(buff);
-			}
-		}
-		else
-		{  
-			bi = this.simpleDiscret.transform(buff);			
-		}
+		bi = this.discret.transform(buff);
 		
 		if(vidPlayer.isInverse() == true){
 			vidPlayer.addImage(save);
@@ -339,20 +327,9 @@ public class CryptVideo {
 			// System.out.println("Frame non decoded : " + (timingFrame+1) +
 			// " /" +this.videoLengthFrames);
 		} else {			
-			BufferedImage bi;
-			if (this.strictMode) {				
-				if(this.isDecoding){
-					bi = this.discretDec.transform(buff);
-					this.frmv.getJob().setReadyTransform(discretDec.isEnable());
-				}
-				else{
-					bi = this.discretEnc.transform(buff);
-					this.frmv.getJob().setReadyTransform(discretEnc.isEnable());
-				}
-			} else {
-				bi = this.simpleDiscret.transform(buff);
-				this.frmv.getJob().setReadyTransform(true);
-			}
+			BufferedImage bi;	
+			bi = this.discret.transform(buff);
+			this.frmv.getJob().setReadyTransform(discret.isEnable());
 			// bi = new CryptImage(buff, pos,
 			// this.strictMode).getCryptDiscret11(keyWord);
 			vid.addFrame(bi, this.timeBase * (timingFrame));
@@ -374,22 +351,10 @@ public class CryptVideo {
 			updateProgress("décodage");
 			// System.out.println("Frame non decoded : " + (timingFrame+1) +
 			// " /" +this.videoLengthFrames);
-		} else {
-			this.frmv.getJob().setReadyTransform(true);
+		} else {			
 			BufferedImage bi;
-			if (this.strictMode) {
-				//bi = this.discretDec.transform(buff);				
-				if(this.isDecoding){
-					bi = this.discretDec.transform(buff);
-					this.frmv.getJob().setReadyTransform(discretDec.isEnable());
-				}
-				else{
-					bi = this.discretEnc.transform(buff);
-					this.frmv.getJob().setReadyTransform(discretEnc.isEnable());
-				}
-			} else {
-				bi = this.simpleDiscret.transform(buff);
-			}
+			bi = this.discret.transform(buff);
+			this.frmv.getJob().setReadyTransform(discret.isEnable());
 			// bi = new CryptImage(buff,
 			// pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
 			vid.addFrame(bi, this.timeBase * timingFrame);
@@ -482,12 +447,10 @@ public class CryptVideo {
 	 */
 	private void updateProgress(String step) {	
 		String stats = "";
-		if(step.equals("décodage") && this.strictMode){
-			stats = "audience en cours : " + discretDec.getAudienceLevel();
+		if(this.strictMode){
+			stats = "audience en cours : " + discret.getAudienceLevel();
 		}
-		else if (step.equals("codage") && this.strictMode){
-			stats = "audience en cours : " + discretEnc.getAudienceLevel();
-		}
+		
 			frmv.getJob().getGui().getProgress().setValue(this.frameCount);
 			frmv.getJob()
 					.getGui()

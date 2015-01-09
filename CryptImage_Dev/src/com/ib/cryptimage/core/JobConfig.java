@@ -15,6 +15,7 @@
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 29 sept. 2014 Author Mannix54
+ * http://ibsoftware.free.fr/cryptimage.php
  */
 
 
@@ -46,7 +47,7 @@ public class JobConfig {
 	private boolean wantDec = false;
 	private boolean wantPlay = false;	
 	private boolean modePhoto = false;
-	private int audienceLevel = 7;
+	private int audienceLevel = 0;
 	private int videoBitrate = 2000;
 	private int videoCodec = 3;
 	private double perc1 = 0.0167;
@@ -233,7 +234,7 @@ public class JobConfig {
 					|| Integer.valueOf(options[0]) > 65535 ) {
 				options[0] = "58158";
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[0] = "58158";
 		}
 		
@@ -243,7 +244,7 @@ public class JobConfig {
 					|| Integer.valueOf(options[1]) > 8 ) {
 				options[1] = "1";
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[1] = "1";
 		}
 		
@@ -253,7 +254,7 @@ public class JobConfig {
 					|| Double.valueOf(options[2]) > 0.03d ) {
 				options[2] = "0.0167";
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[2] = "0.0167";
 		}
 		
@@ -263,7 +264,7 @@ public class JobConfig {
 					|| Double.valueOf(options[3]) > 0.05d ) {
 				options[3] = "0.0334";
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[3] = "0.0334";
 		}
 		
@@ -273,7 +274,7 @@ public class JobConfig {
 					|| Integer.valueOf(options[4]) > 99999999 ) {
 				options[4] = "12345678";
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[4] = "12345678";
 		}
 		
@@ -283,7 +284,7 @@ public class JobConfig {
 					Boolean.valueOf(options[5]) != false ) {
 				options[5] = "false";
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[5] = "false";
 		}
 		
@@ -292,7 +293,7 @@ public class JobConfig {
 			if(Integer.valueOf(options[6]) < 1 || Integer.valueOf(options[6]) > 5 ) {
 				options[6] = "1";
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[6] = "1";
 		}
 		
@@ -302,7 +303,7 @@ public class JobConfig {
 					|| Integer.valueOf(options[7]) > 20000 ) {
 				options[7] = "10000";
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[7] = "10000";
 		}
 		
@@ -314,8 +315,7 @@ public class JobConfig {
 					&& !options[8].equals("mpeg")) {
 				options[8] = "mkv";
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {			
 			options[8] = "mkv";
 		}
 
@@ -326,7 +326,7 @@ public class JobConfig {
 			if(!file.exists()){
 				options[9]="";
 			}			
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			options[9] = "";
 		}		
 		
@@ -347,19 +347,17 @@ public class JobConfig {
 			} else {
 				options[10] = "6425";
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {			
 			options[10] = "6425";
 		}
 		
 		// cycle
 		try {			
 			if (Integer.valueOf(options[11]) < 1
-					|| Integer.valueOf(options[11]) > 99) {
+					|| Integer.valueOf(options[11]) > 99 ) {
 				options[11] = "1";
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {			
 			options[11] = "1";
 		}
 		
@@ -371,8 +369,7 @@ public class JobConfig {
 			}
 		} catch (Exception e) {
 			options[12] = "2";
-		}
-		
+		}		
 		
 		return options;
 		

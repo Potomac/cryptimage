@@ -15,6 +15,7 @@
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 22 déc. 2014 Author Mannix54
+ * http://ibsoftware.free.fr/cryptimage.php
  */
 
 

@@ -15,6 +15,7 @@
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 6 oct. 2014 Author Mannix54
+ * http://ibsoftware.free.fr/cryptimage.php
  */
 
 
@@ -31,7 +32,7 @@ import java.awt.image.WritableRaster;
  * @author Mannix54
  *
  */
-public class SimpleDiscret11 {
+public class SimpleDiscret11 extends Discret {
 	/**
 	 * store the 11 bits key word
 	 */
@@ -106,6 +107,8 @@ public class SimpleDiscret11 {
 	 */
 	private int width;
 	
+	private int audienceLevel;
+	
 	
 	/**
 	 * create a new SimpleDiscret11 object
@@ -119,6 +122,7 @@ public class SimpleDiscret11 {
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);			
 		this.key11bits = this.key11BitsTab[audienceLevel - 1];
+		this.audienceLevel = audienceLevel;
 		
 		this.height = height;
 		this.width = width;
@@ -147,6 +151,7 @@ public class SimpleDiscret11 {
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);			
 		this.key11bits = this.key11BitsTab[audienceLevel - 1];
+		this.audienceLevel = audienceLevel;
 		
 		this.height = height;
 		this.width = width;
@@ -460,6 +465,10 @@ public class SimpleDiscret11 {
 	public boolean isDec() {
 		return isDec;
 	}
+	
+	public boolean isEnable(){
+		return true;
+	}
 
 	public int getCurrentMode() {
 		return currentMode;
@@ -479,6 +488,12 @@ public class SimpleDiscret11 {
 
 	public int getKey16bits() {
 		return key16bits;
+	}
+
+	@Override
+	public int getAudienceLevel() {
+		// TODO Auto-generated method stub
+		return this.audienceLevel;
 	}
 	
 }

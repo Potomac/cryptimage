@@ -35,7 +35,7 @@ import java.awt.image.WritableRaster;
  * @author Mannix54
  *
  */
-public class Discret11Enc {
+public class Discret11Enc extends Discret {
 	/**
 	 * store the 16 bits key word
 	 */

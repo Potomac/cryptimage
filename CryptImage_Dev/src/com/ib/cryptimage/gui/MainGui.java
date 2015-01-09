@@ -15,6 +15,7 @@
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 26 oct. 2014 Author Mannix54
+ * http://ibsoftware.free.fr/cryptimage.php
  */
 
 
@@ -170,10 +171,10 @@ public class MainGui {
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		
-		frame.setSize(700,810);
+		frame.setSize(700,820);
 		frame.setLocationRelativeTo(null);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(700, 810));
+		frame.setMinimumSize(new Dimension(700, 820));
 		frame.setResizable(true);		
 		
 		createPanMode();
@@ -264,7 +265,7 @@ public class MainGui {
 				break;
 			}
 			this.txtOutputFile.setText(job.getOutput_file());
-			this.txtMultiCode.setText(job.getMultiCode());
+			this.txtMultiCode.setText(job.getMultiCode());			
 			this.jspCycle.setValue(job.getCycle());
 			if(job.getResolution() == 1){
 				this.rdi720.setSelected(true);
@@ -701,7 +702,8 @@ public class MainGui {
 		spinnerEditorMultiMode.getModel().setMinimum(1);
 		spinnerEditorMultiMode.getModel().setMaximum(99);
 		spinnerEditorMultiMode.getModel().setStepSize(1);
-		//spinnerEditorMultiMode.getModel().setValue(1);	
+		//spinnerEditorMultiMode.getModel().setValue(1);
+		jspCycle.setValue(1);
 		
 	
 		panAudience.add(labAudience);

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 29 sept. 2014 Author Mannix54
+ * 9 janv. 2015 Author Mannix54
  * http://ibsoftware.free.fr/cryptimage.php
  */
 
@@ -22,19 +22,16 @@
 
 package com.ib.cryptimage.core;
 
- 
+import java.awt.image.BufferedImage;
 
-import com.ib.cryptimage.gui.MainGui;
+/**
+ * @author Mannix54
+ *
+ */
+abstract class Discret {
 
-
-public class Application {
-
-	public static void main(String[] args) {
-		JobConfig job = new JobConfig();
-
-		job.setHasGUI(true);
-		MainGui mainUI = new MainGui(job);		
-		mainUI.showUI();
-	}
-
+	abstract BufferedImage transform(BufferedImage img);
+	abstract boolean isEnable();
+	abstract int getAudienceLevel();
+	
 }
