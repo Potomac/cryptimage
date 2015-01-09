@@ -68,6 +68,7 @@ public class JobConfig {
 	private String multiCode = "";
 	private int cycle;
 	private int resolution;
+	private boolean[] autorisations;
 	
 
 	public JobConfig() {
@@ -331,7 +332,7 @@ public class JobConfig {
 		
 		// multicode
 		try {			
-			if (options[10].length() < 8 && options[10].length() > 0 ) {
+			if (options[10].length() < 11 && options[10].length() > 0 ) {
 				boolean check = true;
 				for (int i = 0; i < options[10].length(); i++) {
 					if (Integer.valueOf(options[10].substring(i,i+1)) < 1
@@ -632,5 +633,13 @@ public class JobConfig {
 
 	public void setResolution(int resolution) {
 		this.resolution = resolution;
+	}
+
+	public boolean[] getAutorisations() {
+		return autorisations;
+	}
+
+	public void setAutorisations(boolean[] autorisations) {
+		this.autorisations = autorisations;
 	}	
 }

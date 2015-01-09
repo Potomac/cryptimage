@@ -22,7 +22,7 @@
 
 package com.ib.cryptimage.core;
 
-import java.awt.Color;
+//import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -43,7 +43,7 @@ public class Discret11Enc {
 	/**
 	 * store the 11 bits key word
 	 */
-	private int key11bits;	
+	//private int key11bits;	
 	/**
 	 * store the current index for the 11 bits key
 	 */
@@ -51,7 +51,7 @@ public class Discret11Enc {
 	
 	private int saveIndexUse11bitsKey;
 	
-	private boolean start = true;
+	//private boolean start = true;
 
 
 	/**
@@ -81,7 +81,7 @@ public class Discret11Enc {
 	 */
 	private int seqFrame = 0;
 	
-	private int totalFrameCount = 0;
+	//private int totalFrameCount = 0;
 	
 	private int[] audienceList = null;
 	
@@ -94,6 +94,8 @@ public class Discret11Enc {
 	private int indexCycle;
 	
 	private int indexUse11bitsKey = -1;
+	
+	private WritableRaster raster;
 	
 	
 	
@@ -145,7 +147,7 @@ public class Discret11Enc {
 		initTruthTable();
 		initDecaPixels(0.0167,0.0334);
 		initDelayArray();
-		this.key11bits = key11BitsTab[0];
+		//this.key11bits = key11BitsTab[0];
 	}	
 
 	
@@ -167,7 +169,7 @@ public class Discret11Enc {
 		initTruthTable();
 		initDecaPixels(perc1,perc2);
 		initDelayArray();
-		this.key11bits = key11BitsTab[0];
+		//this.key11bits = key11BitsTab[0];
 	}	
 	
 	private void initAudienceList(String audience){
@@ -179,7 +181,7 @@ public class Discret11Enc {
 		this.saveIndexUse11bitsKey = -1;				
 		this.index11bitsKey = audienceList[cptCycle] -1;
 		this.indexUse11bitsKey = this.index11bitsKey;
-		this.key11bits = this.key11BitsTab[this.indexUse11bitsKey];
+		//this.key11bits = this.key11BitsTab[this.indexUse11bitsKey];
 		cptArray = 0;
 		cptPoly = 0;
 		this.enable = false;
@@ -205,7 +207,7 @@ public class Discret11Enc {
 		//cptPoly = 0;
 		//this.seqFrame = 0;
 		this.enable = true;	
-		this.key11bits = this.key11BitsTab[this.indexUse11bitsKey];	
+		//this.key11bits = this.key11BitsTab[this.indexUse11bitsKey];	
 	}
 
 	/**
@@ -392,7 +394,7 @@ public class Discret11Enc {
 	 * @return the transformed image
 	 */
 	public BufferedImage transform(BufferedImage image) {
-		totalFrameCount++;		
+		//totalFrameCount++;		
 		
 		// we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
@@ -720,9 +722,20 @@ public class Discret11Enc {
 	 * @return a modified BufferedImage with 310 line set to white
 	 */
 	private BufferedImage setWhite310Line(BufferedImage buff){
-		for (int i = 0; i < buff.getWidth(); i++) {
-			buff.setRGB(i, 574, new Color(255,255, 255).getRGB());
+//		for (int i = 0; i < buff.getWidth(); i++) {
+//			buff.setRGB(i, 574, new Color(255,255, 255).getRGB());
+//		}
+		
+		raster = buff.getRaster();
+		
+		int[] tab = new int[768 * 3];
+		
+		for (int i = 0; i < tab.length; i++) {
+			tab[i] = 255;
 		}
+		
+		raster.setPixels(0, 574, 768, 1, tab);
+		
 		return buff;		
 	}
 	
@@ -732,9 +745,20 @@ public class Discret11Enc {
 	 * @return a modified BufferedImage with 310 line set to black
 	 */
 	private BufferedImage setBlack310Line(BufferedImage buff){
-		for (int i = 0; i < buff.getWidth(); i++) {
-			buff.setRGB(i, 574, new Color(0, 0, 0).getRGB());
+//		for (int i = 0; i < buff.getWidth(); i++) {
+//			buff.setRGB(i, 574, new Color(0, 0, 0).getRGB());
+//		}
+		
+		raster = buff.getRaster();
+		
+		int[] tab = new int[768 * 3];
+		
+		for (int i = 0; i < tab.length; i++) {
+			tab[i] = 0;
 		}
+		
+		raster.setPixels(0, 574, 768, 1, tab);		
+		
 		return buff;		
 	}
 	
@@ -744,9 +768,20 @@ public class Discret11Enc {
 	 * @return a modified BufferedImage with 622 line set to black
 	 */
 	private BufferedImage setBlack622Line(BufferedImage buff){
-		for (int i = 0; i < buff.getWidth(); i++) {
-			buff.setRGB(i, 573, new Color(0, 0, 0).getRGB());
+//		for (int i = 0; i < buff.getWidth(); i++) {
+//			buff.setRGB(i, 573, new Color(0, 0, 0).getRGB());
+//		}
+		
+		raster = buff.getRaster();
+		
+		int[] tab = new int[768 * 3];
+		
+		for (int i = 0; i < tab.length; i++) {
+			tab[i] = 0;
 		}
+		
+		raster.setPixels(0, 573, 768, 1, tab);		
+		
 		return buff;		
 	}
 	
@@ -756,9 +791,20 @@ public class Discret11Enc {
 	 * @return a modified BufferedImage with 622 line set to white
 	 */
 	private BufferedImage setWhite622Line(BufferedImage buff){
-		for (int i = 0; i < buff.getWidth(); i++) {
-			buff.setRGB(i, 573, new Color(255,255, 255).getRGB());
+//		for (int i = 0; i < buff.getWidth(); i++) {
+//			buff.setRGB(i, 573, new Color(255,255, 255).getRGB());
+//		}
+		
+		raster = buff.getRaster();
+		
+		int[] tab = new int[768 * 3];
+		
+		for (int i = 0; i < tab.length; i++) {
+			tab[i] = 255;
 		}
+		
+		raster.setPixels(0, 573, 768, 1, tab);	
+		
 		return buff;		
 	}	
 

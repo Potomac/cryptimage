@@ -70,6 +70,7 @@ public class CryptVideo {
 	private String codePattern;
 	private int cycle;
 	private String fileAudienceLevel;
+	private String fileKeyboardCode;
 		
 	
 	private VideoPlayer vidPlayer;	
@@ -95,6 +96,13 @@ public class CryptVideo {
 					+ String.valueOf(frmv.getJob().getAudienceLevel());
 			this.codePattern = String.valueOf(frmv.getJob().getAudienceLevel());
 			this.cycle = 1;
+		}
+		
+		if(frmv.getJob().isStrictMode() && frmv.getJob().isWantDec()== false){
+			fileKeyboardCode = "_k" + frmv.getJob().getCode();
+		}
+		else {
+			fileKeyboardCode = "";
 		}
 
 		this.keyWord11 = this.computeAudienceMulti(this.codePattern, this.frmv
@@ -122,9 +130,9 @@ public class CryptVideo {
 
 		int mode;
 		if (this.isDecoding) {
-			mode = Discret11.MODE_DEC;
+			mode = 1;
 		} else {
-			mode = Discret11.MODE_ENC;
+			mode = 0;
 		}
 
 		IMediaReader reader = ToolFactory.makeReader(frmv.getJob()
@@ -199,8 +207,7 @@ public class CryptVideo {
 			} else {
 				try {
 					vid = new VideoRecorder(outputFilename + info + keyWord
-							+ this.fileAudienceLevel + "_k"
-							+ frmv.getJob().getCode() + "."
+							+ this.fileAudienceLevel + fileKeyboardCode + "."
 							+ frmv.getJob().getExtension(), width, height,
 							frameRate, frmv.getJob());
 
@@ -408,31 +415,37 @@ public class CryptVideo {
 						+ "\n\r"
 						+ "Fichier codé : " + this.outputFilename + "_c" +
 						this.keyWord +
-						this.fileAudienceLevel + "_k" +
-								frmv.getJob().getCode()
+						this.fileAudienceLevel + fileKeyboardCode
 								+  "." + frmv.getJob().getExtension());			
 		}		
 	}
 	
 	public void saveDatFileVideo(){		
 		if(isDecoding !=true){
-		buff = new BufferedImage(this.width,
-				this.height, 12);		
+			
+			String word = String.format
+					("%16s", Integer.toBinaryString(this.keyWord)).replace(" ", "0");
+			
+			String hexa = String.format
+					("%4s", Integer.toHexString(this.keyWord)).replace(" ", "0");
 		
 		try {
 			File dataFile = new File(this.outputFilename + "_c" + this.keyWord +					
-					this.fileAudienceLevel  + "_k" +
-					frmv.getJob().getCode()
+					this.fileAudienceLevel  + fileKeyboardCode
 					+  ".txt");
 			dataFile.createNewFile();
 			FileWriter ffw = new FileWriter(dataFile);
 			BufferedWriter bfw = new BufferedWriter(ffw);	
-			bfw.write("16 bits keyword : " + this.keyWord + "\r\n");
+			bfw.write("16 bits keyword : " + this.keyWord 
+					+ " ( " + word + ", " + hexa + " )"
+					+ "\r\n");
 			bfw.write("Audience level : " + this.audienceLevel + "\r\n");
 			bfw.write("11 bits keyword : " + this.keyWord11 + "\r\n");
 			bfw.write("nb cycle : " + this.cycle +"\r\n" );
-			bfw.write("serial eprom : " + this.frmv.getJob().getSerial() + "\r\n");
-			bfw.write("keyboard code : " + this.frmv.getJob().getCode() + "\r\n");
+			if(this.strictMode){
+				bfw.write("serial eprom : " + this.frmv.getJob().getSerial() + "\r\n");
+				bfw.write("keyboard code : " + this.frmv.getJob().getCode() + "\r\n");
+			}
 			bfw.write("encoder started at frame n° : " + this.positionSynchro +"\r\n" );
 			bfw.write("Delay 1 : " + this.perc1 * 100 +"%\r\n" );
 			bfw.write("Delay 2 : " + this.perc2 * 100 +"%\r\n" );
@@ -440,8 +453,7 @@ public class CryptVideo {
 			bfw.write("video framerate : " + this.framerate +"\r\n" );			
 			bfw.write("File : " + this.outputFilename +"_c" +
 					this.keyWord + 
-					this.fileAudienceLevel + "_k" +
-							frmv.getJob().getCode()	+ "." 
+					this.fileAudienceLevel + fileKeyboardCode	+ "." 
 					+ frmv.getJob().getExtension() +"\r\n");			
 			
 			bfw.close();			
@@ -450,8 +462,7 @@ public class CryptVideo {
 						+ "\n\r"
 						+ "Rapport : " + this.outputFilename
 						+ "_c" + this.keyWord						
-						+ this.fileAudienceLevel + "_k" +
-						frmv.getJob().getCode()
+						+ this.fileAudienceLevel + fileKeyboardCode
 						+  ".txt");						
 		} catch (IOException e) {
 			System.out

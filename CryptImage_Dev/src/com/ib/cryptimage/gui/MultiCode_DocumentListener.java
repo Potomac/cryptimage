@@ -21,7 +21,6 @@
 
 package com.ib.cryptimage.gui;
 
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
