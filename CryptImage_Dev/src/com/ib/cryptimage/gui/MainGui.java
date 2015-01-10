@@ -171,10 +171,10 @@ public class MainGui {
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
 		
-		frame.setSize(700,820);
+		frame.setSize(740,820);
 		frame.setLocationRelativeTo(null);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(700, 820));
+		frame.setMinimumSize(new Dimension(740, 820));
 		frame.setResizable(true);		
 		
 		createPanMode();
@@ -661,7 +661,9 @@ public class MainGui {
 		combAudience.addActionListener(new MainGui_ActionListener(this));
 		
 		lbl11bitsInfo = new JLabel();
-		lbl11bitsInfo.setFont(new Font("Serif", Font.PLAIN, 10));
+		lbl11bitsInfo.setFont(new Font("Serif", Font.PLAIN, 11));
+		lbl11bitsInfo.setToolTipText("<html>Le mot de 11 bits correspondant au niveau d'audience.<br/>" 
+									+ "Il peut y en avoir plusieurs si le multicode est choisi.</html>");
 		
 		//multimode components		
 		
@@ -681,15 +683,20 @@ public class MainGui {
 		txtMultiCode.setColumns(10);
 		txtMultiCode.setText("6425");
 		txtMultiCode.getDocument().addDocumentListener(new MultiCode_DocumentListener(this));
-		
-		
+				
 		txtMultiCode.setFocusLostBehavior(JFormattedTextField.COMMIT);	
 		//txtMultiCode.setHorizontalAlignment(JTextField.RIGHT);
+		
+		txtMultiCode.setToolTipText("<html>Entrez ici les niveaux d'audience,<br/>" + 
+									"la liste peut contenir jusqu'à 10 niveaux d'audience.</html>");
 		
 		lblMultiAudience = new JLabel("audiences:");
 		lblCycle = new JLabel("cycle:");
 				
 		jspCycle = new JSpinner();
+		
+		jspCycle.setToolTipText("<html>Selectionnez ici le nombre de cycles de 24 trames progressives qu'aura un niveau d'audience.<br/>"+
+								"La durée d'un cycle est de 960 millisecondes.</html>");
 		
 		JSpinner.NumberEditor spinnerEditorMultiMode = new JSpinner.NumberEditor(jspCycle);
 		jspCycle.setEditor(spinnerEditorMultiMode);
