@@ -555,7 +555,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							"Vous devez entrer un ou plusieurs niveaux d'audience pour le multicode.",
+							"Vous devez entrer un ou plusieurs niveaux d'audiences pour le multicode.",
 							"pas de niveau d'audience pour le multicode",
 							JOptionPane.WARNING_MESSAGE);
 		} 

@@ -95,9 +95,14 @@ public class Discret11Enc extends Discret {
 	
 	private int indexUse11bitsKey = -1;
 	
-	private WritableRaster raster;
+	private WritableRaster rasterCheck;
 	
+	private Raster raster1;
 	
+	private WritableRaster raster2;
+	
+	private int[] tabBlack;
+	private int[] tabWhite;
 	
 	/**
 	 * store the value for the truth table
@@ -140,7 +145,10 @@ public class Discret11Enc extends Discret {
 		initAudienceList(audienceList);
 		this.cycle = cycle;
 		this.key16bits = key16bits;
-		this.initKey11BitsTab(key16bits);	
+		this.initKey11BitsTab(key16bits);
+		
+		initRaster();
+		initTabsColor();
 			
 		initPolyLFSR();
 		// choose the right truth table and feed the array delay
@@ -164,6 +172,9 @@ public class Discret11Enc extends Discret {
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);	
 		
+		initRaster();
+		initTabsColor();
+		
 		initPolyLFSR();
 		// choose the right truth table and feed the array delay
 		initTruthTable();
@@ -171,6 +182,28 @@ public class Discret11Enc extends Discret {
 		initDelayArray();
 		//this.key11bits = key11BitsTab[0];
 	}	
+	
+	private void initRaster(){
+		BufferedImage bi = new BufferedImage(this.sWidth, 576,
+				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
+												// BufferedImage.TYPE_INT_BGR
+
+		raster1 = bi.getRaster();		
+	}
+	
+	private void initTabsColor(){
+		tabWhite = new int[768 * 3];
+		
+		for (int i = 0; i < tabWhite.length; i++) {
+			tabWhite[i] = 255;
+		}
+		
+		tabBlack = new int[768 * 3];
+		
+		for (int i = 0; i < tabBlack.length; i++) {
+			tabBlack[i] = 0;
+		}
+	}
 	
 	private void initAudienceList(String audience){
 		this.audienceList = new int[audience.length()];
@@ -494,23 +527,8 @@ public class Discret11Enc extends Discret {
 	 * @return
 	 */
 	private BufferedImage modifyEvenFrame(BufferedImage image, int z) {
-		if (enable) {
-			
-//			//modif even odd if first time
-//			if(this.start == true){
-//				image = modifyOddFrame2(image, z);
-//				cptArray = 0;
-//				cptPoly = 0;
-//				this.start = false;
-//			}
-			
-			
-			BufferedImage bi = new BufferedImage(this.sWidth, 576,
-					BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-													// BufferedImage.TYPE_INT_BGR
-
-			Raster raster1 = bi.getRaster();
-			WritableRaster raster2 = image.getRaster();
+		if (enable) {				
+			raster2 = image.getRaster();
 
 			int temp2 = 0;
 
@@ -547,13 +565,8 @@ public class Discret11Enc extends Discret {
 	 * @return
 	 */
 	private BufferedImage modifyOddFrame(BufferedImage image, int z) {
-		if (enable) {
-			BufferedImage bi = new BufferedImage(this.sWidth, 576,
-					BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-													// BufferedImage.TYPE_INT_BGR
-
-			Raster raster1 = bi.getRaster();
-			WritableRaster raster2 = image.getRaster();
+		if (enable) {			
+			raster2 = image.getRaster();
 
 			int temp2 = 0;
 
@@ -591,13 +604,8 @@ public class Discret11Enc extends Discret {
 	 * @return
 	 */
 	private BufferedImage modifyOddFrame2(BufferedImage image, int z) {
-		if (enable) {
-			BufferedImage bi = new BufferedImage(this.sWidth, 576,
-					BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-													// BufferedImage.TYPE_INT_BGR
-			
-			Raster raster1 = bi.getRaster();
-			WritableRaster raster2 = image.getRaster();
+		if (enable) {			
+			raster2 = image.getRaster();
 
 			int temp2 = 0;
 
@@ -726,15 +734,10 @@ public class Discret11Enc extends Discret {
 //			buff.setRGB(i, 574, new Color(255,255, 255).getRGB());
 //		}
 		
-		raster = buff.getRaster();
+		rasterCheck = buff.getRaster();		
+
 		
-		int[] tab = new int[768 * 3];
-		
-		for (int i = 0; i < tab.length; i++) {
-			tab[i] = 255;
-		}
-		
-		raster.setPixels(0, 574, 768, 1, tab);
+		rasterCheck.setPixels(0, 574, 768, 1, tabWhite);
 		
 		return buff;		
 	}
@@ -749,15 +752,9 @@ public class Discret11Enc extends Discret {
 //			buff.setRGB(i, 574, new Color(0, 0, 0).getRGB());
 //		}
 		
-		raster = buff.getRaster();
+		rasterCheck = buff.getRaster();
 		
-		int[] tab = new int[768 * 3];
-		
-		for (int i = 0; i < tab.length; i++) {
-			tab[i] = 0;
-		}
-		
-		raster.setPixels(0, 574, 768, 1, tab);		
+		rasterCheck.setPixels(0, 574, 768, 1, tabBlack);		
 		
 		return buff;		
 	}
@@ -768,19 +765,10 @@ public class Discret11Enc extends Discret {
 	 * @return a modified BufferedImage with 622 line set to black
 	 */
 	private BufferedImage setBlack622Line(BufferedImage buff){
-//		for (int i = 0; i < buff.getWidth(); i++) {
-//			buff.setRGB(i, 573, new Color(0, 0, 0).getRGB());
-//		}
 		
-		raster = buff.getRaster();
+		rasterCheck = buff.getRaster();	
 		
-		int[] tab = new int[768 * 3];
-		
-		for (int i = 0; i < tab.length; i++) {
-			tab[i] = 0;
-		}
-		
-		raster.setPixels(0, 573, 768, 1, tab);		
+		rasterCheck.setPixels(0, 573, 768, 1, tabBlack);		
 		
 		return buff;		
 	}
@@ -795,15 +783,9 @@ public class Discret11Enc extends Discret {
 //			buff.setRGB(i, 573, new Color(255,255, 255).getRGB());
 //		}
 		
-		raster = buff.getRaster();
+		rasterCheck = buff.getRaster();		
 		
-		int[] tab = new int[768 * 3];
-		
-		for (int i = 0; i < tab.length; i++) {
-			tab[i] = 255;
-		}
-		
-		raster.setPixels(0, 573, 768, 1, tab);	
+		rasterCheck.setPixels(0, 573, 768, 1, tabWhite);	
 		
 		return buff;		
 	}	

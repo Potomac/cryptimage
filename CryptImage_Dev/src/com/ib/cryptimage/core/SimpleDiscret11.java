@@ -109,6 +109,9 @@ public class SimpleDiscret11 extends Discret {
 	
 	private int audienceLevel;
 	
+	private Raster raster1;
+	private WritableRaster raster2;
+	
 	
 	/**
 	 * create a new SimpleDiscret11 object
@@ -122,10 +125,13 @@ public class SimpleDiscret11 extends Discret {
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);			
 		this.key11bits = this.key11BitsTab[audienceLevel - 1];
-		this.audienceLevel = audienceLevel;
+		this.audienceLevel = audienceLevel;		
 		
 		this.height = height;
 		this.width = width;
+		
+		initRaster();
+		
 		poly = new int[this.height * 3];
 		delayArray = new int [3][this.height];
 		initMode(mode);
@@ -151,10 +157,13 @@ public class SimpleDiscret11 extends Discret {
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);			
 		this.key11bits = this.key11BitsTab[audienceLevel - 1];
-		this.audienceLevel = audienceLevel;
+		this.audienceLevel = audienceLevel;		
 		
 		this.height = height;
 		this.width = width;
+		
+		initRaster();
+		
 		poly = new int[this.height * 3];
 		delayArray = new int [3][this.height];
 		initMode(mode);
@@ -379,6 +388,14 @@ public class SimpleDiscret11 extends Discret {
 		return Integer.parseInt(Character.toString(key.charAt(0))); 		
 	}
 	
+	
+	private void initRaster(){
+		BufferedImage bi = new BufferedImage(this.width,this.height,
+				BufferedImage.TYPE_3BYTE_BGR);
+		
+		raster1 = bi.getRaster();
+	}
+	
 	/**
 	 * transform an image that have been added
 	 * this image can be crypted or decrypted, depending of the current mode
@@ -391,12 +408,7 @@ public class SimpleDiscret11 extends Discret {
 		//we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);		
 		
-		BufferedImage bi = new BufferedImage(this.width,this.height,
-				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR			
-		
-		Raster raster1 = bi.getRaster();
-		WritableRaster raster2 = image.getRaster();		
+		raster2 = image.getRaster();		
 		
 		
 		int temp = 0;

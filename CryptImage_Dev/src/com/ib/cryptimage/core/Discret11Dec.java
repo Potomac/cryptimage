@@ -124,6 +124,9 @@ public class Discret11Dec extends Discret {
 	 */
 	private final int sWidth = 768;
 	
+	private Raster raster1;
+	private WritableRaster raster2;	
+	
 	//private int[] tab = new int[sWidth * 3];
 	
 	
@@ -135,6 +138,8 @@ public class Discret11Dec extends Discret {
 	public Discret11Dec(int key16bits){
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);	
+		
+		initRaster();
 			
 		initPolyLFSR();
 		// choose the right truth table and feed the array delay
@@ -156,6 +161,8 @@ public class Discret11Dec extends Discret {
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);	
 		
+		initRaster();
+		
 		initPolyLFSR();
 		// choose the right truth table and feed the array delay
 		initTruthTable();
@@ -164,6 +171,11 @@ public class Discret11Dec extends Discret {
 		//this.key11bits = key11BitsTab[0];
 	}	
 	
+	private void initRaster(){		
+		BufferedImage bi = new BufferedImage(this.sWidth,576,
+				BufferedImage.TYPE_3BYTE_BGR);		
+		raster1 = bi.getRaster();						
+	}
 
 	/**
 	 * initialize the key11BitsTab
@@ -629,13 +641,9 @@ public class Discret11Dec extends Discret {
 	 * @param z the z value for the delay array
 	 * @return
 	 */
-	private BufferedImage modifyEvenFrame(BufferedImage image, int z){	
-		BufferedImage bi = new BufferedImage(this.sWidth,576,
-				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR			
+	private BufferedImage modifyEvenFrame(BufferedImage image, int z){		
 		
-		Raster raster1 = bi.getRaster();
-		WritableRaster raster2 = image.getRaster();		
+		raster2 = image.getRaster();		
 		
 		int temp2 = 0;
 		
@@ -672,12 +680,8 @@ public class Discret11Dec extends Discret {
 	 * @return
 	 */
 	private BufferedImage modifyOddFrame(BufferedImage image, int z){	
-		BufferedImage bi = new BufferedImage(this.sWidth,576,
-				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR		
 		
-		Raster raster1 = bi.getRaster();
-		WritableRaster raster2 = image.getRaster();	
+		raster2 = image.getRaster();	
 
 		int temp2 = 0;	
 
@@ -716,13 +720,9 @@ public class Discret11Dec extends Discret {
 	 * @param z the z value for the delay array
 	 * @return
 	 */
-	private BufferedImage modifyOddFrame2(BufferedImage image, int z){	
-		BufferedImage bi = new BufferedImage(this.sWidth,576,
-				BufferedImage.TYPE_3BYTE_BGR);// img.getType_image());
-											// BufferedImage.TYPE_INT_BGR		
-				
-		Raster raster1 = bi.getRaster();
-		WritableRaster raster2 = image.getRaster();	
+	private BufferedImage modifyOddFrame2(BufferedImage image, int z){
+		
+		raster2 = image.getRaster();	
 
 		int temp2 = 0;	
 
