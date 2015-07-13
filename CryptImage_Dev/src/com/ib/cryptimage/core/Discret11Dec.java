@@ -43,7 +43,7 @@ public class Discret11Dec extends Discret {
 	/**
 	 * store the 11 bits key word
 	 */
-	//private int key11bits;	
+	
 	/**
 	 * store the current index for the 11 bits key
 	 */
@@ -89,9 +89,7 @@ public class Discret11Dec extends Discret {
 	/**
 	 * store the current position from the 6 frames ( half image ) sequence
 	 */
-	private int seqFrame = 0;
-	
-	//private int totalFrameCount = 0;
+	private int seqFrame = 0;	
 	
 	private boolean synchro = false;
 	/**
@@ -111,10 +109,7 @@ public class Discret11Dec extends Discret {
 	 * 3 types of delay
 	 */
 	private int[] decaPixels = new int[3];
-	/**
-	 * the count iterator for poly array
-	 */
-	private int cptPoly = 0;
+
 	/**
 	 * the count iterator for delay array
 	 */
@@ -122,12 +117,10 @@ public class Discret11Dec extends Discret {
 	/**
 	 * the default width of the image which is 768
 	 */
-	private final int sWidth = 768;
-	
-	//private Raster raster1;
+	private final int sWidth = 768;	
+
 	private WritableRaster raster;	
-	
-	//private int[] tab = new int[sWidth * 3];
+
 	
 	
 	/**
@@ -406,8 +399,7 @@ public class Discret11Dec extends Discret {
 	
 	private void razMotif(){
 		this.enable = false;
-		cptArray = 0;
-		cptPoly = 0;
+		cptArray = 0;	
 		this.seqFrame = 0;
 		this.start = true;
 		this.currentframePos = 0;
@@ -446,8 +438,7 @@ public class Discret11Dec extends Discret {
 			this.saveIndex11bitsKey = this.index11bitsKey;
 			this.audienceLevel = 1;
 			this.index11bitsKey = 0;
-			cptArray = 0;
-			cptPoly = 0;
+			cptArray = 0;			
 			this.enable = true;			
 			break;
 		case 10:			
@@ -460,8 +451,7 @@ public class Discret11Dec extends Discret {
 			this.saveIndex11bitsKey = this.index11bitsKey;
 			this.audienceLevel = 2;
 			this.index11bitsKey = 1;
-			cptArray = 0;
-			cptPoly = 0;
+			cptArray = 0;			
 			this.enable = true;
 			//this.seqFrame = 0;
 			//this.currentframePos = 0;			
@@ -475,8 +465,7 @@ public class Discret11Dec extends Discret {
 			this.seqFrame = 0;
 			this.audienceLevel = 3;
 			this.index11bitsKey = 2;
-			cptArray = 0;
-			cptPoly = 0;
+			cptArray = 0;			
 			this.enable = true;			
 			break;
 		case 100:			
@@ -488,8 +477,7 @@ public class Discret11Dec extends Discret {
 			this.saveIndex11bitsKey = this.index11bitsKey;
 			this.audienceLevel = 4;
 			this.index11bitsKey = 3;
-			cptArray = 0;
-			cptPoly = 0;
+			cptArray = 0;			
 			this.enable = true;					
 			break;
 		case 101:			
@@ -501,8 +489,7 @@ public class Discret11Dec extends Discret {
 			this.saveIndex11bitsKey = this.index11bitsKey;
 			this.audienceLevel = 5;
 			this.index11bitsKey = 4;
-			cptArray = 0;
-			cptPoly = 0;
+			cptArray = 0;			
 			this.enable = true;						
 			break;
 		case 110:			
@@ -514,8 +501,7 @@ public class Discret11Dec extends Discret {
 			this.saveIndex11bitsKey = this.index11bitsKey;
 			this.audienceLevel = 6;
 			this.index11bitsKey = 5;
-			cptArray = 0;
-			cptPoly = 0;
+			cptArray = 0;			
 			this.enable = true;					
 			break;
 		case 111:			
@@ -528,8 +514,7 @@ public class Discret11Dec extends Discret {
 			this.saveIndex11bitsKey = this.index11bitsKey;
 			this.audienceLevel = 7;
 			this.index11bitsKey = 6;
-			cptArray = 0;
-			cptPoly = 0;
+			cptArray = 0;			
 			this.enable = true;			
 			break;
 		default:			
@@ -599,8 +584,7 @@ public class Discret11Dec extends Discret {
 					int saveKey = this.index11bitsKey;
 					this.index11bitsKey = this.saveIndex11bitsKey;
 					image = modifyOddFrame2(image, 1);
-					cptArray = 0;
-					cptPoly = 0;
+					cptArray = 0;					
 					this.index11bitsKey = saveKey;
 				}
 				// we compute only the even part of
@@ -615,8 +599,7 @@ public class Discret11Dec extends Discret {
 				this.seqFrame++;
 
 				if (this.seqFrame == 6) {
-					this.seqFrame = 0;
-					this.cptPoly = 0;
+					this.seqFrame = 0;					
 				}
 
 				image = modifyEvenFrame(image, z);
@@ -664,7 +647,6 @@ public class Discret11Dec extends Discret {
 				//draw black line at start of delay
 				raster.setPixels(0, y, delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, 
 						new int[delayArray[index11bitsKey][this.seqFrame][cptArray]  * 3]);	
-				cptPoly++; // we increment the count of poly array
 				cptArray++;
 			}
 			y++; // add one to y in order to have only even lines frame
@@ -689,10 +671,7 @@ public class Discret11Dec extends Discret {
 			if(cptArray == 286){
 				this.cptArray = 0;
 			}
-			
-			if(cptPoly == 1716){
-				cptPoly = 0;				
-			}			
+								
 			//temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
 
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
@@ -704,7 +683,6 @@ public class Discret11Dec extends Discret {
 				//draw black line at start of delay
 				raster.setPixels(0, y, delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, 
 						new int[delayArray[index11bitsKey][this.seqFrame][cptArray]  * 3]);	
-				cptPoly++; // we increment the count of poly array
 				cptArray++;
 			}
 			y++; // add one to y in order to have only odd lines frame
@@ -728,13 +706,8 @@ public class Discret11Dec extends Discret {
 		for (int y = 2; y < 576; y++) {
 			if(cptArray == 286){
 				this.cptArray = 0;
-			}
-			
-			if(cptPoly == 1716){
-				cptPoly = 0;				
 			}			
-			//temp2 = delayArray[index11bitsKey][5][cptArray];
-
+					
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
 				raster.setPixels(delayArray[index11bitsKey][5][cptArray] , y, this.sWidth
@@ -744,7 +717,6 @@ public class Discret11Dec extends Discret {
 				//draw black line at start of delay
 				raster.setPixels(0, y, delayArray[index11bitsKey][5][cptArray] , 1, 
 						new int[delayArray[index11bitsKey][5][cptArray]  * 3]);	
-				cptPoly++; // we increment the count of poly array
 				cptArray++;
 			}
 			y++; // add one to y in order to have only odd lines frame

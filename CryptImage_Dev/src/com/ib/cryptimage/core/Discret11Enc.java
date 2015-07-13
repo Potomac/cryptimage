@@ -43,7 +43,7 @@ public class Discret11Enc extends Discret {
 	/**
 	 * store the 11 bits key word
 	 */
-	//private int key11bits;	
+	
 	/**
 	 * store the current index for the 11 bits key
 	 */
@@ -51,8 +51,6 @@ public class Discret11Enc extends Discret {
 	
 	private int saveIndexUse11bitsKey;
 	
-	//private boolean start = true;
-
 
 	/**
 	 * enable or disable the encoder
@@ -81,8 +79,6 @@ public class Discret11Enc extends Discret {
 	 */
 	private int seqFrame = 0;
 	
-	//private int totalFrameCount = 0;
-	
 	private int[] audienceList = null;
 	
 	private int cycle;
@@ -95,10 +91,8 @@ public class Discret11Enc extends Discret {
 	
 	private int indexUse11bitsKey = -1;
 	
-	private WritableRaster rasterCheck;
-	
-	//private Raster raster1;
-	
+	private WritableRaster rasterCheck;	
+
 	private WritableRaster raster;
 	
 	private int[] tabBlack;
@@ -121,10 +115,7 @@ public class Discret11Enc extends Discret {
 	 * 3 types of delay
 	 */
 	private int[] decaPixels = new int[3];
-	/**
-	 * the count iterator for poly array
-	 */
-	private int cptPoly = 0;
+
 	/**
 	 * the count iterator for delay array
 	 */
@@ -215,8 +206,7 @@ public class Discret11Enc extends Discret {
 		this.index11bitsKey = audienceList[cptCycle] -1;
 		this.indexUse11bitsKey = this.index11bitsKey;
 		//this.key11bits = this.key11BitsTab[this.indexUse11bitsKey];
-		cptArray = 0;
-		cptPoly = 0;
+		cptArray = 0;		
 		this.enable = false;
 	}
 	
@@ -471,8 +461,7 @@ public class Discret11Enc extends Discret {
 					int saveKey = this.indexUse11bitsKey;
 					this.indexUse11bitsKey = this.saveIndexUse11bitsKey;
 					image = modifyOddFrame2(image, 1);
-					cptArray = 0;
-					cptPoly = 0;
+					cptArray = 0;					
 					this.indexUse11bitsKey = saveKey;
 				}
 				// we compute only the even part of
@@ -493,8 +482,7 @@ public class Discret11Enc extends Discret {
 						this.enable = true;
 					}
 					image = setWhite310Line(image);	
-					this.seqFrame = 0;
-					this.cptPoly = 0;
+					this.seqFrame = 0;					
 				}
 				else{
 					image = setBlack310Line(image);	
@@ -549,7 +537,6 @@ public class Discret11Enc extends Discret {
 					// draw black line at start of delay
 					raster.setPixels(0, y, delayArray[indexUse11bitsKey][this.seqFrame][cptArray] , 1, 
 							new int[delayArray[indexUse11bitsKey][this.seqFrame][cptArray]  * 3]);	
-					cptPoly++; // we increment the count of poly array
 					cptArray++;
 				}
 				y++; // add one to y in order to have only even lines frame
@@ -567,18 +554,13 @@ public class Discret11Enc extends Discret {
 	private BufferedImage modifyOddFrame(BufferedImage image, int z) {
 		if (enable) {			
 			raster = image.getRaster();
-
-			//int temp2 = 0;
+			
 
 			for (int y = 2; y < 576; y++) {
 				if (cptArray == 286) {
 					this.cptArray = 0;
 				}
-
-				if (cptPoly == 1716) {
-					cptPoly = 0;
-				}
-				//temp2 = delayArray[indexUse11bitsKey][this.seqFrame][cptArray];
+				
 
 				if (y != 574) { // we don't increment if it's line 310 ( 575 in
 					// digital image )
@@ -588,7 +570,6 @@ public class Discret11Enc extends Discret {
 					// draw black line at start of delay
 					raster.setPixels(0, y, delayArray[indexUse11bitsKey][this.seqFrame][cptArray] , 1, 
 							new int[delayArray[indexUse11bitsKey][this.seqFrame][cptArray]  * 3]);	
-					cptPoly++; // we increment the count of poly array
 					cptArray++;
 				}
 				y++; // add one to y in order to have only odd lines frame
@@ -607,17 +588,11 @@ public class Discret11Enc extends Discret {
 		if (enable) {			
 			raster = image.getRaster();
 
-			//int temp2 = 0;
-
+			
 			for (int y = 2; y < 576; y++) {
 				if (cptArray == 286) {
 					this.cptArray = 0;
 				}
-
-				if (cptPoly == 1716) {
-					cptPoly = 0;
-				}
-				//temp2 = delayArray[indexUse11bitsKey][5][cptArray];
 
 				if (y != 574) { // we don't increment if it's line 310 ( 575 in
 					// digital image )
@@ -627,7 +602,6 @@ public class Discret11Enc extends Discret {
 					// draw black line at start of delay
 					raster.setPixels(0, y, delayArray[indexUse11bitsKey][5][cptArray] , 1, 
 							new int[delayArray[indexUse11bitsKey][5][cptArray]  * 3]);	
-					cptPoly++; // we increment the count of poly array
 					cptArray++;
 				}
 				y++; // add one to y in order to have only odd lines frame
