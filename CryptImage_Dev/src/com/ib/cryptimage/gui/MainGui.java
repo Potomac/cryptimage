@@ -166,7 +166,7 @@ public class MainGui {
 	       // handle exception
 	    }
 		
-		frame = new JFrame("CryptImage v0.0.8");
+		frame = new JFrame("CryptImage v0.0.9");
 		frame.addWindowListener(new MainGui_ActionListener(this));
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
@@ -687,8 +687,8 @@ public class MainGui {
 		txtMultiCode.setFocusLostBehavior(JFormattedTextField.COMMIT);	
 		//txtMultiCode.setHorizontalAlignment(JTextField.RIGHT);
 		
-		txtMultiCode.setToolTipText("<html>Entrez ici les niveaux d'audience,<br/>" + 
-									"la liste peut contenir jusqu'à 10 niveaux d'audience.</html>");
+		txtMultiCode.setToolTipText("<html>Entrez ici les niveaux d'audiences,<br/>" + 
+									"la liste peut contenir jusqu'à 10 niveaux d'audiences.</html>");
 		
 		lblMultiAudience = new JLabel("audiences:");
 		lblCycle = new JLabel("cycle:");

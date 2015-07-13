@@ -24,7 +24,7 @@ package com.ib.cryptimage.core;
 
 
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
+//import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 
@@ -109,8 +109,8 @@ public class SimpleDiscret11 extends Discret {
 	
 	private int audienceLevel;
 	
-	private Raster raster1;
-	private WritableRaster raster2;
+	//private Raster raster1;
+	private WritableRaster raster;
 	
 	
 	/**
@@ -130,7 +130,7 @@ public class SimpleDiscret11 extends Discret {
 		this.height = height;
 		this.width = width;
 		
-		initRaster();
+		//initRaster();
 		
 		poly = new int[this.height * 3];
 		delayArray = new int [3][this.height];
@@ -162,7 +162,7 @@ public class SimpleDiscret11 extends Discret {
 		this.height = height;
 		this.width = width;
 		
-		initRaster();
+		//initRaster();
 		
 		poly = new int[this.height * 3];
 		delayArray = new int [3][this.height];
@@ -389,12 +389,12 @@ public class SimpleDiscret11 extends Discret {
 	}
 	
 	
-	private void initRaster(){
-		BufferedImage bi = new BufferedImage(this.width,this.height,
-				BufferedImage.TYPE_3BYTE_BGR);
-		
-		raster1 = bi.getRaster();
-	}
+//	private void initRaster(){
+//		BufferedImage bi = new BufferedImage(this.width,this.height,
+//				BufferedImage.TYPE_3BYTE_BGR);
+//		
+//		raster1 = bi.getRaster();
+//	}
 	
 	/**
 	 * transform an image that have been added
@@ -408,26 +408,25 @@ public class SimpleDiscret11 extends Discret {
 		//we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);		
 		
-		raster2 = image.getRaster();		
+		raster = image.getRaster();		
 		
 		
-		int temp = 0;
-		int shift = 0;
+		//int temp = 0;
+		//int shift = 0;
 		
 		for (int y = 0; y < this.height; y++) {
-			temp = delayArray[this.seqFullFrame][y];
-			if (this.isDec == true && (temp == decaPixels[1])) {
-				shift = (this.decaPixels[2] - this.decaPixels[1])
-						- this.decaPixels[1];
-			}
-			raster2.setPixels(temp + shift, y, this.width
-					- temp - shift, 1, raster2.getPixels(0,
-					y, this.width - temp - shift, 1,
-					new int[(this.width - temp - shift) * 3]));
+			//temp = delayArray[this.seqFullFrame][y];
+//			if (this.isDec == true && (temp == decaPixels[1])) {
+//				shift = (this.decaPixels[2] - this.decaPixels[1])
+//						- this.decaPixels[1];
+//			}
+			raster.setPixels(delayArray[this.seqFullFrame][y], y, this.width
+					- delayArray[this.seqFullFrame][y], 1, raster.getPixels(0,
+					y, this.width - delayArray[this.seqFullFrame][y], 1,
+					new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
 			//draw black line at start of delay
-			raster2.setPixels(0, y, temp + shift, 1, raster1.getPixels(0,
-					y, temp + shift, 1,
-					new int[(temp + shift) * 3]));			
+			raster.setPixels(0, y, delayArray[this.seqFullFrame][y], 1, 
+					new int[delayArray[this.seqFullFrame][y] * 3]);	
 		}
 		
 		this.seqFullFrame++;

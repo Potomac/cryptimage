@@ -417,7 +417,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	private void showAbout() {
 		JLabel label = new JLabel();
 
-		String deb = "CryptImage v0.0.8" + "<br/>"
+		String deb = "CryptImage v0.0.9" + "<br/>"
 				+ "Copyright (C) 2015-01-09 Mannix54 <br/>";
 
 		String link = "<a href=\"http://ibsoftware.free.fr/cryptimage.php\">http://ibsoftware.free.fr/cryptimage.php</a>"

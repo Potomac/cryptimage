@@ -26,7 +26,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
+//import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -124,8 +124,8 @@ public class Discret11Dec extends Discret {
 	 */
 	private final int sWidth = 768;
 	
-	private Raster raster1;
-	private WritableRaster raster2;	
+	//private Raster raster1;
+	private WritableRaster raster;	
 	
 	//private int[] tab = new int[sWidth * 3];
 	
@@ -139,7 +139,7 @@ public class Discret11Dec extends Discret {
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);	
 		
-		initRaster();
+		//initRaster();
 			
 		initPolyLFSR();
 		// choose the right truth table and feed the array delay
@@ -161,7 +161,7 @@ public class Discret11Dec extends Discret {
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);	
 		
-		initRaster();
+		//initRaster();
 		
 		initPolyLFSR();
 		// choose the right truth table and feed the array delay
@@ -171,11 +171,11 @@ public class Discret11Dec extends Discret {
 		//this.key11bits = key11BitsTab[0];
 	}	
 	
-	private void initRaster(){		
-		BufferedImage bi = new BufferedImage(this.sWidth,576,
-				BufferedImage.TYPE_3BYTE_BGR);		
-		raster1 = bi.getRaster();						
-	}
+//	private void initRaster(){		
+//		BufferedImage bi = new BufferedImage(this.sWidth,576,
+//				BufferedImage.TYPE_3BYTE_BGR);		
+//		raster1 = bi.getRaster();						
+//	}
 
 	/**
 	 * initialize the key11BitsTab
@@ -643,28 +643,27 @@ public class Discret11Dec extends Discret {
 	 */
 	private BufferedImage modifyEvenFrame(BufferedImage image, int z){		
 		
-		raster2 = image.getRaster();		
+		raster = image.getRaster();		
 		
-		int temp2 = 0;
+		//int temp2 = 0;
 		
 		for (int y = 1; y < 576; y++) {
 			if(cptArray == 286){
 				this.cptArray = 0;
 			}
 			
-			temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
+			//temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
 			
 
 			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
 				// digital image ) or if next line is 623 ( 576 in digital image )
-				raster2.setPixels(temp2 , y, this.sWidth
-						- temp2 , 1, raster2.getPixels(0,
-						y, this.sWidth - temp2 , 1,
-						new int[(this.sWidth - temp2) * 3]));
+				raster.setPixels(delayArray[index11bitsKey][this.seqFrame][cptArray] , y, this.sWidth
+						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(0,
+						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] , 1,
+						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray]) * 3]));
 				//draw black line at start of delay
-				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
-						y, temp2 , 1,
-						new int[temp2  * 3]));							
+				raster.setPixels(0, y, delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, 
+						new int[delayArray[index11bitsKey][this.seqFrame][cptArray]  * 3]);	
 				cptPoly++; // we increment the count of poly array
 				cptArray++;
 			}
@@ -681,9 +680,9 @@ public class Discret11Dec extends Discret {
 	 */
 	private BufferedImage modifyOddFrame(BufferedImage image, int z){	
 		
-		raster2 = image.getRaster();	
+		raster = image.getRaster();	
 
-		int temp2 = 0;	
+		//int temp2 = 0;	
 
 	
 		for (int y = 2; y < 576; y++) {
@@ -694,18 +693,17 @@ public class Discret11Dec extends Discret {
 			if(cptPoly == 1716){
 				cptPoly = 0;				
 			}			
-			temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
+			//temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
 
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
-				raster2.setPixels(temp2 , y, this.sWidth
-						- temp2 , 1, raster2.getPixels(0,
-						y, this.sWidth - temp2, 1,
-						new int[(this.sWidth - temp2 ) * 3]));
+				raster.setPixels(delayArray[index11bitsKey][this.seqFrame][cptArray] , y, this.sWidth
+						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(0,
+						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray], 1,
+						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] ) * 3]));
 				//draw black line at start of delay
-				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
-						y, temp2 , 1,
-						new int[temp2  * 3]));				
+				raster.setPixels(0, y, delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, 
+						new int[delayArray[index11bitsKey][this.seqFrame][cptArray]  * 3]);	
 				cptPoly++; // we increment the count of poly array
 				cptArray++;
 			}
@@ -722,9 +720,9 @@ public class Discret11Dec extends Discret {
 	 */
 	private BufferedImage modifyOddFrame2(BufferedImage image, int z){
 		
-		raster2 = image.getRaster();	
+		raster = image.getRaster();	
 
-		int temp2 = 0;	
+		//int temp2 = 0;	
 
 	
 		for (int y = 2; y < 576; y++) {
@@ -735,18 +733,17 @@ public class Discret11Dec extends Discret {
 			if(cptPoly == 1716){
 				cptPoly = 0;				
 			}			
-			temp2 = delayArray[index11bitsKey][5][cptArray];
+			//temp2 = delayArray[index11bitsKey][5][cptArray];
 
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
-				raster2.setPixels(temp2 , y, this.sWidth
-						- temp2 , 1, raster2.getPixels(0,
-						y, this.sWidth - temp2, 1,
-						new int[(this.sWidth - temp2 ) * 3]));
+				raster.setPixels(delayArray[index11bitsKey][5][cptArray] , y, this.sWidth
+						- delayArray[index11bitsKey][5][cptArray] , 1, raster.getPixels(0,
+						y, this.sWidth - delayArray[index11bitsKey][5][cptArray], 1,
+						new int[(this.sWidth - delayArray[index11bitsKey][5][cptArray] ) * 3]));
 				//draw black line at start of delay
-				raster2.setPixels(0, y, temp2 , 1, raster1.getPixels(0,
-						y, temp2 , 1,
-						new int[temp2  * 3]));				
+				raster.setPixels(0, y, delayArray[index11bitsKey][5][cptArray] , 1, 
+						new int[delayArray[index11bitsKey][5][cptArray]  * 3]);	
 				cptPoly++; // we increment the count of poly array
 				cptArray++;
 			}
