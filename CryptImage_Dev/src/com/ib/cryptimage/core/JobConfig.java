@@ -70,7 +70,8 @@ public class JobConfig {
 	private int cycle;
 	private int resolution;
 	private boolean[] autorisations;
-	
+	private boolean noBlackBar = false;
+
 
 	public JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -639,4 +640,13 @@ public class JobConfig {
 	public void setAutorisations(boolean[] autorisations) {
 		this.autorisations = autorisations;
 	}	
+	
+	public boolean isNoBlackBar() {
+		return noBlackBar;
+	}
+
+	public void setNoBlackBar(boolean noBlackBar) {
+		this.noBlackBar = noBlackBar;
+	}
+	
 }

@@ -75,11 +75,11 @@ public class SimpleDiscret11 extends Discret {
 	/**
 	 * store the number of frames that has been transformed by Discret11
 	 */
-	private int currentframePos = 0;
+	protected int currentframePos = 0;
 	/**
 	 * store the current position from the 3 frames ( full image ) sequence
 	 */
-	private int seqFullFrame = 0;
+	protected int seqFullFrame = 0;
 	/**
 	 * store the value for the truth table
 	 * first dimension is z, second is b0, third is b10
@@ -91,7 +91,7 @@ public class SimpleDiscret11 extends Discret {
 	 * in 2 dimension array who represents
 	 * the 6 TV frames
 	 */
-	private int[][] delayArray;	
+	protected int[][] delayArray;	
 	/**
 	 * array for storing the delay in pixels
 	 * 3 types of delay
@@ -101,16 +101,16 @@ public class SimpleDiscret11 extends Discret {
 	/**
 	 * the height of the image
 	 */
-	private int height;
+	protected int height;
 	/**
 	 * the width of the image
 	 */
-	private int width;
+	protected int width;
 	
 	private int audienceLevel;
 	
 	//private Raster raster1;
-	private WritableRaster raster;
+	protected WritableRaster raster;
 	
 	
 	/**
@@ -446,7 +446,7 @@ public class SimpleDiscret11 extends Discret {
 	 * @param targetType the target type
 	 * @return a converted BufferedImage
 	 */
-	private  BufferedImage convertToType(BufferedImage sourceImage,
+	protected  BufferedImage convertToType(BufferedImage sourceImage,
 			int targetType) {
 		BufferedImage image;
 

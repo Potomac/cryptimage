@@ -33,5 +33,6 @@ abstract class Discret {
 	abstract BufferedImage transform(BufferedImage img);
 	abstract boolean isEnable();
 	abstract int getAudienceLevel();
+	abstract int getKey11bits();
 	
 }

@@ -72,11 +72,19 @@ public class CryptPhoto {
 	}
 	
 	public  void encPhoto(BufferedImage img){
-		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getWord16bits(),
-				job.getAudienceLevel(),
-				SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
-		this.key11bits = simpleDiscret.getKey11bits();
-		BufferedImage imgRes = simpleDiscret.transform(img);
+		Discret discret;
+		if(this.job.isNoBlackBar()){
+			discret = new SimpleDiscret11NoBlack(job.getWord16bits(),
+					job.getAudienceLevel(),
+					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
+		}
+		else {
+			discret = new SimpleDiscret11(job.getWord16bits(),
+					job.getAudienceLevel(),
+					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
+		}	
+		this.key11bits = discret.getKey11bits();
+		BufferedImage imgRes = discret.transform(img);
 		saveCryptImage(imgRes);		
 	}
 	

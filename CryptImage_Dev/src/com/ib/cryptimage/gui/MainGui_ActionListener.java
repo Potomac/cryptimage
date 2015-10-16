@@ -118,6 +118,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageCheckBoxes(JCheckBox src) {
+		
+		if(src.equals(this.mainGui.getChkNoBlackBar())){
+			this.mainGui.getJob().setNoBlackBar(
+					this.mainGui.getChkNoBlackBar().isSelected());
+		}
+		
 		if (src.equals(this.mainGui.getChkStrictMode())) {
 			if (src.isSelected()) {				
 				setMultiCodeComboBox();
@@ -417,8 +423,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	private void showAbout() {
 		JLabel label = new JLabel();
 
-		String deb = "CryptImage v0.0.9" + "<br/>"
-				+ "Copyright (C) 2015-07-15 Mannix54 <br/>";
+		String deb = "CryptImage v0.0.10" + "<br/>"
+				+ "Copyright (C) 2015-10-16 Mannix54 <br/>";
 
 		String link = "<a href=\"http://ibsoftware.free.fr/cryptimage.php\">http://ibsoftware.free.fr/cryptimage.php</a>"
 				+ "<br/><br/>";

@@ -49,13 +49,13 @@ public class Discret11Enc extends Discret {
 	 */
 	private int index11bitsKey =-1;
 	
-	private int saveIndexUse11bitsKey;
+	protected int saveIndexUse11bitsKey;
 	
 
 	/**
 	 * enable or disable the encoder
 	 */
-	private boolean enable = false;
+	protected boolean enable = false;
 	/**
 	 * store the current audience level
 	 */
@@ -73,11 +73,11 @@ public class Discret11Enc extends Discret {
 	/**
 	 * store the number of frames that has been transformed by Discret11
 	 */
-	private int currentframePos = 0;
+	protected int currentframePos = 0;
 	/**
 	 * store the current position from the 6 frames ( half image ) sequence
 	 */
-	private int seqFrame = 0;
+	protected int seqFrame = 0;
 	
 	private int[] audienceList = null;
 	
@@ -87,13 +87,13 @@ public class Discret11Enc extends Discret {
 	
 	private int maxCycle = 0;
 	
-	private int indexCycle;
+	protected int indexCycle;
 	
-	private int indexUse11bitsKey = -1;
+	protected int indexUse11bitsKey = -1;
 	
 	private WritableRaster rasterCheck;	
 
-	private WritableRaster raster;
+	protected WritableRaster raster;
 	
 	private int[] tabBlack;
 	private int[] tabWhite;
@@ -109,7 +109,7 @@ public class Discret11Enc extends Discret {
 	 * in 2 dimension array who represents
 	 * the 6 TV frames, we have 7 possibilities because 7 audience levels
 	 */
-	private int[][][] delayArray = new int[7][6][286];
+	protected int[][][] delayArray = new int[7][6][286];
 	/**
 	 * array for storing the delay in pixels
 	 * 3 types of delay
@@ -119,11 +119,11 @@ public class Discret11Enc extends Discret {
 	/**
 	 * the count iterator for delay array
 	 */
-	private int cptArray = 0;	
+	protected int cptArray = 0;	
 	/**
 	 * the default width of the image which is 768
 	 */
-	private final int sWidth = 768;
+	protected final int sWidth = 768;
 
 	
 	
@@ -210,7 +210,7 @@ public class Discret11Enc extends Discret {
 		this.enable = false;
 	}
 	
-	private void changeAudience(){
+	protected void changeAudience(){
 		maxCycle++;
 		if(maxCycle == this.cycle ){
 			maxCycle = 0;
@@ -614,7 +614,7 @@ public class Discret11Enc extends Discret {
 	 * we set the color of the 622 line according to the audience level	
 	 * @param buff the BufferedImage
 	 */
-	private void setAudience622Line(BufferedImage buff) {
+	protected void setAudience622Line(BufferedImage buff) {
 		switch (this.audienceLevel) {
 		case 1:
 			if (this.seqFrame == 1) {
@@ -703,7 +703,7 @@ public class Discret11Enc extends Discret {
 	 * @param buff the BufferedImage
 	 * @return a modified BufferedImage with 310 line set to white
 	 */
-	private BufferedImage setWhite310Line(BufferedImage buff){
+	protected BufferedImage setWhite310Line(BufferedImage buff){
 //		for (int i = 0; i < buff.getWidth(); i++) {
 //			buff.setRGB(i, 574, new Color(255,255, 255).getRGB());
 //		}
@@ -721,7 +721,7 @@ public class Discret11Enc extends Discret {
 	 * @param buff the BufferedImage
 	 * @return a modified BufferedImage with 310 line set to black
 	 */
-	private BufferedImage setBlack310Line(BufferedImage buff){
+	protected BufferedImage setBlack310Line(BufferedImage buff){
 //		for (int i = 0; i < buff.getWidth(); i++) {
 //			buff.setRGB(i, 574, new Color(0, 0, 0).getRGB());
 //		}
@@ -771,7 +771,7 @@ public class Discret11Enc extends Discret {
 	 * @param targetType the target type
 	 * @return a converted BufferedImage
 	 */
-	private  BufferedImage convertToType(BufferedImage sourceImage,
+	protected  BufferedImage convertToType(BufferedImage sourceImage,
 			int targetType) {
 		BufferedImage image;
 
@@ -797,7 +797,7 @@ public class Discret11Enc extends Discret {
 	 * @param h the new height
 	 * @return the resized image
 	 */
-	private BufferedImage getScaledImage(BufferedImage src, int w, int h){
+	protected BufferedImage getScaledImage(BufferedImage src, int w, int h){
 	    int finalw = w;
 	    int finalh = h;
 	    double factor = 1.00d;

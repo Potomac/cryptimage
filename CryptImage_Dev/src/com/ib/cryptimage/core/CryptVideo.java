@@ -168,28 +168,35 @@ public class CryptVideo {
 		}
 
 		if (this.strictMode) {
-			// discret = new Discret11(this.keyWord, mode, this.audienceLevel,
-			// this.perc1, this.perc2);
 			if (this.isDecoding) {
 				discret = new Discret11Dec(this.frmv.getJob()
 						.getWord16bits(), this.perc1, this.perc2);
-				// this.keyWord11 = String.valueOf(discretDec.getKey11bits());
+				
 			} else {
-				// discretEnc = new Discret11Enc(this.frmv.getJob()
-				// .getWord16bits(), String.valueOf(
-				// this.frmv.getJob().getAudienceLevel()),
-				// 1, this.perc1, this.perc2);
+				if(this.frmv.getJob().isNoBlackBar()){
+					discret = new Discret11EncNoBlack(this.frmv.getJob()
+							.getWord16bits(), this.codePattern, this.cycle,
+							this.perc1, this.perc2);
+				}
+				else
+				{
 				discret = new Discret11Enc(this.frmv.getJob()
 						.getWord16bits(), this.codePattern, this.cycle,
 						this.perc1, this.perc2);
-				// this.keyWord11 = discretEnc.getKey11bits();
+				}				
 			}
 
 		} else {
+			if(this.frmv.getJob().isNoBlackBar()){
+				discret = new SimpleDiscret11NoBlack(this.keyWord,
+						Integer.valueOf(this.audienceLevel), mode, this.height,
+						this.width);
+			}
+			else {
 			discret = new SimpleDiscret11(this.keyWord,
 					Integer.valueOf(this.audienceLevel), mode, this.height,
 					this.width);
-			// this.keyWord11 = String.valueOf(simpleDiscret.getKey11bits());
+			}			
 		}
 
 		if (frmv.getJob().isWantPlay() != true) {

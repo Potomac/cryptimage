@@ -118,8 +118,7 @@ public class MainGui {
 	private JSpinner jspCycle;
 	private JLabel lblMultiAudience;
 	private JLabel lblCycle;
-
-	
+	private JCheckBox chkNoBlackBar;
 
 	private JPanel panVideoOptions;
 	private JLabel labCodec;
@@ -166,7 +165,7 @@ public class MainGui {
 	       // handle exception
 	    }
 		
-		frame = new JFrame("CryptImage v0.0.9");
+		frame = new JFrame("CryptImage v0.0.10");
 		frame.addWindowListener(new MainGui_ActionListener(this));
 		frame.setLayout(new GridLayout(2,1));
 		JPanel panGlobal = new JPanel();
@@ -875,7 +874,10 @@ public class MainGui {
 				20,25,
 				1, 1,1,1);
 		
-		
+		chkNoBlackBar = new JCheckBox("Bordure masquée");
+		chkNoBlackBar.addActionListener(new MainGui_ActionListener(this));
+		chkNoBlackBar.setToolTipText("<html>Masque les indices de décalage dans la bordure gauche,<br/>"
+				+ "le noir dans cette zone sera remplacé par une autre couleur,<br/>option active uniquement en mode codage.</html>");
 		chkSound = new JCheckBox("Traiter le son");
 		chkSound.setSelected(true);
 		chkSound.setToolTipText("<html>permet de crypter/décrypter le son,<br/>"
@@ -914,7 +916,7 @@ public class MainGui {
 				pan16bits,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 1,
-				3,1,
+				4,1,
 				100,25,
 				1, 1,1,1);		
 		
@@ -936,7 +938,7 @@ public class MainGui {
 				panDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 3,
-				3,1,
+				4,1,
 				100,25,
 				1, 1,1,1);
 		//delay2
@@ -945,7 +947,7 @@ public class MainGui {
 				panDelay2,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 4,
-				3,1,
+				4,1,
 				100,25,
 				1, 1,1,1);		
 
@@ -959,12 +961,22 @@ public class MainGui {
 				10,25,
 				1, 1,1,1);
 		
+		// enable/disable noBlackBar
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				chkNoBlackBar,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 5,
+				1,1,
+				10,25,
+				1, 1,1,1);
+		
 		//check sound
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				chkSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 5,
+				2, 5,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -973,7 +985,7 @@ public class MainGui {
 				gbl,
 				chkDisableSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 5,
+				3, 5,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -984,7 +996,7 @@ public class MainGui {
 				panFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 6,
-				3,1,
+				4,1,
 				100,25,
 				1, 1,1,1);
 		
@@ -1598,6 +1610,10 @@ public class MainGui {
 
 	public JLabel getLabAudience() {
 		return labAudience;
+	}
+	
+	public JCheckBox getChkNoBlackBar() {
+		return chkNoBlackBar;
 	}
 
 }
