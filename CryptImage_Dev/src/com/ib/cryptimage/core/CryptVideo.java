@@ -59,18 +59,11 @@ public class CryptVideo {
 	private int frameCount;
 	private String audienceLevel;
 	
-	//private Discret11 discret;
-//	private Discret11Dec discretDec;
-//	private Discret11Enc discretEnc;
-//	private SimpleDiscret11 simpleDiscret;
-	
 	private Discret discret;
 	
 	private double perc1;
 	private double perc2;	
-	
-	private FramesPlayer frmv;
-	
+		
 	private String codePattern;
 	private int cycle;
 	private String fileAudienceLevel;
@@ -81,56 +74,53 @@ public class CryptVideo {
 	
 	private double framerate;
 	
-	public CryptVideo(FramesPlayer frmv) {
+	public CryptVideo() {
 
-		this.frmv = frmv;
-
-		if (frmv.getJob().getAudienceLevel() == 8) {
+		if (JobConfig.getAudienceLevel() == 8) {
 			this.audienceLevel = "multicode-"
-					+ this.frmv.getJob().getMultiCode();
+					+ JobConfig.getMultiCode();
 			fileAudienceLevel = "_multicode-"
-					+ this.frmv.getJob().getMultiCode() + "_cycle" + 
-					this.frmv.getJob().getCycle();
-			this.codePattern = this.frmv.getJob().getMultiCode();
-			this.cycle = this.frmv.getJob().getCycle();
+					+ JobConfig.getMultiCode() + "_cycle" + 
+					JobConfig.getCycle();
+			this.codePattern = JobConfig.getMultiCode();
+			this.cycle = JobConfig.getCycle();
 		} else {
-			this.audienceLevel = String.valueOf(frmv.getJob()
+			this.audienceLevel = String.valueOf(JobConfig
 					.getAudienceLevel());
 			fileAudienceLevel = "_a"
-					+ String.valueOf(frmv.getJob().getAudienceLevel());
-			this.codePattern = String.valueOf(frmv.getJob().getAudienceLevel());
+					+ String.valueOf(JobConfig.getAudienceLevel());
+			this.codePattern = String.valueOf(JobConfig.getAudienceLevel());
 			this.cycle = 1;
 		}
 		
-		if(frmv.getJob().isStrictMode() && frmv.getJob().isWantDec()== false){
-			fileKeyboardCode = "_k" + frmv.getJob().getCode();
+		if(JobConfig.isStrictMode() && JobConfig.isWantDec()== false){
+			fileKeyboardCode = "_k" + JobConfig.getCode();
 		}
 		else {
 			fileKeyboardCode = "";
 		}
 
-		this.keyWord11 = this.computeAudienceMulti(this.codePattern, this.frmv
-				.getJob().getWord16bits());
+		this.keyWord11 = this.computeAudienceMulti(this.codePattern, JobConfig.getWord16bits());
 
 		this.frameCount = 0;
-		this.positionSynchro = frmv.getJob().getPositionSynchro();
-		this.strictMode = frmv.getJob().isStrictMode();
+		this.positionSynchro = JobConfig.getPositionSynchro();
+		this.strictMode = JobConfig.isStrictMode();
 
-		if (frmv.getJob().isHorodatage()) {
-			File file = new File(frmv.getJob().getOutput_file());
-			String fileName = frmv.getJob().getDateTime() + "_"
+		if (JobConfig.isHorodatage()) {
+			File file = new File(JobConfig.getOutput_file());
+			String fileName = JobConfig.getDateTime() + "_"
 					+ file.getName();
 			this.outputFilename = file.getParent() + File.separator + fileName;
 		} else {
-			this.outputFilename = frmv.getJob().getOutput_file();
+			this.outputFilename = JobConfig.getOutput_file();
 		}
-		this.keyWord = frmv.getJob().getWord16bits();
-		this.isDecoding = frmv.getJob().isWantDec();
-		this.videoLengthFrames = frmv.getJob().getVideo_frame();
-		this.perc1 = frmv.getJob().getPerc1();
-		this.perc2 = frmv.getJob().getPerc2();
+		this.keyWord = JobConfig.getWord16bits();
+		this.isDecoding = JobConfig.isWantDec();
+		this.videoLengthFrames = JobConfig.getVideo_frame();
+		this.perc1 = JobConfig.getPerc1();
+		this.perc2 = JobConfig.getPerc2();
 
-		this.frmv.getJob().setReadyTransform(false);
+		JobConfig.setReadyTransform(false);
 
 		int mode;
 		if (this.isDecoding) {
@@ -139,7 +129,7 @@ public class CryptVideo {
 			mode = 0;
 		}
 
-		IMediaReader reader = ToolFactory.makeReader(frmv.getJob()
+		IMediaReader reader = ToolFactory.makeReader(JobConfig
 				.getInput_file());
 		reader.readPacket();
 		this.width = reader.getContainer().getStream(0).getStreamCoder()
@@ -149,8 +139,8 @@ public class CryptVideo {
 		double frameRate = reader.getContainer().getStream(0).getStreamCoder()
 				.getFrameRate().getValue();
 
-		if (frmv.getJob().isWantPlay()) {
-			vidPlayer = new VideoPlayer(frameRate, this.frmv.getJob());
+		if (JobConfig.isWantPlay()) {
+			vidPlayer = new VideoPlayer(frameRate);
 		}
 
 		this.timeBase = 1000d / frameRate;
@@ -169,25 +159,25 @@ public class CryptVideo {
 
 		if (this.strictMode) {
 			if (this.isDecoding) {
-				discret = new Discret11Dec(this.frmv.getJob()
+				discret = new Discret11Dec(JobConfig
 						.getWord16bits(), this.perc1, this.perc2);
 				
 			} else {
-				if(this.frmv.getJob().isNoBlackBar()){
-					discret = new Discret11EncNoBlack(this.frmv.getJob()
+				if(JobConfig.isNoBlackBar()){
+					discret = new Discret11EncNoBlack(JobConfig
 							.getWord16bits(), this.codePattern, this.cycle,
 							this.perc1, this.perc2);
 				}
 				else
 				{
-				discret = new Discret11Enc(this.frmv.getJob()
+				discret = new Discret11Enc(JobConfig
 						.getWord16bits(), this.codePattern, this.cycle,
 						this.perc1, this.perc2);
 				}				
 			}
 
 		} else {
-			if(this.frmv.getJob().isNoBlackBar()){
+			if(JobConfig.isNoBlackBar()){
 				discret = new SimpleDiscret11NoBlack(this.keyWord,
 						Integer.valueOf(this.audienceLevel), mode, this.height,
 						this.width);
@@ -199,12 +189,12 @@ public class CryptVideo {
 			}			
 		}
 
-		if (frmv.getJob().isWantPlay() != true) {
+		if (JobConfig.isWantPlay() != true) {
 			if (this.isDecoding) {
 				try {
 					vid = new VideoRecorder(outputFilename + "_dec" + "."
-							+ frmv.getJob().getExtension(), width, height,
-							frameRate, frmv.getJob());
+							+ JobConfig.getExtension(), width, height,
+							frameRate);
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(
@@ -219,8 +209,8 @@ public class CryptVideo {
 				try {
 					vid = new VideoRecorder(outputFilename + info + keyWord
 							+ this.fileAudienceLevel + fileKeyboardCode + "."
-							+ frmv.getJob().getExtension(), width, height,
-							frameRate, frmv.getJob());
+							+ JobConfig.getExtension(), width, height,
+							frameRate);
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(
@@ -270,9 +260,9 @@ public class CryptVideo {
 		}
 		
 		vidPlayer.showImage();
-		if(this.frmv.getJob().isStop() || this.frameCount == this.getVideoLengthFrames()){
+		if(JobConfig.isStop() || this.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();
-			vidPlayer.closeJavaSound();
+			//vidPlayer.closeJavaSound();
 		}
 		updateProgress("codage");
 		//System.out.println("Frames encoded : " + (timingFrame+1) + " /" +this.videoLengthFrames);
@@ -303,20 +293,20 @@ public class CryptVideo {
 		}
 		
 		vidPlayer.showImage();
-		if(this.frmv.getJob().isStop() || this.frameCount == this.getVideoLengthFrames()){
+		if(JobConfig.isStop() || this.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();
-			vidPlayer.closeJavaSound();
+			//vidPlayer.closeJavaSound();
 		}
 		updateProgress("décodage");		
 		}
 	}
 
 	public void addAudioFrame(IAudioSamples sample) {
-		if (!this.frmv.getJob().isWantPlay() 
-				&& this.frmv.getJob().isDisableSound() == false
-				&& this.frmv.getJob().isVideoHasAudioTrack()) {
+		if (!JobConfig.isWantPlay() 
+				&& JobConfig.isDisableSound() == false
+				&& JobConfig.isVideoHasAudioTrack()) {
 			vid.addAudioFrame(sample);
-		} else if (this.frmv.getJob().isWantPlay() ){
+		} else if (JobConfig.isWantPlay() ){
 			//vidPlayer.playJavaSound(sample);			
 		}
 	}
@@ -336,7 +326,7 @@ public class CryptVideo {
 		} else {			
 			BufferedImage bi;	
 			bi = this.discret.transform(buff);
-			this.frmv.getJob().setReadyTransform(discret.isEnable());
+			JobConfig.setReadyTransform(discret.isEnable());
 			// bi = new CryptImage(buff, pos,
 			// this.strictMode).getCryptDiscret11(keyWord);
 			vid.addFrame(bi, this.timeBase * (timingFrame));
@@ -361,7 +351,7 @@ public class CryptVideo {
 		} else {			
 			BufferedImage bi;
 			bi = this.discret.transform(buff);
-			this.frmv.getJob().setReadyTransform(discret.isEnable());
+			JobConfig.setReadyTransform(discret.isEnable());
 			// bi = new CryptImage(buff,
 			// pos,this.strictMode).getDecryptDiscret11WithCode(keyWord);
 			vid.addFrame(bi, this.timeBase * timingFrame);
@@ -374,21 +364,21 @@ public class CryptVideo {
 	public void closeVideo(){
 		vid.closeVideo();
 		if(isDecoding){		
-				this.frmv.getJob().getGui().getTextInfos()
-				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
+			JobConfig.getGui().getTextInfos()
+				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ "Fichier décodé : " + this.outputFilename +"_dec" +
-						 "." + frmv.getJob().getExtension());				
+						 "." + JobConfig.getExtension());				
 		}
 		else
 		{			
-				this.frmv.getJob().getGui().getTextInfos()
-				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
+			JobConfig.getGui().getTextInfos()
+				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ "Fichier codé : " + this.outputFilename + "_c" +
 						this.keyWord +
 						this.fileAudienceLevel + fileKeyboardCode
-								+  "." + frmv.getJob().getExtension());			
+								+  "." + JobConfig.getExtension());			
 		}		
 	}
 	
@@ -415,8 +405,8 @@ public class CryptVideo {
 			bfw.write("11 bits keyword : " + this.keyWord11 + "\r\n");
 			bfw.write("nb cycle : " + this.cycle +"\r\n" );
 			if(this.strictMode){
-				bfw.write("serial eprom : " + this.frmv.getJob().getSerial() + "\r\n");
-				bfw.write("keyboard code : " + this.frmv.getJob().getCode() + "\r\n");
+				bfw.write("serial eprom : " + JobConfig.getSerial() + "\r\n");
+				bfw.write("keyboard code : " + JobConfig.getCode() + "\r\n");
 			}
 			bfw.write("encoder started at frame n° : " + this.positionSynchro +"\r\n" );
 			bfw.write("Delay 1 : " + this.perc1 * 100 +"%\r\n" );
@@ -426,11 +416,11 @@ public class CryptVideo {
 			bfw.write("File : " + this.outputFilename +"_c" +
 					this.keyWord + 
 					this.fileAudienceLevel + fileKeyboardCode	+ "." 
-					+ frmv.getJob().getExtension() +"\r\n");			
+					+ JobConfig.getExtension() +"\r\n");			
 			
 			bfw.close();			
-				this.frmv.getJob().getGui().getTextInfos()
-				.setText(this.frmv.getJob().getGui().getTextInfos().getText() 
+			JobConfig.getGui().getTextInfos()
+				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ "Rapport : " + this.outputFilename
 						+ "_c" + this.keyWord						
@@ -458,8 +448,8 @@ public class CryptVideo {
 			stats = "audience en cours : " + discret.getAudienceLevel();
 		}
 		
-			frmv.getJob().getGui().getProgress().setValue(this.frameCount);
-			frmv.getJob()
+		JobConfig.getGui().getProgress().setValue(this.frameCount);
+		   JobConfig
 					.getGui()
 					.getTextInfos()
 					.setText(

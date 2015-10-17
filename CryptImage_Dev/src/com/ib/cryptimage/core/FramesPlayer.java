@@ -31,8 +31,7 @@ public class FramesPlayer {
 
 
 	private ImageSnapListener imgListen;
-	private IMediaReader mediaReader;
-	private JobConfig job;
+	private IMediaReader mediaReader;	
 	
 	
 	
@@ -40,19 +39,18 @@ public class FramesPlayer {
 	 * constructor for the frames extractor from a video file
 	 * @param job the JobConfig object who stores all settings	
 	 */
-	public FramesPlayer( JobConfig job) {
-		this.job = job;
+	public FramesPlayer() {
+				
+		StreamsFinder streamFinder = new StreamsFinder(JobConfig.getInput_file());
 		
-		StreamsFinder streamFinder = new StreamsFinder(job.getInput_file());
-		
-		this.mediaReader = ToolFactory.makeReader(job.getInput_file());		
+		this.mediaReader = ToolFactory.makeReader(JobConfig.getInput_file());		
 		
 		mediaReader
 				.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 		
 		
 		
-		this.imgListen = new ImageSnapListener(job.getVideo_frame(), this,
+		this.imgListen = new ImageSnapListener(JobConfig.getVideo_frame(), this,
 				streamFinder.getStreamsVideo()[0], streamFinder.getStreamsAudio()[0]);		
 		mediaReader.addListener(imgListen);
 		
@@ -61,31 +59,31 @@ public class FramesPlayer {
 	
 	public void readFrame(){
 		try {
-			while( imgListen.getCount() < job.getVideo_frame()
-					&& job.isStop() != true){				
+			while( imgListen.getCount() < JobConfig.getVideo_frame()
+					&& JobConfig.isStop() != true){				
 				mediaReader.readPacket();		
 			}
 			
-			if(job.isStop() && !job.isWantPlay()){
-				job.getGui().getTextInfos().setText(
-						job.getGui().getTextInfos().getText()
+			if(JobConfig.isStop() && !JobConfig.isWantPlay()){
+				JobConfig.getGui().getTextInfos().setText(
+						JobConfig.getGui().getTextInfos().getText()
 						+ "\n\r"
 						+ "Opération interrompue par l'utilisateur");
 				imgListen.getCryptVid().closeVideo();
 				imgListen.getCryptVid().saveDatFileVideo();
-				job.getGui().getBtnEnter().setEnabled(true);
-				job.getGui().getBtnCancel().setEnabled(false);
-				job.getGui().getBtnExit().setEnabled(true);
+				JobConfig.getGui().getBtnEnter().setEnabled(true);
+				JobConfig.getGui().getBtnCancel().setEnabled(false);
+				JobConfig.getGui().getBtnExit().setEnabled(true);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			if(job.isHasGUI()){
-				job.getGui().getTextInfos().setText(
-						job.getGui().getTextInfos().getText()
+			if(JobConfig.isHasGUI()){
+				JobConfig.getGui().getTextInfos().setText(
+						JobConfig.getGui().getTextInfos().getText()
 						+ "\n\r"
 						+ e.getMessage());
 			}
-			job.setVideo_frame(imgListen.getCount()-1);
+			JobConfig.setVideo_frame(imgListen.getCount()-1);
 			imgListen.getCryptVid().closeVideo();
 			imgListen.getCryptVid().saveDatFileVideo();
 		}		
@@ -96,46 +94,46 @@ public class FramesPlayer {
 	}
 	
 	public String getVideoFilename() {
-		return job.getInput_file();
+		return JobConfig.getInput_file();
 	}
 
 
 	public int getNbFrames() {
-		return job.getVideo_frame();
+		return JobConfig.getVideo_frame();
 	}
 
 
 	public String getOutputFilename() {
-		return job.getOutput_file();
+		return JobConfig.getOutput_file();
 	}
 
 
 	public String getData_url() {
-		return job.getReport_file();
+		return JobConfig.getReport_file();
 	}
 
 
 	public int getKeyWord() {
-		return job.getDiscret11Word();
+		return JobConfig.getDiscret11Word();
 	}
 	
 	public boolean isStrictMode() {
-		return job.isStrictMode();
+		return JobConfig.isStrictMode();
 	}
 
 
 	public boolean isbDec() {
-		return job.isWantDec();
+		return JobConfig.isWantDec();
 	}
 	
 	public int getPositionSynchro() {
-		return job.getPositionSynchro();
+		return JobConfig.getPositionSynchro();
 	}
 
 
-	public JobConfig getJob() {
-		return job;
-	}
+//	public JobConfig getJob() {
+//		return job;
+//	}
 
 
 	public ImageSnapListener getImgListen() {

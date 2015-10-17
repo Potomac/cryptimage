@@ -65,6 +65,7 @@ import javax.swing.text.BadLocationException;
 
 import com.ib.cryptimage.core.CryptPhoto;
 import com.ib.cryptimage.core.FramesPlayer;
+import com.ib.cryptimage.core.JobConfig;
 import com.ib.cryptimage.core.KeyboardCode;
 import com.ib.cryptimage.core.StreamsFinder;
 import com.xuggle.mediatool.IMediaReader;
@@ -120,7 +121,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	private void manageCheckBoxes(JCheckBox src) {
 		
 		if(src.equals(this.mainGui.getChkNoBlackBar())){
-			this.mainGui.getJob().setNoBlackBar(
+			JobConfig.setNoBlackBar(
 					this.mainGui.getChkNoBlackBar().isSelected());
 		}
 		
@@ -180,7 +181,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			// update code
 			updateKeyboardCode(mainGui.getTxtSerial().getText());
 		}else if (src.equals(this.mainGui.getChkHorodatage())) {			
-			mainGui.getJob().setHorodatage(mainGui.getChkHorodatage().isSelected());
+			JobConfig.setHorodatage(mainGui.getChkHorodatage().isSelected());
 		}else if (src.equals(this.mainGui.getChkDisableSound())) {			
 			if(src.isSelected()){
 				mainGui.getChkSound().setSelected(false);
@@ -280,8 +281,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			mainGui.getTxtBitrate().setText(String.valueOf(src.getValue()));
 		}else if(src.equals(mainGui.getSlidFrames())){
 			String time = "";
-			if(this.mainGui.getJob().getFrameRate() > 0){
-				time = getTime((int) (mainGui.getSlidFrames().getValue()/mainGui.getJob().getFrameRate()));
+			if(JobConfig.getFrameRate() > 0){
+				time = getTime((int) (mainGui.getSlidFrames().getValue()/JobConfig.getFrameRate()));
 			}
 			mainGui.getTxtNbFrames().setText(String.valueOf(src.getValue()) + " ("+ time +")");
 		}
@@ -424,7 +425,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		JLabel label = new JLabel();
 
 		String deb = "CryptImage v0.0.10" + "<br/>"
-				+ "Copyright (C) 2015-10-16 Mannix54 <br/>";
+				+ "Copyright (C) 2015-10-17 Mannix54 <br/>";
 
 		String link = "<a href=\"http://ibsoftware.free.fr/cryptimage.php\">http://ibsoftware.free.fr/cryptimage.php</a>"
 				+ "<br/><br/>";
@@ -514,8 +515,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		if (mainGui.getRdiVideo().isSelected()) {
 			extension = new String[] { "avi", "mp4", "mpeg", "mkv", "mpeg2",
-					"ts", "m2t" };
-			filter = new FileNameExtensionFilter("vidéos *.avi *.mp4 *.mpeg *.mpeg2 *.mkv *.ts *.m2t", extension);
+					"mpg","ts", "m2t" };
+			filter = new FileNameExtensionFilter("vidéos *.avi *.mp4 *.mpg *.mpeg *.mpg2 *.mkv *.ts *.m2t", extension);
 		} else {
 			extension = new String[] { "jpeg", "jpg", "bmp", "gif", "png",
 					"tiff" };
@@ -577,83 +578,83 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			mainGui.getBtnInputFile().setEnabled(false);
 			mainGui.getBtnOutputFile().setEnabled(false);
 
-			mainGui.getJob().setInput_file(mainGui.getTxtInputFile().getText());
+			JobConfig.setInput_file(mainGui.getTxtInputFile().getText());
 			if (mainGui.getTxtOutputFile().getText().equals("")) {
-				mainGui.getJob().setOutput_file(
+				JobConfig.setOutput_file(
 						mainGui.getTxtInputFile().getText());
 			} else {
 				File fic = new File(mainGui.getTxtInputFile().getText());
 				if (fic.getName().lastIndexOf(".") != -1) {
-					mainGui.getJob().setOutput_file(
+					JobConfig.setOutput_file(
 							mainGui.getTxtOutputFile().getText()
 									+ File.separator
 									+ fic.getName().substring(0,
 											fic.getName().lastIndexOf(".")));
 				} else {
-					mainGui.getJob().setOutput_file(
+					JobConfig.setOutput_file(
 							mainGui.getTxtOutputFile().getText()
 									+ File.separator + fic.getName());
 				}
 			}
 						
-			mainGui.getJob().setWord16bits(
+			JobConfig.setWord16bits(
 					Integer.valueOf(mainGui.getTxt16bitsWord().getText()));
 
-			mainGui.getJob().setVideo_frame(
+			JobConfig.setVideo_frame(
 					Integer.valueOf(mainGui.getSlidFrames().getValue()));
-			mainGui.getJob().setStrictMode(
+			JobConfig.setStrictMode(
 					mainGui.getChkStrictMode().isSelected());
-			mainGui.getJob().setPositionSynchro(
+			JobConfig.setPositionSynchro(
 					(int) mainGui.getJspFrameStart().getValue());
-			mainGui.getJob().setWantDec(mainGui.getRdiDecoding().isSelected());
-			mainGui.getJob().setWantPlay(mainGui.getChkPlayer().isSelected());
-			mainGui.getJob().setModePhoto(mainGui.getRdiPhoto().isSelected());
-			mainGui.getJob().setExtension(
+			JobConfig.setWantDec(mainGui.getRdiDecoding().isSelected());
+			JobConfig.setWantPlay(mainGui.getChkPlayer().isSelected());
+			JobConfig.setModePhoto(mainGui.getRdiPhoto().isSelected());
+			JobConfig.setExtension(
 					mainGui.getJcbExtension().getSelectedItem().toString());
-			mainGui.getJob().setWantSound(mainGui.getChkSound().isSelected());
-			mainGui.getJob().setDisableSound(
+			JobConfig.setWantSound(mainGui.getChkSound().isSelected());
+			JobConfig.setDisableSound(
 					mainGui.getChkDisableSound().isSelected());
 			
-			mainGui.getJob().setAutorisations(getAutorisationTab());
+			JobConfig.setAutorisations(getAutorisationTab());
 			
-			mainGui.getJob().setAudienceLevel(
+			JobConfig.setAudienceLevel(
 					mainGui.getCombAudience().getSelectedIndex() + 1);
-			mainGui.getJob().setMultiCode(
+			JobConfig.setMultiCode(
 					mainGui.getTxtMultiCode().getText().replaceAll("#", "")
 					.replaceAll(" ", ""));
-			mainGui.getJob().setCycle((int)mainGui.getJspCycle().getValue());
+			JobConfig.setCycle((int)mainGui.getJspCycle().getValue());
 
-			mainGui.getJob().setVideoBitrate(
+			JobConfig.setVideoBitrate(
 					Integer.valueOf(mainGui.getTxtBitrate().getText()));
-			mainGui.getJob().setVideoCodec(
+			JobConfig.setVideoCodec(
 					mainGui.getCombCodec().getSelectedIndex() + 1);
-			mainGui.getJob().setPerc1(
+			JobConfig.setPerc1(
 					Double.valueOf(mainGui.getTxtDelay1().getText()
 							.replace("%", "")) / 100d);
-			mainGui.getJob().setPerc2(
+			JobConfig.setPerc2(
 					Double.valueOf(mainGui.getTxtDelay2().getText()
 							.replace("%", "")) / 100d);
 
 			if (mainGui.getRdi720().isSelected()) {
-				mainGui.getJob().setsWidth(720);
+				JobConfig.setsWidth(720);
 			}
 			if (mainGui.getRdi768().isSelected()) {
-				mainGui.getJob().setsWidth(768);
+				JobConfig.setsWidth(768);
 			}
 
-			mainGui.getJob().setSerial(mainGui.getTxtSerial().getText());
-			mainGui.getJob().setCode(mainGui.getTxtCode().getText());
+			JobConfig.setSerial(mainGui.getTxtSerial().getText());
+			JobConfig.setCode(mainGui.getTxtCode().getText());
 
-			mainGui.getJob().setStop(false);
+			JobConfig.setStop(false);
 
 			mainGui.getProgress().setMaximum(
 					Integer.valueOf(mainGui.getSlidFrames().getValue()));
 
-			if (mainGui.getJob().isModePhoto()) {
+			if (JobConfig.isModePhoto()) {
 				this.thread = new Thread(new Runnable() {
 					@Override
 					public void run() {
-						CryptPhoto photo = new CryptPhoto(mainGui.getJob());
+						CryptPhoto photo = new CryptPhoto();
 						photo.run();
 						mainGui.getProgress().setMaximum(2);
 						mainGui.getProgress().setValue(1);
@@ -676,8 +677,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.thread = new Thread(new Runnable() {
 					@Override
 					public void run() {
-						FramesPlayer frmVideo = new FramesPlayer(mainGui
-								.getJob());
+						FramesPlayer frmVideo = new FramesPlayer();
 						frmVideo.readFrame();
 						mainGui.getBtnEnter().setEnabled(true);
 						mainGui.getBtnCancel().setEnabled(false);
@@ -699,14 +699,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private void manageCancel(){		
 			  mainGui.getBtnCancel().setEnabled(false);
-			  mainGui.getJob().setStop(true);
+			  JobConfig.setStop(true);
 			  mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 	
 	private void setVideosInfos(String path){
 		
 		StreamsFinder findAudio = new StreamsFinder(path);
-		this.mainGui.getJob().setVideoHasAudioTrack(findAudio.isHasAudioTrack());
+		JobConfig.setVideoHasAudioTrack(findAudio.isHasAudioTrack());
 		
 		IMediaReader reader = ToolFactory.makeReader(path);
 		reader.readPacket();
@@ -769,7 +769,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			alertTsM2t();
 		}
 		
-		mainGui.getJob().setFrameRate(frameRate);
+		JobConfig.setFrameRate(frameRate);
 		mainGui.getBtnEnter().setEnabled(true);
 		
 		mainGui.getSlideFrameStart().setMaximum(nb_frames_def);
@@ -800,7 +800,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private void alertTsM2t() {
 		mainGui.getTextInfos().setForeground(Color.red);
-		mainGui.getTextInfos().append("Attention, les vidéos au format TS,"
+		mainGui.getTextInfos().append("\r\nAttention, les vidéos au format TS,"
 				+ " ainsi que les vidéos"
 				+ " au format M2T "
 				+ "génèrent\r\n"
@@ -814,7 +814,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void alertFrameRate(double frameRate){
 		mainGui.getTextInfos().setForeground(Color.red);
-		mainGui.getTextInfos().append("Attention, la vidéo a un FPS de " +
+		mainGui.getTextInfos().append("\r\nAttention, la vidéo a un FPS de " +
 								String.format("%.3f", frameRate) +
 								", \r\nla vidéo traitée ne sera pas pleinement compatible avec"
 								+ " la norme discret11.");		
@@ -1159,7 +1159,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private Boolean saveConfig(){
-		return this.mainGui.getJob().saveConfig(
+		return JobConfig.saveConfig(
 				this.mainGui.getSlid16bitsWord().getValue(),
 				this.mainGui.getCombAudience().getSelectedIndex() + 1,
 				(double)(this.mainGui.getSlidDelay1().getValue())/100000d,

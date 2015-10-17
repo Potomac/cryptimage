@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 16 oct. 2015 Author Mannix54
  */
@@ -134,10 +134,6 @@ public class Discret11EncNoBlack extends Discret11Enc {
 				this.currentframePos++;
 
 			}
-
-			// System.out.println("retourne image seq " + this.seqFrame +
-			// " nb images : " + this.currentframePos );
-			//this.checkMotif(image);
 	
 			return image;		
 	}
@@ -160,8 +156,6 @@ public class Discret11EncNoBlack extends Discret11Enc {
 					this.cptArray = 0;
 				}
 
-				//temp2 = delayArray[indexUse11bitsKey][this.seqFrame][cptArray];
-
 				if (y != 573 && y != 575) { // we don't increment if next line
 											// is 622 ( 574 in
 					// digital image ) or if next line is 623 ( 576 in digital
@@ -169,16 +163,16 @@ public class Discret11EncNoBlack extends Discret11Enc {
 					raster.setPixels(delayArray[indexUse11bitsKey][this.seqFrame][cptArray], y, this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray], 1, raster
 							.getPixels(0, y, this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray], 1,
 									new int[(this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray]) * 3]));
-					
-//					// draw black line at start of delay
-//					raster.setPixels(0, y, delayArray[indexUse11bitsKey][this.seqFrame][cptArray] , 1, 
-//							new int[delayArray[indexUse11bitsKey][this.seqFrame][cptArray]  * 3]);	
-//					
-					
+	
 					//draw color line at start of delay
-					rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][this.seqFrame][cptArray]*3, y, 
-							new int[3]);
-//					
+					try {
+						rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][this.seqFrame][cptArray]*3, y, 
+								new int[3]);
+					} catch (Exception e) {
+						rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][this.seqFrame][cptArray], y, 
+								new int[3]);
+					}
+										
 					tabPixels = new int[delayArray[indexUse11bitsKey][this.seqFrame][cptArray]*3];
 					for (int i = 0; i < tabPixels.length; i=i+3) {
 						tabPixels[i] = rgbPixel[0];
@@ -219,14 +213,16 @@ public class Discret11EncNoBlack extends Discret11Enc {
 							.getPixels(0, y, this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray], 1,
 									new int[(this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray]) * 3]));
 					
-//					// draw black line at start of delay
-//					raster.setPixels(0, y, delayArray[indexUse11bitsKey][this.seqFrame][cptArray] , 1, 
-//							new int[delayArray[indexUse11bitsKey][this.seqFrame][cptArray]  * 3]);	
-//					
+			
 					//draw color line at start of delay
-					rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][this.seqFrame][cptArray]*3, y, 
-							new int[3]);
-//					
+					try {
+						rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][this.seqFrame][cptArray]*3, y, 
+								new int[3]);
+					} catch (Exception e) {
+						rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][this.seqFrame][cptArray], y, 
+								new int[3]);
+					}
+					
 					tabPixels = new int[delayArray[indexUse11bitsKey][this.seqFrame][cptArray]*3];
 					for (int i = 0; i < tabPixels.length; i=i+3) {
 						tabPixels[i] = rgbPixel[0];
@@ -265,13 +261,16 @@ public class Discret11EncNoBlack extends Discret11Enc {
 					raster.setPixels(delayArray[indexUse11bitsKey][5][cptArray], y, this.sWidth - delayArray[indexUse11bitsKey][5][cptArray], 1, raster
 							.getPixels(0, y, this.sWidth - delayArray[indexUse11bitsKey][5][cptArray], 1,
 									new int[(this.sWidth - delayArray[indexUse11bitsKey][5][cptArray]) * 3]));
-//					// draw black line at start of delay
-//					raster.setPixels(0, y, delayArray[indexUse11bitsKey][5][cptArray] , 1, 
-//							new int[delayArray[indexUse11bitsKey][5][cptArray]  * 3]);	
+
 					//draw color line at start of delay
-					rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][5][cptArray]*3, y, 
-							new int[3]);
-//					
+					try {
+						rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][5][cptArray]*3, y, 
+								new int[3]);
+					} catch (Exception e) {
+						rgbPixel = raster.getPixel(delayArray[indexUse11bitsKey][5][cptArray], y, 
+								new int[3]);
+					}
+					
 					tabPixels = new int[delayArray[indexUse11bitsKey][5][cptArray]*3];
 					for (int i = 0; i < tabPixels.length; i=i+3) {
 						tabPixels[i] = rgbPixel[0];

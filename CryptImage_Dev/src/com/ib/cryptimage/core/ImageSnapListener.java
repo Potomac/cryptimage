@@ -53,15 +53,15 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		super();
 		this.frmV = frmV;
 		this.count = 0;
-		cryptVid = new CryptVideo(frmV);
+		cryptVid = new CryptVideo();
 		posFrame = 0;
 		this.isDec = frmV.isbDec();	
 	}
 	
 	public void onAudioSamples(IAudioSamplesEvent event) {
 
-		if (frmV.getJob().isDisableSound() == false 
-				&& frmV.getJob().isVideoHasAudioTrack()) {
+		if (JobConfig.isDisableSound() == false 
+				&& JobConfig.isVideoHasAudioTrack()) {
 			if (event.getAudioSamples().isComplete()) {
 
 				IAudioSamples samples = event.getAudioSamples();
@@ -118,7 +118,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 				"présence de son multicanal non compatible avec cryptimage, la gestion du son sera désactivée",
 				"son multicanal détecté",
 				JOptionPane.WARNING_MESSAGE);
-		frmV.getJob().setDisableSound(true);
+		JobConfig.setDisableSound(true);
 	}
 
 	public void onReadPacket(IReadPacketEvent event){
@@ -132,19 +132,19 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		count = count + 1;		
 	 
 	if(count  == cryptVid.getVideoLengthFrames() 
-			&& frmV.getJob().isWantPlay() !=true
+			&& JobConfig.isWantPlay() !=true
 			 ){		
 		cryptVid.closeVideo();
 		cryptVid.saveDatFileVideo();    
 	} else if(count == cryptVid.getVideoLengthFrames()){
-		this.frmV.getJob().setStop(true);
+		JobConfig.setStop(true);
 		}
    }
 
 	public void dumpFrameToBufferedImage(BufferedImage image) {		
 		this.img = image;
 
-		if (this.frmV.getJob().isWantPlay()) {
+		if (JobConfig.isWantPlay()) {
 			posFrame++;
 			if (this.isDec) {
 				cryptVid.addDisplayFrameDec(image, posFrame, count);

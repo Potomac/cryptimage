@@ -1,18 +1,18 @@
 /**
- * This file is part of	CryptImage_Dev.
+ * This file is part of	CryptImage.
  *
- * CryptImage_Dev is free software: you can redistribute it and/or modify
+ * CryptImage is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CryptImage_Dev is distributed in the hope that it will be useful,
+ * CryptImage is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CryptImage_Dev.  If not, see <http://www.gnu.org/licenses/>
+ * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
  * 16 oct. 2015 Author Mannix54
  */
@@ -55,27 +55,21 @@ public class SimpleDiscret11NoBlack extends SimpleDiscret11 {
 		
 		raster = image.getRaster();					
 		
-		//int temp = 0;
-		//int shift = 0;
-		
 		for (int y = 0; y < this.height; y++) {
-			//temp = delayArray[this.seqFullFrame][y];
-//			if (this.isDec == true && (temp == decaPixels[1])) {
-//				shift = (this.decaPixels[2] - this.decaPixels[1])
-//						- this.decaPixels[1];
-//			}
-//			rgbPixel = raster.getPixel(delayArray[this.seqFullFrame][y]+30, y, 
-//					new int[3]);
-			
 			raster.setPixels(delayArray[this.seqFullFrame][y], y, this.width
 					- delayArray[this.seqFullFrame][y], 1, raster.getPixels(0,
 					y, this.width - delayArray[this.seqFullFrame][y], 1,
 					new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
 			
 			//draw color line at start of delay
-			rgbPixel = raster.getPixel(delayArray[this.seqFullFrame][y]*3, y, 
-					new int[3]);
-//			
+			try {
+				rgbPixel = raster.getPixel(delayArray[this.seqFullFrame][y]*3, y, 
+						new int[3]);
+			} catch (Exception e) {
+				rgbPixel = raster.getPixel(delayArray[this.seqFullFrame][y], y, 
+						new int[3]);
+			}
+						
 			tabPixels = new int[delayArray[this.seqFullFrame][y]*3];
 			for (int i = 0; i < tabPixels.length; i=i+3) {
 				tabPixels[i] = rgbPixel[0];
@@ -84,8 +78,7 @@ public class SimpleDiscret11NoBlack extends SimpleDiscret11 {
 			}
 			
 			raster.setPixels(0, y,delayArray[this.seqFullFrame][y], 1, 
-					tabPixels);	
-			
+					tabPixels);				
 			
 		}
 		

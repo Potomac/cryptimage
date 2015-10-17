@@ -45,18 +45,15 @@ public class VideoRecorder {
 	private boolean disableSound;
 	private static int AUDIORATE = 44100;		
 	private SoundCrypt soundCryptR;
-	private SoundCrypt soundCryptL;
-	private JobConfig job;
+	private SoundCrypt soundCryptL;	
 	
 	
 	public VideoRecorder(String outputFilename, int width, int height,
-			double framerate, 
-			JobConfig job) {	
-		
-		this.job = job;
-		this.wantDec = job.isWantDec();
-		this.wantSoundCryptDecrypt = job.isWantSound();
-		this.disableSound = job.isDisableSound();
+			double framerate) {	
+				
+		this.wantDec = JobConfig.isWantDec();
+		this.wantSoundCryptDecrypt = JobConfig.isWantSound();
+		this.disableSound = JobConfig.isDisableSound();
 		
 		if(wantSoundCryptDecrypt){
 			soundCryptR = new SoundCrypt(AUDIORATE, this.wantDec);
@@ -65,7 +62,7 @@ public class VideoRecorder {
 		
 		
 		
-		if(job.getsWidth()== 720 && job.isStrictMode() == true ){
+		if(JobConfig.getsWidth()== 720 && JobConfig.isStrictMode() == true ){
 			this.is720 = true;
 			width = 720;
 		}
@@ -74,7 +71,7 @@ public class VideoRecorder {
 		IRational frame_rate = IRational.make(framerate);		
 		
 		
-		switch (job.getVideoCodec()) {
+		switch (JobConfig.getVideoCodec()) {
 		case 1:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
 			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
@@ -98,18 +95,18 @@ public class VideoRecorder {
 			break;
 		}		
 				
-		if( this.disableSound != true && this.job.isVideoHasAudioTrack()){
+		if( this.disableSound != true && JobConfig.isVideoHasAudioTrack()){
 		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
 		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
 		}
 		
-		writer.getContainer().getStream(0).getStreamCoder().setBitRate(job.getVideoBitrate()*1024);
+		writer.getContainer().getStream(0).getStreamCoder().setBitRate(JobConfig.getVideoBitrate()*1024);
 			
 		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(25);
 	       
 		writer.getContainer().getStream(0).getStreamCoder().open(null, null);
 		
-		if( this.disableSound != true && this.job.isVideoHasAudioTrack()){
+		if( this.disableSound != true && JobConfig.isVideoHasAudioTrack()){
 			writer.getContainer().getStream(1).getStreamCoder()
 					.open(null, null);
 		}
@@ -131,7 +128,7 @@ public class VideoRecorder {
 		
 		if (sample.isComplete()) {
 			if (this.wantSoundCryptDecrypt) {
-				addAudioFrameTemp(sample, job.isReadyTransform());
+				addAudioFrameTemp(sample, JobConfig.isReadyTransform());
 			} else {
 				//addAudioFrameTemp(sample, false);
 				writer.encodeAudio(1, sample);

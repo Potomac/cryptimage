@@ -142,11 +142,9 @@ public class MainGui {
 	private JLabel lblExtension;
 	private JComboBox<String> jcbExtension;
 	
-	private JobConfig job;
 	
-	public MainGui(JobConfig job){
-		this.job = job;
-		this.job.setGui(this);
+	public MainGui(){	
+		JobConfig.setGui(this);
 		
 		 try {	            
 	        UIManager.setLookAndFeel(
@@ -235,16 +233,16 @@ public class MainGui {
 				1, 1,1,1);
 
 		//load config
-		if(job.loadConfig()){
-			this.slid16bitsWord.setValue(job.getWord16bits());
-			this.combAudience.setSelectedIndex(job.getAudienceLevel());
-			this.slidDelay1.setValue((int) (job.getPerc1() * 100000d));
-			this.slidDelay2.setValue((int) (job.getPerc2() * 100000d));
-			this.txtSerial.setText(job.getSerial());
-			this.chkHorodatage.setSelected(job.isHorodatage());
-			this.combCodec.setSelectedIndex(job.getVideoCodec());
-			this.slidBitrate.setValue(job.getVideoBitrate());
-			switch (job.getExtension()) {
+		if(JobConfig.loadConfig()){
+			this.slid16bitsWord.setValue(JobConfig.getWord16bits());
+			this.combAudience.setSelectedIndex(JobConfig.getAudienceLevel());
+			this.slidDelay1.setValue((int) (JobConfig.getPerc1() * 100000d));
+			this.slidDelay2.setValue((int) (JobConfig.getPerc2() * 100000d));
+			this.txtSerial.setText(JobConfig.getSerial());
+			this.chkHorodatage.setSelected(JobConfig.isHorodatage());
+			this.combCodec.setSelectedIndex(JobConfig.getVideoCodec());
+			this.slidBitrate.setValue(JobConfig.getVideoBitrate());
+			switch (JobConfig.getExtension()) {
 			case "mp4":
 				this.jcbExtension.setSelectedIndex(0);
 				break;
@@ -263,10 +261,10 @@ public class MainGui {
 			default:
 				break;
 			}
-			this.txtOutputFile.setText(job.getOutput_file());
-			this.txtMultiCode.setText(job.getMultiCode());			
-			this.jspCycle.setValue(job.getCycle());
-			if(job.getResolution() == 1){
+			this.txtOutputFile.setText(JobConfig.getOutput_file());
+			this.txtMultiCode.setText(JobConfig.getMultiCode());			
+			this.jspCycle.setValue(JobConfig.getCycle());
+			if(JobConfig.getResolution() == 1){
 				this.rdi720.setSelected(true);
 			}
 			else{
@@ -281,7 +279,7 @@ public class MainGui {
 		frame.repaint();		
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.combAudience.setSelectedIndex(0);
-		this.combAudience.setSelectedIndex(job.getAudienceLevel());
+		this.combAudience.setSelectedIndex(JobConfig.getAudienceLevel());
 	}
 	
 	private void createPanMode(){
@@ -1482,10 +1480,6 @@ public class MainGui {
 
 	public JSlider getSlideFrameStart() {
 		return slideFrameStart;
-	}
-
-	public JobConfig getJob() {
-		return job;
 	}
 
 	public JPanel getPanVideoOptions() {

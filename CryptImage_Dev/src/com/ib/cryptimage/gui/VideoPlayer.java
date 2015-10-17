@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 
 import com.ib.cryptimage.core.JobConfig;
-import com.xuggle.xuggler.IAudioSamples;
+//import com.xuggle.xuggler.IAudioSamples;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,11 +42,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
+//import javax.sound.sampled.AudioFormat;
+//import javax.sound.sampled.AudioSystem;
+//import javax.sound.sampled.DataLine;
+//import javax.sound.sampled.LineUnavailableException;
+//import javax.sound.sampled.SourceDataLine;
 
 
 public class VideoPlayer  implements MouseListener, ActionListener, WindowListener {
@@ -62,18 +62,16 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 	private JButton btnExit;
 	private double frameRate;
 	private long systemPreviousCurrentTime = 0;	
-	private boolean inverse;
-	private JobConfig job;
+	private boolean inverse;	
 	
-	private SourceDataLine mLine;
+	//private SourceDataLine mLine;
 	
 
-	public VideoPlayer(double frameRate, JobConfig job) {		
-		this.job = job;
-		
-		if (job.isWantSound()){
-			openJavaSound();
-		}
+	public VideoPlayer(double frameRate) {		
+				
+//		if (JobConfig.isWantSound()){
+//			openJavaSound();
+//		}
 		
 		frame = new JDialog();	
 		frame.addWindowListener(this);
@@ -180,53 +178,53 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 		this.frame.dispose();
 	}
 	
-	private void openJavaSound()
-	  {	    
-	    AudioFormat audioFormat = new AudioFormat(48000, 16, 2, true, false);
-	    DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-	    try
-	    {
-	      mLine = (SourceDataLine) AudioSystem.getLine(info);
-	      /**
-	       * if that succeeded, try opening the line.
-	       */
-	      mLine.open(audioFormat);
-	      /**
-	       * And if that succeed, start the line.
-	       */
-	      mLine.start();
-	    }
-	    catch (LineUnavailableException e)
-	    {
-	      throw new RuntimeException("could not open audio line");
-	    }	    
-	  }
+//	private void openJavaSound()
+//	  {	    
+//	    AudioFormat audioFormat = new AudioFormat(48000, 16, 2, true, false);
+//	    DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+//	    try
+//	    {
+//	      mLine = (SourceDataLine) AudioSystem.getLine(info);
+//	      /**
+//	       * if that succeeded, try opening the line.
+//	       */
+//	      mLine.open(audioFormat);
+//	      /**
+//	       * And if that succeed, start the line.
+//	       */
+//	      mLine.start();
+//	    }
+//	    catch (LineUnavailableException e)
+//	    {
+//	      throw new RuntimeException("could not open audio line");
+//	    }	    
+//	  }
 	
-	public void playJavaSound(IAudioSamples aSamples)
-	  {
-	    /**
-	     * We're just going to dump all the samples into the line.
-	     */
-	    byte[] rawBytes = aSamples.getData().getByteArray(0, aSamples.getSize());	 
-	    
-	    mLine.write(rawBytes, 0, aSamples.getSize());
-	  }
-
-	  public void closeJavaSound()
-	  {
-	    if (mLine != null)
-	    {
-	      /*
-	       * Wait for the line to finish playing
-	       */
-	      mLine.drain();
-	      /*
-	       * Close the line.
-	       */
-	      mLine.close();
-	      mLine=null;
-	    }
-	  }
+//	public void playJavaSound(IAudioSamples aSamples)
+//	  {
+//	    /**
+//	     * We're just going to dump all the samples into the line.
+//	     */
+//	    byte[] rawBytes = aSamples.getData().getByteArray(0, aSamples.getSize());	 
+//	    
+//	    mLine.write(rawBytes, 0, aSamples.getSize());
+//	  }
+//
+//	  public void closeJavaSound()
+//	  {
+//	    if (mLine != null)
+//	    {
+//	      /*
+//	       * Wait for the line to finish playing
+//	       */
+//	      mLine.drain();
+//	      /*
+//	       * Close the line.
+//	       */
+//	      mLine.close();
+//	      mLine=null;
+//	    }
+//	  }
 	
 
 	public boolean isInverse() {
@@ -279,8 +277,8 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 					labelState.setForeground(Color.red);
 					}				
 			} else if(src.equals(this.btnExit)){
-				if(this.job.isStop()==false){
-					this.job.setStop(true);			
+				if(JobConfig.isStop()==false){
+					JobConfig.setStop(true);			
 					}
 					else {				
 						this.frame.dispose();
@@ -328,8 +326,8 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 
 	@Override
 	public void windowClosing(WindowEvent e) {		
-		if(this.job.isStop()==false){
-			this.job.setStop(true);			
+		if(JobConfig.isStop()==false){
+			JobConfig.setStop(true);			
 			}
 			else {				
 				this.frame.dispose();

@@ -35,55 +35,55 @@ import java.util.Date;
 
 import com.ib.cryptimage.gui.MainGui;
 
-public class JobConfig {
+public final class JobConfig {
 
-	private String input_file = "";
-	private String report_file = "";
-	private String output_file = "";		
-	private int discret11Word = 0;	
-	private int video_frame = 0;
-	private boolean strictMode = false;
-	private int positionSynchro = 1;
-	private boolean wantDec = false;
-	private boolean wantPlay = false;	
-	private boolean modePhoto = false;
-	private int audienceLevel = 0;
-	private int videoBitrate = 2000;
-	private int videoCodec = 3;
-	private double perc1 = 0.0167;
-	private double perc2 = 0.0334;	
-	private int sWidth = 768;
-	private boolean hasGUI = false;
-	private MainGui gui;
-	private boolean isStop = false;
-	private String extension = "mkv";
-	private boolean wantSound = true;
-	private int word16bits = 0;
-	private boolean horodatage = false;
-	private String serial = "";
-	private String code = "";
-	private double frameRate = 25;
-	private boolean disableSound = false;
-	private boolean readyTransform = false;
-	private boolean videoHasAudioTrack = false;
-	private String multiCode = "";
-	private int cycle;
-	private int resolution;
-	private boolean[] autorisations;
-	private boolean noBlackBar = false;
+	private static String input_file = "";
+	private static String report_file = "";
+	private static String output_file = "";		
+	private static int discret11Word = 0;	
+	private static int video_frame = 0;
+	private static boolean strictMode = false;
+	private static int positionSynchro = 1;
+	private static boolean wantDec = false;
+	private static boolean wantPlay = false;	
+	private static boolean modePhoto = false;
+	private static int audienceLevel = 0;
+	private static int videoBitrate = 2000;
+	private static int videoCodec = 3;
+	private static double perc1 = 0.0167;
+	private static double perc2 = 0.0334;	
+	private static int sWidth = 768;
+	private static boolean hasGUI = false;
+	private static MainGui gui;
+	private static boolean isStop = false;
+	private static String extension = "mkv";
+	private static boolean wantSound = true;
+	private static int word16bits = 0;
+	private static boolean horodatage = false;
+	private static String serial = "";
+	private static String code = "";
+	private static double frameRate = 25;
+	private static boolean disableSound = false;
+	private static boolean readyTransform = false;
+	private static boolean videoHasAudioTrack = false;
+	private static String multiCode = "";
+	private static int cycle;
+	private static int resolution;
+	private static boolean[] autorisations;
+	private static boolean noBlackBar = false;
 
 
-	public JobConfig() {
+	private JobConfig() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public String getDateTime(){
+	public static String getDateTime(){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
 		Date date = new Date();
 		return dateFormat.format(date); 
 	}
 	
-	public boolean loadConfig() {
+	public static boolean loadConfig() {
 		// check if the config file exists
 
 		String userHome = System.getProperty("user.home");
@@ -127,35 +127,35 @@ public class JobConfig {
 			
 			try {
 				// 16 bits key
-				this.setWord16bits(Integer.valueOf(options[0]));
+				JobConfig.setWord16bits(Integer.valueOf(options[0]));
 				// audience
-				this.setAudienceLevel(Integer.valueOf(options[1]) -1 );
+				JobConfig.setAudienceLevel(Integer.valueOf(options[1]) -1 );
 				// delay 1
-				this.setPerc1(Double.valueOf(options[2]));
+				JobConfig.setPerc1(Double.valueOf(options[2]));
 				// delay2
-				this.setPerc2(Double.valueOf(options[3]));
+				JobConfig.setPerc2(Double.valueOf(options[3]));
 				// serial
-				this.setSerial(options[4]);
+				JobConfig.setSerial(options[4]);
 				// horodatage
-				this.setHorodatage(Boolean.parseBoolean(options[5]));
+				JobConfig.setHorodatage(Boolean.parseBoolean(options[5]));
 				// codec
-				this.setVideoCodec(Integer.valueOf(options[6]) - 1);
+				JobConfig.setVideoCodec(Integer.valueOf(options[6]) - 1);
 				// bitrate
-				this.setVideoBitrate(Integer.valueOf(options[7]));
+				JobConfig.setVideoBitrate(Integer.valueOf(options[7]));
 				// extension
-				this.setExtension(options[8]);
+				JobConfig.setExtension(options[8]);
 				//working directory
-				this.setOutput_file(options[9]);
+				JobConfig.setOutput_file(options[9]);
 				//multimode
-				this.setMultiCode(options[10]);
+				JobConfig.setMultiCode(options[10]);
 				//cycle
-				this.setCycle(Integer.valueOf(options[11]));
+				JobConfig.setCycle(Integer.valueOf(options[11]));
 				//resolution
 				if(Integer.valueOf(options[12]) == 1){
-					this.setResolution(1);
+					JobConfig.setResolution(1);
 				}
 				else {
-					this.setResolution(2);
+					JobConfig.setResolution(2);
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -168,7 +168,7 @@ public class JobConfig {
 		return false;
 	}
 	
-	public boolean saveConfig(int key16bits, int audienceIndex, double delay1,
+	public static boolean saveConfig(int key16bits, int audienceIndex, double delay1,
 			double delay2, String serial, boolean horodatage, int codecIndex,
 			int bitrate, String extension, String workingDirectory,
 			String multiMode, String cycle, boolean resolution720) {
@@ -228,7 +228,7 @@ public class JobConfig {
 
 	}
 	
-	private String[] checkOptions(String[] options){
+	private static String[] checkOptions(String[] options){
 		//16 bits key
 		try {
 			if(Integer.valueOf(options[0]) < 32 
@@ -377,276 +377,276 @@ public class JobConfig {
 	}
 	
 
-	public String getInput_file() {
+	public static String getInput_file() {
 		return input_file;
 	}
 
-	public double getPerc1() {
+	public static double getPerc1() {
 		return perc1;
 	}
 
-	public void setPerc1(double perc1) {
-		this.perc1 = perc1;
+	public static void setPerc1(double perc1) {
+		JobConfig.perc1 = perc1;
 	}
 
-	public double getPerc2() {
+	public static double getPerc2() {
 		return perc2;
 	}
 
-	public void setPerc2(double perc2) {
-		this.perc2 = perc2;
+	public static void setPerc2(double perc2) {
+		JobConfig.perc2 = perc2;
 	}
 
-	public void setInput_file(String input_file) {
-		this.input_file = input_file;
+	public static void setInput_file(String input_file) {
+		JobConfig.input_file = input_file;
 	}
 
-	public String getReport_file() {
+	public static String getReport_file() {
 		return report_file;
 	}
 
-	public void setReport_file(String report_file) {
-		this.report_file = report_file;
+	public static void setReport_file(String report_file) {
+		JobConfig.report_file = report_file;
 	}
 
-	public String getOutput_file() {
+	public static String getOutput_file() {
 		return output_file;
 	}
 
-	public void setOutput_file(String output_file) {
-		this.output_file = output_file;
+	public static void setOutput_file(String output_file) {
+		JobConfig.output_file = output_file;
 	}
 
-	public int getDiscret11Word() {
+	public static int getDiscret11Word() {
 		return discret11Word;
 	}
 
-	public void setDiscret11Word(int discret11Word) {
-		this.discret11Word = discret11Word;
+	public static void setDiscret11Word(int discret11Word) {
+		JobConfig.discret11Word = discret11Word;
 	}
 
-	public int getVideo_frame() {
+	public static int getVideo_frame() {
 		return video_frame;
 	}
 
-	public void setVideo_frame(int video_frame) {
-		this.video_frame = video_frame;
+	public static void setVideo_frame(int video_frame) {
+		JobConfig.video_frame = video_frame;
 	}
 
-	public boolean isStrictMode() {
+	public static boolean isStrictMode() {
 		return strictMode;
 	}
 
-	public int getAudienceLevel() {
+	public static int getAudienceLevel() {
 		return audienceLevel;
 	}
 
-	public void setAudienceLevel(int audienceLevel) {
-		this.audienceLevel = audienceLevel;
+	public static void setAudienceLevel(int audienceLevel) {
+		JobConfig.audienceLevel = audienceLevel;
 	}
 
-	public int getVideoBitrate() {
+	public static int getVideoBitrate() {
 		return videoBitrate;
 	}
 
-	public void setVideoBitrate(int videoBitrate) {
-		this.videoBitrate = videoBitrate;
+	public static void setVideoBitrate(int videoBitrate) {
+		JobConfig.videoBitrate = videoBitrate;
 	}
 
-	public int getVideoCodec() {
+	public static int getVideoCodec() {
 		return videoCodec;
 	}
 
-	public void setVideoCodec(int videoCodec) {
-		this.videoCodec = videoCodec;
+	public static void setVideoCodec(int videoCodec) {
+		JobConfig.videoCodec = videoCodec;
 	}
 
-	public void setStrictMode(boolean strictMode) {
-		this.strictMode = strictMode;
+	public static void setStrictMode(boolean strictMode) {
+		JobConfig.strictMode = strictMode;
 	}
 
-	public int getPositionSynchro() {
+	public static int getPositionSynchro() {
 		return positionSynchro;
 	}
 
-	public void setPositionSynchro(int positionSynchro) {
-		this.positionSynchro = positionSynchro;
+	public static void setPositionSynchro(int positionSynchro) {
+		JobConfig.positionSynchro = positionSynchro;
 	}
 
-	public boolean isWantDec() {
+	public static boolean isWantDec() {
 		return wantDec;
 	}
 
-	public void setWantDec(boolean wantDec) {
-		this.wantDec = wantDec;
+	public static void setWantDec(boolean wantDec) {
+		JobConfig.wantDec = wantDec;
 	}
 	
-	public boolean isWantPlay() {
+	public static boolean isWantPlay() {
 		return wantPlay;
 	}
 
-	public void setWantPlay(boolean wantPlay) {
-		this.wantPlay = wantPlay;
+	public static void setWantPlay(boolean wantPlay) {
+		JobConfig.wantPlay = wantPlay;
 	}
 
-	public boolean isModePhoto() {
+	public static boolean isModePhoto() {
 		return modePhoto;
 	}
 
-	public void setModePhoto(boolean modePhoto) {
-		this.modePhoto = modePhoto;
+	public static void setModePhoto(boolean modePhoto) {
+		JobConfig.modePhoto = modePhoto;
 	}
 
-	public int getsWidth() {
+	public static int getsWidth() {
 		return sWidth;
 	}
 
-	public void setsWidth(int sWidth) {
-		this.sWidth = sWidth;
+	public static void setsWidth(int sWidth) {
+		JobConfig.sWidth = sWidth;
 	}
 	
-	public boolean isHasGUI() {
+	public static boolean isHasGUI() {
 		return hasGUI;
 	}
 
-	public void setHasGUI(boolean hasGUI) {
-		this.hasGUI = hasGUI;
+	public static void setHasGUI(boolean hasGUI) {
+		JobConfig.hasGUI = hasGUI;
 	}
 
-	public MainGui getGui() {
+	public static MainGui getGui() {
 		return gui;
 	}
 
-	public void setGui(MainGui gui) {
-		this.gui = gui;
+	public static void setGui(MainGui gui) {
+		JobConfig.gui = gui;
 	}
 
-	public boolean isStop() {
+	public static boolean isStop() {
 		return isStop;
 	}
 
-	public void setStop(boolean isStop) {
-		this.isStop = isStop;
+	public static void setStop(boolean isStop) {
+		JobConfig.isStop = isStop;
 	}
 
-	public String getExtension() {
+	public static String getExtension() {
 		return extension;
 	}
 
-	public void setExtension(String extension) {
-		this.extension = extension;
+	public static void setExtension(String extension) {
+		JobConfig.extension = extension;
 	}
 
-	public boolean isWantSound() {
+	public static boolean isWantSound() {
 		return wantSound;
 	}
 
-	public void setWantSound(boolean wantSound) {
-		this.wantSound = wantSound;
+	public static void setWantSound(boolean wantSound) {
+		JobConfig.wantSound = wantSound;
 	}
 
-	public int getWord16bits() {
+	public static int getWord16bits() {
 		return word16bits;
 	}
 
-	public void setWord16bits(int word16bits) {
-		this.word16bits = word16bits;
+	public static void setWord16bits(int word16bits) {
+		JobConfig.word16bits = word16bits;
 	}
 
-	public boolean isHorodatage() {
+	public static boolean isHorodatage() {
 		return horodatage;
 	}
 
-	public void setHorodatage(boolean horodatage) {
-		this.horodatage = horodatage;
+	public static void setHorodatage(boolean horodatage) {
+		JobConfig.horodatage = horodatage;
 	}
 
-	public String getSerial() {
+	public static String getSerial() {
 		return serial;
 	}
 
-	public void setSerial(String serial) {
-		this.serial = serial;
+	public static void setSerial(String serial) {
+		JobConfig.serial = serial;
 	}
 
-	public String getCode() {
+	public static String getCode() {
 		return code;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public static void setCode(String code) {
+		JobConfig.code = code;
 	}
 
-	public double getFrameRate() {
+	public static double getFrameRate() {
 		return frameRate;
 	}
 
-	public void setFrameRate(double frameRate) {
-		this.frameRate = frameRate;
+	public static void setFrameRate(double frameRate) {
+		JobConfig.frameRate = frameRate;
 	}
 
-	public boolean isDisableSound() {
+	public static boolean isDisableSound() {
 		return disableSound;
 	}
 
-	public void setDisableSound(boolean disableSound) {
-		this.disableSound = disableSound;
+	public static void setDisableSound(boolean disableSound) {
+		JobConfig.disableSound = disableSound;
 	}
 
-	public boolean isReadyTransform() {
+	public static boolean isReadyTransform() {
 		return readyTransform;
 	}
 
-	public void setReadyTransform(boolean readyTransform) {
-		this.readyTransform = readyTransform;
+	public static void setReadyTransform(boolean readyTransform) {
+		JobConfig.readyTransform = readyTransform;
 	}
 
-	public boolean isVideoHasAudioTrack() {
+	public static boolean isVideoHasAudioTrack() {
 		return videoHasAudioTrack;
 	}
 
-	public void setVideoHasAudioTrack(boolean videoHasAudioTrack) {
-		this.videoHasAudioTrack = videoHasAudioTrack;
+	public static void setVideoHasAudioTrack(boolean videoHasAudioTrack) {
+		JobConfig.videoHasAudioTrack = videoHasAudioTrack;
 	}
 
-	public String getMultiCode() {
+	public static String getMultiCode() {
 		return multiCode;
 	}
 
-	public void setMultiCode(String multiCode) {
-		this.multiCode = multiCode;
+	public static void setMultiCode(String multiCode) {
+		JobConfig.multiCode = multiCode;
 	}
 
-	public int getCycle() {
+	public static int getCycle() {
 		return cycle;
 	}
 
-	public void setCycle(int cycle) {
-		this.cycle = cycle;
+	public static void setCycle(int cycle) {
+		JobConfig.cycle = cycle;
 	}
 
-	public int getResolution() {
+	public static int getResolution() {
 		return resolution;
 	}
 
-	public void setResolution(int resolution) {
-		this.resolution = resolution;
+	public static void setResolution(int resolution) {
+		JobConfig.resolution = resolution;
 	}
 
-	public boolean[] getAutorisations() {
+	public static boolean[] getAutorisations() {
 		return autorisations;
 	}
 
-	public void setAutorisations(boolean[] autorisations) {
-		this.autorisations = autorisations;
+	public static void setAutorisations(boolean[] autorisations) {
+		JobConfig.autorisations = autorisations;
 	}	
 	
-	public boolean isNoBlackBar() {
+	public static boolean isNoBlackBar() {
 		return noBlackBar;
 	}
 
-	public void setNoBlackBar(boolean noBlackBar) {
-		this.noBlackBar = noBlackBar;
+	public static void setNoBlackBar(boolean noBlackBar) {
+		JobConfig.noBlackBar = noBlackBar;
 	}
 	
 }

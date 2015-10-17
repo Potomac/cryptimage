@@ -30,10 +30,8 @@ import com.ib.cryptimage.gui.MainGui;
 public class Application {
 
 	public static void main(String[] args) {
-		JobConfig job = new JobConfig();
-
-		job.setHasGUI(true);
-		MainGui mainUI = new MainGui(job);		
+		JobConfig.setHasGUI(true);
+		MainGui mainUI = new MainGui();		
 		mainUI.showUI();
 	}
 

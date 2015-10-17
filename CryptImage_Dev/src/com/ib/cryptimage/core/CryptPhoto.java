@@ -34,28 +34,26 @@ import javax.imageio.ImageIO;
  *
  */
 public class CryptPhoto {
-	
-	private JobConfig job;
+		
 	private int key11bits;
 	
-	public CryptPhoto(JobConfig job){
-		this.job = job;			
+	public CryptPhoto(){			
 	}
 	
 	public void run(){
 		BufferedImage img = null;		
 		try{
-			 img = ImageIO.read(new File(job.getInput_file()));
+			 img = ImageIO.read(new File(JobConfig.getInput_file()));
 		}
 		catch(IOException e){			
 			System.out.println("I/O error during the load of the input file.");
 			System.exit(1);
 		}		
 		
-		if(job.isModePhoto() && job.isWantDec()){
+		if(JobConfig.isModePhoto() && JobConfig.isWantDec()){
 			decPhoto(img);
 		}
-		else if(job.isModePhoto() && job.isWantDec()!=true){
+		else if(JobConfig.isModePhoto() && JobConfig.isWantDec()!=true){
 			encPhoto(img);
 		}
 	}
@@ -63,24 +61,24 @@ public class CryptPhoto {
 	
 	public  void decPhoto(BufferedImage img){
 		
-		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(job.getWord16bits(),
-				job.getAudienceLevel(),
+		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(JobConfig.getWord16bits(),
+				JobConfig.getAudienceLevel(),
 				SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
 		this.key11bits = simpleDiscret.getKey11bits();
 		BufferedImage imgRes = simpleDiscret.transform(img);
-		saveDecryptFile(imgRes, job.getOutput_file(), this.key11bits);		
+		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);		
 	}
 	
 	public  void encPhoto(BufferedImage img){
 		Discret discret;
-		if(this.job.isNoBlackBar()){
-			discret = new SimpleDiscret11NoBlack(job.getWord16bits(),
-					job.getAudienceLevel(),
+		if(JobConfig.isNoBlackBar()){
+			discret = new SimpleDiscret11NoBlack(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
 					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
 		}
 		else {
-			discret = new SimpleDiscret11(job.getWord16bits(),
-					job.getAudienceLevel(),
+			discret = new SimpleDiscret11(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
 					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
 		}	
 		this.key11bits = discret.getKey11bits();
@@ -91,46 +89,46 @@ public class CryptPhoto {
 	public  void saveCryptImage(BufferedImage bi) {
 		try {
 			// retrieve image
-			File outputfile = new File(job.getOutput_file() + "_c" +
-			this.job.getWord16bits() + "-" + this.key11bits + ".png");
+			File outputfile = new File(JobConfig.getOutput_file() + "_c" +
+					JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
 			ImageIO.write(bi, "png", outputfile);
-			if(job.isHasGUI()){
-				job.getGui().getTextInfos().setText(
-						"Image codée : " + job.getOutput_file()
+			if(JobConfig.isHasGUI()){
+				JobConfig.getGui().getTextInfos().setText(
+						"Image codée : " + JobConfig.getOutput_file()
 						+"_c" 
-						+ this.job.getWord16bits() + "-" + this.key11bits + ".png");
+						+ JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
 			}
-			System.out.println("SimpleDiscret11 crypted image : " + job.getOutput_file()
+			System.out.println("SimpleDiscret11 crypted image : " + JobConfig.getOutput_file()
 					+ "_c"
-					+ this.job.getWord16bits() + "-" + this.key11bits + ".png");
+					+ JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
 		} catch (IOException e) {
 			System.out.println("I/O error during the write of the crypted image");
 			System.exit(1);
 		}
 
 		try {
-			File dataFile = new File(job.getOutput_file() + "_c" 
-						+ this.job.getWord16bits() + "-" 
+			File dataFile = new File(JobConfig.getOutput_file() + "_c" 
+						+ JobConfig.getWord16bits() + "-" 
 						+  this.key11bits + ".txt");
 			dataFile.createNewFile();
 			FileWriter ffw = new FileWriter(dataFile);
-			ffw.write("key 16 bits : " + this.job.getWord16bits() + "\r\n");
-			ffw.write("Audience level : " + this.job.getAudienceLevel() + "\r\n");
+			ffw.write("key 16 bits : " + JobConfig.getWord16bits() + "\r\n");
+			ffw.write("Audience level : " + JobConfig.getAudienceLevel() + "\r\n");
 			ffw.write("key 11 bits : " + this.key11bits + "\r\n");			
-			ffw.write("file : " + job.getOutput_file() + "_c" 
-			+ this.job.getWord16bits() + "-" + this.key11bits +
+			ffw.write("file : " + JobConfig.getOutput_file() + "_c" 
+			+ JobConfig.getWord16bits() + "-" + this.key11bits +
 			 ".txt");
 			ffw.close();
-			if(job.isHasGUI()){
-				job.getGui().getTextInfos().setText(
-						job.getGui().getTextInfos().getText() 
+			if(JobConfig.isHasGUI()){
+				JobConfig.getGui().getTextInfos().setText(
+						JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+
-						"Rapport : " + job.getOutput_file() +"_c" 
-						+ this.job.getWord16bits() + "-" + this.key11bits + ".txt");
+						"Rapport : " + JobConfig.getOutput_file() +"_c" 
+						+ JobConfig.getWord16bits() + "-" + this.key11bits + ".txt");
 			}
-			System.out.println("Report shift file : " + job.getOutput_file()
-					+ "_c" + this.job.getWord16bits() + "-" + this.key11bits + ".txt");
+			System.out.println("Report shift file : " + JobConfig.getOutput_file()
+					+ "_c" + JobConfig.getWord16bits() + "-" + this.key11bits + ".txt");
 		} catch (IOException e) {
 			System.out
 					.println("I/O error during the write of the report file");
@@ -141,16 +139,16 @@ public class CryptPhoto {
 	public  void saveDecryptFile(BufferedImage bi,String output_file, int key11){
 		try {
 			// retrieve image
-			File outputfile = new File(output_file + "_d" + this.job.getWord16bits() 
+			File outputfile = new File(output_file + "_d" + JobConfig.getWord16bits() 
 								+ "-" + key11 + ".png");
 			ImageIO.write(bi, "png", outputfile);
-			if(job.isHasGUI()){
-				job.getGui().getTextInfos().setText(
+			if(JobConfig.isHasGUI()){
+				JobConfig.getGui().getTextInfos().setText(
 						"Image décodée : " 
-				+ output_file + "_d" + this.job.getWord16bits() + "-" + key11 + ".png");
+				+ output_file + "_d" + JobConfig.getWord16bits() + "-" + key11 + ".png");
 			}
 			System.out.println( "Output File decrypted : " + output_file + "_d"
-			+ this.job.getWord16bits() + "-"
+			+ JobConfig.getWord16bits() + "-"
 			+ key11 + ".png" );
 		} catch (IOException e) {
 			System.out.println("I/O error during the write of the decrypted image");			
