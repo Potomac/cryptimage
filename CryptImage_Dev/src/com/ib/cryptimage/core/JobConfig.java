@@ -71,7 +71,9 @@ public final class JobConfig {
 	private static int resolution;
 	private static boolean[] autorisations;
 	private static boolean noBlackBar = false;
-
+	private static int delay1;
+	private static int delay2;
+	
 
 	private JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -647,6 +649,22 @@ public final class JobConfig {
 
 	public static void setNoBlackBar(boolean noBlackBar) {
 		JobConfig.noBlackBar = noBlackBar;
+	}
+
+	public static int getDelay1() {
+		return delay1;
+	}
+
+	public static void setDelay1(int delay1) {
+		JobConfig.delay1 = delay1;
+	}
+
+	public static int getDelay2() {
+		return delay2;
+	}
+
+	public static void setDelay2(int delay2) {
+		JobConfig.delay2 = delay2;
 	}
 	
 }

@@ -328,7 +328,10 @@ public class Discret11Enc extends Discret {
 		}
 		if (decaPixels[2] == 0 ){
 			decaPixels[2] = 2;
-		}		
+		}
+		
+		JobConfig.setDelay1(decaPixels[1]);
+		JobConfig.setDelay2(decaPixels[2]);
 	}
 	
 	/**

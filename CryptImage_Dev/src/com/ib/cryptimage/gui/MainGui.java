@@ -874,8 +874,9 @@ public class MainGui {
 		
 		chkNoBlackBar = new JCheckBox("Bordure masquée");
 		chkNoBlackBar.addActionListener(new MainGui_ActionListener(this));
-		chkNoBlackBar.setToolTipText("<html>Masque les indices de décalage dans la bordure gauche,<br/>"
-				+ "le noir dans cette zone sera remplacé par une autre couleur,<br/>option active uniquement en mode codage.</html>");
+		chkNoBlackBar.setToolTipText("<html>-En mode codage: masque les indices de décalage dans la bordure gauche,<br/>"
+				+ "le noir dans cette zone sera remplacé par une autre couleur,<br/>-En mode décodage: supprime les segments de couleur dans la bordure"
+				+ "<br/>si cette option avait été activée en mode codage.</html>");
 		chkSound = new JCheckBox("Traiter le son");
 		chkSound.setSelected(true);
 		chkSound.setToolTipText("<html>permet de crypter/décrypter le son,<br/>"

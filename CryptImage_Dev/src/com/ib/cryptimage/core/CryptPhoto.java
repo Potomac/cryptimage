@@ -60,10 +60,17 @@ public class CryptPhoto {
 	
 	
 	public  void decPhoto(BufferedImage img){
-		
-		SimpleDiscret11 simpleDiscret = new SimpleDiscret11(JobConfig.getWord16bits(),
-				JobConfig.getAudienceLevel(),
-				SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
+		SimpleDiscret11 simpleDiscret;
+		if(JobConfig.isNoBlackBar()){
+			simpleDiscret = new SimpleDiscret11Black(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
+					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
+		}
+		else {
+			simpleDiscret = new SimpleDiscret11(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
+					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
+		}		
 		this.key11bits = simpleDiscret.getKey11bits();
 		BufferedImage imgRes = simpleDiscret.transform(img);
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);		

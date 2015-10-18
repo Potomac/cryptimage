@@ -47,11 +47,11 @@ public class Discret11Dec extends Discret {
 	/**
 	 * store the current index for the 11 bits key
 	 */
-	private int index11bitsKey;
+	protected int index11bitsKey;
 	
-	private int saveIndex11bitsKey = -1;
+	protected int saveIndex11bitsKey = -1;
 	
-	private boolean start = true;
+	protected boolean start = true;
 	/**
 	 * the queue for the state of the color of the 310 and 622 lines
 	 */
@@ -67,7 +67,7 @@ public class Discret11Dec extends Discret {
 	/**
 	 * enable or disable the decoder
 	 */
-	private boolean enable = false;
+	protected boolean enable = false;
 	/**
 	 * store the current audience level
 	 */
@@ -85,11 +85,11 @@ public class Discret11Dec extends Discret {
 	/**
 	 * store the number of frames that has been transformed by Discret11
 	 */
-	private int currentframePos = 0;
+	protected int currentframePos = 0;
 	/**
 	 * store the current position from the 6 frames ( half image ) sequence
 	 */
-	private int seqFrame = 0;	
+	protected int seqFrame = 0;	
 	
 	private boolean synchro = false;
 	/**
@@ -103,7 +103,7 @@ public class Discret11Dec extends Discret {
 	 * in 2 dimension array who represents
 	 * the 6 TV frames, we have 7 possibilities because 7 audience levels
 	 */
-	private int[][][] delayArray = new int[7][6][286];
+	protected int[][][] delayArray = new int[7][6][286];
 	/**
 	 * array for storing the delay in pixels
 	 * 3 types of delay
@@ -113,13 +113,13 @@ public class Discret11Dec extends Discret {
 	/**
 	 * the count iterator for delay array
 	 */
-	private int cptArray = 0;	
+	protected int cptArray = 0;	
 	/**
 	 * the default width of the image which is 768
 	 */
-	private final int sWidth = 768;	
+	protected final int sWidth = 768;	
 
-	private WritableRaster raster;	
+	protected WritableRaster raster;	
 
 	
 	
@@ -265,7 +265,10 @@ public class Discret11Dec extends Discret {
 		}
 		if (decaPixels[2] == 0 ){
 			decaPixels[2] = 2;
-		}		
+		}
+		
+		JobConfig.setDelay1(decaPixels[1]);
+		JobConfig.setDelay2(decaPixels[2]);
 	}
 	
 	/**
@@ -346,7 +349,7 @@ public class Discret11Dec extends Discret {
 		return Integer.parseInt(Character.toString(key.charAt(0))); 		
 	}
 	
-	private void checkMotif(BufferedImage buff) {	
+	protected void checkMotif(BufferedImage buff) {	
 
 		if (is310WhiteLine(buff) && indexPos == 0) {
 			//System.out.println(indexPos + " ligne 310 blanche pos 1 " + this.totalFrameCount);
@@ -791,7 +794,7 @@ public class Discret11Dec extends Discret {
 	 * @param targetType the target type
 	 * @return a converted BufferedImage
 	 */
-	private  BufferedImage convertToType(BufferedImage sourceImage,
+	protected  BufferedImage convertToType(BufferedImage sourceImage,
 			int targetType) {
 		BufferedImage image;
 
@@ -817,7 +820,7 @@ public class Discret11Dec extends Discret {
 	 * @param h the new height
 	 * @return the resized image
 	 */
-	private BufferedImage getScaledImage(BufferedImage src, int w, int h){
+	protected BufferedImage getScaledImage(BufferedImage src, int w, int h){
 	    int finalw = w;
 	    int finalh = h;
 	    double factor = 1.00d;
