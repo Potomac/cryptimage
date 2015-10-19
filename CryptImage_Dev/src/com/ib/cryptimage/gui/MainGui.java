@@ -34,6 +34,7 @@ import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -309,7 +310,8 @@ public class MainGui {
 				+ "-si option désactivée : pas de gestion des lignes 310/622 et "
 				+ "la vidéo garde sa résolution originale</html>");
 		
-		btnAbout = new JButton("À propos...");	
+		btnAbout = new JButton("À propos...");
+		btnAbout.setIcon(new ImageIcon(this.getClass().getResource("/icons/help.png")));
 		btnAbout.addActionListener(new MainGui_ActionListener(this));
 		
 		GridBagLayout gbl = new GridBagLayout();
@@ -362,8 +364,11 @@ public class MainGui {
 		txtOutputFile = new JTextField(40);
 		txtOutputFile.setEditable(false);
 		btnInputFile = new JButton("Ouvrir");
+		btnInputFile.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
+		btnInputFile.setToolTipText("le fichier vidéo ou photo à ouvrir");
 		btnInputFile.addActionListener(new MainGui_ActionListener(this));
 		btnOutputFile = new JButton("Dossier");
+		btnOutputFile.setIcon(new ImageIcon(this.getClass().getResource("/icons/fileopen.png")));
 		btnOutputFile.setEnabled(true);
 		btnOutputFile.addActionListener(new MainGui_ActionListener(this));
 		btnOutputFile.setToolTipText("le dossier de travail où seront stockés les fichiers générés");
@@ -1242,13 +1247,16 @@ public class MainGui {
 		
 		
 		btnEnter = new JButton("Valider");
+		btnEnter.setIcon(new ImageIcon(this.getClass().getResource("/icons/apply.png")));
 		btnEnter.setEnabled(false);
 		btnEnter.addActionListener(new MainGui_ActionListener(this));
 		
 		btnExit = new JButton("Quitter");
+		btnExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
 		btnExit.addActionListener(new MainGui_ActionListener(this));
 		
 		btnCancel = new JButton("Annuler");
+		btnCancel.setIcon(new ImageIcon(this.getClass().getResource("/icons/cancel.png")));
 		btnCancel.addActionListener(new MainGui_ActionListener(this));
 		btnCancel.addMouseListener(new MainGui_ActionListener(this));
 		btnCancel.setEnabled(false);
