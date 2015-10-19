@@ -291,7 +291,7 @@ public class MainGui {
 				"Mode");
 		panMode.setBorder(title);
 		
-		rdiVideo = new JRadioButton("Vidéo");		
+		rdiVideo = new JRadioButton("Vidéo");
 		rdiVideo.setSelected(true);
 		rdiVideo.addActionListener(new MainGui_ActionListener(this));
 		rdiVideo.setToolTipText("pour coder ou décoder des fichiers vidéos");
