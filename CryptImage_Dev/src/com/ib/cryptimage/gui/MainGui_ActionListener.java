@@ -526,9 +526,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		dialogue.setFileFilter(filter);
 
 		if (dialogue.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			
 			file = dialogue.getSelectedFile();
 
 			if (!file.canRead()) {
+				mainGui.getFrame().setCursor(
+						Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
@@ -552,6 +557,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					mainGui.getBtnEnter().setEnabled(true);
 				}
 			}
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
 

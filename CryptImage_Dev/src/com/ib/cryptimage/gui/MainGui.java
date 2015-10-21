@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -174,6 +175,7 @@ public class MainGui {
 		frame.setAutoRequestFocus(true);
 		frame.setMinimumSize(new Dimension(740, 820));
 		frame.setResizable(true);		
+		frame.setIconImage(new ImageIcon(this.getClass().getResource("/icons/logo_jframe.png")).getImage());
 		
 		createPanMode();
 		createPanFile();
@@ -182,56 +184,13 @@ public class MainGui {
 		createPanVideo();
 		createPanLog();
 		
-		GridBagLayout gbl = new GridBagLayout();
-		
-		this.placerComposants(panGlobal,
-				gbl,
-				panMode,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 0,
-				1,1,
-				100,10,
-				1, 1,1,1);	
-		this.placerComposants(panGlobal,
-				gbl,
-				panFile,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 1,
-				1,1,
-				100,10,
-				1, 1,1,1);
-		this.placerComposants(panGlobal,
-				gbl,
-				panOptionsDiscret11,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 2,
-				1,1,
-				100,30,
-				1, 1,1,1);
-		this.placerComposants(panGlobal,
-				gbl,
-				panKeyboardCode,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 3,
-				1,1,
-				100,10,
-				1, 1,1,1);
-		this.placerComposants(panGlobal,
-				gbl,
-				panVideoOptions,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 4,
-				1,1,
-				100,15,
-				1, 1,1,1);
-		this.placerComposants(panGlobal,
-				gbl,
-				panProgress,
-				GridBagConstraints.LINE_START, GridBagConstraints.BOTH,
-				0, 5,
-				1,1,
-				100,25,
-				1, 1,1,1);
+		panGlobal.setLayout(new BoxLayout(panGlobal, BoxLayout.PAGE_AXIS ));
+		panGlobal.add(panMode);
+		panGlobal.add(panFile);
+		panGlobal.add(panOptionsDiscret11);
+		panGlobal.add(panKeyboardCode);
+		panGlobal.add(panVideoOptions);
+		panGlobal.add(panProgress);
 
 		//load config
 		if(JobConfig.loadConfig()){
@@ -1237,7 +1196,7 @@ public class MainGui {
 		progress.setValue(0);
 		progress.setStringPainted(true);
 		
-		textInfos = new JTextArea(5,40);
+		textInfos = new JTextArea(5,40); //5,40
 		textInfos.setEditable(false);
 		textInfos.setAutoscrolls(true);
 		textInfos.setLineWrap(true);

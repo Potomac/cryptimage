@@ -79,6 +79,7 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 		
 		
 		this.frame.setLayout(new BorderLayout());
+		frame.setIconImage(new ImageIcon(this.getClass().getResource("/icons/logo_jframe.png")).getImage());
 		this.frameRate = frameRate;
 		this.inverse = false;
 		icon = new ImageIcon();		
