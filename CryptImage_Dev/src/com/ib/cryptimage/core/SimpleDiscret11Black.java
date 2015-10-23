@@ -21,7 +21,6 @@
 
 package com.ib.cryptimage.core;
 
-import java.awt.image.BufferedImage;
 
 /**
  * @author Mannix54
@@ -39,43 +38,11 @@ public class SimpleDiscret11Black extends SimpleDiscret11 {
 		super(key16bits, audienceLevel, mode, height, width, perc1, perc2);		
 	}
 
-	/**
-	 * transform an image that have been added
-	 * this image can be crypted or decrypted, depending of the current mode
-	 * of the SimpleDiscret11 object
-	 * @param image the image to be transformed
-	 * @return the transformed image
-	 */
-	public BufferedImage transform(BufferedImage image){
-				
-		//we check the type image and the size
-		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);		
-		
-		raster = image.getRaster();					
-		
-		for (int y = 0; y < this.height; y++) {
-			raster.setPixels(delayArray[this.seqFullFrame][y], y, this.width
-					- delayArray[this.seqFullFrame][y], 1, raster.getPixels(0,
-					y, this.width - delayArray[this.seqFullFrame][y], 1,
-					new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
-			
-			//draw black line at start of delay
-			raster.setPixels(0, y, JobConfig.getDelay2(), 1, 
-					new int[JobConfig.getDelay2() * 3]);			
-		}
-		
-		this.seqFullFrame++;
-	
-		if (this.seqFullFrame == 3) {
-			this.seqFullFrame = 0;			
-		}
-
-		this.currentframePos++;
-		
-		return image;
-	}	
-	
-
+	protected void drawLine(int y){
+		//draw black line at start of delay
+		raster.setPixels(0, y, JobConfig.getDelay2(), 1, 
+				new int[JobConfig.getDelay2() * 3]);		
+	}
 
 }
 

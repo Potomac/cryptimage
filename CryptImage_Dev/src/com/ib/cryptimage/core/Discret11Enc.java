@@ -504,10 +504,6 @@ public class Discret11Enc extends Discret {
 
 			}
 
-			// System.out.println("retourne image seq " + this.seqFrame +
-			// " nb images : " + this.currentframePos );
-			//this.checkMotif(image);
-	
 			return image;		
 	}
 	
@@ -527,8 +523,7 @@ public class Discret11Enc extends Discret {
 				if (cptArray == 286) {
 					this.cptArray = 0;
 				}
-
-				//temp2 = delayArray[indexUse11bitsKey][this.seqFrame][cptArray];
+				
 
 				if (y != 573 && y != 575) { // we don't increment if next line
 											// is 622 ( 574 in
@@ -538,8 +533,7 @@ public class Discret11Enc extends Discret {
 							.getPixels(0, y, this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray], 1,
 									new int[(this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray]) * 3]));
 					// draw black line at start of delay
-					raster.setPixels(0, y, delayArray[indexUse11bitsKey][this.seqFrame][cptArray] , 1, 
-							new int[delayArray[indexUse11bitsKey][this.seqFrame][cptArray]  * 3]);	
+					drawLine(delayArray[indexUse11bitsKey][this.seqFrame][cptArray], y);
 					cptArray++;
 				}
 				y++; // add one to y in order to have only even lines frame
@@ -570,9 +564,8 @@ public class Discret11Enc extends Discret {
 					raster.setPixels(delayArray[indexUse11bitsKey][this.seqFrame][cptArray], y, this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray], 1, raster
 							.getPixels(0, y, this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray], 1,
 									new int[(this.sWidth - delayArray[indexUse11bitsKey][this.seqFrame][cptArray]) * 3]));
-					// draw black line at start of delay
-					raster.setPixels(0, y, delayArray[indexUse11bitsKey][this.seqFrame][cptArray] , 1, 
-							new int[delayArray[indexUse11bitsKey][this.seqFrame][cptArray]  * 3]);	
+					// draw black line at start of delay	
+					drawLine(delayArray[indexUse11bitsKey][this.seqFrame][cptArray], y);
 					cptArray++;
 				}
 				y++; // add one to y in order to have only odd lines frame
@@ -603,14 +596,19 @@ public class Discret11Enc extends Discret {
 							.getPixels(0, y, this.sWidth - delayArray[indexUse11bitsKey][5][cptArray], 1,
 									new int[(this.sWidth - delayArray[indexUse11bitsKey][5][cptArray]) * 3]));
 					// draw black line at start of delay
-					raster.setPixels(0, y, delayArray[indexUse11bitsKey][5][cptArray] , 1, 
-							new int[delayArray[indexUse11bitsKey][5][cptArray]  * 3]);	
+					drawLine(delayArray[indexUse11bitsKey][5][cptArray], y);
 					cptArray++;
 				}
 				y++; // add one to y in order to have only odd lines frame
 			}
 		}
 		return image;
+	}
+	
+	protected void drawLine(int delay, int y){
+		// draw black line at start of delay
+		raster.setPixels(0, y, delay , 1, 
+				new int[delay  * 3]);	
 	}
 	
 	/**

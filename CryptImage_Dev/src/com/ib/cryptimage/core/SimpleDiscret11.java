@@ -412,24 +412,15 @@ public class SimpleDiscret11 extends Discret {
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);		
 		
 		raster = image.getRaster();		
-		
-		
-		//int temp = 0;
-		//int shift = 0;
+			
 		
 		for (int y = 0; y < this.height; y++) {
-			//temp = delayArray[this.seqFullFrame][y];
-//			if (this.isDec == true && (temp == decaPixels[1])) {
-//				shift = (this.decaPixels[2] - this.decaPixels[1])
-//						- this.decaPixels[1];
-//			}
 			raster.setPixels(delayArray[this.seqFullFrame][y], y, this.width
 					- delayArray[this.seqFullFrame][y], 1, raster.getPixels(0,
 					y, this.width - delayArray[this.seqFullFrame][y], 1,
 					new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
 			//draw black line at start of delay
-			raster.setPixels(0, y, delayArray[this.seqFullFrame][y], 1, 
-					new int[delayArray[this.seqFullFrame][y] * 3]);	
+			drawLine(y);
 		}
 		
 		this.seqFullFrame++;
@@ -441,7 +432,14 @@ public class SimpleDiscret11 extends Discret {
 		this.currentframePos++;
 		
 		return image;
-	}	
+	}
+	
+	protected void drawLine(int y){
+		//draw black line at start of delay
+		raster.setPixels(0, y, delayArray[this.seqFullFrame][y], 1, 
+				new int[delayArray[this.seqFullFrame][y] * 3]);		
+	}
+
 	
 	/**
 	 * Convert a source image to a desired BufferedImage type

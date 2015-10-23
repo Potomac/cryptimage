@@ -638,9 +638,6 @@ public class Discret11Dec extends Discret {
 				this.cptArray = 0;
 			}
 			
-			//temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
-			
-
 			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
 				// digital image ) or if next line is 623 ( 576 in digital image )
 				raster.setPixels(delayArray[index11bitsKey][this.seqFrame][cptArray] , y, this.sWidth
@@ -648,8 +645,7 @@ public class Discret11Dec extends Discret {
 						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] , 1,
 						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray]) * 3]));
 				//draw black line at start of delay
-				raster.setPixels(0, y, delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, 
-						new int[delayArray[index11bitsKey][this.seqFrame][cptArray]  * 3]);	
+				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
 				cptArray++;
 			}
 			y++; // add one to y in order to have only even lines frame
@@ -684,8 +680,7 @@ public class Discret11Dec extends Discret {
 						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray], 1,
 						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] ) * 3]));
 				//draw black line at start of delay
-				raster.setPixels(0, y, delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, 
-						new int[delayArray[index11bitsKey][this.seqFrame][cptArray]  * 3]);	
+				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
 				cptArray++;
 			}
 			y++; // add one to y in order to have only odd lines frame
@@ -718,14 +713,20 @@ public class Discret11Dec extends Discret {
 						y, this.sWidth - delayArray[index11bitsKey][5][cptArray], 1,
 						new int[(this.sWidth - delayArray[index11bitsKey][5][cptArray] ) * 3]));
 				//draw black line at start of delay
-				raster.setPixels(0, y, delayArray[index11bitsKey][5][cptArray] , 1, 
-						new int[delayArray[index11bitsKey][5][cptArray]  * 3]);	
+				drawLine(delayArray[index11bitsKey][5][cptArray], y);
 				cptArray++;
 			}
 			y++; // add one to y in order to have only odd lines frame
 		}
 		return image;			
 	}
+	
+	protected void drawLine(int delay,int y){
+		//draw black line at start of delay
+		raster.setPixels(0, y,delay , 1, 
+				new int[delay  * 3]);			
+	}
+
 	
 	private boolean is310WhiteLine(BufferedImage buff) {
 		int val, total = 0;	
