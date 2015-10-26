@@ -152,14 +152,31 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getSlidBitrate().setEnabled(false);
 				mainGui.getTxtBitrate().setEnabled(false);
 				mainGui.getCombCodec().setEnabled(false);
+				mainGui.getCombAudioCodec().setEnabled(false);
 				mainGui.getJcbExtension().setEnabled(false);
-				// mainGui.getChkSound().setEnabled(false);
+				mainGui.getChkSound().setEnabled(false);//
+				mainGui.getChkDisableSound().setEnabled(false);//
 			} else if (mainGui.getRdiPhoto().isSelected() != true) {
 				mainGui.getSlidBitrate().setEnabled(true);
 				mainGui.getTxtBitrate().setEnabled(true);
 				mainGui.getCombCodec().setEnabled(true);
-				mainGui.getJcbExtension().setEnabled(true);
+				if(!mainGui.getChkDisableSound().isSelected()){
+				mainGui.getCombAudioCodec().setEnabled(true);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1){
+					mainGui.getJcbExtension().setSelectedIndex(2);
+					mainGui.getJcbExtension().setEnabled(false);					
+				}
+				else{
+					mainGui.getJcbExtension().setEnabled(true);
+				}
 				mainGui.getChkSound().setEnabled(true);
+				}
+				else{
+					mainGui.getJcbExtension().setEnabled(true);
+				}
+				//mainGui.getJcbExtension().setEnabled(true);
+				//mainGui.getChkSound().setEnabled(true);
+				mainGui.getChkDisableSound().setEnabled(true);
 				mainGui.getChkHorodatage().setEnabled(true);
 			}
 		} else if (src.equals(this.mainGui.getChkAutorisation1())) {
@@ -185,11 +202,24 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}else if (src.equals(this.mainGui.getChkDisableSound())) {			
 			if(src.isSelected()){
 				mainGui.getChkSound().setSelected(false);
-				mainGui.getChkSound().setEnabled(false);				
+				mainGui.getChkSound().setEnabled(false);
+				mainGui.getCombAudioCodec().setEnabled(false);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1 ){
+					mainGui.getJcbExtension().setSelectedIndex(2);
+					mainGui.getJcbExtension().setEnabled(true);
+				}
 			}
 			else {
 				mainGui.getChkSound().setSelected(true);
 				mainGui.getChkSound().setEnabled(true);
+				mainGui.getCombAudioCodec().setEnabled(true);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1 ){
+					mainGui.getJcbExtension().setSelectedIndex(2);
+					mainGui.getJcbExtension().setEnabled(false);
+				}
+				else {
+					mainGui.getJcbExtension().setEnabled(true);
+				}
 			}
 		}
 		
@@ -206,6 +236,23 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageComboBoxes(JComboBox<?> src) {
+		
+		if (src.equals(mainGui.getCombAudioCodec())) {
+			if(mainGui.getCombAudioCodec().getSelectedIndex()== 1){
+				if(mainGui.getJcbExtension().getSelectedIndex() != 2){
+					alertWavCodec();
+				}				
+				mainGui.getJcbExtension().setSelectedIndex(2);
+				mainGui.getJcbExtension().setEnabled(false);
+			}
+			else {
+				if (mainGui.getTextInfos().getForeground() == Color.red){
+					mainGui.getTextInfos().setText("");
+				}				
+				mainGui.getJcbExtension().setEnabled(true);
+			}
+		}
+		
 		if (src.equals(mainGui.getJcbExtension())) {
 			if (src.getSelectedIndex() == 0
 					&& this.mainGui.getCombCodec().getSelectedIndex() == 3) {
@@ -310,6 +357,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getSlidBitrate().setEnabled(false);
 				mainGui.getTxtBitrate().setEnabled(false);				
 				mainGui.getCombCodec().setEnabled(false);
+				mainGui.getCombAudioCodec().setEnabled(false);
 				mainGui.getJcbExtension().setEnabled(false);
 				mainGui.getSlidFrames().setEnabled(false);
 				mainGui.getTxtNbFrames().setEnabled(false);
@@ -319,6 +367,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getRdi768().setEnabled(false);
 				mainGui.getChkPlayer().setEnabled(false);
 				mainGui.getChkSound().setEnabled(false);
+				mainGui.getChkDisableSound().setEnabled(false);
 				mainGui.getChkHorodatage().setEnabled(false);				
 			}
 		} else if(src.equals(mainGui.getRdiVideo())){
@@ -334,7 +383,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getSlidBitrate().setEnabled(true);
 				mainGui.getTxtBitrate().setEnabled(true);				
 				mainGui.getCombCodec().setEnabled(true);
-				mainGui.getJcbExtension().setEnabled(true);
+				if(!mainGui.getChkDisableSound().isSelected()){
+					mainGui.getCombAudioCodec().setEnabled(true);
+					mainGui.getChkSound().setEnabled(true);						
+				}
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1 && 
+						!mainGui.getChkDisableSound().isSelected()){
+					mainGui.getJcbExtension().setEnabled(false);
+				}
+				else{
+					mainGui.getJcbExtension().setEnabled(true);
+				}
+				//mainGui.getJcbExtension().setEnabled(true);
 				mainGui.getSlidFrames().setEnabled(true);
 				mainGui.getTxtNbFrames().setEnabled(true);
 				mainGui.getChkStrictMode().setEnabled(true);
@@ -343,7 +403,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
-				mainGui.getChkSound().setEnabled(true);
+				//mainGui.getChkSound().setEnabled(true);
+				mainGui.getChkDisableSound().setEnabled(true);
 				mainGui.getChkHorodatage().setEnabled(true);				
 				
 			} else if(src.isSelected()){
@@ -357,7 +418,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
 				mainGui.getChkHorodatage().setEnabled(true);
-				
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1){
+					mainGui.getJcbExtension().setEnabled(false);
+				}
+				else{
+					//mainGui.getJcbExtension().setEnabled(true);
+				}				
 				
 			}
 		} else if(src.equals(mainGui.getRdiCoding())){			
@@ -635,6 +701,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					Integer.valueOf(mainGui.getTxtBitrate().getText()));
 			JobConfig.setVideoCodec(
 					mainGui.getCombCodec().getSelectedIndex() + 1);
+			JobConfig.setAudioCodec(
+					mainGui.getCombAudioCodec().getSelectedIndex() + 1);
 			JobConfig.setPerc1(
 					Double.valueOf(mainGui.getTxtDelay1().getText()
 							.replace("%", "")) / 100d);
@@ -826,6 +894,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 								", \r\nla vidéo traitée ne sera pas pleinement compatible avec"
 								+ " la norme discret11.");		
 	}
+	
+	private void alertWavCodec() {
+		mainGui.getTextInfos().setForeground(Color.red);
+		mainGui.getTextInfos().append("\r\nAttention, le codec wav ne fonctionne qu'avec "
+				+ "le conteneur mkv, "				
+				+ "le choix sera restreint qu'au mkv,\r\n"				
+				+ "en conséquence les autres conteneurs seront désactivés dans la liste.");		
+	}
+	
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {			

@@ -96,8 +96,18 @@ public class VideoRecorder {
 		}		
 				
 		if( this.disableSound != true && JobConfig.isVideoHasAudioTrack()){
-		writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
-		writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
+			switch (JobConfig.getAudioCodec()) {
+			case 1:
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
+				break;
+			case 2:
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 2,AUDIORATE);	
+				//writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
+				break;
+			default:
+				break;
+			}		
 		}
 		
 		writer.getContainer().getStream(0).getStreamCoder().setBitRate(JobConfig.getVideoBitrate()*1024);

@@ -131,6 +131,8 @@ public class MainGui {
 	private JRadioButton rdi720;
 	private JRadioButton rdi768;
 	private JCheckBox chkHorodatage;
+	private JLabel labAudioCodec;
+	private JComboBox<String> combAudioCodec;
 	
 	private JPanel panProgress;
 	private JProgressBar progress;
@@ -971,7 +973,7 @@ public class MainGui {
 		panVideoOptions = new JPanel();
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Options vidéo");
+				"Options audio/vidéo");
 		panVideoOptions.setBorder(title);
 		GridBagLayout gbl = new GridBagLayout();
 		
@@ -981,6 +983,11 @@ public class MainGui {
 		ButtonGroup btngrp = new ButtonGroup();
 		btngrp.add(rdi720);
 		btngrp.add(rdi768);
+		
+		labAudioCodec = new JLabel("Audio");
+		String[] tabAudio = {"mp3 192 kbs","wav"};
+		combAudioCodec = new JComboBox<String>(tabAudio);		
+		combAudioCodec.addActionListener(new MainGui_ActionListener(this));
 		
 		chkPlayer = new JCheckBox("mode lecteur");
 		chkPlayer.addActionListener(new MainGui_ActionListener(this));
@@ -1131,12 +1138,21 @@ public class MainGui {
 				rdi720,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 0,
-				2,1,
+				1,1,
 				25,50,
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
 				rdi768,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				25,50,
+				1, 1,1,1);
+		
+		this.placerComposants(panVideoOptions,
+				gbl,
+				labAudioCodec,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				2, 0,
 				1,1,
@@ -1144,9 +1160,18 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
-				chkPlayer,
+				combAudioCodec,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				3, 0,
+				1,1,
+				25,50,
+				1, 1,1,1);
+		
+		this.placerComposants(panVideoOptions,
+				gbl,
+				chkPlayer,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				4, 0,
 				1,1,
 				25,50,
 				1, 1,1,1);
@@ -1154,7 +1179,7 @@ public class MainGui {
 				gbl,
 				chkHorodatage,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				4, 0,
+				5, 0,
 				1,1,
 				25,50,
 				1, 1,1,1);
@@ -1576,6 +1601,14 @@ public class MainGui {
 	
 	public JCheckBox getChkNoBlackBar() {
 		return chkNoBlackBar;
+	}
+
+	public JLabel getAudioCodec() {
+		return labAudioCodec;
+	}
+
+	public JComboBox<String> getCombAudioCodec() {
+		return combAudioCodec;
 	}
 
 }
