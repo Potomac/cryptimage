@@ -293,7 +293,7 @@ public final class JobConfig {
 		
 		//codec
 		try {
-			if(Integer.valueOf(options[6]) < 1 || Integer.valueOf(options[6]) > 5 ) {
+			if(Integer.valueOf(options[6]) < 1 || Integer.valueOf(options[6]) > 6 ) {
 				options[6] = "1";
 			}
 		} catch (Exception e) {			

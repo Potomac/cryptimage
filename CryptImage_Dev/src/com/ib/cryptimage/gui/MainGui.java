@@ -999,7 +999,7 @@ public class MainGui {
 		chkHorodatage.setToolTipText("préfixe le nom de fichier avec une date et une heure");
 		chkHorodatage.addActionListener(new MainGui_ActionListener(this));
 				
-		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2"};
+		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2", "FFV1"};
 		combCodec = new JComboBox<String>(tab);	
 		combCodec.addActionListener(new MainGui_ActionListener(this));				
 		labCodec = new JLabel("codec");
