@@ -36,7 +36,16 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
+import static java.nio.file.StandardCopyOption.*;
 import java.util.Hashtable;
 
 import javax.swing.JButton;
@@ -46,6 +55,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -72,6 +82,7 @@ import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
@@ -92,7 +103,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	@Override
 	public void actionPerformed(ActionEvent e)  {
 		Object src = e.getSource();
-		if ((src instanceof JButton)) {			
+		
+		if (src instanceof JMenuItem) {
+			this.manageMenus((JMenuItem) src);
+		} else if((src instanceof JButton)) {			
 				this.manageButtons((JButton) src);			
 		} else if (src instanceof JTextField) {
 			this.manageTxtFields((JTextField) src);
@@ -120,22 +134,50 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageCheckBoxes(JCheckBox src) {
 		
+		if(src.equals(this.mainGui.getChkDisableSoundSyster())){
+			if(src.isSelected()){
+				this.mainGui.getChkSoundSyster().setSelected(false);
+				this.mainGui.getChkSoundSyster().setEnabled(false);				
+			}
+			else{
+				this.mainGui.getChkSoundSyster().setSelected(true);
+				this.mainGui.getChkSoundSyster().setEnabled(true);		
+			}
+		}
+		
 		if(src.equals(this.mainGui.getChkNoBlackBar())){
 			JobConfig.setNoBlackBar(
 					this.mainGui.getChkNoBlackBar().isSelected());
 		}
 		
-		if (src.equals(this.mainGui.getChkStrictMode())) {
-			if (src.isSelected()) {				
+		if (src.equals(this.mainGui.getChkStrictMode())) {			
+			if (src.isSelected()) {
+				if(this.mainGui.getRdiPhoto().isSelected()){					
+					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+				}
+				if(this.mainGui.getRdiVideo().isSelected()){			
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+				}			
 				setMultiCodeComboBox();
 				this.mainGui.getLbl11bitsInfo().setEnabled(true);
-				if(this.mainGui.getRdiDecoding().isSelected()){
+				if(this.mainGui.getRdiDiscretDecoding().isSelected()){
 					this.mainGui.getCombAudience().setSelectedIndex(0);
 					disableComboAudience();					
 				}
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 			} else {
+				if(this.mainGui.getRdiVideo().isSelected()){					
+					this.mainGui.getRdiDiscretCorrel().setEnabled(false);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+				}
+				if(this.mainGui.getRdiPhoto().isSelected()){					
+					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+					this.mainGui.getRdiDiscretCorrel().setEnabled(false);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+				}
 				setNoMultiCodeComboBox();				
 				enableComboAudience();				
 				this.mainGui.getLbl11bitsInfo().setEnabled(true);		
@@ -153,6 +195,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getTxtBitrate().setEnabled(false);
 				mainGui.getCombCodec().setEnabled(false);
 				mainGui.getCombAudioCodec().setEnabled(false);
+				mainGui.getCombAudioRate().setEnabled(false);
 				mainGui.getJcbExtension().setEnabled(false);
 				mainGui.getChkSound().setEnabled(false);//
 				mainGui.getChkDisableSound().setEnabled(false);//
@@ -162,7 +205,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getCombCodec().setEnabled(true);
 				if(!mainGui.getChkDisableSound().isSelected()){
 				mainGui.getCombAudioCodec().setEnabled(true);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1){
+				mainGui.getCombAudioRate().setEnabled(true);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
 					mainGui.getJcbExtension().setSelectedIndex(2);
 					mainGui.getJcbExtension().setEnabled(false);					
 				}
@@ -204,7 +248,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkSound().setSelected(false);
 				mainGui.getChkSound().setEnabled(false);
 				mainGui.getCombAudioCodec().setEnabled(false);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1 ){
+				mainGui.getCombAudioRate().setEnabled(false);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 ){
 					mainGui.getJcbExtension().setSelectedIndex(2);
 					mainGui.getJcbExtension().setEnabled(true);
 				}
@@ -213,7 +258,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkSound().setSelected(true);
 				mainGui.getChkSound().setEnabled(true);
 				mainGui.getCombAudioCodec().setEnabled(true);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1 ){
+				mainGui.getCombAudioRate().setEnabled(true);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 ){
 					mainGui.getJcbExtension().setSelectedIndex(2);
 					mainGui.getJcbExtension().setEnabled(false);
 				}
@@ -237,11 +283,50 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageComboBoxes(JComboBox<?> src) {
 		
+		if(src.equals(this.mainGui.getCombSystemCrypt())){
+			switch (this.mainGui.getCombSystemCrypt().getSelectedIndex()) {
+			case 0:
+			this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Discret11");
+			this.mainGui.getChkStrictMode().setEnabled(true);
+			//rdiVideoSelected();
+				break;				
+			case 1:
+				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Syster");
+				if(!this.mainGui.getChkStrictMode().isSelected()){
+					setMultiCodeComboBox();
+				}
+				this.mainGui.getChkStrictMode().setSelected(true);
+				if(this.mainGui.getRdiVideo().isSelected()){
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+					this.mainGui.getSlid16bitsWord().setEnabled(true);
+					this.mainGui.getJsp16bitKeyword().setEnabled(true);
+					enableComboAudience();
+				}
+				if(this.mainGui.getRdiPhoto().isSelected()){
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+					this.mainGui.getSlid16bitsWord().setEnabled(true);
+					this.mainGui.getJsp16bitKeyword().setEnabled(true);
+					enableComboAudience();
+				}
+				mainGui.getRdi720().setEnabled(true);
+				mainGui.getRdi768().setEnabled(true);
+				//setMultiCodeComboBox();
+				this.mainGui.getChkStrictMode().setEnabled(false);
+				break;
+			default:
+				break;
+			}
+		}
+		
 		if (src.equals(mainGui.getCombAudioCodec())) {
-			if(mainGui.getCombAudioCodec().getSelectedIndex()== 1){
-				if(mainGui.getJcbExtension().getSelectedIndex() != 2){
-					alertWavCodec();
-				}				
+			if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
+//				if(mainGui.getJcbExtension().getSelectedIndex() != 2){
+//					alertWavCodec();
+//				}				
 				mainGui.getJcbExtension().setSelectedIndex(2);
 				mainGui.getJcbExtension().setEnabled(false);
 			}
@@ -324,6 +409,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		} else if(src.equals(mainGui.getSlideFrameStart())){
 			mainGui.getJspFrameStart().setValue(
 					mainGui.getSlideFrameStart().getValue());
+		} 
+		else if(src.equals(mainGui.getSlideFrameStartSyster())){
+			mainGui.getJspFrameStartSyster().setValue(
+					mainGui.getSlideFrameStartSyster().getValue());
 		} else if(src.equals(mainGui.getSlidBitrate())){
 			mainGui.getTxtBitrate().setText(String.valueOf(src.getValue()));
 		}else if(src.equals(mainGui.getSlidFrames())){
@@ -342,15 +431,119 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		} else if(src.equals(this.mainGui.getJspFrameStart())){
 			mainGui.getSlideFrameStart().setValue(
 					(int) src.getValue());
+		} else if(src.equals(this.mainGui.getJspFrameStartSyster())){
+			mainGui.getSlideFrameStartSyster().setValue(
+					(int) src.getValue());
 		}
 	}
 
 	private void manageRadioButton(JRadioButton src) {
+		
+		if(src.equals(this.mainGui.getRdiSysterCodingRandom())){
+			if(src.isSelected()){
+				this.mainGui.getTxtSysterEnc().setEnabled(false);
+				this.mainGui.getBtnFileSysterEnc().setEnabled(false);
+				this.mainGui.getComboTableSysterEnc().setEnabled(true);
+			}
+		}
+		if(src.equals(this.mainGui.getRdiSysterCodingFile())){
+			if(src.isSelected()){
+				this.mainGui.getTxtSysterEnc().setEnabled(true);
+				this.mainGui.getBtnFileSysterEnc().setEnabled(true);
+				this.mainGui.getComboTableSysterEnc().setEnabled(false);
+			}
+		}
+		if(src.equals(this.mainGui.getRdiSysterDeCodingFile())){
+			if(src.isSelected()){
+				this.mainGui.getTxtSysterDec().setEnabled(true);
+				this.mainGui.getBtnFileSysterDec().setEnabled(true);
+				this.mainGui.getComboTableSysterDec().setEnabled(false);
+			}
+		}
+		if(src.equals(this.mainGui.getRdiSysterDeCodingTags())){
+			if(src.isSelected()){
+				this.mainGui.getTxtSysterDec().setEnabled(false);
+				this.mainGui.getBtnFileSysterDec().setEnabled(false);
+				this.mainGui.getComboTableSysterDec().setEnabled(false);
+			}
+		}
+		if(src.equals(this.mainGui.getRdiSysterDecodingCorrel())){
+			if(src.isSelected()){
+				this.mainGui.getTxtSysterDec().setEnabled(false);
+				this.mainGui.getBtnFileSysterDec().setEnabled(false);
+				this.mainGui.getComboTableSysterDec().setEnabled(true);
+			}
+		}
+		
+		
+		if(src.equals(this.mainGui.getRdiDiscretCorrel())){
+			if(src.isSelected()){
+				this.mainGui.getSlid16bitsWord().setEnabled(false);
+				this.mainGui.getJsp16bitKeyword().setEnabled(false);
+				disableComboAudience();	
+				if(!this.mainGui.getChkStrictMode().isSelected()){
+					setMultiCodeComboBox();
+				}
+				this.mainGui.getChkStrictMode().setSelected(true);
+				if(this.mainGui.getRdiPhoto().isSelected()){
+					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+				}
+				mainGui.getRdi720().setEnabled(true);
+				mainGui.getRdi768().setEnabled(true);	
+				//setMultiCodeComboBox();
+				this.mainGui.getChkStrictMode().setEnabled(false);				
+			}	
+		}
+		if(src.equals(this.mainGui.getRdiDiscretDecoding())){
+			this.mainGui.getChkStrictMode().setEnabled(true);
+			if(src.isSelected()){
+				this.mainGui.getSlid16bitsWord().setEnabled(true);
+				this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			}
+		}
+		
+		if(src.equals(this.mainGui.getRdiDiscretCoding())){
+			this.mainGui.getChkStrictMode().setEnabled(true);
+			if(src.isSelected()){
+				this.mainGui.getSlid16bitsWord().setEnabled(true);
+				this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			}
+		}
+		
+		if(src.equals(mainGui.getRdiSysterCodingGen())){
+			if(src.isSelected()){
+				this.mainGui.getCardEncDecSyster().show(this.mainGui.getPanSysterEncDecCard(),
+						"SysterCoding");
+			}			
+		}
+		if(src.equals(mainGui.getRdiSysterDecodingGen())){
+			if(src.isSelected()){
+				this.mainGui.getCardEncDecSyster().show(this.mainGui.getPanSysterEncDecCard(),
+						"SysterDecoding");
+			}			
+		}		
+		
 		if(src.equals(mainGui.getRdiPhoto())){
 			if(src.isSelected()){
-				setNoMultiCodeComboBox();
-				enableComboAudience();
-				this.mainGui.getLbl11bitsInfo().setEnabled(true);
+				//**setNoMultiCodeComboBox();
+				if(this.mainGui.getChkStrictMode().isSelected()){
+					this.mainGui.getRdiDiscretDecoding().setEnabled(false);	
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+					this.mainGui.getSlid16bitsWord().setEnabled(true);
+					this.mainGui.getJsp16bitKeyword().setEnabled(true);
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					if (mainGui.getCombSystemCrypt().getSelectedIndex() == 0) {
+						this.mainGui.getChkStrictMode().setEnabled(true);
+					}
+				}
+				else{
+					this.mainGui.getRdiDiscretDecoding().setEnabled(true);								
+				}
+				if (!this.mainGui.getRdiDiscretDecoding().isSelected()
+						&& !this.mainGui.getRdiDiscretCorrel().isSelected()) {
+					enableComboAudience();
+					this.mainGui.getLbl11bitsInfo().setEnabled(true);
+				}
 				mainGui.getTxtInputFile().setText("");				
 				mainGui.getBtnEnter().setEnabled(false);
 				//mainGui.getBtnOutputFile().setEnabled(false);
@@ -358,21 +551,39 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getTxtBitrate().setEnabled(false);				
 				mainGui.getCombCodec().setEnabled(false);
 				mainGui.getCombAudioCodec().setEnabled(false);
+				mainGui.getCombAudioRate().setEnabled(false);
 				mainGui.getJcbExtension().setEnabled(false);
 				mainGui.getSlidFrames().setEnabled(false);
 				mainGui.getTxtNbFrames().setEnabled(false);
-				mainGui.getChkStrictMode().setSelected(false);
-				mainGui.getChkStrictMode().setEnabled(false);				
-				mainGui.getRdi720().setEnabled(false);
-				mainGui.getRdi768().setEnabled(false);
+				//**mainGui.getChkStrictMode().setSelected(false);
+				//**mainGui.getChkStrictMode().setEnabled(false);				
+				//**mainGui.getRdi720().setEnabled(false);
+				//**mainGui.getRdi768().setEnabled(false);
+				mainGui.getChkPlayer().setSelected(false);;
 				mainGui.getChkPlayer().setEnabled(false);
 				mainGui.getChkSound().setEnabled(false);
 				mainGui.getChkDisableSound().setEnabled(false);
 				mainGui.getChkHorodatage().setEnabled(false);				
 			}
 		} else if(src.equals(mainGui.getRdiVideo())){
-			setMultiCodeComboBox();			
-			if(this.mainGui.getRdiDecoding().isSelected()){
+			
+			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			if(!this.mainGui.getChkStrictMode().isSelected()){
+				setMultiCodeComboBox();
+			}
+			else{
+				this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+				this.mainGui.getRdiDiscretCoding().setSelected(true);
+				this.mainGui.getSlid16bitsWord().setEnabled(true);
+				this.mainGui.getJsp16bitKeyword().setEnabled(true);
+				if (mainGui.getCombSystemCrypt().getSelectedIndex() == 0) {
+					this.mainGui.getChkStrictMode().setEnabled(true);
+				}
+				enableComboAudience();
+			}
+			//setMultiCodeComboBox();			
+			if(this.mainGui.getRdiDiscretDecoding().isSelected() || 
+					this.mainGui.getRdiDiscretCorrel().isSelected()){
 				disableComboAudience();
 				this.mainGui.getLbl11bitsInfo().setEnabled(false);
 			}
@@ -385,9 +596,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getCombCodec().setEnabled(true);
 				if(!mainGui.getChkDisableSound().isSelected()){
 					mainGui.getCombAudioCodec().setEnabled(true);
+					mainGui.getCombAudioRate().setEnabled(true);
 					mainGui.getChkSound().setEnabled(true);						
 				}
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1 && 
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 && 
 						!mainGui.getChkDisableSound().isSelected()){
 					mainGui.getJcbExtension().setEnabled(false);
 				}
@@ -397,8 +609,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				//mainGui.getJcbExtension().setEnabled(true);
 				mainGui.getSlidFrames().setEnabled(true);
 				mainGui.getTxtNbFrames().setEnabled(true);
-				mainGui.getChkStrictMode().setEnabled(true);
-				mainGui.getChkStrictMode().setSelected(true);
+				if(this.mainGui.getCombSystemCrypt().getSelectedIndex() !=1
+					 && !this.mainGui.getRdiDiscretCorrel().isSelected()){
+					mainGui.getChkStrictMode().setEnabled(true);
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					//this.mainGui.getRdiDiscretCoding().setSelected(true);
+				}
+				mainGui.getChkStrictMode().setSelected(true);				
 				//mainGui.getCombAudience().setEnabled(true);
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
@@ -412,13 +629,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getBtnEnter().setEnabled(false);
 				//mainGui.getBtnOutputFile().setEnabled(false);
 				mainGui.getSlidFrames().setEnabled(true);
-				mainGui.getChkStrictMode().setEnabled(true);
+				if(this.mainGui.getCombSystemCrypt().getSelectedIndex() !=1){
+					mainGui.getChkStrictMode().setEnabled(true);
+				}
 				mainGui.getChkStrictMode().setSelected(true);
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
 				mainGui.getChkHorodatage().setEnabled(true);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 1){
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
 					mainGui.getJcbExtension().setEnabled(false);
 				}
 				else{
@@ -426,10 +645,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}				
 				
 			}
-		} else if(src.equals(mainGui.getRdiCoding())){			
+		} else if(src.equals(mainGui.getRdiDiscretCoding())){			
 			enableComboAudience();
 			this.mainGui.getLbl11bitsInfo().setEnabled(true);
-		} else if(src.equals(mainGui.getRdiDecoding())){
+		} else if(src.equals(mainGui.getRdiDiscretDecoding())){
 			if(this.mainGui.getChkStrictMode().isSelected() == false){
 				if(this.mainGui.getCombAudience().getItemCount() == 7){
 					setNoMultiCodeComboBox();
@@ -440,13 +659,235 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}			
 		}
 	}
+	
+//	private void rdiVideoSelected(){
+//		if(mainGui.getRdiVideo().isSelected()){
+//			setMultiCodeComboBox();			
+//			if(this.mainGui.getRdiDiscretDecoding().isSelected()){
+//				disableComboAudience();
+//				this.mainGui.getLbl11bitsInfo().setEnabled(false);
+//			}
+//			if(mainGui.getRdiVideo().isSelected() && mainGui.getChkPlayer().isSelected()!=true){
+//				mainGui.getTxtInputFile().setText("");				
+//				mainGui.getBtnEnter().setEnabled(false);
+//				//mainGui.getBtnOutputFile().setEnabled(false);
+//				mainGui.getSlidBitrate().setEnabled(true);
+//				mainGui.getTxtBitrate().setEnabled(true);				
+//				mainGui.getCombCodec().setEnabled(true);
+//				if(!mainGui.getChkDisableSound().isSelected()){
+//					mainGui.getCombAudioCodec().setEnabled(true);
+//					mainGui.getChkSound().setEnabled(true);						
+//				}
+//				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 && 
+//						!mainGui.getChkDisableSound().isSelected()){
+//					mainGui.getJcbExtension().setEnabled(false);
+//				}
+//				else{
+//					mainGui.getJcbExtension().setEnabled(true);
+//				}
+//				//mainGui.getJcbExtension().setEnabled(true);
+//				mainGui.getSlidFrames().setEnabled(true);
+//				mainGui.getTxtNbFrames().setEnabled(true);
+//				mainGui.getChkStrictMode().setEnabled(true);
+//				mainGui.getChkStrictMode().setSelected(true);
+//				//mainGui.getCombAudience().setEnabled(true);
+//				mainGui.getRdi720().setEnabled(true);
+//				mainGui.getRdi768().setEnabled(true);
+//				mainGui.getChkPlayer().setEnabled(true);
+//				//mainGui.getChkSound().setEnabled(true);
+//				mainGui.getChkDisableSound().setEnabled(true);
+//				mainGui.getChkHorodatage().setEnabled(true);				
+//				
+//			} else if(mainGui.getRdiVideo().isSelected()){
+//				mainGui.getTxtInputFile().setText("");				
+//				mainGui.getBtnEnter().setEnabled(false);
+//				//mainGui.getBtnOutputFile().setEnabled(false);
+//				mainGui.getSlidFrames().setEnabled(true);
+//				mainGui.getChkStrictMode().setEnabled(true);
+//				mainGui.getChkStrictMode().setSelected(true);
+//				mainGui.getRdi720().setEnabled(true);
+//				mainGui.getRdi768().setEnabled(true);
+//				mainGui.getChkPlayer().setEnabled(true);
+//				mainGui.getChkHorodatage().setEnabled(true);
+//				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
+//					mainGui.getJcbExtension().setEnabled(false);
+//				}
+//				else{
+//					//mainGui.getJcbExtension().setEnabled(true);
+//				}				
+//			}
+//		}
+//	}
 
 	private void manageTxtFields(JTextField src) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	private void manageMenus(JMenuItem src){
+		if(src.equals(this.mainGui.getmOpen())){
+			manageFileOpen();
+		}
+		else if (src.equals(this.mainGui.getmExit())){
+			saveConfig();
+			System.exit(0);
+		} else if (src.equals(this.mainGui.getmAbout())){
+			showAbout();
+		}else if (src.equals(this.mainGui.getmGen())){
+			genRandomSyster();
+		}else if (src.equals(this.mainGui.getmDocumentation())){
+			launchDocumentation();
+		}
+	}
+	
+	private void launchDocumentation() {		
+		String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+	
+		File config = new File(binPath + "manuel_cryptimage.pdf");
+
+		if (config.exists()) {			
+			// run pdf program in order to launch documentation
+			if (Desktop.isDesktopSupported()) {
+				try {					
+					Desktop.getDesktop().open(new File(binPath + "manuel_cryptimage.pdf"));
+				} catch (IOException ex) {
+					JOptionPane
+					.showMessageDialog(
+							mainGui.getFrame(),
+							"Impossible de lancer la documentation pdf,"
+							+ " vérifiez que vous avez bien installé un lecteur PDF.",
+							"Impossible de lancer la documentation pdf",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+
+		}
+		else{
+			//we try to see if documentation exists in user home
+
+			// test if cryptimage directory exists
+			boolean success = new File(System.getProperty("user.home")
+					+ File.separator + "cryptimage").exists();
+
+			if (success == false) {
+				success = new File(System.getProperty("user.home") 
+						+ File.separator + "cryptimage").mkdir();
+			}
+			
+			String userHome = System.getProperty("user.home");
+
+			File configPDF = new File(userHome + File.separator + "cryptimage"
+					+ File.separator + "manuel_cryptimage.pdf");
+			
+			if (configPDF.exists()) {				
+				// run pdf program in order to launch documentation
+				if (Desktop.isDesktopSupported()) {
+					try {						
+						Desktop.getDesktop().open(configPDF);
+					} catch (IOException ex) {
+						JOptionPane
+						.showMessageDialog(
+								mainGui.getFrame(),
+								"Impossible de lancer la documentation pdf depuis"
+								+ " le répertoire utilisateur,"
+								+ " vérifiez que vous avez bien installé un lecteur PDF.",
+								"Impossible de lancer la documentation pdf",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+
+			}
+			else {
+				// we install the documentation to the home user				 
+				 InputStream is = this.getClass().getResourceAsStream("/ressources/manuel_cryptimage.pdf");
+				
+				 File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "manuel_cryptimage.pdf");
+				 FileOutputStream fos = null;				
+				try {
+					fos = new FileOutputStream(newFile);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}  
+				 
+				 int read = 0;
+			     byte[] bytes = new byte[1024];
+				 
+			     try {
+					while ((read = is.read(bytes)) != -1) {
+						 try {
+							fos.write(bytes, 0, read);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				 				 
+				 try {
+					fos.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+												 
+				 try {
+					Files.copy(newFile.toPath(), 
+							 configPDF.toPath(), REPLACE_EXISTING);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					JOptionPane
+					.showMessageDialog(
+							mainGui.getFrame(),
+							"Impossible d'installer la documentation vers"
+							+ " le répertoire utilisateur.",
+							"Impossible d'installer la documentation pdf",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				 
+				try {
+					Files.delete(newFile.toPath());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				 
+				 if (Desktop.isDesktopSupported()) {
+						try {						
+							Desktop.getDesktop().open(configPDF);
+						} catch (IOException ex) {
+							JOptionPane
+							.showMessageDialog(
+									mainGui.getFrame(),
+									"Impossible de lancer la documentation pdf depuis"
+									+ " le répertoire utilisateur.",
+									"Impossible de lancer la documentation pdf",
+									JOptionPane.ERROR_MESSAGE);
+						}
+					}				
+			}			
+		}
+	}
+	
+	private void genRandomSyster(){
+		GenEncFile gen = new GenEncFile(mainGui.getFrame(), "Générer un fichier d'encodage", true);
+		gen.display();
+	}
 
 	private void manageButtons(JButton src) {
+		
+		if(src.equals(this.mainGui.getBtnFileSysterEnc())){
+			openFileSysterEnc();
+		}
+		
+		if(src.equals(this.mainGui.getBtnFileSysterDec())){
+			openFileSysterDec();
+		}
+		
 		if(src.equals(mainGui.getBtnExit())){
 			saveConfig();
 			System.exit(0);
@@ -491,7 +932,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		JLabel label = new JLabel();
 
 		String deb = "CryptImage v0.0.11" + "<br/>"
-				+ "Copyright (C) 2015-10-21 Mannix54 <br/>";
+				+ "Copyright (C) 2015-11-27 Mannix54 <br/>";
 
 		String link = "<a href=\"http://ibsoftware.free.fr/cryptimage.php\">http://ibsoftware.free.fr/cryptimage.php</a>"
 				+ "<br/><br/>";
@@ -571,6 +1012,256 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 	}
 	
+	private void openFileSysterEnc(){
+		JFileChooser dialogue = new JFileChooser();
+		dialogue.setDialogTitle("Sélectionnez le fichier d'encodage");
+		File file;
+
+		dialogue.setAcceptAllFileFilterUsed(false);
+		FileNameExtensionFilter filter;
+		String[] extension;
+
+		extension = new String[] { "enc" };
+		filter = new FileNameExtensionFilter("fichier d'encodage *.enc", extension);
+		
+
+		dialogue.setFileFilter(filter);
+
+		if (dialogue.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			
+			file = dialogue.getSelectedFile();
+
+			if (!file.canRead()) {
+				mainGui.getFrame().setCursor(
+						Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				JOptionPane
+						.showMessageDialog(
+								dialogue,
+								"Le fichier n'est pas accessible en lecture ou bien est endommagé",
+								"erreur de lecture de fichier",
+								JOptionPane.ERROR_MESSAGE);
+			} else {
+				//TODO
+				if (checkValidityFileEncDec(file, "enc")) {
+					this.mainGui.getTxtSysterEnc().setText(file.getAbsolutePath());
+				}
+				else{
+					this.mainGui.getTxtSysterEnc().setText("");
+				}
+			}
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
+		
+	}
+	
+	private void openFileSysterDec(){
+		JFileChooser dialogue = new JFileChooser();
+		dialogue.setDialogTitle("Sélectionnez le fichier de décodage");
+		File file;
+
+		FileNameExtensionFilter filter;
+		String[] extension;
+
+		dialogue.setAcceptAllFileFilterUsed(false);
+		extension = new String[] { "dec" };
+		filter = new FileNameExtensionFilter("fichier de décodage *.dec", extension);
+		
+
+		dialogue.setFileFilter(filter);
+
+		if (dialogue.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			
+			file = dialogue.getSelectedFile();
+
+			if (!file.canRead()) {
+				mainGui.getFrame().setCursor(
+						Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				JOptionPane
+						.showMessageDialog(
+								dialogue,
+								"Le fichier n'est pas accessible en lecture ou bien est endommagé",
+								"erreur de lecture de fichier",
+								JOptionPane.ERROR_MESSAGE);
+			} else {
+				//TODO
+				//check the validity of the file
+				if (checkValidityFileEncDec(file, "dec")) {
+					this.mainGui.getTxtSysterDec().setText(file.getAbsolutePath());
+				}
+				else{
+					this.mainGui.getTxtSysterDec().setText("");
+				}
+			}
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
+	}
+	
+	private boolean checkValidityFileEncDec(File file, String decEnc){
+		BufferedReader fileInBuff = null;
+		
+			try {
+				fileInBuff = new BufferedReader(new FileReader(file.getAbsolutePath()));
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}		
+		
+		String line;
+		int compt = 0;
+		String[] options;	
+	
+			try {
+				while ((line = fileInBuff.readLine()) != null ) {
+					compt++;
+					options = line.split(";");
+					if (options.length == 1){
+						JOptionPane
+						.showMessageDialog(
+								mainGui.getFrame(),
+								"Ligne vierge à la ligne " + compt + " du fichier " + decEnc,
+								"erreur de syntaxe du fichier " + decEnc,
+								JOptionPane.ERROR_MESSAGE);
+						fileInBuff.close();
+						return false;
+					}
+					if(checkValuesTags(options[1], options[2], 
+							options[4], options[3],options[5]) == false){
+						JOptionPane
+						.showMessageDialog(
+								mainGui.getFrame(),
+								"Erreur de syntaxe à la ligne " + compt + " du fichier " + decEnc,
+								"erreur de syntaxe du fichier " + decEnc,
+								JOptionPane.ERROR_MESSAGE);
+						fileInBuff.close();
+						return false;
+					}
+				}
+			} catch ( IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+			catch ( Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				JOptionPane
+				.showMessageDialog(
+						mainGui.getFrame(),
+						"Erreur de syntaxe du fichier " + decEnc
+						+ ", " + e.getMessage() ,
+						"erreur de syntaxe du fichier " + decEnc,
+						JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		
+		
+		try {
+			fileInBuff.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//check if possible the size of lines with the frame lenght of the video
+			if(!this.mainGui.getTxtInputFile().getText().equals("")){
+				int corr = 0;
+				if(decEnc.equals("dec")){
+					corr = 1 ;
+				}
+				if(compt + corr < mainGui.getSlideFrameStart().getMaximum()
+						&& this.mainGui.getRdiVideo().isSelected()){
+					JOptionPane
+					.showMessageDialog(
+							mainGui.getFrame(),
+							"Le fichier " + decEnc
+							+ " n'a pas assez de lignes par rapport "
+							+ "au nombre de trames du fichier vidéo.",
+							"Pas assez de lignes dans le fichier " + decEnc,
+							JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				if(compt + corr < 3
+						&& this.mainGui.getRdiPhoto().isSelected()
+						&& this.mainGui.getRdiSysterCodingGen().isSelected()){
+					JOptionPane
+					.showMessageDialog(
+							mainGui.getFrame(),
+							"Le fichier " + decEnc
+							+ " doit avoir au moins 3 lignes quand le mode "
+							+ "photo est selectionné.",
+							"Pas assez de lignes dans le fichier " + decEnc,
+							JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+				if(compt + corr < 2
+						&& this.mainGui.getRdiPhoto().isSelected()
+						&& this.mainGui.getRdiSysterDecodingGen().isSelected()){
+					JOptionPane
+					.showMessageDialog(
+							mainGui.getFrame(),
+							"Le fichier " + decEnc
+							+ " doit avoir au moins 1 ligne quand le mode "
+							+ "photo est selectionné.",
+							"Pas assez de lignes dans le fichier " + decEnc,
+							JOptionPane.ERROR_MESSAGE);
+					return false;
+				}		
+			}
+		
+		
+		
+		return true;
+	}
+	
+	private boolean checkValuesTags(String typeTable, String offsetBin1, String offsetBin2,
+			String incrementBin1, String incrementBin2){
+		
+		try {
+			if (typeTable.equals("skip") && offsetBin1.equals("skip") 
+					&& offsetBin2.equals("skip")
+					&& incrementBin1.equals("skip") 
+					&& incrementBin2.equals("skip")) {
+				return true;
+			}			
+			if(Integer.parseInt(typeTable) >0 && Integer.parseInt(typeTable) <3){
+				if(Integer.parseInt(offsetBin1) >= 0 && Integer.parseInt(offsetBin1) < 256){
+					if(Integer.parseInt(offsetBin2) >= 0 && Integer.parseInt(offsetBin2) < 256){
+						if(Integer.parseInt(incrementBin1) > 0 && Integer.parseInt(incrementBin1) < 128){
+							if(isOdd(Integer.parseInt(incrementBin1))){
+								if(Integer.parseInt(incrementBin2) > 0 && Integer.parseInt(incrementBin2) < 128){
+									if(isOdd(Integer.parseInt(incrementBin2))){
+										return true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			return false;
+		}
+		
+		return false;
+	}
+	
+	private boolean isOdd(int val){
+		double test = (double) val;
+		if ((test / 2d) - (int)(test / 2d) != 0) {
+			return true;
+		}
+		else 
+			return false;
+	}
+	
+	
+	
 	private void manageFileOpen() {
 		JFileChooser dialogue = new JFileChooser();
 		dialogue.setDialogTitle("Sélectionnez le fichier d'entrée");
@@ -623,6 +1314,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					mainGui.getBtnEnter().setEnabled(true);
 				}
 			}
+			//reset enc and dec files
+			this.mainGui.getTxtSysterEnc().setText("");
+			this.mainGui.getTxtSysterDec().setText("");
 			mainGui.getFrame().setCursor(
 					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
@@ -631,7 +1325,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	private void manageEnter() {
 		if (mainGui.getCombAudience().getSelectedIndex() == 7
 				&& mainGui.getTxtMultiCode().getText().replaceAll("#", "")
-						.replaceAll(" ", "").equals("")) {
+						.replaceAll(" ", "").equals("")
+						&& mainGui.getCombSystemCrypt().getSelectedIndex() == 0) {
 			JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
@@ -639,6 +1334,30 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 							"pas de niveau d'audience pour le multicode",
 							JOptionPane.WARNING_MESSAGE);
 		} 
+		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
+				&& mainGui.getTxtSysterEnc().getText().equals("")
+				&& mainGui.getRdiSysterCodingGen().isSelected()
+				&& mainGui.getRdiSysterCodingFile().isSelected()){
+			JOptionPane
+			.showMessageDialog(
+					mainGui.getFrame(),
+					"Vous devez entrer le chemin du fichier d'encodage dans le volet "
+					+ "de configuration syster",
+					"absence de fichier d'encodage",
+					JOptionPane.WARNING_MESSAGE);		
+		}
+		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
+				&& mainGui.getTxtSysterDec().getText().equals("")
+				&& mainGui.getRdiSysterDecodingGen().isSelected()
+				&& mainGui.getRdiSysterDeCodingFile().isSelected()){
+			JOptionPane
+			.showMessageDialog(
+					mainGui.getFrame(),
+					"Vous devez entrer le chemin du fichier de décodage dans le volet"
+					+ " de configuration syster",
+					"absence de fichier de décodage",
+					JOptionPane.WARNING_MESSAGE);		
+		}		
 		else {
 			mainGui.getTextInfos().setForeground(Color.black);
 
@@ -670,23 +1389,107 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}
 			}
 						
+			// system crypt
+			JobConfig.setSystemCrypt(this.mainGui.getCombSystemCrypt().getSelectedIndex());
+			
+			//discret correl
+			if(this.mainGui.getRdiDiscretCorrel().isSelected()
+					&& JobConfig.getSystemCrypt() == 0){
+				JobConfig.setWantDecCorrel(true);
+				JobConfig.setWantDec(true);
+			}
+			else {
+				JobConfig.setWantDecCorrel(false);
+			}
+						
 			JobConfig.setWord16bits(
 					Integer.valueOf(mainGui.getTxt16bitsWord().getText()));
 
 			JobConfig.setVideo_frame(
-					Integer.valueOf(mainGui.getSlidFrames().getValue()));
+					Integer.valueOf(mainGui.getSlidFrames().getValue()));			
 			JobConfig.setStrictMode(
 					mainGui.getChkStrictMode().isSelected());
-			JobConfig.setPositionSynchro(
-					(int) mainGui.getJspFrameStart().getValue());
-			JobConfig.setWantDec(mainGui.getRdiDecoding().isSelected());
+			
+			if (JobConfig.getSystemCrypt() == 0) {
+				JobConfig.setPositionSynchro(
+						(int) mainGui.getJspFrameStart().getValue());
+			} else {
+				JobConfig.setPositionSynchro(
+						(int) mainGui.getJspFrameStartSyster().getValue());
+			}
+			
+			//discret dec enc normal
+			if(mainGui.getRdiDiscretDecoding().isSelected()
+					&& JobConfig.getSystemCrypt() == 0){
+				JobConfig.setWantDec(true);
+			}
+			if(mainGui.getRdiDiscretCoding().isSelected() 
+					&& JobConfig.getSystemCrypt() == 0){
+				JobConfig.setWantDec(false);
+			}
+			
+			//syster dec enc
+			if(mainGui.getRdiSysterCodingGen().isSelected()
+					&& JobConfig.getSystemCrypt() == 1){
+				JobConfig.setWantDec(false);
+				if(mainGui.getRdiSysterCodingFile().isSelected()){
+					JobConfig.setFileDataEncSyster(
+							this.mainGui.getTxtSysterEnc().getText());
+				}
+				if(mainGui.getRdiSysterCodingRandom().isSelected()){
+					JobConfig.setWantSysterEncRandom(true);
+					//type syster table
+					JobConfig.setTableSyster(this.mainGui.getComboTableSysterEnc().getSelectedIndex() + 1);
+				}
+				else {
+					JobConfig.setWantSysterEncRandom(false);
+				}
+				if(mainGui.getChkTags().isSelected()){
+					JobConfig.setWantSysterTags(true);
+				}
+				else {
+					JobConfig.setWantSysterTags(false);
+				}
+			}
+			
+			if(mainGui.getRdiSysterDecodingGen().isSelected() 
+					&& JobConfig.getSystemCrypt() == 1){
+				JobConfig.setWantDec(true);
+				if(mainGui.getRdiSysterDecodingCorrel().isSelected()){
+					JobConfig.setWantDecCorrel(true);
+					//type syster table
+					JobConfig.setTableSyster(this.mainGui.getComboTableSysterDec().getSelectedIndex() + 1);
+				}
+				else {
+					JobConfig.setWantDecCorrel(false);	
+				}
+				if(mainGui.getRdiSysterDeCodingTags().isSelected()){
+					JobConfig.setWantSysterTags(true);					
+				}
+				else {
+					JobConfig.setWantSysterTags(false);	
+				}
+				if(mainGui.getRdiSysterDeCodingFile().isSelected()){
+					JobConfig.setFileDataDecSyster(
+							this.mainGui.getTxtSysterDec().getText());
+				}
+			}
+			
 			JobConfig.setWantPlay(mainGui.getChkPlayer().isSelected());
 			JobConfig.setModePhoto(mainGui.getRdiPhoto().isSelected());
 			JobConfig.setExtension(
 					mainGui.getJcbExtension().getSelectedItem().toString());
-			JobConfig.setWantSound(mainGui.getChkSound().isSelected());
-			JobConfig.setDisableSound(
+			
+			if (JobConfig.getSystemCrypt() == 0) {
+				JobConfig.setWantSound(mainGui.getChkSound().isSelected());
+				JobConfig.setDisableSound(
 					mainGui.getChkDisableSound().isSelected());
+			}
+			else {
+				JobConfig.setWantSound(mainGui.getChkSoundSyster().isSelected());
+				JobConfig.setDisableSound(
+					mainGui.getChkDisableSoundSyster().isSelected());
+			}
 			
 			JobConfig.setAutorisations(getAutorisationTab());
 			
@@ -703,6 +1506,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					mainGui.getCombCodec().getSelectedIndex() + 1);
 			JobConfig.setAudioCodec(
 					mainGui.getCombAudioCodec().getSelectedIndex() + 1);
+			JobConfig.setAudioRate(
+					(Integer.valueOf(this.mainGui.getCombAudioRate()
+							.getSelectedItem().toString().replaceAll("Hz", "")
+							.trim())));			
 			JobConfig.setPerc1(
 					Double.valueOf(mainGui.getTxtDelay1().getText()
 							.replace("%", "")) / 100d);
@@ -778,10 +1585,89 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			  mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 	
-	private void setVideosInfos(String path){
-		
+	private int getNumFrames(String path){
+			int count = 0;
+
+		    String filename = path;
+
+
+		    // create a Xuggler container object
+
+		    IContainer container = IContainer.make();
+
+		    // open up the container
+
+		    if (container.open(filename, IContainer.Type.READ, null) < 0)
+		      throw new IllegalArgumentException("could not open file: " + filename);
+
+		    // query how many streams the call to open found
+		    int numStreams = container.getNumStreams();
+
+		    // and iterate through the streams to find the first video stream
+		    int videoStreamId = -1;
+		    IStreamCoder videoCoder = null;
+		    for(int i = 0; i < numStreams; i++)
+		    {
+		      // find the stream object
+		      IStream stream = container.getStream(i);
+
+		      // get the pre-configured decoder that can decode this stream;
+		      IStreamCoder coder = stream.getStreamCoder();
+
+		      if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO)
+		      {
+		        videoStreamId = i;
+		        videoCoder = coder;
+		        break;
+		      }
+		    }
+
+		    if (videoStreamId == -1)
+		      throw new RuntimeException("could not find video stream in container: "+filename);
+
+		    // Now we have found the video stream in this file.  Let's open up
+		    // our decoder so it can do work
+		    if (videoCoder.open() < 0)
+		      throw new RuntimeException(
+		        "could not open video decoder for container: " + filename);
+		    // Now, we start walking through the container looking at each packet.
+
+		    IPacket packet = IPacket.make();
+		    while(container.readNextPacket(packet) >= 0)		    {
+		      
+		      // Now we have a packet, let's see if it belongs to our video strea
+
+		      if (packet.getStreamIndex() == videoStreamId)
+		      {
+		    	  count++;
+		      }
+		      else
+		      {
+		        // This packet isn't part of our video stream, so we just
+		        // silently drop it.
+		        do {} while(false);
+		      }
+		    }
+
+		    if (videoCoder != null)
+		    {
+		      videoCoder.close();
+		      videoCoder = null;
+		    }
+		    if (container !=null)
+		    {
+		      container.close();
+		      container = null;
+		    }
+		    return count;
+	}
+	
+	
+	private void setVideosInfos(String path){		
 		StreamsFinder findAudio = new StreamsFinder(path);
 		JobConfig.setVideoHasAudioTrack(findAudio.isHasAudioTrack());
+		
+		
 		
 		IMediaReader reader = ToolFactory.makeReader(path);
 		reader.readPacket();
@@ -798,7 +1684,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		double frames_nb = 0;
 		double alt_nbframes = 0;
 		IStream stream = null;
-		
+			
 		
 		  if(videoStreamId == -1) {
 		        for(int i = 0; i < container.getNumStreams(); i++) {
@@ -835,17 +1721,28 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			nb_frames_def = (int)alt_nbframes;
 		}
 		
-		if(frameRate !=25){
-			alertFrameRate(frameRate);
-		}
+//		if(frameRate !=25){
+//			alertFrameRate(frameRate);
+//		}
 		
 		if(path.substring(path.lastIndexOf(".") + 1, path.length()).equals("ts")
 				|| path.substring(path.lastIndexOf(".") + 1, path.length()).equals("m2t")){
 			alertTsM2t();
 		}
+		else {
+			this.mainGui.getChkDisableSound().setSelected(false);
+			this.mainGui.getChkSound().setSelected(true);
+			this.mainGui.getChkSound().setEnabled(true);
+			this.mainGui.getChkDisableSoundSyster().setSelected(false);
+			this.mainGui.getChkSoundSyster().setSelected(true);
+			this.mainGui.getChkSoundSyster().setEnabled(true);
+		}
 		
 		JobConfig.setFrameRate(frameRate);
 		mainGui.getBtnEnter().setEnabled(true);
+		
+		//fix
+		nb_frames_def = getNumFrames(path);
 		
 		mainGui.getSlideFrameStart().setMaximum(nb_frames_def);
 		mainGui.getSlideFrameStart().setValue(1);
@@ -858,6 +1755,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		mainGui.getSlideFrameStart().setMinorTickSpacing((int) (0.05 * nb_frames_def));
 		mainGui.getSlideFrameStart().setPaintLabels(true);		
 		mainGui.getSlideFrameStart().setPaintTicks(true);
+		
+		mainGui.getSlideFrameStartSyster().setMaximum(nb_frames_def);
+		mainGui.getSlideFrameStartSyster().setValue(1);
+		Hashtable<Integer, JLabel> labelTable2 = new Hashtable<Integer, JLabel>();
+		labelTable2.put( new Integer( 1 ), new JLabel("1"));		
+		labelTable2.put( new Integer( nb_frames_def ), 
+				new JLabel(String.valueOf(nb_frames_def)));
+		mainGui.getSlideFrameStartSyster().setLabelTable(labelTable2);
+		mainGui.getSlideFrameStartSyster().setMajorTickSpacing((int) (0.5 * nb_frames_def));
+		mainGui.getSlideFrameStartSyster().setMinorTickSpacing((int) (0.05 * nb_frames_def));
+		mainGui.getSlideFrameStartSyster().setPaintLabels(true);		
+		mainGui.getSlideFrameStartSyster().setPaintTicks(true);
 		
 		mainGui.getSlidFrames().setMaximum(nb_frames_def);
 		mainGui.getSlidFrames().setValue((int) (0.10 * nb_frames_def));		
@@ -885,30 +1794,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		this.mainGui.getChkDisableSound().setSelected(true);
 		this.mainGui.getChkSound().setSelected(false);
 		this.mainGui.getChkSound().setEnabled(false);
+		this.mainGui.getChkDisableSoundSyster().setSelected(true);
+		this.mainGui.getChkSoundSyster().setSelected(false);
+		this.mainGui.getChkSoundSyster().setEnabled(false);
 	}
 
-	private void alertFrameRate(double frameRate){
-		mainGui.getTextInfos().setForeground(Color.red);
-		mainGui.getTextInfos().append("\r\nAttention, la vidéo a un FPS de " +
-								String.format("%.3f", frameRate) +
-								", \r\nla vidéo traitée ne sera pas pleinement compatible avec"
-								+ " la norme discret11.");		
-	}
-	
-	private void alertWavCodec() {
-		mainGui.getTextInfos().setForeground(Color.red);
-		mainGui.getTextInfos().append("\r\nAttention, le codec wav ne fonctionne qu'avec "
-				+ "le conteneur mkv, "				
-				+ "le choix sera restreint qu'au mkv,\r\n"				
-				+ "en conséquence les autres conteneurs seront désactivés dans la liste.");		
-	}
-	
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {			
 		
 		if(e.getSource().equals(mainGui.getJsp16bitKeyword()) 
-				|| e.getSource().equals(mainGui.getJspFrameStart())){
+				|| e.getSource().equals(mainGui.getJspFrameStart())
+				|| e.getSource().equals(mainGui.getJspFrameStartSyster())){
 			JSpinner spi = (JSpinner)e.getSource();
 			manageSpinners(spi);
 		} 		
@@ -1242,7 +2139,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 	}
 	
-	private Boolean saveConfig(){
+	private Boolean saveConfig(){		
 		return JobConfig.saveConfig(
 				this.mainGui.getSlid16bitsWord().getValue(),
 				this.mainGui.getCombAudience().getSelectedIndex() + 1,
@@ -1256,8 +2153,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getTxtOutputFile().getText(),
 				this.mainGui.getTxtMultiCode().getText().replaceAll(" ", "").replaceAll("#", ""),
 				this.mainGui.getJspCycle().getValue().toString(),
-				this.mainGui.getRdi720().isSelected());
-				
+				this.mainGui.getRdi720().isSelected(),
+				this.mainGui.getCombAudioCodec().getSelectedIndex(),
+				this.mainGui.getCombAudioRate().getSelectedItem().toString().replaceAll("Hz", "").trim(),
+				this.mainGui.getCombSystemCrypt().getSelectedIndex());						
 	}
 	
 	private String getTime(int timer){		  

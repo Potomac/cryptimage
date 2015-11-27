@@ -730,11 +730,15 @@ public class Discret11Dec extends Discret {
 	
 	private boolean is310WhiteLine(BufferedImage buff) {
 		int val, total = 0;	
+		//Raster pix = buff.getData();
 	    
 		for (int i = 0; i < buff.getWidth(); i++) {
 			val = buff.getRGB(i, 574);			
 			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
- 		}
+//			total += (pix.getPixel(i, 574, new int[3])[0]+
+//					 pix.getPixel(i, 574, new int[3])[1]+
+//					 pix.getPixel(i, 574,new int[3])[2])/3;
+		}
 		
 		if ((total / sWidth) > 200) {
 			return true;
@@ -745,11 +749,15 @@ public class Discret11Dec extends Discret {
 	
 	private boolean is310BlackLine(BufferedImage buff) {
 		int val, total = 0;
+//		Raster pix = buff.getData();
 	    
 		for (int i = 0; i < buff.getWidth(); i++) {
 			val = buff.getRGB(i, 574);			
 			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
- 		}	
+//			total += pix.getPixel(i, 574, new int[this.sWidth * 3])[0]+
+//					 pix.getPixel(i, 574, new int[this.sWidth * 3])[1]+
+//					 pix.getPixel(i, 574, new int[this.sWidth * 3])[2];
+		}	
 
 		if ((total / sWidth) < 30) {
 			return true;
@@ -761,10 +769,14 @@ public class Discret11Dec extends Discret {
 	
 	private boolean is622WhiteLine(BufferedImage buff){
 		int val, total = 0;
+//		Raster pix = buff.getData();
 		
 		for (int i = 0; i < buff.getWidth(); i++) {
 			val = buff.getRGB(i, 573);			
 			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
+//			total += pix.getPixel(i, 573, new int[this.sWidth * 3])[0]+
+//					 pix.getPixel(i, 573, new int[this.sWidth * 3])[1]+
+//					 pix.getPixel(i, 573, new int[this.sWidth * 3])[2];
 		}		
 
 		if ((total / sWidth) > 200) {
@@ -775,11 +787,15 @@ public class Discret11Dec extends Discret {
 	}
 	
 	private boolean is622BlackLine(BufferedImage buff){
-		int val, total = 0;		
+		int val, total = 0;
+//		Raster pix = buff.getData();
 		
 		for (int i = 0; i < buff.getWidth(); i++) {
 			val = buff.getRGB(i, 573);		
 			total += (((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3;
+//			total += pix.getPixel(i, 573, new int[this.sWidth * 3])[0]+
+//					 pix.getPixel(i, 573, new int[this.sWidth * 3])[1]+
+//					 pix.getPixel(i, 573, new int[this.sWidth * 3])[2];
 		}	
 
 		if ((total / sWidth) < 30) {
@@ -891,6 +907,20 @@ public class Discret11Dec extends Discret {
 
 	public void setKey16bits(int key16bits) {
 		this.key16bits = key16bits;
+	}
+
+
+	@Override
+	void closeFileData() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	void skipFrame() {
+		// TODO Auto-generated method stub
+		
 	}		
 
 }

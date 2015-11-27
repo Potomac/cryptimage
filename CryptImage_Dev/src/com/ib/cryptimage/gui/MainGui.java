@@ -23,12 +23,22 @@
 package com.ib.cryptimage.gui;
 
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.Hashtable;
 
@@ -43,6 +53,10 @@ import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
@@ -51,6 +65,7 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
@@ -80,8 +95,20 @@ public class MainGui {
 	
 	private JPanel panOptionsDiscret11;
 	private JPanel panKeyboardCode;
-	private JRadioButton rdiCoding;
-	private JRadioButton rdiDecoding;
+	private JRadioButton rdiDiscretCoding;
+	private JRadioButton rdiDiscretDecoding;
+	private JRadioButton rdiDiscretCorrel;
+	private JRadioButton rdiSysterCodingGen;
+	private JRadioButton rdiSysterDecodingGen;
+	private JRadioButton rdiSysterDecodingCorrel;
+	private JRadioButton rdiSysterCodingFile;
+	private JRadioButton rdiSysterCodingRandom;
+	private JRadioButton rdiSysterDecodingFile;
+	private JRadioButton rdiSysterDeCodingTags;
+	private JCheckBox chkTags;
+	private JButton btnFileSysterEnc;
+	private JButton btnFileSysterDec;
+	
 	private JLabel lab16bitsWord;
 	private JFormattedTextField txt16bitsWord;
 	private JSlider slid16bitsWord;
@@ -101,8 +128,11 @@ public class MainGui {
 	private JCheckBox chkDelay;
 	private JSpinner jsp16bitKeyword;
 	private JLabel labFrameStart;
+	private JLabel labFrameStartSyster;
 	private JSpinner jspFrameStart;
+	private JSpinner jspFrameStartSyster;
 	private JSlider slideFrameStart;
+	private JSlider slideFrameStartSyster;
 	private JCheckBox chkAutorisation1;
 	private JCheckBox chkAutorisation2;
 	private JCheckBox chkAutorisation3;
@@ -114,8 +144,10 @@ public class MainGui {
 	private JLabel labCode;
 	private JTextField txtCode;
 	private JCheckBox chkSound;
+	private JCheckBox chkSoundSyster;
 	private JLabel lbl11bitsInfo;
 	private JCheckBox chkDisableSound;
+	private JCheckBox chkDisableSoundSyster;
 	private JFormattedTextField txtMultiCode;
 	private JSpinner jspCycle;
 	private JLabel lblMultiAudience;
@@ -133,6 +165,7 @@ public class MainGui {
 	private JCheckBox chkHorodatage;
 	private JLabel labAudioCodec;
 	private JComboBox<String> combAudioCodec;
+	private JComboBox<String> combAudioRate;
 	
 	private JPanel panProgress;
 	private JProgressBar progress;
@@ -146,8 +179,41 @@ public class MainGui {
 	private JLabel lblExtension;
 	private JComboBox<String> jcbExtension;
 	
+	private JLabel lblSystemCrypt;
+	private JComboBox<String> combSystemCrypt;
+
+	private JPanel panOptionsSyster;
+
+	private JPanel panCoderSyster;
+
+	private JPanel panDecoderSyster;
 	
-	public MainGui(){	
+	private JPanel panSystemCrypt;
+	private CardLayout card;
+	private CardLayout cardEncDecSyster;
+	private JTextField txtSysterEnc;
+	private JTextField txtSysterDec;
+	private JPanel panSysterMode;
+	private JPanel panSysterEncDecCard;
+	private JPanel panSysterMisc;
+	private JComboBox<String> comboTableSysterEnc;
+	private JComboBox<String> comboTableSysterDec;
+	private MainGui_ActionListener controler;
+	
+	private JMenuBar menuBar;
+	private JMenu mFile;
+	private JMenu mTools;
+	private JMenu mHelp;
+	private JMenuItem mOpen;
+	private JMenuItem mExit;
+	private JMenuItem mGen;
+	private JMenuItem mDocumentation;
+	private JMenuItem mAbout;
+	
+	public MainGui(){
+		
+		controler = new MainGui_ActionListener(this);
+			
 		JobConfig.setGui(this);
 		
 		 try {	            
@@ -168,28 +234,38 @@ public class MainGui {
 	    }
 		
 		frame = new JFrame("CryptImage v0.0.11");
-		frame.addWindowListener(new MainGui_ActionListener(this));
-		frame.setLayout(new GridLayout(2,1));
+		frame.addWindowListener(controler);
+		frame.setLayout(new GridLayout(1,1));
 		JPanel panGlobal = new JPanel();
 		
-		frame.setSize(740,820);
+		frame.setSize(740,830);
 		frame.setLocationRelativeTo(null);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(740, 820));
+		frame.setMinimumSize(new Dimension(740, 830));
 		frame.setResizable(true);		
 		frame.setIconImage(new ImageIcon(this.getClass().getResource("/icons/logo_jframe.png")).getImage());
+		
+		createMenu();
 		
 		createPanMode();
 		createPanFile();
 		createPanKeyboardCode();
-		createPanDiscret11();	
+		createPanDiscret11();
+		createPanSyster();
 		createPanVideo();
 		createPanLog();
 		
-		panGlobal.setLayout(new BoxLayout(panGlobal, BoxLayout.PAGE_AXIS ));
+		panSystemCrypt = new JPanel();
+		card = new CardLayout();
+		panSystemCrypt.setLayout(card);
+		panSystemCrypt.add(panOptionsDiscret11, "Discret11");
+		panSystemCrypt.add(panOptionsSyster, "Syster");
+		
+		panGlobal.setLayout(new BoxLayout(panGlobal, BoxLayout.Y_AXIS ));
 		panGlobal.add(panMode);
 		panGlobal.add(panFile);
-		panGlobal.add(panOptionsDiscret11);
+		panGlobal.add(panSystemCrypt);
+		//panGlobal.add(panOptionsDiscret11);
 		panGlobal.add(panKeyboardCode);
 		panGlobal.add(panVideoOptions);
 		panGlobal.add(panProgress);
@@ -232,8 +308,20 @@ public class MainGui {
 			else{
 				this.rdi768.setSelected(true);
 			}
+			//audio codec
+			this.combAudioCodec.setSelectedIndex(JobConfig.getAudioCodec());
+			//audio rate
+			if(JobConfig.getAudioRate() == 44100){
+				this.combAudioRate.setSelectedIndex(0);
+			}
+			else{
+				this.combAudioRate.setSelectedIndex(1);
+			}
+			this.combSystemCrypt.setSelectedIndex(JobConfig.getSystemCrypt());
 		}
 		
+		//check documentation
+		copyNewHelpVersion();
 
 		frame.setLayout(new GridLayout(1,0));
 		frame.getContentPane().add(panGlobal);		
@@ -242,6 +330,123 @@ public class MainGui {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.combAudience.setSelectedIndex(0);
 		this.combAudience.setSelectedIndex(JobConfig.getAudienceLevel());
+	}
+	
+	private void copyNewHelpVersion(){
+		String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		
+		File config = new File(binPath + "manuel_cryptimage.pdf");
+
+		if (!config.exists() && !JobConfig.getLaunch().equals("0.0.11")) {
+			
+			// test if cryptimage directory exists
+			boolean success = new File(System.getProperty("user.home")
+					+ File.separator + "cryptimage").exists();
+			
+			if(success == false){
+			success = new File(System.getProperty("user.home")
+					+ File.separator + "cryptimage").mkdir();
+			}		
+			
+			// we install the documentation to the home user
+			String userHome = System.getProperty("user.home");
+			File configPDF = new File(userHome + File.separator + "cryptimage"
+					+ File.separator + "manuel_cryptimage.pdf");
+			
+			 InputStream is = this.getClass().getResourceAsStream("/ressources/manuel_cryptimage.pdf");
+			
+			 File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "manuel_cryptimage.pdf");
+			 FileOutputStream fos = null;				
+			try {
+				fos = new FileOutputStream(newFile);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}  
+			 
+			 int read = 0;
+		     byte[] bytes = new byte[1024];
+			 
+		     try {
+				while ((read = is.read(bytes)) != -1) {
+					 try {
+						fos.write(bytes, 0, read);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+						 
+			 try {
+				fos.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+											 
+			 try {
+				Files.copy(newFile.toPath(), 
+						 configPDF.toPath(), REPLACE_EXISTING);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				JOptionPane
+				.showMessageDialog(
+						this.frame,
+						"Impossible d'installer la documentation vers"
+						+ " le répertoire utilisateur.",
+						"Impossible d'installer la documentation pdf",
+						JOptionPane.ERROR_MESSAGE);
+			}
+			 
+			try {
+				Files.delete(newFile.toPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			 
+		}
+	}
+	
+	private void createMenu(){
+		menuBar = new JMenuBar();
+		mFile = new JMenu("Fichier");
+		mTools = new JMenu("Outils");
+		mHelp = new JMenu("Aide");
+		mOpen = new JMenuItem("Ouvrir un fichier");
+		mOpen.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
+		mOpen.addActionListener(controler);
+		mExit = new JMenuItem("Quitter");
+		mExit.addActionListener(controler);
+		mExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
+		mGen = new JMenuItem("Générer un fichier d'encodage");
+		mGen.addActionListener(controler);
+		mGen.setIcon(new ImageIcon(this.getClass().getResource("/icons/encrypted.png")));
+		mAbout = new JMenuItem("À propos...");		
+		mAbout.addActionListener(controler);
+		mAbout.setIcon(new ImageIcon(this.getClass().getResource("/icons/help.png")));
+		mDocumentation = new JMenuItem("Documentation");
+		mDocumentation.addActionListener(controler);
+		mDocumentation.setIcon(new ImageIcon(this.getClass().getResource("/icons/documentation.png")));
+		menuBar.add(mFile);
+		menuBar.add(mTools);
+		menuBar.add(mHelp);
+		
+		mFile.add(mOpen);
+		mFile.setMnemonic('F');
+		mOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
+		mFile.add(mExit);
+		mTools.add(mGen);
+		mTools.setMnemonic('t');
+		mHelp.add(mDocumentation);
+		mHelp.add(mAbout);
+		mHelp.setMnemonic('A');
+		frame.setJMenuBar(menuBar);
+		
 	}
 	
 	private void createPanMode(){
@@ -254,26 +459,32 @@ public class MainGui {
 		
 		rdiVideo = new JRadioButton("Vidéo");
 		rdiVideo.setSelected(true);
-		rdiVideo.addActionListener(new MainGui_ActionListener(this));
+		rdiVideo.addActionListener(controler);
 		rdiVideo.setToolTipText("pour coder ou décoder des fichiers vidéos");
 		rdiPhoto = new JRadioButton("Photo");
-		rdiPhoto.addActionListener(new MainGui_ActionListener(this));
+		rdiPhoto.addActionListener(controler);
 		rdiPhoto.setToolTipText("pour coder ou décoder des fichiers images");
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(rdiVideo);
 		btnGroup.add(rdiPhoto);
 		
 		chkStrictMode = new JCheckBox("Respect de la norme");		
-		chkStrictMode.addActionListener(new MainGui_ActionListener(this));
+		chkStrictMode.addActionListener(controler);
 		chkStrictMode.setSelected(true);
 		chkStrictMode.setToolTipText("<html>-si option activée : gestion des lignes 310/622,"
 				+ "<br/>redimensionnement automatique vers le format 4/3 720x576 ou 768x576<br/>"
 				+ "-si option désactivée : pas de gestion des lignes 310/622 et "
 				+ "la vidéo garde sa résolution originale</html>");
 		
+		lblSystemCrypt = new JLabel("Système");
+		String [] tab = {"Discret11", "Nagravision syster"};
+		combSystemCrypt = new JComboBox<>(tab);
+		combSystemCrypt.addActionListener(controler);
+		
+		
 		btnAbout = new JButton("À propos...");
 		btnAbout.setIcon(new ImageIcon(this.getClass().getResource("/icons/help.png")));
-		btnAbout.addActionListener(new MainGui_ActionListener(this));
+		btnAbout.addActionListener(controler);
 		
 		GridBagLayout gbl = new GridBagLayout();
 		
@@ -304,9 +515,25 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panMode,
 				gbl,
-				btnAbout,
+				lblSystemCrypt,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				3, 0,
+				1,1,
+				25,0.5,
+				1, 1,1,1);	
+		this.placerComposants(panMode,
+				gbl,
+				combSystemCrypt,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				4, 0,
+				1,1,
+				25,0.5,
+				1, 1,1,1);	
+		this.placerComposants(panMode,
+				gbl,
+				btnAbout,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				5, 0,
 				1,1,
 				25,0.5,
 				1, 1,1,1);	
@@ -327,11 +554,11 @@ public class MainGui {
 		btnInputFile = new JButton("Ouvrir");
 		btnInputFile.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		btnInputFile.setToolTipText("le fichier vidéo ou photo à ouvrir");
-		btnInputFile.addActionListener(new MainGui_ActionListener(this));
+		btnInputFile.addActionListener(controler);
 		btnOutputFile = new JButton("Dossier");
 		btnOutputFile.setIcon(new ImageIcon(this.getClass().getResource("/icons/fileopen.png")));
 		btnOutputFile.setEnabled(true);
-		btnOutputFile.addActionListener(new MainGui_ActionListener(this));
+		btnOutputFile.addActionListener(controler);
 		btnOutputFile.setToolTipText("le dossier de travail où seront stockés les fichiers générés");
 		
 		
@@ -381,17 +608,17 @@ public class MainGui {
 		GridBagLayout gbl = new GridBagLayout();
 		
 		chkAutorisation1 = new JCheckBox("A1");
-		chkAutorisation1.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation1.addActionListener(controler);
 		chkAutorisation2 = new JCheckBox("A2");
-		chkAutorisation2.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation2.addActionListener(controler);
 		chkAutorisation3 = new JCheckBox("A3");
-		chkAutorisation3.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation3.addActionListener(controler);
 		chkAutorisation4 = new JCheckBox("A4");
-		chkAutorisation4.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation4.addActionListener(controler);
 		chkAutorisation5 = new JCheckBox("A5");
-		chkAutorisation5.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation5.addActionListener(controler);
 		chkAutorisation6 = new JCheckBox("A6");
-		chkAutorisation6.addActionListener(new MainGui_ActionListener(this));
+		chkAutorisation6.addActionListener(controler);
 		
 		chkAutorisation1.setSelected(true);
 		chkAutorisation2.setSelected(true);
@@ -421,7 +648,7 @@ public class MainGui {
 		
 	
 			
-		txtSerial.getDocument().addDocumentListener(new MainGui_ActionListener(this));		
+		txtSerial.getDocument().addDocumentListener(controler);		
 		txtCode = new JTextField(8);
 		txtCode.setEditable(false);
 		txtCode.setHorizontalAlignment(JTextField.RIGHT);
@@ -511,24 +738,394 @@ public class MainGui {
 		
 	}
 	
+	private void createPanSyster(){
+		panOptionsSyster = new JPanel();
+		//panOptionsSyster.setLayout(new GridLayout(3, 1));
+		
+		TitledBorder title;
+		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Options nagravision syster");
+		panOptionsSyster.setBorder(title);		
+				
+		panCoderSyster = new JPanel();
+		TitledBorder titleCodingGen;
+		titleCodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Options de codage");
+		panCoderSyster.setBorder(titleCodingGen);
+		//panCoderSyster.setLayout(new BoxLayout(panCoderSyster, BoxLayout.Y_AXIS));
+		
+		panDecoderSyster = new JPanel();
+		TitledBorder titleDecodingGen;
+		titleDecodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Options de décodage");
+		panDecoderSyster.setBorder(titleDecodingGen);
+		panDecoderSyster.setLayout(new BoxLayout(panDecoderSyster, BoxLayout.Y_AXIS));
+		
+		rdiSysterCodingGen = new JRadioButton("Coder");
+		rdiSysterCodingGen.addActionListener(controler);
+		rdiSysterDecodingGen = new JRadioButton("Décoder");
+		rdiSysterDecodingGen.addActionListener(controler);
+		
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(rdiSysterCodingGen);
+		buttonGroup.add(rdiSysterDecodingGen);
+		
+		
+		
+		btnFileSysterEnc = new JButton("Ouvrir");
+		btnFileSysterEnc.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
+		btnFileSysterEnc.addActionListener(controler);
+		btnFileSysterDec = new JButton("Ouvrir");
+		btnFileSysterDec.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
+		btnFileSysterDec.addActionListener(controler);
+		
+		//sub rdi coding
+		rdiSysterCodingRandom = new JRadioButton("Coder automatiquement");
+		rdiSysterCodingRandom.addActionListener(controler);
+		rdiSysterCodingFile = new JRadioButton("Coder à l'aide d'un fichier d'encodage");
+		rdiSysterCodingFile.addActionListener(controler);
+		chkTags = new JCheckBox("Tatouer la ligne 288");
+		chkTags.addActionListener(controler);
+		
+		ButtonGroup btnSubOptionsCoding = new ButtonGroup();
+		btnSubOptionsCoding.add(rdiSysterCodingRandom);
+		btnSubOptionsCoding.add(rdiSysterCodingFile);		
+				
+		String[] tab = {"table primaire 1","table primaire 2"};
+		comboTableSysterEnc = new JComboBox<String>(tab);
+		comboTableSysterEnc.setSelectedIndex(1);
+		
+		
+		JPanel subRdiCoding = new JPanel();
+		TitledBorder titleSubRdiCoding;
+		titleSubRdiCoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"");
+		subRdiCoding.setBorder(titleSubRdiCoding);
+		//subRdiCoding.setLayout(new BoxLayout(subRdiCoding, BoxLayout.Y_AXIS));
+		txtSysterEnc = new JTextField(80);
+		txtSysterEnc.setEditable(false);		
+		txtSysterDec = new JTextField(80);
+		txtSysterDec.setEditable(false);
+		
+		txtSysterEnc.setEnabled(false);
+		btnFileSysterEnc.setEnabled(false);
+		//comboTableSysterEnc.setEnabled(false);
+		
+		GridBagLayout gblRdiCoding = new GridBagLayout();
+		
+		this.placerComposants(subRdiCoding,
+				gblRdiCoding,
+				rdiSysterCodingRandom,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(subRdiCoding,
+				gblRdiCoding,
+				comboTableSysterEnc,
+				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
+				1, 0,
+				1,1,
+				10,20,
+				1, 1,1,1);
+		this.placerComposants(subRdiCoding,
+				gblRdiCoding,
+				rdiSysterCodingFile,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 2,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(subRdiCoding,
+				gblRdiCoding,
+				txtSysterEnc,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 2,
+				1,1,
+				99,20,
+				1, 1,1,1);
+		this.placerComposants(subRdiCoding,
+				gblRdiCoding,
+				btnFileSysterEnc,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				2, 2,
+				1,1,
+				1,20,
+				1, 1,1,1);
+		
+		GridBagLayout gblCoderSyster = new GridBagLayout();
+		this.placerComposants(panCoderSyster,
+				gblCoderSyster,
+				subRdiCoding,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 0,
+				1,1,
+				100,25,
+				1, 1,1,1);		
+		this.placerComposants(panCoderSyster,
+				gblCoderSyster,
+				chkTags,
+				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
+				0, 1,
+				1,1,
+				100,25,
+				1, 1,1,1);		
+		
+		//decoding
+		rdiSysterDecodingFile = new JRadioButton("Décoder à l'aide d'un fichier de décodage");
+		rdiSysterDecodingFile.addActionListener(controler);
+		rdiSysterDeCodingTags = new JRadioButton("Décoder via le tatouage de la ligne 288");
+		rdiSysterDeCodingTags.addActionListener(controler);
+		rdiSysterDecodingCorrel = new JRadioButton("Décoder via la corrélation de lignes");
+		rdiSysterDecodingCorrel.addActionListener(controler);
+		
+		ButtonGroup btnSubOptionsDecoding = new ButtonGroup();
+		btnSubOptionsDecoding.add(rdiSysterDecodingFile);
+		btnSubOptionsDecoding.add(rdiSysterDeCodingTags);
+		btnSubOptionsDecoding.add(rdiSysterDecodingCorrel);
+		
+		JPanel subRdiDecoding = new JPanel();
+		TitledBorder titleSubRdiDecoding;
+		titleSubRdiDecoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"");
+		subRdiDecoding.setBorder(titleSubRdiDecoding);
+		//subRdiDecoding.setLayout(new BoxLayout(subRdiDecoding, BoxLayout.Y_AXIS));
+//		subRdiDecoding.add(rdiSysterDecodingFile);
+//		subRdiDecoding.add(rdiSysterDeCodingTags);
+//		subRdiDecoding.add(rdiSysterDecodingCorrel);
+		
+		
+		comboTableSysterDec = new JComboBox<String>(tab);
+		comboTableSysterDec.setSelectedIndex(1);
+		comboTableSysterDec.setEnabled(false);
+		
+		GridBagLayout gblRdiDecoding = new GridBagLayout();
+		
+		this.placerComposants(subRdiDecoding,
+				gblRdiDecoding,
+				rdiSysterDecodingFile,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				0,33,
+				1, 1,1,1);
+		this.placerComposants(subRdiDecoding,
+				gblRdiDecoding,
+				txtSysterDec,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 0,
+				2,1,
+				99,33,
+				1, 1,1,1);
+		this.placerComposants(subRdiDecoding,
+				gblRdiDecoding,
+				btnFileSysterDec,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				3, 0,
+				1,1,
+				1,33,
+				1, 1,1,1);
+		this.placerComposants(subRdiDecoding,
+				gblRdiDecoding,
+				rdiSysterDeCodingTags,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 1,
+				3,1,
+				100,33,
+				1, 1,1,1);
+		this.placerComposants(subRdiDecoding,
+				gblRdiDecoding,
+				rdiSysterDecodingCorrel,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 2,
+				1,1,
+				0,33,
+				1, 1,1,1);
+		this.placerComposants(subRdiDecoding,
+				gblRdiDecoding,
+				comboTableSysterDec,
+				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
+				1, 2,
+				2,1,
+				80,33,
+				1, 1,1,1);
+				
+		panDecoderSyster.add(subRdiDecoding);
+		
+		//pan mode
+		panSysterMode = new JPanel();
+		GridBagLayout gblSysterMode = new GridBagLayout();
+		this.placerComposants(panSysterMode,
+				gblSysterMode,
+				rdiSysterCodingGen,
+				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
+				0, 0,
+				1,1,
+				0,100,
+				1, 1,1,1);
+		this.placerComposants(panSysterMode,
+				gblSysterMode,
+				rdiSysterDecodingGen,
+				GridBagConstraints.WEST, GridBagConstraints.WEST,
+				1, 0,
+				1,1,
+				20,100,
+				1, 1,1,1);		
+	
+		
+		//pan cardlayout syster enc dec
+		panSysterEncDecCard = new JPanel();
+		cardEncDecSyster = new CardLayout();
+		panSysterEncDecCard.setLayout(cardEncDecSyster);
+		panSysterEncDecCard.add(panCoderSyster,"SysterCoding");
+		panSysterEncDecCard.add(panDecoderSyster,"SysterDecoding");
+		
+		//pan syster misc
+		//frame start    
+		labFrameStartSyster = new JLabel("démarrer à la trame ");
+		slideFrameStartSyster = new JSlider(JSlider.HORIZONTAL,1,200000,1);
+		slideFrameStartSyster.setToolTipText("permet de commencer le codage/décodage qu'à partir d'un numéro de trame précis");
+		jspFrameStartSyster = new JSpinner();	
+		jspFrameStartSyster.addChangeListener(controler);		
+		JSpinner.NumberEditor spinnerEditor3 = new JSpinner.NumberEditor(jspFrameStartSyster);
+		jspFrameStartSyster.setEditor(spinnerEditor3);
+		JComponent editor2 = jspFrameStartSyster.getEditor();
+		JFormattedTextField tf2 = ((JSpinner.DefaultEditor) editor2).getTextField();
+		tf2.setColumns(5);
+		tf2.setEditable(false);
+		spinnerEditor3.getModel().setMinimum(1);
+		spinnerEditor3.getModel().setMaximum(200000);
+		spinnerEditor3.getModel().setStepSize(1);
+		spinnerEditor3.getModel().setValue(1);
+		
+		
+		slideFrameStartSyster.addChangeListener(controler);			
+		slideFrameStartSyster.setValue(1);
+		slideFrameStartSyster.setMajorTickSpacing(50000);
+		slideFrameStartSyster.setMinorTickSpacing(10000);
+		Hashtable<Integer, JLabel> labelTable4 = new Hashtable<Integer, JLabel>();
+		labelTable4.put( new Integer( 1 ), new JLabel("1"));		
+		labelTable4.put( new Integer( 200000 ), new JLabel("200000"));
+		slideFrameStartSyster.setLabelTable(labelTable4);
+		slideFrameStartSyster.setPaintLabels(true);		
+		slideFrameStartSyster.setPaintTicks(true);
+		
+		chkSoundSyster = new JCheckBox("Traiter le son");
+		chkSoundSyster.setSelected(true);
+		chkSoundSyster.setToolTipText("<html>permet de crypter/décrypter le son,<br/>"
+				+ "si décochée le son sera présent mais non traité par le codeur/décodeur</html>");
+		
+		chkDisableSoundSyster = new JCheckBox("Désactiver le son");		
+		chkDisableSoundSyster.setSelected(false);
+		chkDisableSoundSyster.setToolTipText("Désactive la piste son, la vidéo sera muette.");
+		chkDisableSoundSyster.addActionListener(controler);
+		
+		
+		
+		panSysterMisc = new JPanel();
+		GridBagLayout gblSysterMisc = new GridBagLayout();
+		
+		this.placerComposants(panSysterMisc,
+				gblSysterMisc,
+				chkSoundSyster,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				0,33,
+				1, 1,1,1);
+		this.placerComposants(panSysterMisc,
+				gblSysterMisc,
+				chkDisableSoundSyster,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				10,33,
+				1, 1,1,1);
+		this.placerComposants(panSysterMisc,
+				gblSysterMisc,
+				labFrameStartSyster,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 1,
+				1,1,
+				10,33,
+				1, 1,1,1);
+		this.placerComposants(panSysterMisc,
+				gblSysterMisc,
+				slideFrameStartSyster,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 1,
+				1,1,
+				70,33,
+				1, 1,1,1);
+		this.placerComposants(panSysterMisc,
+				gblSysterMisc,
+				jspFrameStartSyster,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				2, 1,
+				1,1,
+				20,33,
+				1, 1,1,1);
+		
+		//panOptionsSyster.add(rdiSysterCodingGen);
+		//panOptionsSyster.add(rdiSysterDecodingGen);
+		
+		GridBagLayout gblOptionsSyster = new GridBagLayout();
+		this.placerComposants(panOptionsSyster,
+				gblOptionsSyster,
+				panSysterMode,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 0,
+				1,1,
+				100,10,
+				1, 1,1,1);
+		this.placerComposants(panOptionsSyster,
+				gblOptionsSyster,
+				panSysterEncDecCard,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 1,
+				1,1,
+				100,45,
+				1, 1,1,1);
+		this.placerComposants(panOptionsSyster,
+				gblOptionsSyster,
+				panSysterMisc,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 2,
+				1,1,
+				100,45,
+				1, 1,1,1);
+//		panOptionsSyster.add(panSysterMode);		
+//		panOptionsSyster.add(panSysterEncDecCard);
+//		panOptionsSyster.add(panSysterMisc);
+		
+		rdiSysterCodingGen.setSelected(true);
+		rdiSysterCodingRandom.setSelected(true);
+		rdiSysterDecodingFile.setSelected(true);
+		
+	}
+	
 	private void createPanDiscret11(){
 		panOptionsDiscret11 = new JPanel();
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Options Discret11");
+				"Options discret11");
 		panOptionsDiscret11.setBorder(title);
 		GridBagLayout gbl = new GridBagLayout();
 		
-		rdiCoding = new JRadioButton("coder");
-		rdiCoding.setSelected(true);
-		rdiDecoding = new JRadioButton("décoder");
+		rdiDiscretCoding = new JRadioButton("coder");
+		rdiDiscretCoding.setSelected(true);
+		rdiDiscretDecoding = new JRadioButton("décoder");
+		rdiDiscretCorrel = new JRadioButton("décoder par corrélation de lignes");
 		
-		rdiCoding.addActionListener(new MainGui_ActionListener(this));
-		rdiDecoding.addActionListener(new MainGui_ActionListener(this));
+		rdiDiscretCoding.addActionListener(controler);
+		rdiDiscretDecoding.addActionListener(controler);
+		rdiDiscretCorrel.addActionListener(controler);
 		
 		ButtonGroup btnGroup = new ButtonGroup();
-		btnGroup.add(rdiCoding);
-		btnGroup.add(rdiDecoding);
+		btnGroup.add(rdiDiscretCoding);
+		btnGroup.add(rdiDiscretDecoding);
+		btnGroup.add(rdiDiscretCorrel);
 		
 		//init 16 bits word slider
 		JPanel pan16bits = new JPanel();
@@ -536,7 +1133,7 @@ public class MainGui {
 		
 		lab16bitsWord = new JLabel("mot de 16 bits");
 		slid16bitsWord = new JSlider(JSlider.HORIZONTAL,32,65535,58158);
-		slid16bitsWord.addChangeListener(new MainGui_ActionListener(this));			
+		slid16bitsWord.addChangeListener(controler);			
 		
 		
 		slid16bitsWord.setValue(58158);
@@ -621,7 +1218,7 @@ public class MainGui {
 				"niveau 5","niveau 6","niveau 7", "multicode"};
 		combAudience = new JComboBox<String>(tab);
 		combAudience.setSelectedIndex(0);
-		combAudience.addActionListener(new MainGui_ActionListener(this));
+		combAudience.addActionListener(controler);
 		
 		lbl11bitsInfo = new JLabel();
 		lbl11bitsInfo.setFont(new Font("Serif", Font.PLAIN, 11));
@@ -688,7 +1285,7 @@ public class MainGui {
 		  
 		chkDelay = new JCheckBox("Retards par défaut");
 		chkDelay.setSelected(true);
-		chkDelay.addActionListener(new MainGui_ActionListener(this));
+		chkDelay.addActionListener(controler);
 		
 		labDelay1 = new JLabel("Retard 1");
 		txtDelay1 = new JTextField(5);
@@ -697,9 +1294,9 @@ public class MainGui {
 		txtDelay1.setEditable(false);
 		txtDelay2.setEditable(false);
 		slidDelay1 = new JSlider(JSlider.HORIZONTAL,500,3000,1000);
-		slidDelay1.addChangeListener(new MainGui_ActionListener(this));	
+		slidDelay1.addChangeListener(controler);	
 		slidDelay2 = new JSlider(JSlider.HORIZONTAL,2000,5000,3000);
-		slidDelay2.addChangeListener(new MainGui_ActionListener(this));
+		slidDelay2.addChangeListener(controler);
 		Hashtable<Integer, JLabel> labelTableDelay1 = new Hashtable<Integer, JLabel>();
 		labelTableDelay1.put( new Integer( 500 ), new JLabel("0.5") );		
 		labelTableDelay1.put( new Integer( 1750 ), new JLabel("1.75") );
@@ -786,7 +1383,7 @@ public class MainGui {
 		slideFrameStart = new JSlider(JSlider.HORIZONTAL,1,200000,1);
 		slideFrameStart.setToolTipText("permet de commencer le codage/décodage qu'à partir d'un numéro de trame précis");
 		jspFrameStart = new JSpinner();	
-		jspFrameStart.addChangeListener(new MainGui_ActionListener(this));		
+		jspFrameStart.addChangeListener(controler);		
 		JSpinner.NumberEditor spinnerEditor2 = new JSpinner.NumberEditor(jspFrameStart);
 		jspFrameStart.setEditor(spinnerEditor2);
 		JComponent editor = jspFrameStart.getEditor();
@@ -799,7 +1396,7 @@ public class MainGui {
 		spinnerEditor2.getModel().setValue(1);
 		
 		
-		slideFrameStart.addChangeListener(new MainGui_ActionListener(this));			
+		slideFrameStart.addChangeListener(controler);			
 		slideFrameStart.setValue(1);
 		slideFrameStart.setMajorTickSpacing(50000);
 		slideFrameStart.setMinorTickSpacing(10000);
@@ -839,7 +1436,7 @@ public class MainGui {
 				1, 1,1,1);
 		
 		chkNoBlackBar = new JCheckBox("Bordure masquée");
-		chkNoBlackBar.addActionListener(new MainGui_ActionListener(this));
+		chkNoBlackBar.addActionListener(controler);
 		chkNoBlackBar.setToolTipText("<html>-En mode codage: masque les indices de décalage dans la bordure gauche,<br/>"
 				+ "le noir dans cette zone sera remplacé par une autre couleur,<br/>-En mode décodage: supprime les segments de couleur dans la bordure"
 				+ "<br/>si cette option avait été activée en mode codage.</html>");
@@ -851,7 +1448,7 @@ public class MainGui {
 		chkDisableSound = new JCheckBox("Désactiver le son");		
 		chkDisableSound.setSelected(false);
 		chkDisableSound.setToolTipText("Désactive la piste son, la vidéo sera muette.");
-		chkDisableSound.addActionListener(new MainGui_ActionListener(this));
+		chkDisableSound.addActionListener(controler);
 		
 		//initialisation serial decoder
 		txtSerial.setText("12345678");
@@ -859,21 +1456,28 @@ public class MainGui {
 		//selection mode
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				rdiCoding,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				rdiDiscretCoding,
+				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
 				0, 0,
 				1,1,
-				80,25,
+				33,25,
 				1, 1,1,1);
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				rdiDecoding,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				rdiDiscretDecoding,
+				GridBagConstraints.WEST, GridBagConstraints.WEST,
 				1, 0,
 				1,1,
-				20,25,
+				33,25,
 				1, 1,1,1);
-		
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				rdiDiscretCorrel,
+				GridBagConstraints.WEST, GridBagConstraints.WEST,
+				2, 0,
+				1,1,
+				33,25,
+				1, 1,1,1);
 		
 		//selection 16 bits keyword
 		this.placerComposants(panOptionsDiscret11,
@@ -881,7 +1485,7 @@ public class MainGui {
 				pan16bits,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 1,
-				4,1,
+				6,1,
 				100,25,
 				1, 1,1,1);		
 		
@@ -892,7 +1496,7 @@ public class MainGui {
 				panAudience,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 2,
-				7,1,
+				6,1,
 				100,25,
 				1, 1,1,1);		
 	
@@ -903,7 +1507,7 @@ public class MainGui {
 				panDelay1,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 3,
-				4,1,
+				6,1,
 				100,25,
 				1, 1,1,1);
 		//delay2
@@ -912,7 +1516,7 @@ public class MainGui {
 				panDelay2,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 4,
-				4,1,
+				6,1,
 				100,25,
 				1, 1,1,1);		
 
@@ -922,7 +1526,7 @@ public class MainGui {
 				chkDelay,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 5,
-				1,1,
+				2,1,
 				10,25,
 				1, 1,1,1);
 		
@@ -931,7 +1535,7 @@ public class MainGui {
 				gbl,
 				chkNoBlackBar,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				1, 5,
+				2, 5,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -941,7 +1545,7 @@ public class MainGui {
 				gbl,
 				chkSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 5,
+				3, 5,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -950,7 +1554,7 @@ public class MainGui {
 				gbl,
 				chkDisableSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				3, 5,
+				4, 5,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -961,11 +1565,11 @@ public class MainGui {
 				panFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 6,
-				4,1,
+				6,1,
 				100,25,
 				1, 1,1,1);
 		
-		jsp16bitKeyword.addChangeListener(new MainGui_ActionListener(this));
+		jsp16bitKeyword.addChangeListener(controler);
 	}
 	
 	private void createPanVideo(){
@@ -977,36 +1581,42 @@ public class MainGui {
 		panVideoOptions.setBorder(title);
 		GridBagLayout gbl = new GridBagLayout();
 		
-		rdi720 = new JRadioButton("720x576 pixels");
-		rdi768 = new JRadioButton("768x576 pixels");
+		rdi720 = new JRadioButton("720x576");
+		rdi768 = new JRadioButton("768x576");
 		rdi768.setSelected(true);
 		ButtonGroup btngrp = new ButtonGroup();
 		btngrp.add(rdi720);
 		btngrp.add(rdi768);
 		
 		labAudioCodec = new JLabel("Audio");
-		String[] tabAudio = {"mp3 192 kbs","wav"};
+		String[] tabAudio = {"mp3 96 kbs","mp3 128 kbs","mp3 160 kbs",
+				"mp3 192 kbs","mp3 224 kbs","mp3 320 kbs","wav (pour mkv)"};
 		combAudioCodec = new JComboBox<String>(tabAudio);		
-		combAudioCodec.addActionListener(new MainGui_ActionListener(this));
+		combAudioCodec.setSelectedIndex(3);
+		combAudioCodec.addActionListener(controler);
+		
+		String[] tabAudioRate = {"44100 Hz", "48000 Hz"};
+		combAudioRate = new JComboBox<String>(tabAudioRate);
+		combAudioRate.addActionListener(controler);
 		
 		chkPlayer = new JCheckBox("mode lecteur");
-		chkPlayer.addActionListener(new MainGui_ActionListener(this));
+		chkPlayer.addActionListener(controler);
 		chkPlayer.setToolTipText("<html>Permet de regarder le résultat dans "
 				+ "une fenêtre au lieu de créer la vidéo,<br/>"
 				+ "c'est un simple aperçu visuel sans le son.</html>");
 		
 		chkHorodatage = new JCheckBox("horodatage");		
 		chkHorodatage.setToolTipText("préfixe le nom de fichier avec une date et une heure");
-		chkHorodatage.addActionListener(new MainGui_ActionListener(this));
+		chkHorodatage.addActionListener(controler);
 				
 		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2", "FFV1"};
 		combCodec = new JComboBox<String>(tab);	
-		combCodec.addActionListener(new MainGui_ActionListener(this));				
+		combCodec.addActionListener(controler);				
 		labCodec = new JLabel("codec");
 		
 		labBitrate = new JLabel("Bitrate");
 		slidBitrate = new JSlider(JSlider.HORIZONTAL,1,20000,10000);
-		slidBitrate.addChangeListener(new MainGui_ActionListener(this));
+		slidBitrate.addChangeListener(controler);
 		slidBitrate.setMajorTickSpacing(5000);
 		//slidBitrate.setMinorTickSpacing(1000);
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
@@ -1020,7 +1630,7 @@ public class MainGui {
 		txtBitrate.setText("10000");
 		
 		slidFrames = new JSlider(JSlider.HORIZONTAL,1,200000,200000);
-		slidFrames.addChangeListener(new MainGui_ActionListener(this));	
+		slidFrames.addChangeListener(controler);	
 		slidFrames.setMajorTickSpacing(50000);
 		slidFrames.setMinorTickSpacing(10000);
 		Hashtable<Integer, JLabel> labelTable2 = new Hashtable<Integer, JLabel>();
@@ -1039,7 +1649,7 @@ public class MainGui {
 		String[] tabExtension = {"mp4","avi","mkv", "mpeg", "ts"};
 		jcbExtension = new JComboBox<String>(tabExtension);
 		jcbExtension.setSelectedIndex(0);
-		jcbExtension.addActionListener(new MainGui_ActionListener(this));
+		jcbExtension.addActionListener(controler);
 		
 		//init codec video panel
 		JPanel panVideoCodec = new JPanel();
@@ -1166,12 +1776,19 @@ public class MainGui {
 				1,1,
 				25,50,
 				1, 1,1,1);
-		
+		this.placerComposants(panVideoOptions,
+				gbl,
+				combAudioRate,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				4, 0,
+				1,1,
+				25,50,
+				1, 1,1,1);		
 		this.placerComposants(panVideoOptions,
 				gbl,
 				chkPlayer,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				4, 0,
+				5, 0,
 				1,1,
 				25,50,
 				1, 1,1,1);
@@ -1179,7 +1796,7 @@ public class MainGui {
 				gbl,
 				chkHorodatage,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				5, 0,
+				6, 0,
 				1,1,
 				25,50,
 				1, 1,1,1);
@@ -1190,7 +1807,7 @@ public class MainGui {
 				panVideoCodec,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 1,
-				6,1,
+				7,1,
 				100,50,
 				1, 1,1,1);
 		
@@ -1200,7 +1817,7 @@ public class MainGui {
 				panExtensionVideo,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 2,
-				6,1,
+				7,1,
 				100,50,
 				1, 1,1,1);
 		
@@ -1233,16 +1850,16 @@ public class MainGui {
 		btnEnter = new JButton("Valider");
 		btnEnter.setIcon(new ImageIcon(this.getClass().getResource("/icons/apply.png")));
 		btnEnter.setEnabled(false);
-		btnEnter.addActionListener(new MainGui_ActionListener(this));
+		btnEnter.addActionListener(controler);
 		
 		btnExit = new JButton("Quitter");
 		btnExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
-		btnExit.addActionListener(new MainGui_ActionListener(this));
+		btnExit.addActionListener(controler);
 		
 		btnCancel = new JButton("Annuler");
 		btnCancel.setIcon(new ImageIcon(this.getClass().getResource("/icons/cancel.png")));
-		btnCancel.addActionListener(new MainGui_ActionListener(this));
-		btnCancel.addMouseListener(new MainGui_ActionListener(this));
+		btnCancel.addActionListener(controler);
+		btnCancel.addMouseListener(controler);
 		btnCancel.setEnabled(false);
 		
 		this.placerComposants(panProgress,
@@ -1367,12 +1984,12 @@ public class MainGui {
 		return btnOutputFile;
 	}
 
-	public JRadioButton getRdiCoding() {
-		return rdiCoding;
+	public JRadioButton getRdiDiscretCoding() {
+		return rdiDiscretCoding;
 	}
 
-	public JRadioButton getRdiDecoding() {
-		return rdiDecoding;
+	public JRadioButton getRdiDiscretDecoding() {
+		return rdiDiscretDecoding;
 	}
 
 	public JFormattedTextField getTxt16bitsWord() {
@@ -1609,6 +2226,206 @@ public class MainGui {
 
 	public JComboBox<String> getCombAudioCodec() {
 		return combAudioCodec;
+	}
+
+	public JComboBox<String> getCombAudioRate() {
+		return combAudioRate;
+	}
+
+	public JComboBox<String> getCombSystemCrypt() {
+		return combSystemCrypt;
+	}
+
+	public void setCombSystemCrypt(JComboBox<String> combSystemCrypt) {
+		this.combSystemCrypt = combSystemCrypt;
+	}
+
+	public JRadioButton getRdiDiscretCorrel() {
+		return rdiDiscretCorrel;
+	}
+
+	public void setRdiDiscretCorrel(JRadioButton rdiCorrel) {
+		this.rdiDiscretCorrel = rdiCorrel;
+	}
+
+	public JRadioButton getRdiSysterCodingGen() {
+		return rdiSysterCodingGen;
+	}
+
+	public void setRdiSysterCodingGen(JRadioButton rdiSysterCodingGen) {
+		this.rdiSysterCodingGen = rdiSysterCodingGen;
+	}
+
+	public JRadioButton getRdiSysterDecodingGen() {
+		return rdiSysterDecodingGen;
+	}
+
+	public void setRdiSysterDecodingGen(JRadioButton rdiSysterDecodingGen) {
+		this.rdiSysterDecodingGen = rdiSysterDecodingGen;
+	}
+
+	public JRadioButton getRdiSysterDecodingCorrel() {
+		return rdiSysterDecodingCorrel;
+	}
+
+	public void setRdiSysterDecodingCorrel(JRadioButton rdiSysterDecodingCorrel) {
+		this.rdiSysterDecodingCorrel = rdiSysterDecodingCorrel;
+	}
+
+	public JRadioButton getRdiSysterCodingFile() {
+		return rdiSysterCodingFile;
+	}
+
+	public void setRdiSysterCodingFile(JRadioButton rdiSysterCodingFile) {
+		this.rdiSysterCodingFile = rdiSysterCodingFile;
+	}
+
+	public JRadioButton getRdiSysterCodingRandom() {
+		return rdiSysterCodingRandom;
+	}
+
+	public void setRdiSysterCodingRandom(JRadioButton rdiSysterCodingRandom) {
+		this.rdiSysterCodingRandom = rdiSysterCodingRandom;
+	}
+
+	public JRadioButton getRdiSysterDeCodingFile() {
+		return rdiSysterDecodingFile;
+	}
+
+	public void setRdiSysterDeCodingFile(JRadioButton rdiSysterDeCodingFile) {
+		this.rdiSysterDecodingFile = rdiSysterDeCodingFile;
+	}
+
+	public JRadioButton getRdiSysterDeCodingTags() {
+		return rdiSysterDeCodingTags;
+	}
+
+	public void setRdiSysterDeCodingTags(JRadioButton rdiSysterDeCodingTags) {
+		this.rdiSysterDeCodingTags = rdiSysterDeCodingTags;
+	}
+
+	public JCheckBox getChkTags() {
+		return chkTags;
+	}
+
+	public void setChkTags(JCheckBox chkTags) {
+		this.chkTags = chkTags;
+	}
+
+	public JButton getBtnFileSysterEnc() {
+		return btnFileSysterEnc;
+	}
+
+	public void setBtnFileSysterEnc(JButton btnFileSysterEnc) {
+		this.btnFileSysterEnc = btnFileSysterEnc;
+	}
+
+	public JButton getBtnFileSysterDec() {
+		return btnFileSysterDec;
+	}
+
+	public void setBtnFileSysterDec(JButton btnFileSysterDec) {
+		this.btnFileSysterDec = btnFileSysterDec;
+	}
+
+	public JPanel getPanSystemCrypt() {
+		return panSystemCrypt;
+	}
+
+	public CardLayout getCard() {
+		return card;
+	}
+
+	public CardLayout getCardEncDecSyster() {
+		return cardEncDecSyster;
+	}
+
+	public JTextField getTxtSysterEnc() {
+		return txtSysterEnc;
+	}
+
+	public void setTxtSysterEnc(JTextField txtSysterEnc) {
+		this.txtSysterEnc = txtSysterEnc;
+	}
+
+	public JTextField getTxtSysterDec() {
+		return txtSysterDec;
+	}
+
+	public void setTxtSysterDec(JTextField txtSysterDec) {
+		this.txtSysterDec = txtSysterDec;
+	}
+
+	public JPanel getPanSysterEncDecCard() {
+		return panSysterEncDecCard;
+	}
+
+	public JCheckBox getChkSoundSyster() {
+		return chkSoundSyster;
+	}
+
+	public void setChkSoundSyster(JCheckBox chkSoundSyster) {
+		this.chkSoundSyster = chkSoundSyster;
+	}
+
+	public JCheckBox getChkDisableSoundSyster() {
+		return chkDisableSoundSyster;
+	}
+
+	public void setChkDisableSoundSyster(JCheckBox chkDisableSoundSyster) {
+		this.chkDisableSoundSyster = chkDisableSoundSyster;
+	}
+
+	public JLabel getLabFrameStartSyster() {
+		return labFrameStartSyster;
+	}
+
+	public void setLabFrameStartSyster(JLabel labFrameStartSyster) {
+		this.labFrameStartSyster = labFrameStartSyster;
+	}
+
+	public JSpinner getJspFrameStartSyster() {
+		return jspFrameStartSyster;
+	}
+
+	public void setJspFrameStartSyster(JSpinner jspFrameStartSyster) {
+		this.jspFrameStartSyster = jspFrameStartSyster;
+	}
+
+	public JSlider getSlideFrameStartSyster() {
+		return slideFrameStartSyster;
+	}
+
+	public void setSlideFrameStartSyster(JSlider slideFrameStartSyster) {
+		this.slideFrameStartSyster = slideFrameStartSyster;
+	}
+
+	public JComboBox<String> getComboTableSysterEnc() {
+		return comboTableSysterEnc;
+	}
+
+	public JComboBox<String> getComboTableSysterDec() {
+		return comboTableSysterDec;
+	}
+
+	public JMenuItem getmOpen() {
+		return mOpen;
+	}
+
+	public JMenuItem getmExit() {
+		return mExit;
+	}
+
+	public JMenuItem getmGen() {
+		return mGen;
+	}
+
+	public JMenuItem getmAbout() {
+		return mAbout;
+	}
+
+	public JMenuItem getmDocumentation() {
+		return mDocumentation;
 	}
 
 }

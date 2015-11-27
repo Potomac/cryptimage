@@ -43,21 +43,24 @@ public class VideoRecorder {
 	private boolean wantDec = false;
 	private boolean wantSoundCryptDecrypt = false;
 	private boolean disableSound;
-	private static int AUDIORATE = 44100;		
+	private int AUDIORATE;		
 	private SoundCrypt soundCryptR;
 	private SoundCrypt soundCryptL;	
 	
 	
 	public VideoRecorder(String outputFilename, int width, int height,
-			double framerate) {	
+			double framerate, int audioRateValue) {	
 				
+		this.AUDIORATE = audioRateValue;
 		this.wantDec = JobConfig.isWantDec();
 		this.wantSoundCryptDecrypt = JobConfig.isWantSound();
 		this.disableSound = JobConfig.isDisableSound();
 		
 		if(wantSoundCryptDecrypt){
-			soundCryptR = new SoundCrypt(AUDIORATE, this.wantDec);
-			soundCryptL = new SoundCrypt(AUDIORATE, this.wantDec);
+			soundCryptR = new SoundCrypt(AUDIORATE, this.wantDec,
+					JobConfig.getAmpEnc(), JobConfig.getAmpDec());
+			soundCryptL = new SoundCrypt(AUDIORATE, this.wantDec, 
+					JobConfig.getAmpEnc(), JobConfig.getAmpDec());
 		}
 		
 		
@@ -68,14 +71,13 @@ public class VideoRecorder {
 		}
 		
 		writer = ToolFactory.makeWriter(outputFilename);		
-		IRational frame_rate = IRational.make(framerate);		
-		
+		IRational frame_rate = IRational.make(framerate);			
 		
 		switch (JobConfig.getVideoCodec()) {
 		case 1:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
 			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
-			
+			writer.getContainer().getStream(0).getStreamCoder().setProperty("preset", "medium");
 			break;
 		case 2:
 			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO,frame_rate, width, height);
@@ -103,21 +105,43 @@ public class VideoRecorder {
 			switch (JobConfig.getAudioCodec()) {
 			case 1:
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
-				writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(96*1000);		
 				break;
 			case 2:
-				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 2,AUDIORATE);	
-				//writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(128*1000);		
 				break;
+			case 3:
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(160*1000);		
+				break;
+			case 4:
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
+				break;
+			case 5:
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(224*1000);		
+				break;
+			case 6:
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(320*1000);		
+				break;
+			case 7:
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 2,AUDIORATE);
+				break;			
 			default:
 				break;
 			}		
 		}
 		
-		writer.getContainer().getStream(0).getStreamCoder().setBitRate(JobConfig.getVideoBitrate()*1024);
+		writer.getContainer().getStream(0).getStreamCoder().setBitRate(JobConfig.getVideoBitrate()*1000);
 			
-		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(25);
-	       
+		writer.getContainer().getStream(0).getStreamCoder().setNumPicturesInGroupOfPictures(6);
+		
+		//writer.getContainer().getStream(0).getStreamCoder().setFlag(IStreamCoder.Flags.FLAG_QSCALE, false);
+		
+		
 		writer.getContainer().getStream(0).getStreamCoder().open(null, null);
 		
 		if( this.disableSound != true && JobConfig.isVideoHasAudioTrack()){
@@ -129,11 +153,11 @@ public class VideoRecorder {
 		
 	}
 	
-	public void addFrame(BufferedImage buff, double timeMilliseconds){		
+	public void addFrame(BufferedImage buff, long timeMilliseconds){		
 		if(this.is720){
 			buff = getScaledImage(buff, 720, 576);			
 		}		
-		 writer.encodeVideo(0, buff,(int)(timeMilliseconds *1000d),TimeUnit.MICROSECONDS);
+		 writer.encodeVideo(0, buff,(timeMilliseconds *1000l),TimeUnit.MICROSECONDS);
 	}
 	
 	
@@ -153,7 +177,7 @@ public class VideoRecorder {
 	}
 	
 	private void addAudioFrameTemp(IAudioSamples sample, boolean enable) {
-		
+				
 		double[] tabL = new double[(int)sample.getNumSamples()];
 		
 		double[] tabR = new double[(int)sample.getNumSamples()];
@@ -162,14 +186,14 @@ public class VideoRecorder {
 			if (sample.getSample(i, 0, IAudioSamples.Format.FMT_S16) != 0){				
 				tabL[i] = sample.getSample(i, 0, IAudioSamples.Format.FMT_S16);				
 			}
-			else {
+			else {				
 				tabL[i] = -100000;			
 			}
 			
 			if (sample.getSample(i, 1, IAudioSamples.Format.FMT_S16) != 0){				
 				tabR[i] = sample.getSample(i, 1, IAudioSamples.Format.FMT_S16);				
 			}
-			else {
+			else {				
 				tabR[i] = -100000;			
 			}
 		}
@@ -226,7 +250,7 @@ public class VideoRecorder {
 		if(this.is720){
 			IRational ratio = IRational.make(16,15);			 
 			writer.getContainer().getStream(0).setSampleAspectRatio(ratio);
-		}	
+		}		
 		writer.close();		
 	}
 	

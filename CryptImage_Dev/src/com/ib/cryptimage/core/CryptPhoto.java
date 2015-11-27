@@ -26,8 +26,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 /**
  * @author Mannix54
@@ -36,131 +38,376 @@ import javax.imageio.ImageIO;
 public class CryptPhoto {
 		
 	private int key11bits;
+	private int offset;
+	private int increment;
 	
 	public CryptPhoto(){			
 	}
 	
-	public void run(){
+	public boolean run(){
 		BufferedImage img = null;		
 		try{
 			 img = ImageIO.read(new File(JobConfig.getInput_file()));
 		}
-		catch(IOException e){			
-			System.out.println("I/O error during the load of the input file.");
-			System.exit(1);
+		catch(IOException e){
+			JOptionPane
+			.showMessageDialog(
+					JobConfig.getGui().getFrame(),
+					"Erreur lors du chargement de l'image",
+					"erreur de chargement I/O",
+					JOptionPane.ERROR_MESSAGE);		
+			return false;
 		}		
 		
 		if(JobConfig.isModePhoto() && JobConfig.isWantDec()){
-			decPhoto(img);
+			if(JobConfig.getSystemCrypt() == 0 && !JobConfig.isStrictMode())
+			{
+			decPhotoSimpleDiscret(img);
+			}
+			else {
+				if (JobConfig.getSystemCrypt() == 0 && JobConfig.isStrictMode()
+						&& JobConfig.isWantDecCorrel()){
+					decPhotoDiscretCorrelStrict(img);
+				}
+				else if (JobConfig.getSystemCrypt() == 0 && JobConfig.isStrictMode()){
+					decPhotoDiscretStrict(img);
+				}
+			}
+			
+			if(JobConfig.getSystemCrypt() == 1 && JobConfig.isStrictMode()
+					&& !JobConfig.isWantDecCorrel())
+			{
+			decPhotoSyster(img);
+			} else if (JobConfig.getSystemCrypt() == 1 && JobConfig.isStrictMode()
+					&& JobConfig.isWantDecCorrel())
+			{
+			decPhotoSysterCorrel(img);
+			}			
+			
 		}
-		else if(JobConfig.isModePhoto() && JobConfig.isWantDec()!=true){
-			encPhoto(img);
+		else if(JobConfig.isModePhoto() && JobConfig.isWantDec()!=true
+				&& JobConfig.getSystemCrypt() == 0
+				&& !JobConfig.isStrictMode()){
+			encPhotoSimpleDiscret(img);
+		}  else if(JobConfig.isModePhoto() && JobConfig.isWantDec() != true
+				&& JobConfig.getSystemCrypt() == 0
+				&& JobConfig.isStrictMode()){
+			encPhotoDiscretStrict(img);
 		}
+		else if(JobConfig.isModePhoto() && JobConfig.isWantDec() != true
+				&& JobConfig.getSystemCrypt() == 1){
+			encPhotoSyster(img);
+		}
+		return true;
 	}
 	
-	
-	public  void decPhoto(BufferedImage img){
-		SimpleDiscret11 simpleDiscret;
-		if(JobConfig.isNoBlackBar()){
-			simpleDiscret = new SimpleDiscret11Black(JobConfig.getWord16bits(),
-					JobConfig.getAudienceLevel(),
-					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
+	public void encPhotoSyster(BufferedImage img){		
+		SysterEnc systerEnc;
+		int offset1, increment1, offset2, increment2;
+		
+		String output;
+		if (JobConfig.isHorodatage()) {
+			File file = new File(JobConfig.getOutput_file());
+			String fileName = JobConfig.getDateTime() + "_"
+					+ file.getName();
+			output = file.getParent() + File.separator + fileName;
+		} else {
+			output = JobConfig.getOutput_file();
 		}
-		else {
-			simpleDiscret = new SimpleDiscret11(JobConfig.getWord16bits(),
-					JobConfig.getAudienceLevel(),
-					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth());
+				
+		systerEnc = new SysterEnc(JobConfig.getTableSyster(),
+				output,
+					JobConfig.getFileDataEncSyster(),
+					JobConfig.getGui().getChkPlayer().isSelected());
+		
+		BufferedImage imgRes = null;
+		
+		if (JobConfig.getGui().getRdiSysterCodingFile().isSelected()) {
+			imgRes = systerEnc.transform(img);
+			if (imgRes == null) {
+				imgRes = systerEnc.transform(img);
+			}
+			imgRes = systerEnc.transform(img);
+			systerEnc.closeFileData();
+		}
+		
+		else{
+			genOffsetIncrement();
+			offset1 = this.offset;
+			increment1 = this.increment;
+			genOffsetIncrement();
+			offset2 = this.offset;
+			increment2 = this.increment;
+			imgRes = systerEnc.transformPhoto(img, offset1,increment1, offset2, increment2);
+			if (imgRes == null) {				
+				imgRes = systerEnc.transformPhoto(img, offset1,increment1, offset2, increment2);
+			}		
+			imgRes = systerEnc.transformPhoto(img, offset1,increment1, offset2, increment2);
+			systerEnc.closeFileData();
+		}
+				
+		saveCryptImage(imgRes);
+		
+	}
+	
+	public void decPhotoSysterCorrel(BufferedImage img){		
+		Device device;
+		device = new SysterDec(JobConfig.getTableSyster(),
+				JobConfig.getFileDataDecSyster(),
+				JobConfig.isWantDecCorrel());
+		
+		BufferedImage imgRes = device.transform(img);		
+		while(imgRes == null){			
+			imgRes = device.transform(img);
 		}		
-		this.key11bits = simpleDiscret.getKey11bits();
-		BufferedImage imgRes = simpleDiscret.transform(img);
-		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);		
+		device.closeFileData();
+		
+		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);	
 	}
 	
-	public  void encPhoto(BufferedImage img){
-		Discret discret;
+	public void decPhotoSyster(BufferedImage img){			
+		Device device;
+		device = new SysterDec(JobConfig.getTableSyster(),
+				JobConfig.getFileDataDecSyster(),
+				JobConfig.isWantDecCorrel());
+		
+		BufferedImage imgRes = device.transform(img);		
+		while(imgRes == null){			
+			imgRes = device.transform(img);
+		}
+		device.closeFileData();
+		
+		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);	
+	}
+	
+	
+	public void encPhotoDiscretStrict(BufferedImage img){		
+		Device device;
+		String codePattern;
+		int cycle;		
+		
+		if (JobConfig.getAudienceLevel() == 8) {
+			codePattern = JobConfig.getMultiCode();
+			cycle = JobConfig.getCycle();
+		} else {					
+			codePattern = String.valueOf(JobConfig.getAudienceLevel());
+			cycle = 1;
+		}
+						
 		if(JobConfig.isNoBlackBar()){
-			discret = new SimpleDiscret11NoBlack(JobConfig.getWord16bits(),
-					JobConfig.getAudienceLevel(),
-					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
+			device = new Discret11EncNoBlack(JobConfig.getWord16bits(), 
+					codePattern, cycle,
+					JobConfig.getPerc1(), JobConfig.getPerc2());
 		}
 		else {
-			discret = new SimpleDiscret11(JobConfig.getWord16bits(),
-					JobConfig.getAudienceLevel(),
-					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth());
+			device =new Discret11Enc(JobConfig.getWord16bits(), 
+					codePattern, cycle,
+					JobConfig.getPerc1(), JobConfig.getPerc2());
 		}	
-		this.key11bits = discret.getKey11bits();
-		BufferedImage imgRes = discret.transform(img);
+		this.key11bits = device.getKey11bits();
+		BufferedImage imgRes = device.transform(img);
+		for (int i = 0; i < 26; i++) {
+			imgRes = device.transform(img);
+		}		
 		saveCryptImage(imgRes);		
 	}
 	
-	public  void saveCryptImage(BufferedImage bi) {
-		try {
-			// retrieve image
-			File outputfile = new File(JobConfig.getOutput_file() + "_c" +
-					JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
-			ImageIO.write(bi, "png", outputfile);
-			if(JobConfig.isHasGUI()){
-				JobConfig.getGui().getTextInfos().setText(
-						"Image codée : " + JobConfig.getOutput_file()
-						+"_c" 
-						+ JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
-			}
-			System.out.println("SimpleDiscret11 crypted image : " + JobConfig.getOutput_file()
-					+ "_c"
-					+ JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
-		} catch (IOException e) {
-			System.out.println("I/O error during the write of the crypted image");
-			System.exit(1);
-		}
-
-		try {
-			File dataFile = new File(JobConfig.getOutput_file() + "_c" 
-						+ JobConfig.getWord16bits() + "-" 
-						+  this.key11bits + ".txt");
-			dataFile.createNewFile();
-			FileWriter ffw = new FileWriter(dataFile);
-			ffw.write("key 16 bits : " + JobConfig.getWord16bits() + "\r\n");
-			ffw.write("Audience level : " + JobConfig.getAudienceLevel() + "\r\n");
-			ffw.write("key 11 bits : " + this.key11bits + "\r\n");			
-			ffw.write("file : " + JobConfig.getOutput_file() + "_c" 
-			+ JobConfig.getWord16bits() + "-" + this.key11bits +
-			 ".txt");
-			ffw.close();
-			if(JobConfig.isHasGUI()){
-				JobConfig.getGui().getTextInfos().setText(
-						JobConfig.getGui().getTextInfos().getText() 
-						+ "\n\r"
-						+
-						"Rapport : " + JobConfig.getOutput_file() +"_c" 
-						+ JobConfig.getWord16bits() + "-" + this.key11bits + ".txt");
-			}
-			System.out.println("Report shift file : " + JobConfig.getOutput_file()
-					+ "_c" + JobConfig.getWord16bits() + "-" + this.key11bits + ".txt");
-		} catch (IOException e) {
-			System.out
-					.println("I/O error during the write of the report file");
-			System.exit(1);
-		}
+	public void decPhotoDiscretStrict(BufferedImage img){
+		decPhotoDiscretCorrelStrict(img);	
 	}
 	
-	public  void saveDecryptFile(BufferedImage bi,String output_file, int key11){
-		try {
-			// retrieve image
-			File outputfile = new File(output_file + "_d" + JobConfig.getWord16bits() 
-								+ "-" + key11 + ".png");
-			ImageIO.write(bi, "png", outputfile);
-			if(JobConfig.isHasGUI()){
-				JobConfig.getGui().getTextInfos().setText(
-						"Image décodée : " 
-				+ output_file + "_d" + JobConfig.getWord16bits() + "-" + key11 + ".png");
-			}
-			System.out.println( "Output File decrypted : " + output_file + "_d"
-			+ JobConfig.getWord16bits() + "-"
-			+ key11 + ".png" );
-		} catch (IOException e) {
-			System.out.println("I/O error during the write of the decrypted image");			
-			System.exit(1);
+	public void decPhotoDiscretCorrelStrict(BufferedImage img){		
+		Device device;
+		device = new DiscretDecCorrel();
+		BufferedImage imgRes = device.transform(img);
+		this.key11bits = device.getKey11bits();
+		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
+	}
+	
+	
+	public  void decPhotoSimpleDiscret(BufferedImage img){		
+		Device device;
+		if(JobConfig.isNoBlackBar()){
+			device = new SimpleDiscret11Black(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
+					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth(),
+					JobConfig.getPerc1(), JobConfig.getPerc2());
 		}
-	}	
+		else {
+			device = new SimpleDiscret11(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
+					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth(),
+					JobConfig.getPerc1(), JobConfig.getPerc2());
+		}		
+		this.key11bits = device.getKey11bits();
+		BufferedImage imgRes = device.transform(img);
+		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);		
+	}
+	
+	public  void encPhotoSimpleDiscret(BufferedImage img){		
+		Device device;
+		if(JobConfig.isNoBlackBar()){
+			device = new SimpleDiscret11NoBlack(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
+					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth(),
+					JobConfig.getPerc1(), JobConfig.getPerc2());
+		}
+		else {
+			device = new SimpleDiscret11(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
+					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth(),
+					JobConfig.getPerc1(), JobConfig.getPerc2());
+		}	
+		this.key11bits = device.getKey11bits();
+		BufferedImage imgRes = device.transform(img);
+		saveCryptImage(imgRes);		
+	}
+	
+	public  boolean saveCryptImage(BufferedImage bi) {
+		try {
+			if (JobConfig.getSystemCrypt() == 0) {
+				// retrieve image
+				File outputfile = new File(
+						JobConfig.getOutput_file() + "_c" + 
+				JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
+				ImageIO.write(bi, "png", outputfile);
+				if (JobConfig.isHasGUI()) {
+
+					JobConfig.getGui().getTextInfos().setText("Image codée : " + JobConfig.getOutput_file() + "_c"
+							+ JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
+				}
+			}
+		} catch (IOException e) {
+			JOptionPane
+			.showMessageDialog(
+					JobConfig.getGui().getFrame(),
+					"Erreur lors de l'écriture de l'image cryptée",
+					"erreur d'écriture I/O",
+					JOptionPane.ERROR_MESSAGE);		
+			return false;
+		}
+		
+		if (JobConfig.getSystemCrypt() == 1) { //syster
+			// retrieve image
+			File outputfile = new File(
+					JobConfig.getOutput_file() + "_c" + 
+			"syster.png");
+			try {
+				ImageIO.write(bi, "png", outputfile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane
+				.showMessageDialog(
+						JobConfig.getGui().getFrame(),
+						"Erreur lors de l'écriture de l'image cryptée",
+						"erreur d'écriture I/O",
+						JOptionPane.ERROR_MESSAGE);	
+				return false;
+			}
+			if (JobConfig.isHasGUI()) {
+				JobConfig.getGui().getTextInfos().setText("Image codée : " + JobConfig.getOutput_file() + "_c"
+						+ "syster.png");
+			}
+		}
+		
+		
+		if (JobConfig.getSystemCrypt() == 0) {
+			try {
+				File dataFile = new File(
+						JobConfig.getOutput_file() + "_c" + JobConfig.getWord16bits() + "-" + this.key11bits + ".txt");
+				dataFile.createNewFile();
+				FileWriter ffw = new FileWriter(dataFile);
+				ffw.write("key 16 bits : " + JobConfig.getWord16bits() + "\r\n");
+				ffw.write("Audience level : " + JobConfig.getAudienceLevel() +
+						"\r\n");
+				ffw.write("key 11 bits : " + this.key11bits + "\r\n");
+				ffw.write("file : " + JobConfig.getOutput_file() + "_c" +
+				JobConfig.getWord16bits() + "-"
+						+ this.key11bits + ".txt");
+				ffw.close();
+
+				if (JobConfig.isHasGUI()) {
+					JobConfig.getGui().getTextInfos()
+							.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + "Rapport : "
+									+ JobConfig.getOutput_file() + "_c" + JobConfig.getWord16bits() + "-"
+									+ this.key11bits + ".txt");
+				}
+
+			} catch (IOException e) {
+				JOptionPane
+				.showMessageDialog(
+						JobConfig.getGui().getFrame(),
+						"Erreur lors de l'écriture du rapport",
+						"erreur d'écriture I/O",
+						JOptionPane.ERROR_MESSAGE);	
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public  boolean saveDecryptFile(BufferedImage bi,String output_file, int key11){
+		if (JobConfig.getSystemCrypt() == 0) {
+			try {
+				// retrieve image
+				File outputfile = new File(output_file + "_d" + 
+				JobConfig.getWord16bits() + "-" + key11 + ".png");
+				ImageIO.write(bi, "png", outputfile);
+				if (JobConfig.isHasGUI()) {
+					JobConfig.getGui().getTextInfos().setText(
+							"Image décodée : " + output_file + "_d" + 
+					JobConfig.getWord16bits() + "-" + key11 + ".png");
+				}				
+			} catch (IOException e) {
+				JOptionPane
+				.showMessageDialog(
+						JobConfig.getGui().getFrame(),
+						"Erreur lors de l'écriture de l'image décryptée",
+						"erreur d'écriture I/O",
+						JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		}
+		else {
+			try {
+				// retrieve image
+				File outputfile = new File(output_file + "_d" + 
+				"syster.png");
+				ImageIO.write(bi, "png", outputfile);
+				if (JobConfig.isHasGUI()) {
+					JobConfig.getGui().getTextInfos().setText(
+							"Image décodée : " + output_file + "_d" + 
+					"syster.png");
+				}				
+			} catch (IOException e) {
+				JOptionPane
+				.showMessageDialog(
+						JobConfig.getGui().getFrame(),
+						"Erreur lors de l'écriture de l'image décryptée",
+						"erreur d'écriture I/O",
+						JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	protected void genOffsetIncrement() {		
+		Random rand = new Random();
+		int min = 0;
+		int max = 255;
+
+		this.offset = rand.nextInt(max - min + 1) + min;
+
+		min = 1;
+		max = 127;
+		double val;
+		val = rand.nextInt(max - min + 1) + min;
+		if ((val / 2) - (int) (val / 2) == 0) {
+			this.increment = (int) (val + 1);
+		} else {
+			this.increment = (int) (val);
+		}				
+	}
 
 }

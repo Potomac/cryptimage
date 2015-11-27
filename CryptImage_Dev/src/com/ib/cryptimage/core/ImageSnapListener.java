@@ -42,15 +42,16 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	private boolean isDec;
 	private FramesPlayer frmV;
 	private IAudioResampler audioResampler = null;
-	private static int AUDIORATE = 44100;
+	private int AUDIORATE;
 
 	/**
 	 * constructor
 	 * @param nbFrames number of frames to extract from the video
 	 */
 	public ImageSnapListener(int nbFrames, FramesPlayer frmV,
-			int videoIndex, int audioIndex) {
+			int videoIndex, int audioIndex) {		
 		super();
+		this.AUDIORATE = JobConfig.getAudioRate();
 		this.frmV = frmV;
 		this.count = 0;
 		cryptVid = new CryptVideo();
@@ -100,7 +101,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 						audioResampler.resample(out, samples,
 								samples.getNumSamples());
 
-						cryptVid.addAudioFrame(out);						
+						cryptVid.addAudioFrame(out);	//out					
 
 						out.delete();
 					}
@@ -135,7 +136,8 @@ public class ImageSnapListener extends MediaListenerAdapter {
 			&& JobConfig.isWantPlay() !=true
 			 ){		
 		cryptVid.closeVideo();
-		cryptVid.saveDatFileVideo();    
+		cryptVid.saveDatFileVideo();
+		cryptVid.getDevice().closeFileData();		
 	} else if(count == cryptVid.getVideoLengthFrames()){
 		JobConfig.setStop(true);
 		}

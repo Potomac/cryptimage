@@ -60,9 +60,11 @@ public class FramesPlayer {
 	public void readFrame(){
 		try {
 			while( imgListen.getCount() < JobConfig.getVideo_frame()
-					&& JobConfig.isStop() != true){				
-				mediaReader.readPacket();		
+					&& JobConfig.isStop() != true  ){				
+				mediaReader.readPacket();				
 			}
+			
+			
 			
 			if(JobConfig.isStop() && !JobConfig.isWantPlay()){
 				JobConfig.getGui().getTextInfos().setText(
@@ -71,6 +73,7 @@ public class FramesPlayer {
 						+ "Opération interrompue par l'utilisateur");
 				imgListen.getCryptVid().closeVideo();
 				imgListen.getCryptVid().saveDatFileVideo();
+				imgListen.getCryptVid().getDevice().closeFileData();
 				JobConfig.getGui().getBtnEnter().setEnabled(true);
 				JobConfig.getGui().getBtnCancel().setEnabled(false);
 				JobConfig.getGui().getBtnExit().setEnabled(true);
@@ -86,6 +89,7 @@ public class FramesPlayer {
 			JobConfig.setVideo_frame(imgListen.getCount()-1);
 			imgListen.getCryptVid().closeVideo();
 			imgListen.getCryptVid().saveDatFileVideo();
+			//imgListen.getCryptVid().getDevice().closeFileData();
 		}		
 	}
 	

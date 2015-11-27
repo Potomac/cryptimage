@@ -14,8 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 9 janv. 2015 Author Mannix54
- * http://ibsoftware.free.fr/cryptimage.php
+ * 23 nov. 2015 Author Mannix54
  */
 
 
@@ -28,11 +27,13 @@ import java.awt.image.BufferedImage;
  * @author Mannix54
  *
  */
-abstract class Discret extends Device {
-
+public abstract class Device {
+	
 	abstract BufferedImage transform(BufferedImage img);
 	abstract boolean isEnable();
 	abstract int getAudienceLevel();
 	abstract int getKey11bits();
-	
+	abstract void closeFileData();
+	abstract void skipFrame();
+
 }

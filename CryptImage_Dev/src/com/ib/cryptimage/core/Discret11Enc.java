@@ -888,6 +888,20 @@ public class Discret11Enc extends Discret {
 
 	public void setCycle(int cycle) {
 		this.cycle = cycle;
+	}
+
+
+	@Override
+	void closeFileData() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	void skipFrame() {
+		// TODO Auto-generated method stub
+		
 	}		
 
 }

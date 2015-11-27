@@ -73,7 +73,22 @@ public final class JobConfig {
 	private static boolean noBlackBar = false;
 	private static int delay1;
 	private static int delay2;
-	private static int audioCodec = 0;
+	private static int audioCodec = 3;
+	
+	private static int audioRate = 0;
+	private static int ampEnc = 1;
+	private static int ampDec = 3;
+	private static int systemCrypt = 0;
+	
+	private static int tableSyster = 2;
+	private static String fileDataEncSyster ="";
+	private static String fileDataDecSyster = "";
+	private static boolean wantDecCorrel = false;
+	private static boolean wantSysterTags = false;
+	private static boolean wantSysterEncRandom = false;
+	
+	private static String launch = "first";
+	
 
 	private JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -93,8 +108,8 @@ public final class JobConfig {
 		File config = new File(userHome + File.separator + "cryptimage"
 				+ File.separator + "cryptimage.conf");
 
-		if (config.exists()) {
-			String[] options = new String[13];
+		if (config.exists()) {			
+			String[] options = new String[17];
 			FileInputStream fis;
 			try {
 				fis = new FileInputStream(config);
@@ -106,7 +121,7 @@ public final class JobConfig {
 				int compt = 0;
 
 				try {
-					while ((line = br.readLine()) != null && compt < 13) {
+					while ((line = br.readLine()) != null && compt < 17) {
 						options[compt] = line;
 						compt++;						
 					}
@@ -159,6 +174,15 @@ public final class JobConfig {
 				else {
 					JobConfig.setResolution(2);
 				}
+				//audio codec
+				JobConfig.setAudioCodec(Integer.valueOf(options[13]));
+				//audio rate
+				JobConfig.setAudioRate(Integer.valueOf(options[14]));
+				//system crypt
+				JobConfig.setSystemCrypt(Integer.valueOf(options[15]));
+				//version
+				JobConfig.setLaunch(options[16]);				
+				
 			} catch (Exception e) {
 				// TODO: handle exception
 				System.out.println(e.getMessage());
@@ -170,10 +194,13 @@ public final class JobConfig {
 		return false;
 	}
 	
+	
+	
 	public static boolean saveConfig(int key16bits, int audienceIndex, double delay1,
 			double delay2, String serial, boolean horodatage, int codecIndex,
 			int bitrate, String extension, String workingDirectory,
-			String multiMode, String cycle, boolean resolution720) {
+			String multiMode, String cycle, boolean resolution720, int audioCodecValue,
+			String audioRateValue, int systemCrypt) {
 
 		try {
 
@@ -216,6 +243,10 @@ public final class JobConfig {
 				} else {
 					bfw.write(2 + lineSeparator);
 				}
+				bfw.write(audioCodecValue + lineSeparator);
+				bfw.write(audioRateValue + lineSeparator);
+				bfw.write(systemCrypt + lineSeparator);
+				bfw.write("0.0.11" + lineSeparator);
 				bfw.close();
 
 				return true;
@@ -372,7 +403,41 @@ public final class JobConfig {
 			}
 		} catch (Exception e) {
 			options[12] = "2";
-		}		
+		}
+		//audio codec
+		try {
+			if(Integer.valueOf(options[13]) < 0 || 
+					Integer.valueOf(options[13]) > 6 ) {
+				options[13] = "3";
+			}
+		} catch (Exception e) {
+			options[13] = "3";
+		}
+		//audio rate
+		try {
+			if(Integer.valueOf(options[14]) != 44100 && 
+					Integer.valueOf(options[14]) != 48000 ) {
+				options[14] = "44100";
+			}
+		} catch (Exception e) {
+			options[14] = "44100";
+		}
+		// system crypt
+		try {
+			if (Integer.valueOf(options[15]) != 0 && Integer.valueOf(options[15]) != 1) {
+				options[15] = "0";
+			}
+		} catch (Exception e) {
+			options[15] = "0";
+		}
+		//version
+		try {
+			if (options[16].equals(null)) {
+				options[16] = "first";
+			}
+		} catch (Exception e) {
+			options[16] = "first";
+		}
 		
 		return options;
 		
@@ -673,6 +738,94 @@ public final class JobConfig {
 
 	public static void setAudioCodec(int audioCodec) {
 		JobConfig.audioCodec = audioCodec;
+	}
+
+	public static int getAudioRate() {
+		return audioRate;
+	}
+
+	public static void setAudioRate(int audioRate) {
+		JobConfig.audioRate = audioRate;
+	}
+
+	public static int getAmpEnc() {
+		return ampEnc;
+	}
+
+	public static void setAmpEnc(int ampEnc) {
+		JobConfig.ampEnc = ampEnc;
+	}
+
+	public static int getAmpDec() {
+		return ampDec;
+	}
+
+	public static void setAmpDec(int ampDec) {
+		JobConfig.ampDec = ampDec;
+	}
+
+	public static int getSystemCrypt() {
+		return systemCrypt;
+	}
+
+	public static void setSystemCrypt(int systemCrypt) {
+		JobConfig.systemCrypt = systemCrypt;
+	}
+
+	public static int getTableSyster() {
+		return tableSyster;
+	}
+
+	public static void setTableSyster(int tableSyster) {
+		JobConfig.tableSyster = tableSyster;
+	}
+
+	public static String getFileDataEncSyster() {
+		return fileDataEncSyster;
+	}
+
+	public static void setFileDataEncSyster(String fileDataEncSyster) {
+		JobConfig.fileDataEncSyster = fileDataEncSyster;
+	}
+
+	public static String getFileDataDecSyster() {
+		return fileDataDecSyster;
+	}
+
+	public static void setFileDataDecSyster(String fileDataDecSyster) {
+		JobConfig.fileDataDecSyster = fileDataDecSyster;
+	}
+
+	public static boolean isWantDecCorrel() {
+		return wantDecCorrel;
+	}
+
+	public static void setWantDecCorrel(boolean wantDecCorrel) {
+		JobConfig.wantDecCorrel = wantDecCorrel;
+	}
+
+	public static boolean isWantSysterTags() {
+		return wantSysterTags;
+	}
+
+	public static void setWantSysterTags(boolean wantSysterTags) {
+		JobConfig.wantSysterTags = wantSysterTags;
+	}
+
+	public static boolean isWantSysterEncRandom() {
+		return wantSysterEncRandom;
+	}
+
+	public static void setWantSysterEncRandom(boolean wantSysterEncRandom) {
+		JobConfig.wantSysterEncRandom = wantSysterEncRandom;
+	}
+
+	public static String getLaunch() {
+		return launch;
+	}
+
+	public static void setLaunch(String launch) {
+		JobConfig.launch = launch;
 	}
 	
 }

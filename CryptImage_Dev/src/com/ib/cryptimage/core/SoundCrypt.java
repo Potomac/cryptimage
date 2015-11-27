@@ -38,17 +38,18 @@ public class SoundCrypt {
 	private double decy;
 	private boolean dec;
 	private int sampleCount = 0;
-	private boolean initButterWorthChorus = false;
+	//private boolean initButterWorthChorus = false;
 	private boolean initChebyChorus = false;
+	private boolean initChebyChorus2 = false;
 	
 
 	
-	//low pass butterWorth Chorus2
-	private int nzeros_butterChorus;
-    private int npoles_butterChorus;
-	private double gain_buttterChorus;
-	private double[] xv_butterChorus;
-	private double[] yv_butterChorus;
+//	//low pass butterWorth Chorus2
+//	private int nzeros_butterChorus;
+//    private int npoles_butterChorus;
+//	private double gain_buttterChorus;
+//	private double[] xv_butterChorus;
+//	private double[] yv_butterChorus;
 	
 	//init cheby chorus
 	private int nzeros_chebyChorus;
@@ -57,19 +58,25 @@ public class SoundCrypt {
 	private double[] xv_chebyChorus;
 	private double[] yv_chebyChorus;
 	
+	private int nzeros_chebyChorus2;
+    private int npoles_chebyChorus2;
+	private double gain_chebyChorus2;
+	private double[] xv_chebyChorus2;
+	private double[] yv_chebyChorus2;
+	
 	
 	/**
 	 * 
 	 * @param rate rate in hertz for the samples
 	 * @param dec true if decoding mode
 	 */
-	public SoundCrypt(int rate, boolean dec){		
+	public SoundCrypt(int rate, boolean dec, int ampEnc, int ampDec){		
 		this.dec = dec;
 		if(this.dec == true){
-			m_nGain = 3;
+			m_nGain = ampDec; //3
 		}
 		else{
-			m_nGain = 1;
+			m_nGain = ampEnc; //1
 		}
 		this.rate = rate;
 		
@@ -89,18 +96,23 @@ public class SoundCrypt {
 	public double[] transform(double[] sound, boolean enable) {
 
 		if (this.dec) {
-			sound = lowPassButterWorthChorus2(sound);
-		} else {
-			sound = lowPassChebyShevChorus(sound);
-		}
-
+			if (this.rate == 44100) {				
+				sound = lowPassChebyShevChorus44100_pre(sound);
+			} else {
+				sound = lowPassChebyShevChorus48000_pre(sound);
+			}
+		} 
+		
 		sound = crypt(sound, enable);
 
 		if (this.dec) {
-			sound = lowPassChebyShevChorus(sound);
-		} else {
-			sound = lowPassButterWorthChorus2(sound);
-		}
+			if (this.rate == 44100) {				
+				sound = lowPassChebyShevChorus44100_post(sound);
+			} else {
+				sound = lowPassChebyShevChorus48000_post(sound);
+			}
+		} 
+		
 		return sound;
 	}
 	
@@ -125,90 +137,164 @@ public class SoundCrypt {
 			}				
 		return sound;
 	}
-	
+
 	/**
-	 * postfilter chorus
-	 * 
+	 * filter for 44100 Hz
 	 * @param sound
 	 * @return
 	 */
-	private double[] lowPassChebyShevChorus(double[] sound){
-		//init
+	private double[] lowPassChebyShevChorus44100_pre(double[] sound) {
+		// init
 		if (this.initChebyChorus == false) {
-			 nzeros_chebyChorus = 10;
-			 npoles_chebyChorus = 10;
-			 gain_chebyChorus = 7.432679797e+02;
-			 xv_chebyChorus = new double[nzeros_chebyChorus + 1];
-			 yv_chebyChorus = new double[npoles_chebyChorus + 1];
-			 this.initChebyChorus = true;
+			nzeros_chebyChorus = 4;
+			npoles_chebyChorus = 4;
+			gain_chebyChorus = 6.310833714e+00;
+			xv_chebyChorus = new double[nzeros_chebyChorus + 1];
+			yv_chebyChorus = new double[npoles_chebyChorus + 1];
+			this.initChebyChorus = true;
 		}
-		
-	    for (int i=0;i<sound.length;i++)
-	    {
-	    	double input = sound[i];
-	    	xv_chebyChorus[0] = xv_chebyChorus[1]; xv_chebyChorus[1] = xv_chebyChorus[2]; xv_chebyChorus[2] = xv_chebyChorus[3];
-			xv_chebyChorus[3] = xv_chebyChorus[4]; xv_chebyChorus[4] = xv_chebyChorus[5]; xv_chebyChorus[5] = xv_chebyChorus[6];
-			xv_chebyChorus[6] = xv_chebyChorus[7]; xv_chebyChorus[7] = xv_chebyChorus[8]; xv_chebyChorus[8] = xv_chebyChorus[9];
-			xv_chebyChorus[9] = xv_chebyChorus[10];
-			
-			xv_chebyChorus[10] = input / gain_chebyChorus;
-			
-			yv_chebyChorus[0] = yv_chebyChorus[1]; yv_chebyChorus[1] = yv_chebyChorus[2]; yv_chebyChorus[2] = yv_chebyChorus[3];
-			yv_chebyChorus[3] = yv_chebyChorus[4]; yv_chebyChorus[4] = yv_chebyChorus[5]; yv_chebyChorus[5] = yv_chebyChorus[6];
-			yv_chebyChorus[6] = yv_chebyChorus[7]; yv_chebyChorus[7] = yv_chebyChorus[8]; yv_chebyChorus[8] = yv_chebyChorus[9];
-			yv_chebyChorus[9] = yv_chebyChorus[10];
-			
-			yv_chebyChorus[10] =   ((xv_chebyChorus[0] + xv_chebyChorus[10])
-				+ 10 * (xv_chebyChorus[1] + xv_chebyChorus[9]) + 45 * (xv_chebyChorus[2] + xv_chebyChorus[8])
-				+ 120 * (xv_chebyChorus[3] + xv_chebyChorus[7]) + 210 * (xv_chebyChorus[4] + xv_chebyChorus[6])
-				+ 252 * xv_chebyChorus[5]
-				+ ( -0.0000357500 * yv_chebyChorus[0]) + (  0.0006094904 * yv_chebyChorus[1])
-				+ ( -0.0061672448 * yv_chebyChorus[2]) + (  0.0298428117 * yv_chebyChorus[3])
-				+ ( -0.1344215690 * yv_chebyChorus[4]) + (  0.3160380663 * yv_chebyChorus[5])
-				+ ( -0.8283557827 * yv_chebyChorus[6]) + (  1.0214778438 * yv_chebyChorus[7])
-				+ ( -1.7026748890 * yv_chebyChorus[8]) + (  0.9259874211 * yv_chebyChorus[9]));
-			sound[i]=yv_chebyChorus[10];
-	    	
-	    }	
-		
-		return sound;		
+
+		for (int i = 0; i < sound.length; i++) {
+			double input = sound[i];
+			xv_chebyChorus[0] = xv_chebyChorus[1];
+			xv_chebyChorus[1] = xv_chebyChorus[2];
+			xv_chebyChorus[2] = xv_chebyChorus[3];
+			xv_chebyChorus[3] = xv_chebyChorus[4];
+
+			xv_chebyChorus[4] = input / gain_chebyChorus;
+
+			yv_chebyChorus[0] = yv_chebyChorus[1];
+			yv_chebyChorus[1] = yv_chebyChorus[2];
+			yv_chebyChorus[2] = yv_chebyChorus[3];
+			yv_chebyChorus[3] = yv_chebyChorus[4];
+
+			yv_chebyChorus[4] = (xv_chebyChorus[0] + xv_chebyChorus[4]) + 4 * (xv_chebyChorus[1] + xv_chebyChorus[3])
+					+ 6 * xv_chebyChorus[2] + (-0.0622354481 * yv_chebyChorus[0]) + (-0.0826699057 * yv_chebyChorus[1])
+					+ (-0.7552376542 * yv_chebyChorus[2]) + (-0.6351796968 * yv_chebyChorus[3]);
+
+			sound[i] = yv_chebyChorus[4];
+		}
+		return sound;
+
 	}
 	
+	private double[] lowPassChebyShevChorus44100_post(double[] sound) {
+		// init
+		if (this.initChebyChorus2 == false) {
+			nzeros_chebyChorus2 = 7;
+			npoles_chebyChorus2 = 7;
+			gain_chebyChorus2 = 2.211596484e+02;
+			xv_chebyChorus2 = new double[nzeros_chebyChorus2 + 1];
+			yv_chebyChorus2 = new double[npoles_chebyChorus2 + 1];
+			this.initChebyChorus2 = true;
+		}
+
+		for (int i = 0; i < sound.length; i++) {
+			double input = sound[i];
+			xv_chebyChorus2[0] = xv_chebyChorus2[1];
+			xv_chebyChorus2[1] = xv_chebyChorus2[2];
+			xv_chebyChorus2[2] = xv_chebyChorus2[3];
+			xv_chebyChorus2[3] = xv_chebyChorus2[4];
+			xv_chebyChorus2[4] = xv_chebyChorus2[5];
+			xv_chebyChorus2[5] = xv_chebyChorus2[6];
+			xv_chebyChorus2[6] = xv_chebyChorus2[7];
+			xv_chebyChorus2[7] = input / gain_chebyChorus2;
+			yv_chebyChorus2[0] = yv_chebyChorus2[1];
+			yv_chebyChorus2[1] = yv_chebyChorus2[2];
+			yv_chebyChorus2[2] = yv_chebyChorus2[3];
+			yv_chebyChorus2[3] = yv_chebyChorus2[4];
+			yv_chebyChorus2[4] = yv_chebyChorus2[5];
+			yv_chebyChorus2[5] = yv_chebyChorus2[6];
+			yv_chebyChorus2[6] = yv_chebyChorus2[7];
+			yv_chebyChorus2[7] = (xv_chebyChorus2[0] + xv_chebyChorus2[7])
+					+ 7 * (xv_chebyChorus2[1] + xv_chebyChorus2[6]) + 21 * (xv_chebyChorus2[2] + xv_chebyChorus2[5])
+					+ 35 * (xv_chebyChorus2[3] + xv_chebyChorus2[4]) + (0.0935164959 * yv_chebyChorus2[0])
+					+ (-0.4657366789 * yv_chebyChorus2[1]) + (1.2531881677 * yv_chebyChorus2[2])
+					+ (-2.2854956347 * yv_chebyChorus2[3]) + (2.9413622606 * yv_chebyChorus2[4])
+					+ (-2.9346526015 * yv_chebyChorus2[5]) + (1.8190505669 * yv_chebyChorus2[6]);
+			sound[i] = yv_chebyChorus2[7];
+		}
+		return sound;
+	}
+	
+	
 	/**
-	 * low pass chorus order 5
+	 * filter for 48000 hz case
 	 * @param sound
 	 * @return
 	 */
-	private double[] lowPassButterWorthChorus2(double[] sound){
-		//init
-		if(this.initButterWorthChorus == false){
-		nzeros_butterChorus =5;
-        npoles_butterChorus = 5;
-		gain_buttterChorus  =  8.513711711;
-		xv_butterChorus = new double[nzeros_butterChorus+1];
-		yv_butterChorus = new double[npoles_butterChorus+1];
-		this.initButterWorthChorus = true;
+	private double[] lowPassChebyShevChorus48000_pre(double[] sound) {
+		// init
+		if (this.initChebyChorus == false) {
+			nzeros_chebyChorus = 4;
+			npoles_chebyChorus = 4;
+			gain_chebyChorus = 8.183340972e+00;
+			xv_chebyChorus = new double[nzeros_chebyChorus + 1];
+			yv_chebyChorus = new double[npoles_chebyChorus + 1];
+			this.initChebyChorus = true;
 		}
+
+		for (int i = 0; i < sound.length; i++) {
+			double input = sound[i];
+			xv_chebyChorus[0] = xv_chebyChorus[1];
+			xv_chebyChorus[1] = xv_chebyChorus[2];
+			xv_chebyChorus[2] = xv_chebyChorus[3];
+			xv_chebyChorus[3] = xv_chebyChorus[4];
+
+			xv_chebyChorus[4] = input / gain_chebyChorus;
+
+			yv_chebyChorus[0] = yv_chebyChorus[1];
+			yv_chebyChorus[1] = yv_chebyChorus[2];
+			yv_chebyChorus[2] = yv_chebyChorus[3];
+			yv_chebyChorus[3] = yv_chebyChorus[4];
+			yv_chebyChorus[4] = (xv_chebyChorus[0] + xv_chebyChorus[4]) + 4 * (xv_chebyChorus[1] + xv_chebyChorus[3])
+					+ 6 * xv_chebyChorus[2] + (-0.0626606278 * yv_chebyChorus[0]) + (0.0379954621 * yv_chebyChorus[1])
+					+ (-0.6759257285 * yv_chebyChorus[2]) + (-0.2546007635 * yv_chebyChorus[3]);
+			sound[i] = yv_chebyChorus[4];
+		}
+
+		return sound;
+	}
 		
-		
-	    for (int i=0;i<sound.length;i++)
-	    {
-	    	double input = sound[i];
-			xv_butterChorus[0] = xv_butterChorus[1]; xv_butterChorus[1] = xv_butterChorus[2]; xv_butterChorus[2] = xv_butterChorus[3];
-			xv_butterChorus[3] = xv_butterChorus[4]; xv_butterChorus[4] = xv_butterChorus[5];
-			xv_butterChorus[5] =input/ gain_buttterChorus;
+	private double[] lowPassChebyShevChorus48000_post(double[] sound) {
+		// init
+		if (this.initChebyChorus2 == false) {
+			nzeros_chebyChorus2 = 7;
+			npoles_chebyChorus2 = 7;
+			gain_chebyChorus2 = 3.834721196e+02;
+			xv_chebyChorus2 = new double[nzeros_chebyChorus2 + 1];
+			yv_chebyChorus2 = new double[npoles_chebyChorus2 + 1];
+			this.initChebyChorus2 = true;
+		}
+
+		for (int i = 0; i < sound.length; i++) {
+			double input = sound[i];
+			xv_chebyChorus2[0] = xv_chebyChorus2[1];
+			xv_chebyChorus2[1] = xv_chebyChorus2[2];
+			xv_chebyChorus2[2] = xv_chebyChorus2[3];
+			xv_chebyChorus2[3] = xv_chebyChorus2[4];
+			xv_chebyChorus2[4] = xv_chebyChorus2[5];
+			xv_chebyChorus2[5] = xv_chebyChorus2[6];
+			xv_chebyChorus2[6] = xv_chebyChorus2[7];
 			
-			yv_butterChorus[0] = yv_butterChorus[1]; yv_butterChorus[1] = yv_butterChorus[2]; yv_butterChorus[2] = yv_butterChorus[3];
-			yv_butterChorus[3] = yv_butterChorus[4]; yv_butterChorus[4] = yv_butterChorus[5];
-			yv_butterChorus[5] =(float)  ((xv_butterChorus[0] + xv_butterChorus[5])
-				+ 5 * (xv_butterChorus[1] + xv_butterChorus[4]) + 10 * (xv_butterChorus[2] + xv_butterChorus[3])
-				+ ( -0.0134199638 * yv_butterChorus[0]) + ( -0.1268802975 * yv_butterChorus[1])
-				+ ( -0.4492748641 * yv_butterChorus[2]) + ( -1.0628245463 * yv_butterChorus[3])
-				+ ( -1.1062429845 * yv_butterChorus[4]));//GDS
+			xv_chebyChorus2[7] = input / gain_chebyChorus2;
 			
-			sound[i] = yv_butterChorus[5];
-	    }			
-		return sound;		
-	}	
+			yv_chebyChorus2[0] = yv_chebyChorus2[1];
+			yv_chebyChorus2[1] = yv_chebyChorus2[2];
+			yv_chebyChorus2[2] = yv_chebyChorus2[3];
+			yv_chebyChorus2[3] = yv_chebyChorus2[4];
+			yv_chebyChorus2[4] = yv_chebyChorus2[5];
+			yv_chebyChorus2[5] = yv_chebyChorus2[6];
+			yv_chebyChorus2[6] = yv_chebyChorus2[7];
+			yv_chebyChorus2[7] = (xv_chebyChorus2[0] + xv_chebyChorus2[7]) + 7 * (xv_chebyChorus2[1] + xv_chebyChorus2[6])
+					+ 21 * (xv_chebyChorus2[2] + xv_chebyChorus2[5]) + 35 * (xv_chebyChorus2[3] + xv_chebyChorus2[4])
+					+ (0.1130488058 * yv_chebyChorus2[0]) + (-0.6208360469 * yv_chebyChorus2[1])
+					+ (1.7554209098 * yv_chebyChorus2[2]) + (-3.2416570827 * yv_chebyChorus2[3])
+					+ (4.1799016509 * yv_chebyChorus2[4]) + (-3.9042013855 * yv_chebyChorus2[5])
+					+ (2.3845309549 * yv_chebyChorus2[6]);
+			sound[i] = yv_chebyChorus2[7];
+		}
+		return sound;
+	}
 	
 }

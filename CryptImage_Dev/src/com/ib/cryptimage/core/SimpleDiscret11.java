@@ -507,5 +507,17 @@ public class SimpleDiscret11 extends Discret {
 		// TODO Auto-generated method stub
 		return this.audienceLevel;
 	}
+
+	@Override
+	void closeFileData() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void skipFrame() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
