@@ -233,7 +233,7 @@ public class MainGui {
 	       // handle exception
 	    }
 		
-		frame = new JFrame("CryptImage v0.0.11");
+		frame = new JFrame("CryptImage v" + JobConfig.getVERSION());
 		frame.addWindowListener(controler);
 		frame.setLayout(new GridLayout(1,1));
 		JPanel panGlobal = new JPanel();
@@ -337,7 +337,7 @@ public class MainGui {
 		
 		File config = new File(binPath + "manuel_cryptimage.pdf");
 
-		if (!config.exists() && !JobConfig.getLaunch().equals("0.0.11")) {
+		if (!config.exists() && !JobConfig.getLaunch().equals(JobConfig.getVERSION())) {
 			
 			// test if cryptimage directory exists
 			boolean success = new File(System.getProperty("user.home")

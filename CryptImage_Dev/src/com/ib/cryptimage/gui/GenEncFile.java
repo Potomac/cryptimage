@@ -249,7 +249,7 @@ public class GenEncFile extends JDialog {
 				
 		int lines = Integer.valueOf(this.txtLines.getText().toString().trim());
 		int typeTable = combTable.getSelectedIndex() + 1;
-		int offset1, increment1, offset2, increment2;
+		int offset1, increment1, offset2;//, increment2;
 		int min = 0;
 		int max = 255;
 		double val;
@@ -284,19 +284,25 @@ public class GenEncFile extends JDialog {
 
 			offset2 = rand.nextInt(max - min + 1) + min;
 
-			min = 1;
-			max = 127;
-			
-			val = rand.nextInt(max - min + 1) + min;
-			if ((val / 2) - (int) (val / 2) == 0) {
-				increment2 = (int) (val + 1);
-			} else {
-				increment2 = (int) (val);
-			}
+//			min = 1;
+//			max = 127;
+//			
+//			val = rand.nextInt(max - min + 1) + min;
+//			if ((val / 2) - (int) (val / 2) == 0) {
+//				increment2 = (int) (val + 1);
+//			} else {
+//				increment2 = (int) (val);
+//			}
 
+			offset2 = offset1 + increment1;
+			if(offset2 > 255){
+				offset2 = offset2 - 256;
+			}
+			
 			fileOut.write("frame " + (i + 1) + ";" + typeTable + ";" 
 			+ offset1 + ";" + increment1 + ";" + offset2 + ";"
-					+ increment2 + "\r\n");
+					+ increment1 + "\r\n");			
+			
 		}
 
 		fileOut.close();		

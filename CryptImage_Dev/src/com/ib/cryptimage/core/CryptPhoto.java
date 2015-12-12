@@ -136,8 +136,12 @@ public class CryptPhoto {
 			offset1 = this.offset;
 			increment1 = this.increment;
 			genOffsetIncrement();
-			offset2 = this.offset;
-			increment2 = this.increment;
+			offset2 = offset1 + increment1; //this.offset;
+			if(offset2 > 255){
+				offset2 = offset2 - 256;
+			}			
+			
+			increment2 = increment1; //this.increment;
 			imgRes = systerEnc.transformPhoto(img, offset1,increment1, offset2, increment2);
 			if (imgRes == null) {				
 				imgRes = systerEnc.transformPhoto(img, offset1,increment1, offset2, increment2);

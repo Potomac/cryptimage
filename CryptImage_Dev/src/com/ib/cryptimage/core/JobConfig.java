@@ -88,6 +88,7 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
+	private static String VERSION = "0.0.13";
 	
 
 	private JobConfig() {
@@ -246,7 +247,7 @@ public final class JobConfig {
 				bfw.write(audioCodecValue + lineSeparator);
 				bfw.write(audioRateValue + lineSeparator);
 				bfw.write(systemCrypt + lineSeparator);
-				bfw.write("0.0.11" + lineSeparator);
+				bfw.write(VERSION + lineSeparator);
 				bfw.close();
 
 				return true;
@@ -826,6 +827,10 @@ public final class JobConfig {
 
 	public static void setLaunch(String launch) {
 		JobConfig.launch = launch;
+	}
+
+	public static String getVERSION() {
+		return VERSION;
 	}
 	
 }

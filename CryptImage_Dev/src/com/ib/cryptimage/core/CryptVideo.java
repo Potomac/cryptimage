@@ -140,7 +140,8 @@ public class CryptVideo {
 		double frameRate = reader.getContainer().getStream(0).getStreamCoder()
 				.getFrameRate().getValue();
 		
-		this.framerate = frameRate;
+		this.framerate = JobConfig.getFrameRate(); //frameRate;
+		frameRate = JobConfig.getFrameRate(); 
 
 		if (JobConfig.isWantPlay()) {
 			vidPlayer = new VideoPlayer(frameRate);

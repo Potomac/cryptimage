@@ -106,6 +106,20 @@ public abstract class Syster extends Device {
 		}				
 	}
 	
+	protected void genOffsetIncrementEven() {		
+//		Random rand = new Random();
+//		int min = 0;
+//		int max = 255;
+
+		this.offset = this.offset + this.increment;
+		if(this.offset > 255){
+			this.offset = offset - 256;
+		}
+		
+		//rand.nextInt(max - min + 1) + min;
+			
+	}
+	
 	protected void initKeyTable(){
 			Reader paramReader;
 			switch (typeTable) {
