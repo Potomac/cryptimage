@@ -88,7 +88,7 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "0.0.13";
+	private static String VERSION = "0.0.14";
 	
 
 	private JobConfig() {

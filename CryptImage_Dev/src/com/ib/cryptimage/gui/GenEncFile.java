@@ -72,7 +72,7 @@ public class GenEncFile extends JDialog {
 	 */
 	public GenEncFile(JFrame parent, String title, boolean modal) {
 		super(parent, title, modal);
-		this.setSize(580, 160);
+		this.setSize(580, 180);
 		this.setLocationRelativeTo(null);	
 		
 		initGUI();
@@ -282,7 +282,7 @@ public class GenEncFile extends JDialog {
 			min = 0;
 			max = 255;
 
-			offset2 = rand.nextInt(max - min + 1) + min;
+//			offset2 = rand.nextInt(max - min + 1) + min;
 
 //			min = 1;
 //			max = 127;
@@ -294,10 +294,10 @@ public class GenEncFile extends JDialog {
 //				increment2 = (int) (val);
 //			}
 
-			offset2 = offset1 + increment1;
-			if(offset2 > 255){
-				offset2 = offset2 - 256;
-			}
+			offset2 = offset1;
+//			if(offset2 > 255){
+//				offset2 = offset2 - 256;
+//			}
 			
 			fileOut.write("frame " + (i + 1) + ";" + typeTable + ";" 
 			+ offset1 + ";" + increment1 + ";" + offset2 + ";"

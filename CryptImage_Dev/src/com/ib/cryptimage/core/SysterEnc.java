@@ -113,7 +113,7 @@ public class SysterEnc extends Syster {
 			this.increment = this.incrementEven;
 		} else {
 			//this.genOffsetIncrement();
-			this.genOffsetIncrementEven();
+			//this.genOffsetIncrementEven();
 		}
 		
 		this.initPermut();

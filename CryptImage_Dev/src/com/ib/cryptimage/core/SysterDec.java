@@ -655,9 +655,7 @@ public class SysterDec extends Syster {
 					}
 				}
 			}
-			
-		   //System.out.println(offset_opt + ";" + incr_opt);
-			
+						
 		   this.offset = offset_opt;
 		   this.increment = incr_opt;		   
 		}
