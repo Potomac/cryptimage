@@ -85,6 +85,8 @@ import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * @author Mannix54
@@ -738,6 +740,29 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}else if (src.equals(this.mainGui.getmDocumentation())){
 			launchDocumentation();
 		}
+		else if(src.equals(this.mainGui.getmAuto())){
+			System.out.println("Auto");
+			manageLang();
+		}
+		else if(src.equals(this.mainGui.getmEnglish())){
+			System.out.println("English");
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
+			this.mainGui.refreshGUI();
+		}else if(src.equals(this.mainGui.getmFrench())){
+			System.out.println("French");
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
+			this.mainGui.refreshGUI();
+		}
+	}
+	
+	private void manageLang(){
+		if (this.mainGui.getLocale().getLanguage().equals("fr")){
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
+		}
+		else{
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
+		}
+		this.mainGui.refreshGUI();
 	}
 	
 	private void launchDocumentation() {		
@@ -2139,7 +2164,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 	}
 	
-	private Boolean saveConfig(){		
+	private Boolean saveConfig(){
+		
+		//language
+		int language = 0;
+		if(this.mainGui.getmAuto().isSelected()){
+			language = 0;
+		} else if (this.mainGui.getmEnglish().isSelected()){
+			language = 1;
+		} else if (this.mainGui.getmFrench().isSelected()){
+			language = 2;
+		}
+		
 		return JobConfig.saveConfig(
 				this.mainGui.getSlid16bitsWord().getValue(),
 				this.mainGui.getCombAudience().getSelectedIndex() + 1,
@@ -2156,7 +2192,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getRdi720().isSelected(),
 				this.mainGui.getCombAudioCodec().getSelectedIndex(),
 				this.mainGui.getCombAudioRate().getSelectedItem().toString().replaceAll("Hz", "").trim(),
-				this.mainGui.getCombSystemCrypt().getSelectedIndex());						
+				this.mainGui.getCombSystemCrypt().getSelectedIndex(),
+				language);			
 	}
 	
 	private String getTime(int timer){		  

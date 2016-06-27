@@ -88,7 +88,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "0.0.14";
+	private static String VERSION = "0.0.15";
+	private static int lang = 0; // 0 --> auto, 1--> English, 2--> French
 	
 
 	private JobConfig() {
@@ -110,7 +111,7 @@ public final class JobConfig {
 				+ File.separator + "cryptimage.conf");
 
 		if (config.exists()) {			
-			String[] options = new String[17];
+			String[] options = new String[18];
 			FileInputStream fis;
 			try {
 				fis = new FileInputStream(config);
@@ -122,7 +123,7 @@ public final class JobConfig {
 				int compt = 0;
 
 				try {
-					while ((line = br.readLine()) != null && compt < 17) {
+					while ((line = br.readLine()) != null && compt < 18) {
 						options[compt] = line;
 						compt++;						
 					}
@@ -182,7 +183,10 @@ public final class JobConfig {
 				//system crypt
 				JobConfig.setSystemCrypt(Integer.valueOf(options[15]));
 				//version
-				JobConfig.setLaunch(options[16]);				
+				JobConfig.setLaunch(options[16]);
+				//language
+				JobConfig.setLang(Integer.valueOf(options[17]));
+				
 				
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -201,7 +205,7 @@ public final class JobConfig {
 			double delay2, String serial, boolean horodatage, int codecIndex,
 			int bitrate, String extension, String workingDirectory,
 			String multiMode, String cycle, boolean resolution720, int audioCodecValue,
-			String audioRateValue, int systemCrypt) {
+			String audioRateValue, int systemCrypt, int language) {
 
 		try {
 
@@ -248,6 +252,7 @@ public final class JobConfig {
 				bfw.write(audioRateValue + lineSeparator);
 				bfw.write(systemCrypt + lineSeparator);
 				bfw.write(VERSION + lineSeparator);
+				bfw.write(language + lineSeparator);
 				bfw.close();
 
 				return true;
@@ -439,9 +444,15 @@ public final class JobConfig {
 		} catch (Exception e) {
 			options[16] = "first";
 		}
-		
-		return options;
-		
+		// language
+		try {
+			if (Integer.valueOf(options[17]) < 0 || Integer.valueOf(options[17]) > 2) {
+				options[17] = "0";
+				}
+			} catch (Exception e) {
+			options[17] = "0";
+				}
+		return options;		
 	}
 	
 
@@ -831,6 +842,14 @@ public final class JobConfig {
 
 	public static String getVERSION() {
 		return VERSION;
+	}
+
+	public static int getLang() {
+		return lang;
+	}
+
+	public static void setLang(int lang) {
+		JobConfig.lang = lang;
 	}
 	
 }

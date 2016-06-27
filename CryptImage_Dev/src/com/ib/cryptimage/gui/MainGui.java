@@ -41,6 +41,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.Hashtable;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -60,6 +62,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -80,7 +83,12 @@ import com.ib.cryptimage.core.JobConfig;
  */
 public class MainGui {
 	
+	private Locale locale;
+	private ResourceBundle res;
+	
 	private JFrame frame;
+	
+	private JPanel panGlobal;
 	
 	private JPanel panMode;
 	private JRadioButton rdiVideo;
@@ -203,14 +211,27 @@ public class MainGui {
 	private JMenuBar menuBar;
 	private JMenu mFile;
 	private JMenu mTools;
+	private JMenu mLang;
 	private JMenu mHelp;
 	private JMenuItem mOpen;
 	private JMenuItem mExit;
 	private JMenuItem mGen;
 	private JMenuItem mDocumentation;
 	private JMenuItem mAbout;
+	private JRadioButtonMenuItem  mAuto;
+	private JRadioButtonMenuItem  mEnglish;
+	private JRadioButtonMenuItem  mFrench;
 	
-	public MainGui(){
+	private TitledBorder titlePanLog;
+	private TitledBorder titlePanMode;
+	
+	public MainGui(){		
+		
+		System.out.println("Locale par defaut : ");		
+		locale = Locale.getDefault();	
+		System.out.println(locale.getLanguage());
+		res = ResourceBundle.getBundle("ressources/mainGui", locale); 
+		System.out.println(res.getBaseBundleName());
 		
 		controler = new MainGui_ActionListener(this);
 			
@@ -236,7 +257,7 @@ public class MainGui {
 		frame = new JFrame("CryptImage v" + JobConfig.getVERSION());
 		frame.addWindowListener(controler);
 		frame.setLayout(new GridLayout(1,1));
-		JPanel panGlobal = new JPanel();
+		panGlobal = new JPanel();
 		
 		frame.setSize(740,830);
 		frame.setLocationRelativeTo(null);
@@ -272,6 +293,26 @@ public class MainGui {
 
 		//load config
 		if(JobConfig.loadConfig()){
+			
+			switch (JobConfig.getLang()) {
+			case 0:
+				res = ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault());
+				mAuto.setSelected(true);
+				break;
+			case 1:
+				res = ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH);
+				mEnglish.setSelected(true);				
+				break;
+			case 2:
+				res = ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH);
+				mFrench.setSelected(true);				
+				break;
+			default:
+				break;
+			}
+						
+			this.refreshGUI();
+			
 			this.slid16bitsWord.setValue(JobConfig.getWord16bits());
 			this.combAudience.setSelectedIndex(JobConfig.getAudienceLevel());
 			this.slidDelay1.setValue((int) (JobConfig.getPerc1() * 100000d));
@@ -412,36 +453,90 @@ public class MainGui {
 		}
 	}
 	
-	private void createMenu(){
+	public void refreshGUI(){
+		//menu bar
+		mFile.setText(res.getString("mFile"));
+		mTools.setText(res.getString("mTools"));
+		mLang.setText(res.getString("mLang"));
+		mHelp.setText(res.getString("mHelp"));
+		mOpen.setText(res.getString("mOpenFile"));
+		mExit.setText(res.getString("mExit"));
+		mGen.setText(res.getString("mGen"));
+		mEnglish.setText(res.getString("mEnglish"));
+		mFrench.setText(res.getString("mFrench"));
+		mDocumentation.setText(res.getString("mDocumentation"));
+		mAbout.setText(res.getString("mAbout"));
+		
+		//panLog
+		titlePanLog.setTitle(res.getString("panLog.informations"));
+		btnEnter.setText(res.getString("panLog.enter"));
+		btnExit.setText(res.getString("panLog.exit"));
+		btnCancel.setText(res.getString("panLog.cancel"));
+		
+		//panMode
+		titlePanMode.setTitle(res.getString("panMode.mode"));
+		rdiVideo.setText(res.getString("panMode.video"));
+		rdiVideo.setToolTipText(res.getString("panMode.tooltip.video"));
+		rdiPhoto.setText(res.getString("panMode.photo"));
+		rdiPhoto.setToolTipText(res.getString("panMode.tooltip.photo"));
+		chkStrictMode.setText(res.getString("panMode.respectNorme"));
+		chkStrictMode.setToolTipText(res.getString("panMode.tooltip.respectNorme"));
+		lblSystemCrypt.setText(res.getString("panMode.lblSystem"));
+		btnAbout.setText(res.getString("mAbout"));
+	
+	}
+	
+	private void createMenu(){				
 		menuBar = new JMenuBar();
-		mFile = new JMenu("Fichier");
-		mTools = new JMenu("Outils");
-		mHelp = new JMenu("Aide");
-		mOpen = new JMenuItem("Ouvrir un fichier");
+		mFile = new JMenu(res.getString("mFile"));
+		mTools = new JMenu(res.getString("mTools"));
+		mLang = new JMenu(res.getString("mLang"));
+		mHelp = new JMenu(res.getString("mHelp"));
+		mOpen = new JMenuItem(res.getString("mOpenFile"));
 		mOpen.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		mOpen.addActionListener(controler);
-		mExit = new JMenuItem("Quitter");
+		mExit = new JMenuItem(res.getString("mExit"));
 		mExit.addActionListener(controler);
 		mExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
-		mGen = new JMenuItem("Générer un fichier d'encodage");
+		mGen = new JMenuItem(res.getString("mGen"));
 		mGen.addActionListener(controler);
 		mGen.setIcon(new ImageIcon(this.getClass().getResource("/icons/encrypted.png")));
-		mAbout = new JMenuItem("À propos...");		
+		
+		mAuto = new JRadioButtonMenuItem("Auto");
+		mAuto.addActionListener(controler);
+		mEnglish = new JRadioButtonMenuItem(res.getString("mEnglish"));
+		mEnglish.addActionListener(controler);
+		mFrench = new JRadioButtonMenuItem(res.getString("mFrench"));
+		mFrench.addActionListener(controler);
+		
+		mAbout = new JMenuItem(res.getString("mAbout"));		
 		mAbout.addActionListener(controler);
 		mAbout.setIcon(new ImageIcon(this.getClass().getResource("/icons/help.png")));
-		mDocumentation = new JMenuItem("Documentation");
+		mDocumentation = new JMenuItem(res.getString("mDocumentation"));
 		mDocumentation.addActionListener(controler);
 		mDocumentation.setIcon(new ImageIcon(this.getClass().getResource("/icons/documentation.png")));
+		
 		menuBar.add(mFile);
 		menuBar.add(mTools);
+		menuBar.add(mLang);
 		menuBar.add(mHelp);
-		
+				
 		mFile.add(mOpen);
 		mFile.setMnemonic('F');
 		mOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
 		mFile.add(mExit);
 		mTools.add(mGen);
 		mTools.setMnemonic('t');
+		
+		mLang.add(mAuto);
+		mLang.add(mEnglish);
+		mLang.add(mFrench);
+		ButtonGroup btgLang = new ButtonGroup();		
+		btgLang.add(mAuto);
+		btgLang.add(mEnglish);
+		btgLang.add(mFrench);
+		mAuto.setSelected(true); // TODO to be configured by preference file
+		
 		mHelp.add(mDocumentation);
 		mHelp.add(mAbout);
 		mHelp.setMnemonic('A');
@@ -451,38 +546,38 @@ public class MainGui {
 	
 	private void createPanMode(){
 		panMode = new JPanel();		
+				
+		titlePanMode = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panMode.mode"));
+		panMode.setBorder(titlePanMode);
 		
-		TitledBorder title;
-		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Mode");
-		panMode.setBorder(title);
-		
-		rdiVideo = new JRadioButton("Vidéo");
+		rdiVideo = new JRadioButton(res.getString("panMode.video"));
 		rdiVideo.setSelected(true);
 		rdiVideo.addActionListener(controler);
-		rdiVideo.setToolTipText("pour coder ou décoder des fichiers vidéos");
-		rdiPhoto = new JRadioButton("Photo");
+		rdiVideo.setToolTipText(res.getString("panMode.tooltip.video")); //("pour coder ou décoder des fichiers vidéos");
+		rdiPhoto = new JRadioButton(res.getString("panMode.photo"));
 		rdiPhoto.addActionListener(controler);
-		rdiPhoto.setToolTipText("pour coder ou décoder des fichiers images");
+		rdiPhoto.setToolTipText(res.getString("panMode.tooltip.photo"));//("pour coder ou décoder des fichiers images");
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(rdiVideo);
 		btnGroup.add(rdiPhoto);
 		
-		chkStrictMode = new JCheckBox("Respect de la norme");		
+		chkStrictMode = new JCheckBox(res.getString("panMode.respectNorme"));		
 		chkStrictMode.addActionListener(controler);
 		chkStrictMode.setSelected(true);
-		chkStrictMode.setToolTipText("<html>-si option activée : gestion des lignes 310/622,"
+		chkStrictMode.setToolTipText(res.getString("panMode.tooltip.respectNorme"));
+				/*"<html>-si option activée : gestion des lignes 310/622,"
 				+ "<br/>redimensionnement automatique vers le format 4/3 720x576 ou 768x576<br/>"
 				+ "-si option désactivée : pas de gestion des lignes 310/622 et "
-				+ "la vidéo garde sa résolution originale</html>");
+				+ "la vidéo garde sa résolution originale</html>");*/
 		
-		lblSystemCrypt = new JLabel("Système");
+		lblSystemCrypt = new JLabel(res.getString("panMode.lblSystem"));
 		String [] tab = {"Discret11", "Nagravision syster"};
 		combSystemCrypt = new JComboBox<>(tab);
 		combSystemCrypt.addActionListener(controler);
 		
 		
-		btnAbout = new JButton("À propos...");
+		btnAbout = new JButton(res.getString("mAbout"));
 		btnAbout.setIcon(new ImageIcon(this.getClass().getResource("/icons/help.png")));
 		btnAbout.addActionListener(controler);
 		
@@ -1828,11 +1923,10 @@ public class MainGui {
 	private void createPanLog(){
 		panProgress = new JPanel();
 		//panProgress.setLayout(new BorderLayout());
-		TitledBorder title;
-		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Informations");
-		panProgress.setBorder(title);		
-		GridBagLayout gbl = new GridBagLayout();
+		titlePanLog = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panLog.informations"));
+		panProgress.setBorder(titlePanLog);		
+		GridBagLayout gbl = new GridBagLayout();	
 		
 		progress = new JProgressBar(0,this.getSlidFrames().getValue());
 		progress.setValue(0);
@@ -1847,16 +1941,16 @@ public class MainGui {
 		//scrollPane.setSize(500, 100);
 		
 		
-		btnEnter = new JButton("Valider");
+		btnEnter = new JButton(res.getString("panLog.enter"));
 		btnEnter.setIcon(new ImageIcon(this.getClass().getResource("/icons/apply.png")));
 		btnEnter.setEnabled(false);
 		btnEnter.addActionListener(controler);
 		
-		btnExit = new JButton("Quitter");
+		btnExit = new JButton(res.getString("panLog.exit"));
 		btnExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
 		btnExit.addActionListener(controler);
 		
-		btnCancel = new JButton("Annuler");
+		btnCancel = new JButton(res.getString("panLog.cancel"));
 		btnCancel.setIcon(new ImageIcon(this.getClass().getResource("/icons/cancel.png")));
 		btnCancel.addActionListener(controler);
 		btnCancel.addMouseListener(controler);
@@ -2426,6 +2520,38 @@ public class MainGui {
 
 	public JMenuItem getmDocumentation() {
 		return mDocumentation;
+	}
+
+	public JMenuItem getmAuto() {
+		return mAuto;
+	}
+
+	public JMenuItem getmEnglish() {
+		return mEnglish;
+	}
+
+	public JMenuItem getmFrench() {
+		return mFrench;
+	}
+
+	public Locale getLocale() {
+		return locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
+	public ResourceBundle getRes() {
+		return res;
+	}
+
+	public void setRes(ResourceBundle res) {
+		this.res = res;
+	}
+
+	public JPanel getPanGlobal() {
+		return panGlobal;
 	}
 
 }
