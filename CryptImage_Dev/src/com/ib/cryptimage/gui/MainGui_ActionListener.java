@@ -1289,6 +1289,19 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private void manageFileOpen() {
 		JFileChooser dialogue = new JFileChooser();
+		
+		String lang ="";
+		if(this.mainGui.getmAuto().isSelected()){
+			lang = Locale.getDefault().getLanguage();
+		} else if (this.mainGui.getmEnglish().isSelected()){
+			lang ="en";
+		} else if (this.mainGui.getmFrench().isSelected()){
+			lang = "fr";
+		}
+		
+		dialogue.setLocale(new Locale(lang));
+		dialogue.updateUI();
+		
 		dialogue.setDialogTitle("Sélectionnez le fichier d'entrée");
 		File file;
 

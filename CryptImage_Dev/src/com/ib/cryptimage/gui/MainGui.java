@@ -230,8 +230,7 @@ public class MainGui {
 		System.out.println("Locale par defaut : ");		
 		locale = Locale.getDefault();	
 		System.out.println(locale.getLanguage());
-		res = ResourceBundle.getBundle("ressources/mainGui", locale); 
-		System.out.println(res.getBaseBundleName());
+		res = ResourceBundle.getBundle("ressources/mainGui", locale); 		
 		
 		controler = new MainGui_ActionListener(this);
 			
