@@ -96,10 +96,12 @@ public class MainGui_ActionListener implements ActionListener, ChangeListener,
 DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private MainGui mainGui;
-	private Thread thread = null; 
+	private Thread thread = null;	
+	
+	private ResourceBundle res;
 	
 	public MainGui_ActionListener(MainGui mainGui) {
-		this.mainGui = mainGui;
+		this.mainGui = mainGui;		
 	}
 
 	@Override
@@ -743,45 +745,90 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		else if(src.equals(this.mainGui.getmAuto())){
 			System.out.println("Auto");
 			manageLang();
+			JobConfig.setLang(0);
 		}
-		else if(src.equals(this.mainGui.getmEnglish())){
+		else if(src.equals(this.mainGui.getmGerman())){
+			System.out.println("German");
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN)); 
+			this.mainGui.refreshGUI();
+			JobConfig.setLang(1);
+		}else if(src.equals(this.mainGui.getmEnglish())){
 			System.out.println("English");
 			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
 			this.mainGui.refreshGUI();
+			JobConfig.setLang(2);
+		}else if(src.equals(this.mainGui.getmSpanish())){
+			System.out.println("Spanish");
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("es"))); 
+			this.mainGui.refreshGUI();
+			JobConfig.setLang(3);
 		}else if(src.equals(this.mainGui.getmFrench())){
 			System.out.println("French");
 			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
 			this.mainGui.refreshGUI();
+			JobConfig.setLang(4);
+		}else if(src.equals(this.mainGui.getmItalian())){
+			System.out.println("Italian");
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("it"))); 
+			this.mainGui.refreshGUI();
+			JobConfig.setLang(5);
+		}else if(src.equals(this.mainGui.getmPolish())){
+			System.out.println("Polish");
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"))); 
+			this.mainGui.refreshGUI();
+			JobConfig.setLang(6);
 		}
 	}
 	
 	private void manageLang(){
-		if (this.mainGui.getLocale().getLanguage().equals("fr")){
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
-		}
+		if (this.mainGui.getLocale().getLanguage().equals("de")){
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN)); 
+		} else if(this.mainGui.getLocale().getLanguage().equals("en")){
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
+			}
+		else if(this.mainGui.getLocale().getLanguage().equals("es")){
+				this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("es"))); 
+				}
+		else if(this.mainGui.getLocale().getLanguage().equals("fr")){
+					this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
+				}
+		else if(this.mainGui.getLocale().getLanguage().equals("it")){
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("it"))); 
+			}
+		else if(this.mainGui.getLocale().getLanguage().equals("pl")){
+			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"))); 
+			}		
 		else{
 			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
 		}
 		this.mainGui.refreshGUI();
 	}
 	
-	private void launchDocumentation() {		
+	private void launchDocumentation() {
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
 		String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 	
-		File config = new File(binPath + "manuel_cryptimage.pdf");
+		String help_name_file = "";
+		if(JobConfig.getUserLanguage().equals("fr")){
+			help_name_file = "cryptimage_fr.pdf";
+		}
+		else{
+			help_name_file = "cryptimage_en.pdf";
+		}
+		
+		File config = new File(binPath + help_name_file);
 
 		if (config.exists()) {			
 			// run pdf program in order to launch documentation
 			if (Desktop.isDesktopSupported()) {
 				try {					
-					Desktop.getDesktop().open(new File(binPath + "manuel_cryptimage.pdf"));
+					Desktop.getDesktop().open(new File(binPath + help_name_file));
 				} catch (IOException ex) {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							"Impossible de lancer la documentation pdf,"
-							+ " vérifiez que vous avez bien installé un lecteur PDF.",
-							"Impossible de lancer la documentation pdf",
+							res.getString("mainGui.help.errorLaunch"),
+							res.getString("mainGui.help.errorLaunch.title"),
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -802,7 +849,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			String userHome = System.getProperty("user.home");
 
 			File configPDF = new File(userHome + File.separator + "cryptimage"
-					+ File.separator + "manuel_cryptimage.pdf");
+					+ File.separator + help_name_file );
 			
 			if (configPDF.exists()) {				
 				// run pdf program in order to launch documentation
@@ -813,10 +860,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						JOptionPane
 						.showMessageDialog(
 								mainGui.getFrame(),
-								"Impossible de lancer la documentation pdf depuis"
-								+ " le répertoire utilisateur,"
-								+ " vérifiez que vous avez bien installé un lecteur PDF.",
-								"Impossible de lancer la documentation pdf",
+								res.getString("mainGui.help.errorLaunchUserDir"),
+								res.getString("mainGui.help.errorLaunch.title"),
 								JOptionPane.ERROR_MESSAGE);
 					}
 				}
@@ -824,9 +869,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}
 			else {
 				// we install the documentation to the home user				 
-				 InputStream is = this.getClass().getResourceAsStream("/ressources/manuel_cryptimage.pdf");
+				 InputStream is = this.getClass().getResourceAsStream("/ressources/" + help_name_file);
 				
-				 File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "manuel_cryptimage.pdf");
+				 File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + help_name_file);
 				 FileOutputStream fos = null;				
 				try {
 					fos = new FileOutputStream(newFile);
@@ -868,9 +913,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							"Impossible d'installer la documentation vers"
-							+ " le répertoire utilisateur.",
-							"Impossible d'installer la documentation pdf",
+							res.getString("mainGui.help.errorInstall"),
+							res.getString("mainGui.help.errorInstall.title"),
 							JOptionPane.ERROR_MESSAGE);
 				}
 				 
@@ -888,9 +932,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 							JOptionPane
 							.showMessageDialog(
 									mainGui.getFrame(),
-									"Impossible de lancer la documentation pdf depuis"
-									+ " le répertoire utilisateur.",
-									"Impossible de lancer la documentation pdf",
+									res.getString("mainGui.help.errorLaunchUserDirGeneral"),
+									res.getString("mainGui.help.errorLaunch.title"),
 									JOptionPane.ERROR_MESSAGE);
 						}
 					}				
@@ -899,7 +942,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private void genRandomSyster(){
-		GenEncFile gen = new GenEncFile(mainGui.getFrame(), "Générer un fichier d'encodage", true);
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		GenEncFile gen = new GenEncFile(mainGui.getFrame(), res.getString("manageGenFile.title"), true);
 		gen.display();
 	}
 
@@ -923,9 +967,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 				.showMessageDialog(
 						mainGui.getFrame(),
-						"Une erreur de type exception s'est produite :" +
+						res.getString("mainGui.exceptionError") + " " +
 						e.getMessage(),
-						"Erreur du programme",
+						res.getString("mainGui.exceptionError.title"),
 						JOptionPane.ERROR_MESSAGE);
 				System.exit(1);
 			}
@@ -937,9 +981,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 				.showMessageDialog(
 						mainGui.getFrame(),
-						"Une erreur de type exception s'est produite :" +
+						res.getString("mainGui.exceptionError") + " " +
 						e.getMessage(),
-						"Erreur du programme",
+						res.getString("mainGui.exceptionError.title"),
 						JOptionPane.ERROR_MESSAGE);
 				System.exit(1);
 			}			
@@ -954,6 +998,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private void showAbout() {
+		
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
 		JLabel label = new JLabel();
 
 		String deb = "CryptImage v" + JobConfig.getVERSION() + "<br/>"
@@ -994,7 +1041,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		ep.setBackground(label.getBackground());
 		
 		JPanel pan = new JPanel();
-		JButton btnLicense = new JButton("Voir la licence");
+		JButton btnLicense = new JButton(res.getString("showAbout.license"));
 		btnLicense.addActionListener(new ActionListener() {
 			
 			@Override
@@ -1012,14 +1059,21 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		pan.add(ep, BorderLayout.CENTER);
 		pan.add(panBtn, BorderLayout.SOUTH);
 
-		JOptionPane.showMessageDialog(null, pan, "À propos...",
+		JOptionPane.showMessageDialog(null, pan, res.getString("showAbout.about"),
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	private void manageSave() {
 		JFileChooser dialogue = new JFileChooser();
+		
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
+		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
+		dialogue.updateUI();
+		
+		
 		dialogue.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		dialogue.setDialogTitle("Sélectionnez le répertoire où sera enregistré le fichier");
+		dialogue.setDialogTitle(res.getString("manageSave.dialogTitle"));
 		
 		File file;
 		if (dialogue.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -1028,8 +1082,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
-								"Le répertoire tapé n'existe pas, veuillez le créer d'abord.",
-								"répertoire non existant",
+								res.getString("manageSave.errorFolder"),
+								res.getString("manageSave.errorFolder.title"),
 								JOptionPane.WARNING_MESSAGE);
 			} else {
 				mainGui.getTxtOutputFile().setText(file.getAbsolutePath());
@@ -1039,7 +1093,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private void openFileSysterEnc(){
 		JFileChooser dialogue = new JFileChooser();
-		dialogue.setDialogTitle("Sélectionnez le fichier d'encodage");
+		
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
+		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
+		dialogue.updateUI();
+		
+		dialogue.setDialogTitle(res.getString("openFileSysterEnc.dialogTitle"));
 		File file;
 
 		dialogue.setAcceptAllFileFilterUsed(false);
@@ -1047,7 +1107,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		String[] extension;
 
 		extension = new String[] { "enc" };
-		filter = new FileNameExtensionFilter("fichier d'encodage *.enc", extension);
+		filter = new FileNameExtensionFilter(res.getString("openFileSysterEnc.filters"), extension);
 		
 
 		dialogue.setFileFilter(filter);
@@ -1064,8 +1124,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
-								"Le fichier n'est pas accessible en lecture ou bien est endommagé",
-								"erreur de lecture de fichier",
+								res.getString("openFileSysterEnc.errorIO"),
+								res.getString("openFileSysterEnc.errorIO.title"),
 								JOptionPane.ERROR_MESSAGE);
 			} else {
 				//TODO
@@ -1084,7 +1144,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private void openFileSysterDec(){
 		JFileChooser dialogue = new JFileChooser();
-		dialogue.setDialogTitle("Sélectionnez le fichier de décodage");
+		
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
+		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
+		dialogue.updateUI();
+		
+		dialogue.setDialogTitle(res.getString("openFileSysterDec.dialogTitle"));
 		File file;
 
 		FileNameExtensionFilter filter;
@@ -1092,7 +1158,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		dialogue.setAcceptAllFileFilterUsed(false);
 		extension = new String[] { "dec" };
-		filter = new FileNameExtensionFilter("fichier de décodage *.dec", extension);
+		filter = new FileNameExtensionFilter(res.getString("openFileSysterDec.filters"), extension);
 		
 
 		dialogue.setFileFilter(filter);
@@ -1109,8 +1175,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
-								"Le fichier n'est pas accessible en lecture ou bien est endommagé",
-								"erreur de lecture de fichier",
+								res.getString("openFileSysterDec.errorIO"),
+								res.getString("openFileSysterDec.errorIO.title"),
 								JOptionPane.ERROR_MESSAGE);
 			} else {
 				//TODO
@@ -1149,8 +1215,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						JOptionPane
 						.showMessageDialog(
 								mainGui.getFrame(),
-								"Ligne vierge à la ligne " + compt + " du fichier " + decEnc,
-								"erreur de syntaxe du fichier " + decEnc,
+								res.getString("mainGui.validityError.blankLine") + " " 
+								+ compt + " " 
+					     		+ res.getString("mainGui.validityError.file") 
+								+ " " + decEnc,
+								res.getString("mainGui.validityError.title") + " " + decEnc,
 								JOptionPane.ERROR_MESSAGE);
 						fileInBuff.close();
 						return false;
@@ -1160,8 +1229,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						JOptionPane
 						.showMessageDialog(
 								mainGui.getFrame(),
-								"Erreur de syntaxe à la ligne " + compt + " du fichier " + decEnc,
-								"erreur de syntaxe du fichier " + decEnc,
+								res.getString("mainGui.validityError.syntax") 
+								+ " " + compt + " " 
+								+ res.getString("mainGui.validityError.file")  
+								+ " " + decEnc,
+								res.getString("mainGui.validityError.title") + " " + decEnc,
 								JOptionPane.ERROR_MESSAGE);
 						fileInBuff.close();
 						return false;
@@ -1178,9 +1250,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 				.showMessageDialog(
 						mainGui.getFrame(),
-						"Erreur de syntaxe du fichier " + decEnc
+						res.getString("mainGui.validityError.title") + " " + decEnc
 						+ ", " + e.getMessage() ,
-						"erreur de syntaxe du fichier " + decEnc,
+						res.getString("mainGui.validityError.title") + " " + decEnc,
 						JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
@@ -1203,10 +1275,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							"Le fichier " + decEnc
-							+ " n'a pas assez de lignes par rapport "
-							+ "au nombre de trames du fichier vidéo.",
-							"Pas assez de lignes dans le fichier " + decEnc,
+							res.getString("mainGui.validityError.file.name") + " " + decEnc
+							+ " " + res.getString("mainGui.validityError.file.name2"),
+							res.getString("mainGui.validityError.file.name3") + " " + decEnc,
 							JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
@@ -1216,10 +1287,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							"Le fichier " + decEnc
-							+ " doit avoir au moins 3 lignes quand le mode "
-							+ "photo est selectionné.",
-							"Pas assez de lignes dans le fichier " + decEnc,
+							res.getString("mainGui.validityError.file.name") + " " + decEnc
+							+ " " + res.getString("mainGui.validityError.file.name4"),
+							res.getString("mainGui.validityError.file.name3") + " " + decEnc,
 							JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
@@ -1229,10 +1299,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							"Le fichier " + decEnc
-							+ " doit avoir au moins 1 ligne quand le mode "
-							+ "photo est selectionné.",
-							"Pas assez de lignes dans le fichier " + decEnc,
+							res.getString("mainGui.validityError.file.name") + " " + decEnc
+							+ " " + res.getString("mainGui.validityError.file.name5"),
+							res.getString("mainGui.validityError.file.name3") + " " + decEnc,
 							JOptionPane.ERROR_MESSAGE);
 					return false;
 				}		
@@ -1288,21 +1357,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	
 	private void manageFileOpen() {
-		JFileChooser dialogue = new JFileChooser();
+		JFileChooser dialogue = new JFileChooser();		
+
 		
-		String lang ="";
-		if(this.mainGui.getmAuto().isSelected()){
-			lang = Locale.getDefault().getLanguage();
-		} else if (this.mainGui.getmEnglish().isSelected()){
-			lang ="en";
-		} else if (this.mainGui.getmFrench().isSelected()){
-			lang = "fr";
-		}
-		
-		dialogue.setLocale(new Locale(lang));
+		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
 		dialogue.updateUI();
 		
-		dialogue.setDialogTitle("Sélectionnez le fichier d'entrée");
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
+		dialogue.setDialogTitle(res.getString("manageFileOpen.dialogTitle"));
 		File file;
 
 		FileNameExtensionFilter filter;
@@ -1310,12 +1373,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		if (mainGui.getRdiVideo().isSelected()) {
 			extension = new String[] { "avi", "mp4", "mpeg", "mkv", "mpeg2",
-					"mpg","ts", "m2t" };
-			filter = new FileNameExtensionFilter("vidéos *.avi *.mp4 *.mpg *.mpeg *.mpg2 *.mkv *.ts *.m2t", extension);
+					"mpg","ts", "m2t", "wmv" };
+			filter = new FileNameExtensionFilter(res.getString("manageFileOpen.filenameExtensionFiltersVideo"), extension);
 		} else {
 			extension = new String[] { "jpeg", "jpg", "bmp", "gif", "png",
 					"tiff" };
-			filter = new FileNameExtensionFilter("images *.jpeg *.jpg *.bmp *.gif *.png *.tiff", extension);
+			filter = new FileNameExtensionFilter(res.getString("manageFileOpen.filenameExtensionFiltersPhoto"), extension);
 		}
 
 		dialogue.setFileFilter(filter);
@@ -1332,8 +1395,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
-								"Le fichier n'est pas accessible en lecture ou bien est endommagé",
-								"erreur de lecture de fichier",
+								res.getString("manageFileOpen.errorOpen"),
+								res.getString("manageFileOpen.errorOpenTitle"),
 								JOptionPane.ERROR_MESSAGE);
 			} else {
 
@@ -1361,6 +1424,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageEnter() {
+		
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
 		if (mainGui.getCombAudience().getSelectedIndex() == 7
 				&& mainGui.getTxtMultiCode().getText().replaceAll("#", "")
 						.replaceAll(" ", "").equals("")
@@ -1368,8 +1434,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							"Vous devez entrer un ou plusieurs niveaux d'audiences pour le multicode.",
-							"pas de niveau d'audience pour le multicode",
+							res.getString("manageEnter.errorMulticode"),
+							res.getString("manageEnter.errorMulticodeTitle"),
 							JOptionPane.WARNING_MESSAGE);
 		} 
 		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
@@ -1379,9 +1445,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JOptionPane
 			.showMessageDialog(
 					mainGui.getFrame(),
-					"Vous devez entrer le chemin du fichier d'encodage dans le volet "
-					+ "de configuration syster",
-					"absence de fichier d'encodage",
+					res.getString("manageEnter.errorSysterFileEnc"),
+					res.getString("manageEnter.errorSysterFileEncTitle"),
 					JOptionPane.WARNING_MESSAGE);		
 		}
 		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
@@ -1391,9 +1456,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JOptionPane
 			.showMessageDialog(
 					mainGui.getFrame(),
-					"Vous devez entrer le chemin du fichier de décodage dans le volet"
-					+ " de configuration syster",
-					"absence de fichier de décodage",
+					res.getString("manageEnter.errorSysterFileDec"),
+					res.getString("manageEnter.errorSysterFileDecTitle"),
 					JOptionPane.WARNING_MESSAGE);		
 		}		
 		else {
@@ -1821,14 +1885,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private void alertTsM2t() {
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
 		mainGui.getTextInfos().setForeground(Color.red);
-		mainGui.getTextInfos().append("\r\nAttention, les vidéos au format TS,"
-				+ " ainsi que les vidéos"
-				+ " au format M2T "
-				+ "génèrent\r\n"
-				+ "un bug"
-				+ " dans la gestion du son avec cryptimage,"
-				+ " en conséquence la gestion du son sera désactivée.");
+		mainGui.getTextInfos().append(res.getString("mainGui.alertTsM2t"));
 		this.mainGui.getChkDisableSound().setSelected(true);
 		this.mainGui.getChkSound().setSelected(false);
 		this.mainGui.getChkSound().setEnabled(false);
@@ -2180,14 +2239,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	private Boolean saveConfig(){
 		
 		//language
-		int language = 0;
-		if(this.mainGui.getmAuto().isSelected()){
-			language = 0;
-		} else if (this.mainGui.getmEnglish().isSelected()){
-			language = 1;
-		} else if (this.mainGui.getmFrench().isSelected()){
-			language = 2;
-		}
+//		int language = 0;
+//		if(this.mainGui.getmAuto().isSelected()){
+//			language = 0;
+//		} else if (this.mainGui.getmEnglish().isSelected()){
+//			language = 1;
+//		} else if (this.mainGui.getmFrench().isSelected()){
+//			language = 2;
+//		}
 		
 		return JobConfig.saveConfig(
 				this.mainGui.getSlid16bitsWord().getValue(),
@@ -2206,7 +2265,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getCombAudioCodec().getSelectedIndex(),
 				this.mainGui.getCombAudioRate().getSelectedItem().toString().replaceAll("Hz", "").trim(),
 				this.mainGui.getCombSystemCrypt().getSelectedIndex(),
-				language);			
+				JobConfig.getLang());			
 	}
 	
 	private String getTime(int timer){		  

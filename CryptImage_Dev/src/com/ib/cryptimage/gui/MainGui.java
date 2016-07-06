@@ -47,6 +47,7 @@ import java.util.ResourceBundle;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -220,10 +221,23 @@ public class MainGui {
 	private JMenuItem mAbout;
 	private JRadioButtonMenuItem  mAuto;
 	private JRadioButtonMenuItem  mEnglish;
+	private JRadioButtonMenuItem  mGerman;
+	private JRadioButtonMenuItem  mItalian;
+	private JRadioButtonMenuItem  mSpanish;
+	private JRadioButtonMenuItem  mPolish;
 	private JRadioButtonMenuItem  mFrench;
 	
 	private TitledBorder titlePanLog;
 	private TitledBorder titlePanMode;
+	private TitledBorder titlePanFile;
+	private TitledBorder titlePanDiscret11;
+	private TitledBorder titlePanKeyboard;
+	private TitledBorder titlePanVideo;
+	private TitledBorder titlePanSyster;
+	private TitledBorder titlePanSysterCodingGen;
+	private TitledBorder titlePanSysterDecodingGen;
+	private TitledBorder titlePanSysterSubRdiCoding;
+	private TitledBorder titlePanSysterSubRdiDecoding;
 	
 	public MainGui(){		
 		
@@ -299,12 +313,28 @@ public class MainGui {
 				mAuto.setSelected(true);
 				break;
 			case 1:
+				res = ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN);
+				mGerman.setSelected(true);				
+				break;
+			case 2:
 				res = ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH);
 				mEnglish.setSelected(true);				
 				break;
-			case 2:
+			case 3:
+				res = ResourceBundle.getBundle("ressources/mainGui", new Locale("es"));
+				mSpanish.setSelected(true);				
+				break;
+			case 4:
 				res = ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH);
 				mFrench.setSelected(true);				
+				break;
+			case 5:
+				res = ResourceBundle.getBundle("ressources/mainGui", Locale.ITALIAN);
+				mItalian.setSelected(true);				
+				break;
+			case 6:
+				res = ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"));
+				mPolish.setSelected(true);				
 				break;
 			default:
 				break;
@@ -373,9 +403,10 @@ public class MainGui {
 	}
 	
 	private void copyNewHelpVersion(){
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
 		String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		
-		File config = new File(binPath + "manuel_cryptimage.pdf");
+		File config = new File(binPath + "cryptimage_fr.pdf");
 
 		if (!config.exists() && !JobConfig.getLaunch().equals(JobConfig.getVERSION())) {
 			
@@ -389,13 +420,14 @@ public class MainGui {
 			}		
 			
 			// we install the documentation to the home user
+			// french version
 			String userHome = System.getProperty("user.home");
 			File configPDF = new File(userHome + File.separator + "cryptimage"
-					+ File.separator + "manuel_cryptimage.pdf");
+					+ File.separator + "cryptimage_fr.pdf");
 			
-			 InputStream is = this.getClass().getResourceAsStream("/ressources/manuel_cryptimage.pdf");
+			 InputStream is = this.getClass().getResourceAsStream("/ressources/cryptimage_fr.pdf");
 			
-			 File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "manuel_cryptimage.pdf");
+			 File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "cryptimage_fr.pdf");
 			 FileOutputStream fos = null;				
 			try {
 				fos = new FileOutputStream(newFile);
@@ -437,9 +469,8 @@ public class MainGui {
 				JOptionPane
 				.showMessageDialog(
 						this.frame,
-						"Impossible d'installer la documentation vers"
-						+ " le répertoire utilisateur.",
-						"Impossible d'installer la documentation pdf",
+						res.getString("mainGui.help.errorInstall"),
+						res.getString("mainGui.help.errorInstall.title"),
 						JOptionPane.ERROR_MESSAGE);
 			}
 			 
@@ -448,7 +479,69 @@ public class MainGui {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}			 
+			}
+			
+			// english version						
+			File configPDF_en = new File(userHome + File.separator + "cryptimage"
+					+ File.separator + "cryptimage_en.pdf");
+			
+			 InputStream is_en= this.getClass().getResourceAsStream("/ressources/cryptimage_en.pdf");
+			
+			 File newFile_en = new File(System.getProperty("java.io.tmpdir") + File.separator + "cryptimage_en.pdf");
+			 FileOutputStream fos_en = null;				
+			try {
+				fos_en = new FileOutputStream(newFile_en);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}  
+			 
+			 int read_en = 0;
+		     byte[] bytes_en = new byte[1024];
+			 
+		     try {
+				while ((read_en = is_en.read(bytes_en)) != -1) {
+					 try {
+						fos_en.write(bytes_en, 0, read_en);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+						 
+			 try {
+				fos_en.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+											 
+			 try {
+				Files.copy(newFile_en.toPath(), 
+						configPDF_en.toPath(), REPLACE_EXISTING);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				JOptionPane
+				.showMessageDialog(
+						this.frame,
+						res.getString("mainGui.help.errorInstall"),
+						res.getString("mainGui.help.errorInstall.title"),
+						JOptionPane.ERROR_MESSAGE);
+			}
+			 
+			try {
+				Files.delete(newFile_en.toPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 		}
 	}
 	
@@ -463,6 +556,10 @@ public class MainGui {
 		mGen.setText(res.getString("mGen"));
 		mEnglish.setText(res.getString("mEnglish"));
 		mFrench.setText(res.getString("mFrench"));
+		mSpanish.setText(res.getString("mSpanish"));
+		mGerman.setText(res.getString("mGerman"));
+		mItalian.setText(res.getString("mItalian"));
+		mPolish.setText(res.getString("mPolish"));
 		mDocumentation.setText(res.getString("mDocumentation"));
 		mAbout.setText(res.getString("mAbout"));
 		
@@ -482,6 +579,103 @@ public class MainGui {
 		chkStrictMode.setToolTipText(res.getString("panMode.tooltip.respectNorme"));
 		lblSystemCrypt.setText(res.getString("panMode.lblSystem"));
 		btnAbout.setText(res.getString("mAbout"));
+		
+		//panfile
+		titlePanFile.setTitle(res.getString("panFile.title"));
+		btnInputFile.setText(res.getString("panFile.open"));
+		btnInputFile.setToolTipText(res.getString("panFile.tooltip.open"));
+		btnOutputFile.setText(res.getString("panFile.folder"));
+		btnOutputFile.setToolTipText(res.getString("panFile.tooltip.folder"));
+		
+		//panDiscret11
+		titlePanDiscret11.setTitle(res.getString("panDiscret11.title"));
+		rdiDiscretCoding.setText(res.getString("panDiscret11.coding"));
+		rdiDiscretDecoding.setText(res.getString("panDiscret11.decoding"));
+		rdiDiscretCorrel.setText(res.getString("panDiscret11.decodingCorrel"));
+		lab16bitsWord.setText(res.getString("panDiscret11.lab16bits"));
+		
+		labAudience.setText(res.getString("panDiscret11.labAudience"));
+		int index = combAudience.getSelectedIndex();
+		String[] tab = {res.getString("panDiscret11.AudienceLevel1"),res.getString("panDiscret11.AudienceLevel2"),res.getString("panDiscret11.AudienceLevel3"),res.getString("panDiscret11.AudienceLevel4"),
+				res.getString("panDiscret11.AudienceLevel5"),res.getString("panDiscret11.AudienceLevel6"),res.getString("panDiscret11.AudienceLevel7"),res.getString("panDiscret11.AudienceLevelMulti")};
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>( tab );
+		combAudience.setModel(model);
+		combAudience.setSelectedIndex(index);
+		
+		lbl11bitsInfo.setToolTipText(res.getString("panDiscret11.lab11bits.tooltip"));
+		txtMultiCode.setToolTipText(res.getString("panDiscret11.txtMultiCode.tooltip"));
+		lblMultiAudience.setText(res.getString("panDiscret11.labMultiAudience"));
+		lblCycle.setText(res.getString("panDiscret11.labCycle"));
+		jspCycle.setToolTipText(res.getString("panDiscret11.jspCycle.tooltip"));
+		chkDelay.setText(res.getString("panDiscret11.chkDelay"));
+		labDelay1.setText(res.getString("panDiscret11.labDelay1"));
+		labDelay2.setText(res.getString("panDiscret11.labDelay2"));
+		labFrameStart.setText(res.getString("panDiscret11.labFrameStart"));
+		slideFrameStart.setToolTipText(res.getString("panDiscret11.slideFrameStart.tooltip"));
+		chkNoBlackBar.setText(res.getString("panDiscret11.chkNoBlackBar"));
+		chkNoBlackBar.setToolTipText(res.getString("panDiscret11.chkNoBlackBar.tooltip"));
+		chkSound.setText(res.getString("panDiscret11.chkSound"));
+		chkSound.setToolTipText(res.getString("panDiscret11.chkSound.tooltip"));
+		chkDisableSound.setText(res.getString("panDiscret11.chkDisableSound"));
+		chkDisableSound.setToolTipText(res.getString("panDiscret11.chkDisableSound.tooltip"));
+			
+		//createPanKeyboard
+		titlePanKeyboard.setTitle(res.getString("panKeyboard.titlePanKeyboard"));
+		labSerial.setText(res.getString("panKeyboard.labSerial"));
+		labCode.setText(res.getString("panKeyboard.labCode"));
+		
+		//createPanVideo
+		titlePanVideo.setTitle(res.getString("panVideo.titlePanVideo"));
+		labAudioCodec.setText(res.getString("panVideo.labAudioCodec"));
+		chkPlayer.setText(res.getString("panVideo.chkPlayer"));
+		chkPlayer.setToolTipText(res.getString("panVideo.chkPlayer.tooltip"));
+		chkHorodatage.setText(res.getString("panVideo.chkHorodatage"));
+		chkHorodatage.setToolTipText(res.getString("panVideo.chkHorodatage.tooltip"));
+		labCodec.setText(res.getString("panVideo.labCodec"));
+		labBitrate.setText(res.getString("panVideo.labBitrate"));
+		labNbFrames.setText(res.getString("panVideo.labNbFrames"));
+		lblExtension.setText(res.getString("panVideo.lblExtension"));
+		
+		//createPanSyster
+		titlePanSyster.setTitle(res.getString("panSyster.titlePanSyster"));
+		titlePanSysterCodingGen.setTitle(res.getString("panSyster.titlePanSysterCodingGen"));
+		titlePanSysterDecodingGen.setTitle(res.getString("panSyster.titlePanSysterDecodingGen"));
+		rdiSysterCodingGen.setText(res.getString("panSyster.rdiSysterCodingGen"));
+		rdiSysterDecodingGen.setText(res.getString("panSyster.rdiSysterDecodingGen"));
+		btnFileSysterEnc.setText(res.getString("panSyster.btnFileSysterEnc"));
+		btnFileSysterDec.setText(res.getString("panSyster.btnFileSysterDec"));
+		rdiSysterCodingRandom.setText(res.getString("panSyster.rdiSysterCodingRandom"));
+		rdiSysterCodingFile.setText(res.getString("panSyster.rdiSysterCodingFile"));
+		chkTags.setText(res.getString("panSyster.chkTags"));
+		
+		int indexSysterEnc = getComboTableSysterEnc().getSelectedIndex();
+		int indexSysterDec = comboTableSysterDec.getSelectedIndex();
+		String[] tabSyster ={res.getString("panSyster.comboTableSysterEnc.menu1"),
+				res.getString("panSyster.comboTableSysterEnc.menu2")};
+		
+		DefaultComboBoxModel<String> modelSysterEnc = new DefaultComboBoxModel<String>( tabSyster );
+		DefaultComboBoxModel<String> modelSysterDec = new DefaultComboBoxModel<String>( tabSyster );
+		getComboTableSysterEnc().setModel(modelSysterEnc);
+		getComboTableSysterEnc().setSelectedIndex(indexSysterEnc);
+		comboTableSysterDec.setModel(modelSysterDec);
+		comboTableSysterDec.setSelectedIndex(indexSysterDec);
+		
+		rdiSysterDecodingFile.setText(res.getString("panSyster.rdiSysterDecodingFile"));
+		rdiSysterDeCodingTags.setText(res.getString("panSyster.rdiSysterDeCodingTags"));
+		rdiSysterDecodingCorrel.setText(res.getString("panSyster.rdiSysterDecodingCorrel"));
+		labFrameStartSyster.setText(res.getString("panSyster.labFrameStartSyster"));
+		slideFrameStartSyster.setToolTipText(res.getString("panSyster.labFrameStartSyster.tooltip"));
+		chkSoundSyster.setText(res.getString("panSyster.chkSoundSyster"));
+		chkSoundSyster.setToolTipText(res.getString("panSyster.chkSoundSyster.tooltip"));
+		chkDisableSoundSyster.setText(res.getString("panSyster.chkDisableSoundSyster"));
+		chkDisableSoundSyster.setToolTipText(res.getString("panSyster.chkDisableSoundSyster.tooltip"));
+		
+		
+		
+		
+		
+		
+		
 	
 	}
 	
@@ -504,9 +698,28 @@ public class MainGui {
 		mAuto = new JRadioButtonMenuItem("Auto");
 		mAuto.addActionListener(controler);
 		mEnglish = new JRadioButtonMenuItem(res.getString("mEnglish"));
+		mEnglish.setIcon(new ImageIcon(this.getClass().getResource("/icons/gb.png")));
 		mEnglish.addActionListener(controler);
+		
 		mFrench = new JRadioButtonMenuItem(res.getString("mFrench"));
+		mFrench.setIcon(new ImageIcon(this.getClass().getResource("/icons/fr.png")));
 		mFrench.addActionListener(controler);
+		
+		mGerman = new JRadioButtonMenuItem(res.getString("mGerman"));
+		mGerman.setIcon(new ImageIcon(this.getClass().getResource("/icons/de.png")));
+		mGerman.addActionListener(controler);
+		
+		mSpanish = new JRadioButtonMenuItem(res.getString("mSpanish"));
+		mSpanish.setIcon(new ImageIcon(this.getClass().getResource("/icons/es.png")));
+		mSpanish.addActionListener(controler);
+		
+		mItalian = new JRadioButtonMenuItem(res.getString("mItalian"));
+		mItalian.setIcon(new ImageIcon(this.getClass().getResource("/icons/it.png")));
+		mItalian.addActionListener(controler);
+		
+		mPolish = new JRadioButtonMenuItem(res.getString("mPolish"));
+		mPolish.setIcon(new ImageIcon(this.getClass().getResource("/icons/pl.png")));
+		mPolish.addActionListener(controler);
 		
 		mAbout = new JMenuItem(res.getString("mAbout"));		
 		mAbout.addActionListener(controler);
@@ -528,12 +741,20 @@ public class MainGui {
 		mTools.setMnemonic('t');
 		
 		mLang.add(mAuto);
+		mLang.add(mGerman);
 		mLang.add(mEnglish);
+		mLang.add(mSpanish);
 		mLang.add(mFrench);
+		mLang.add(mItalian);
+		mLang.add(mPolish);
 		ButtonGroup btgLang = new ButtonGroup();		
 		btgLang.add(mAuto);
+		btgLang.add(mGerman);
 		btgLang.add(mEnglish);
+		btgLang.add(mSpanish);
 		btgLang.add(mFrench);
+		btgLang.add(mItalian);
+		btgLang.add(mPolish);
 		mAuto.setSelected(true); // TODO to be configured by preference file
 		
 		mHelp.add(mDocumentation);
@@ -635,25 +856,24 @@ public class MainGui {
 	
 	private void createPanFile(){
 		panFile = new JPanel();
-		
-		TitledBorder title;
-		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Fichiers");
-		panFile.setBorder(title);
+				
+		titlePanFile = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panFile.title"));
+		panFile.setBorder(titlePanFile);
 		
 		txtInputFile = new JTextField(40);
 		txtInputFile.setEditable(false);
 		txtOutputFile = new JTextField(40);
 		txtOutputFile.setEditable(false);
-		btnInputFile = new JButton("Ouvrir");
+		btnInputFile = new JButton(res.getString("panFile.open"));
 		btnInputFile.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
-		btnInputFile.setToolTipText("le fichier vidéo ou photo à ouvrir");
+		btnInputFile.setToolTipText(res.getString("panFile.tooltip.open"));
 		btnInputFile.addActionListener(controler);
-		btnOutputFile = new JButton("Dossier");
+		btnOutputFile = new JButton(res.getString("panFile.folder"));
 		btnOutputFile.setIcon(new ImageIcon(this.getClass().getResource("/icons/fileopen.png")));
 		btnOutputFile.setEnabled(true);
 		btnOutputFile.addActionListener(controler);
-		btnOutputFile.setToolTipText("le dossier de travail où seront stockés les fichiers générés");
+		btnOutputFile.setToolTipText(res.getString("panFile.tooltip.folder"));
 		
 		
 		GridBagLayout gbl = new GridBagLayout();
@@ -694,10 +914,10 @@ public class MainGui {
 	
 	private void createPanKeyboardCode(){
 		panKeyboardCode = new JPanel();
-		TitledBorder title;
-		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Code clavier décodeur");
-		panKeyboardCode.setBorder(title);
+		
+		titlePanKeyboard = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panKeyboard.titlePanKeyboard"));
+		panKeyboardCode.setBorder(titlePanKeyboard);
 		
 		GridBagLayout gbl = new GridBagLayout();
 		
@@ -722,8 +942,8 @@ public class MainGui {
 		chkAutorisation6.setSelected(true);
 		
 		
-		labSerial = new JLabel("numéro de série:");		
-		labCode = new JLabel("code clavier:");
+		labSerial = new JLabel(res.getString("panKeyboard.labSerial"));		
+		labCode = new JLabel(res.getString("panKeyboard.labCode"));
 		
 		MaskFormatter mask;
 		
@@ -736,14 +956,14 @@ public class MainGui {
 			e.printStackTrace();
 		}
 		
-		txtSerial.setColumns(8);
+		txtSerial.setColumns(7);
 		txtSerial.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);	
 		txtSerial.setHorizontalAlignment(JTextField.RIGHT);
 		
 	
 			
 		txtSerial.getDocument().addDocumentListener(controler);		
-		txtCode = new JTextField(8);
+		txtCode = new JTextField(7);
 		txtCode.setEditable(false);
 		txtCode.setHorizontalAlignment(JTextField.RIGHT);
 		
@@ -836,28 +1056,27 @@ public class MainGui {
 		panOptionsSyster = new JPanel();
 		//panOptionsSyster.setLayout(new GridLayout(3, 1));
 		
-		TitledBorder title;
-		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Options nagravision syster");
-		panOptionsSyster.setBorder(title);		
+		titlePanSyster = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panSyster.titlePanSyster"));
+		panOptionsSyster.setBorder(titlePanSyster);		
 				
 		panCoderSyster = new JPanel();
-		TitledBorder titleCodingGen;
-		titleCodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Options de codage");
-		panCoderSyster.setBorder(titleCodingGen);
+		
+		titlePanSysterCodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panSyster.titlePanSysterCodingGen"));
+		panCoderSyster.setBorder(titlePanSysterCodingGen);
 		//panCoderSyster.setLayout(new BoxLayout(panCoderSyster, BoxLayout.Y_AXIS));
 		
 		panDecoderSyster = new JPanel();
-		TitledBorder titleDecodingGen;
-		titleDecodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Options de décodage");
-		panDecoderSyster.setBorder(titleDecodingGen);
+		
+		titlePanSysterDecodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panSyster.titlePanSysterDecodingGen"));
+		panDecoderSyster.setBorder(titlePanSysterDecodingGen);
 		panDecoderSyster.setLayout(new BoxLayout(panDecoderSyster, BoxLayout.Y_AXIS));
 		
-		rdiSysterCodingGen = new JRadioButton("Coder");
+		rdiSysterCodingGen = new JRadioButton(res.getString("panSyster.rdiSysterCodingGen"));
 		rdiSysterCodingGen.addActionListener(controler);
-		rdiSysterDecodingGen = new JRadioButton("Décoder");
+		rdiSysterDecodingGen = new JRadioButton(res.getString("panSyster.rdiSysterDecodingGen"));
 		rdiSysterDecodingGen.addActionListener(controler);
 		
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -866,35 +1085,35 @@ public class MainGui {
 		
 		
 		
-		btnFileSysterEnc = new JButton("Ouvrir");
+		btnFileSysterEnc = new JButton(res.getString("panSyster.btnFileSysterEnc"));
 		btnFileSysterEnc.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		btnFileSysterEnc.addActionListener(controler);
-		btnFileSysterDec = new JButton("Ouvrir");
+		btnFileSysterDec = new JButton(res.getString("panSyster.btnFileSysterDec"));
 		btnFileSysterDec.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		btnFileSysterDec.addActionListener(controler);
 		
 		//sub rdi coding
-		rdiSysterCodingRandom = new JRadioButton("Coder automatiquement");
+		rdiSysterCodingRandom = new JRadioButton(res.getString("panSyster.rdiSysterCodingRandom"));
 		rdiSysterCodingRandom.addActionListener(controler);
-		rdiSysterCodingFile = new JRadioButton("Coder à l'aide d'un fichier d'encodage");
+		rdiSysterCodingFile = new JRadioButton(res.getString("panSyster.rdiSysterCodingFile"));
 		rdiSysterCodingFile.addActionListener(controler);
-		chkTags = new JCheckBox("Tatouer la ligne 288");
+		chkTags = new JCheckBox(res.getString("panSyster.chkTags"));
 		chkTags.addActionListener(controler);
 		
 		ButtonGroup btnSubOptionsCoding = new ButtonGroup();
 		btnSubOptionsCoding.add(rdiSysterCodingRandom);
 		btnSubOptionsCoding.add(rdiSysterCodingFile);		
 				
-		String[] tab = {"table primaire 1","table primaire 2"};
+		String[] tab = {res.getString("panSyster.comboTableSysterEnc.menu1"),res.getString("panSyster.comboTableSysterEnc.menu2")};
 		comboTableSysterEnc = new JComboBox<String>(tab);
 		comboTableSysterEnc.setSelectedIndex(1);
 		
 		
 		JPanel subRdiCoding = new JPanel();
-		TitledBorder titleSubRdiCoding;
-		titleSubRdiCoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+		
+		titlePanSysterSubRdiCoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 				"");
-		subRdiCoding.setBorder(titleSubRdiCoding);
+		subRdiCoding.setBorder(titlePanSysterSubRdiCoding);
 		//subRdiCoding.setLayout(new BoxLayout(subRdiCoding, BoxLayout.Y_AXIS));
 		txtSysterEnc = new JTextField(80);
 		txtSysterEnc.setEditable(false);		
@@ -967,11 +1186,11 @@ public class MainGui {
 				1, 1,1,1);		
 		
 		//decoding
-		rdiSysterDecodingFile = new JRadioButton("Décoder à l'aide d'un fichier de décodage");
+		rdiSysterDecodingFile = new JRadioButton(res.getString("panSyster.rdiSysterDecodingFile"));
 		rdiSysterDecodingFile.addActionListener(controler);
-		rdiSysterDeCodingTags = new JRadioButton("Décoder via le tatouage de la ligne 288");
+		rdiSysterDeCodingTags = new JRadioButton(res.getString("panSyster.rdiSysterDeCodingTags"));
 		rdiSysterDeCodingTags.addActionListener(controler);
-		rdiSysterDecodingCorrel = new JRadioButton("Décoder via la corrélation de lignes");
+		rdiSysterDecodingCorrel = new JRadioButton(res.getString("panSyster.rdiSysterDecodingCorrel"));
 		rdiSysterDecodingCorrel.addActionListener(controler);
 		
 		ButtonGroup btnSubOptionsDecoding = new ButtonGroup();
@@ -980,10 +1199,10 @@ public class MainGui {
 		btnSubOptionsDecoding.add(rdiSysterDecodingCorrel);
 		
 		JPanel subRdiDecoding = new JPanel();
-		TitledBorder titleSubRdiDecoding;
-		titleSubRdiDecoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+		
+		titlePanSysterSubRdiDecoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 				"");
-		subRdiDecoding.setBorder(titleSubRdiDecoding);
+		subRdiDecoding.setBorder(titlePanSysterSubRdiDecoding);
 		//subRdiDecoding.setLayout(new BoxLayout(subRdiDecoding, BoxLayout.Y_AXIS));
 //		subRdiDecoding.add(rdiSysterDecodingFile);
 //		subRdiDecoding.add(rdiSysterDeCodingTags);
@@ -1077,9 +1296,9 @@ public class MainGui {
 		
 		//pan syster misc
 		//frame start    
-		labFrameStartSyster = new JLabel("démarrer à la trame ");
+		labFrameStartSyster = new JLabel(res.getString("panSyster.labFrameStartSyster"));
 		slideFrameStartSyster = new JSlider(JSlider.HORIZONTAL,1,200000,1);
-		slideFrameStartSyster.setToolTipText("permet de commencer le codage/décodage qu'à partir d'un numéro de trame précis");
+		slideFrameStartSyster.setToolTipText(res.getString("panSyster.labFrameStartSyster.tooltip"));
 		jspFrameStartSyster = new JSpinner();	
 		jspFrameStartSyster.addChangeListener(controler);		
 		JSpinner.NumberEditor spinnerEditor3 = new JSpinner.NumberEditor(jspFrameStartSyster);
@@ -1105,14 +1324,13 @@ public class MainGui {
 		slideFrameStartSyster.setPaintLabels(true);		
 		slideFrameStartSyster.setPaintTicks(true);
 		
-		chkSoundSyster = new JCheckBox("Traiter le son");
+		chkSoundSyster = new JCheckBox(res.getString("panSyster.chkSoundSyster"));
 		chkSoundSyster.setSelected(true);
-		chkSoundSyster.setToolTipText("<html>permet de crypter/décrypter le son,<br/>"
-				+ "si décochée le son sera présent mais non traité par le codeur/décodeur</html>");
+		chkSoundSyster.setToolTipText(res.getString("panSyster.chkSoundSyster.tooltip"));
 		
-		chkDisableSoundSyster = new JCheckBox("Désactiver le son");		
+		chkDisableSoundSyster = new JCheckBox(res.getString("panSyster.chkDisableSoundSyster"));		
 		chkDisableSoundSyster.setSelected(false);
-		chkDisableSoundSyster.setToolTipText("Désactive la piste son, la vidéo sera muette.");
+		chkDisableSoundSyster.setToolTipText(res.getString("panSyster.chkDisableSoundSyster.tooltip"));
 		chkDisableSoundSyster.addActionListener(controler);
 		
 		
@@ -1201,16 +1419,16 @@ public class MainGui {
 	
 	private void createPanDiscret11(){
 		panOptionsDiscret11 = new JPanel();
-		TitledBorder title;
-		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Options discret11");
-		panOptionsDiscret11.setBorder(title);
+		
+		titlePanDiscret11 = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panDiscret11.title"));
+		panOptionsDiscret11.setBorder(titlePanDiscret11);
 		GridBagLayout gbl = new GridBagLayout();
 		
-		rdiDiscretCoding = new JRadioButton("coder");
+		rdiDiscretCoding = new JRadioButton(res.getString("panDiscret11.coding"));
 		rdiDiscretCoding.setSelected(true);
-		rdiDiscretDecoding = new JRadioButton("décoder");
-		rdiDiscretCorrel = new JRadioButton("décoder par corrélation de lignes");
+		rdiDiscretDecoding = new JRadioButton(res.getString("panDiscret11.decoding"));
+		rdiDiscretCorrel = new JRadioButton(res.getString("panDiscret11.decodingCorrel"));
 		
 		rdiDiscretCoding.addActionListener(controler);
 		rdiDiscretDecoding.addActionListener(controler);
@@ -1225,7 +1443,7 @@ public class MainGui {
 		JPanel pan16bits = new JPanel();
 		GridBagLayout gbl_pan16bits = new GridBagLayout();
 		
-		lab16bitsWord = new JLabel("mot de 16 bits");
+		lab16bitsWord = new JLabel(res.getString("panDiscret11.lab16bits"));
 		slid16bitsWord = new JSlider(JSlider.HORIZONTAL,32,65535,58158);
 		slid16bitsWord.addChangeListener(controler);			
 		
@@ -1307,17 +1525,16 @@ public class MainGui {
 		//GridBagLayout gblAudience = new GridBagLayout();
 				
 		
-		labAudience = new JLabel("Audience");		
-		String[] tab = {"niveau 1","niveau 2","niveau 3","niveau 4",
-				"niveau 5","niveau 6","niveau 7", "multicode"};
+		labAudience = new JLabel(res.getString("panDiscret11.labAudience"));		
+		String[] tab = {res.getString("panDiscret11.AudienceLevel1"),res.getString("panDiscret11.AudienceLevel2"),res.getString("panDiscret11.AudienceLevel3"),res.getString("panDiscret11.AudienceLevel4"),
+				res.getString("panDiscret11.AudienceLevel5"),res.getString("panDiscret11.AudienceLevel6"),res.getString("panDiscret11.AudienceLevel7"),res.getString("panDiscret11.AudienceLevelMulti")};
 		combAudience = new JComboBox<String>(tab);
 		combAudience.setSelectedIndex(0);
 		combAudience.addActionListener(controler);
 		
 		lbl11bitsInfo = new JLabel();
 		lbl11bitsInfo.setFont(new Font("Serif", Font.PLAIN, 11));
-		lbl11bitsInfo.setToolTipText("<html>Le mot de 11 bits correspondant au niveau d'audience.<br/>" 
-									+ "Il peut y en avoir plusieurs si le multicode est choisi.</html>");
+		lbl11bitsInfo.setToolTipText(res.getString("panDiscret11.lab11bits.tooltip"));
 		
 		//multimode components		
 		
@@ -1341,16 +1558,14 @@ public class MainGui {
 		txtMultiCode.setFocusLostBehavior(JFormattedTextField.COMMIT);	
 		//txtMultiCode.setHorizontalAlignment(JTextField.RIGHT);
 		
-		txtMultiCode.setToolTipText("<html>Entrez ici les niveaux d'audiences,<br/>" + 
-									"la liste peut contenir jusqu'à 10 niveaux d'audiences.</html>");
+		txtMultiCode.setToolTipText(res.getString("panDiscret11.txtMultiCode.tooltip"));
 		
-		lblMultiAudience = new JLabel("audiences:");
-		lblCycle = new JLabel("cycle:");
+		lblMultiAudience = new JLabel(res.getString("panDiscret11.labMultiAudience"));
+		lblCycle = new JLabel(res.getString("panDiscret11.labCycle"));
 				
 		jspCycle = new JSpinner();
 		
-		jspCycle.setToolTipText("<html>Selectionnez ici le nombre de cycles de 24 trames progressives qu'aura un niveau d'audience.<br/>"+
-								"La durée d'un cycle est de 960 millisecondes.</html>");
+		jspCycle.setToolTipText(res.getString("panDiscret11.jspCycle.tooltip"));
 		
 		JSpinner.NumberEditor spinnerEditorMultiMode = new JSpinner.NumberEditor(jspCycle);
 		jspCycle.setEditor(spinnerEditorMultiMode);
@@ -1377,13 +1592,13 @@ public class MainGui {
 	    panAudience.add(lbl11bitsInfo);	    
 
 		  
-		chkDelay = new JCheckBox("Retards par défaut");
+		chkDelay = new JCheckBox(res.getString("panDiscret11.chkDelay"));
 		chkDelay.setSelected(true);
 		chkDelay.addActionListener(controler);
 		
-		labDelay1 = new JLabel("Retard 1");
+		labDelay1 = new JLabel(res.getString("panDiscret11.labDelay1"));
 		txtDelay1 = new JTextField(5);
-		labDelay2 = new JLabel("Retard 2");
+		labDelay2 = new JLabel(res.getString("panDiscret11.labDelay2"));
 		txtDelay2 = new JTextField(5);
 		txtDelay1.setEditable(false);
 		txtDelay2.setEditable(false);
@@ -1473,9 +1688,9 @@ public class MainGui {
 		
 		
 		//frame start    
-		labFrameStart = new JLabel("démarrer à la trame ");
+		labFrameStart = new JLabel(res.getString("panDiscret11.labFrameStart"));
 		slideFrameStart = new JSlider(JSlider.HORIZONTAL,1,200000,1);
-		slideFrameStart.setToolTipText("permet de commencer le codage/décodage qu'à partir d'un numéro de trame précis");
+		slideFrameStart.setToolTipText(res.getString("panDiscret11.slideFrameStart.tooltip"));
 		jspFrameStart = new JSpinner();	
 		jspFrameStart.addChangeListener(controler);		
 		JSpinner.NumberEditor spinnerEditor2 = new JSpinner.NumberEditor(jspFrameStart);
@@ -1529,19 +1744,16 @@ public class MainGui {
 				20,25,
 				1, 1,1,1);
 		
-		chkNoBlackBar = new JCheckBox("Bordure masquée");
+		chkNoBlackBar = new JCheckBox(res.getString("panDiscret11.chkNoBlackBar"));
 		chkNoBlackBar.addActionListener(controler);
-		chkNoBlackBar.setToolTipText("<html>-En mode codage: masque les indices de décalage dans la bordure gauche,<br/>"
-				+ "le noir dans cette zone sera remplacé par une autre couleur,<br/>-En mode décodage: supprime les segments de couleur dans la bordure"
-				+ "<br/>si cette option avait été activée en mode codage.</html>");
-		chkSound = new JCheckBox("Traiter le son");
+		chkNoBlackBar.setToolTipText(res.getString("panDiscret11.chkNoBlackBar.tooltip"));
+		chkSound = new JCheckBox(res.getString("panDiscret11.chkSound"));
 		chkSound.setSelected(true);
-		chkSound.setToolTipText("<html>permet de crypter/décrypter le son,<br/>"
-				+ "si décochée le son sera présent mais non traité par le codeur/décodeur</html>");
+		chkSound.setToolTipText(res.getString("panDiscret11.chkSound.tooltip"));
 		
-		chkDisableSound = new JCheckBox("Désactiver le son");		
+		chkDisableSound = new JCheckBox(res.getString("panDiscret11.chkDisableSound"));		
 		chkDisableSound.setSelected(false);
-		chkDisableSound.setToolTipText("Désactive la piste son, la vidéo sera muette.");
+		chkDisableSound.setToolTipText(res.getString("panDiscret11.chkDisableSound.tooltip"));
 		chkDisableSound.addActionListener(controler);
 		
 		//initialisation serial decoder
@@ -1569,7 +1781,7 @@ public class MainGui {
 				rdiDiscretCorrel,
 				GridBagConstraints.WEST, GridBagConstraints.WEST,
 				2, 0,
-				1,1,
+				2,1,
 				33,25,
 				1, 1,1,1);
 		
@@ -1669,10 +1881,10 @@ public class MainGui {
 	private void createPanVideo(){
 		
 		panVideoOptions = new JPanel();
-		TitledBorder title;
-		title = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"Options audio/vidéo");
-		panVideoOptions.setBorder(title);
+		
+		titlePanVideo = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				res.getString("panVideo.titlePanVideo"));
+		panVideoOptions.setBorder(titlePanVideo);
 		GridBagLayout gbl = new GridBagLayout();
 		
 		rdi720 = new JRadioButton("720x576");
@@ -1682,9 +1894,9 @@ public class MainGui {
 		btngrp.add(rdi720);
 		btngrp.add(rdi768);
 		
-		labAudioCodec = new JLabel("Audio");
+		labAudioCodec = new JLabel(res.getString("panVideo.labAudioCodec"));
 		String[] tabAudio = {"mp3 96 kbs","mp3 128 kbs","mp3 160 kbs",
-				"mp3 192 kbs","mp3 224 kbs","mp3 320 kbs","wav (pour mkv)"};
+				"mp3 192 kbs","mp3 224 kbs","mp3 320 kbs","wav (mkv)"};
 		combAudioCodec = new JComboBox<String>(tabAudio);		
 		combAudioCodec.setSelectedIndex(3);
 		combAudioCodec.addActionListener(controler);
@@ -1693,22 +1905,19 @@ public class MainGui {
 		combAudioRate = new JComboBox<String>(tabAudioRate);
 		combAudioRate.addActionListener(controler);
 		
-		chkPlayer = new JCheckBox("mode lecteur");
+		chkPlayer = new JCheckBox(res.getString("panVideo.chkPlayer"));
 		chkPlayer.addActionListener(controler);
-		chkPlayer.setToolTipText("<html>Permet de regarder le résultat dans "
-				+ "une fenêtre au lieu de créer la vidéo,<br/>"
-				+ "c'est un simple aperçu visuel sans le son.</html>");
+		chkPlayer.setToolTipText(res.getString("panVideo.chkPlayer.tooltip"));
 		
-		chkHorodatage = new JCheckBox("horodatage");		
-		chkHorodatage.setToolTipText("préfixe le nom de fichier avec une date et une heure");
-		chkHorodatage.addActionListener(controler);
+		chkHorodatage = new JCheckBox(res.getString("panVideo.chkHorodatage"));		
+		chkHorodatage.setToolTipText(res.getString("panVideo.chkHorodatage.tooltip"));
 				
 		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2", "FFV1"};
 		combCodec = new JComboBox<String>(tab);	
 		combCodec.addActionListener(controler);				
-		labCodec = new JLabel("codec");
+		labCodec = new JLabel(res.getString("panVideo.labCodec"));
 		
-		labBitrate = new JLabel("Bitrate");
+		labBitrate = new JLabel(res.getString("panVideo.labBitrate"));
 		slidBitrate = new JSlider(JSlider.HORIZONTAL,1,20000,10000);
 		slidBitrate.addChangeListener(controler);
 		slidBitrate.setMajorTickSpacing(5000);
@@ -1733,13 +1942,13 @@ public class MainGui {
 		slidFrames.setLabelTable(labelTable2);
 		slidFrames.setPaintLabels(true);		
 		slidFrames.setPaintTicks(true);
-		labNbFrames = new JLabel("Nb trames");
+		labNbFrames = new JLabel(res.getString("panVideo.labNbFrames"));
 		txtNbFrames = new JTextField(10);		
 		txtNbFrames.setEditable(false);		
 		txtNbFrames.setText("200000");
 		
 		
-		lblExtension = new JLabel("extension");		
+		lblExtension = new JLabel(res.getString("panVideo.lblExtension"));		
 		String[] tabExtension = {"mp4","avi","mkv", "mpeg", "ts"};
 		jcbExtension = new JComboBox<String>(tabExtension);
 		jcbExtension.setSelectedIndex(0);
@@ -2551,6 +2760,22 @@ public class MainGui {
 
 	public JPanel getPanGlobal() {
 		return panGlobal;
+	}
+
+	public JRadioButtonMenuItem getmGerman() {
+		return mGerman;
+	}
+
+	public JRadioButtonMenuItem getmItalian() {
+		return mItalian;
+	}
+
+	public JRadioButtonMenuItem getmSpanish() {
+		return mSpanish;
+	}
+
+	public JRadioButtonMenuItem getmPolish() {
+		return mPolish;
 	}
 
 }

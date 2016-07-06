@@ -48,7 +48,7 @@ public class ShowLicense{
 	}	
 	
 	public void show(){
-		JOptionPane.showMessageDialog(null, pan, "Licence GNU GPL V3",
+		JOptionPane.showMessageDialog(null, pan, "GNU GPL V3 license",
 				JOptionPane.INFORMATION_MESSAGE);	
 	}
 

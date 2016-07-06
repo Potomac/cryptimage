@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import com.ib.cryptimage.gui.MainGui;
 
@@ -89,7 +90,7 @@ public final class JobConfig {
 	
 	private static String launch = "first";
 	private static String VERSION = "0.0.15";
-	private static int lang = 0; // 0 --> auto, 1--> English, 2--> French
+	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	
 
 	private JobConfig() {
@@ -446,13 +447,35 @@ public final class JobConfig {
 		}
 		// language
 		try {
-			if (Integer.valueOf(options[17]) < 0 || Integer.valueOf(options[17]) > 2) {
+			if (Integer.valueOf(options[17]) < 0 || Integer.valueOf(options[17]) > 6) {
 				options[17] = "0";
 				}
 			} catch (Exception e) {
 			options[17] = "0";
 				}
 		return options;		
+	}
+	
+	public static String getUserLanguage(){
+		String userlanguage ="";
+		
+		if(JobConfig.getLang() == 0){
+			userlanguage = Locale.getDefault().getLanguage();
+		} else if (JobConfig.getLang() == 1){
+			userlanguage ="de";
+		} else if (JobConfig.getLang() == 2){
+			userlanguage = "en";
+		} else if (JobConfig.getLang() == 3){
+			userlanguage = "es";
+		} else if (JobConfig.getLang() == 4){
+			userlanguage = "fr";
+		} else if (JobConfig.getLang() == 5){
+			userlanguage = "it";
+		} else if (JobConfig.getLang() == 6){
+			userlanguage = "pl";
+		}
+		
+		return userlanguage;
 	}
 	
 

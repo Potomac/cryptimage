@@ -33,6 +33,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.JOptionPane;
 
@@ -75,7 +77,11 @@ public class CryptVideo {
 	
 	private double framerate;///
 	
+	private ResourceBundle res;
+	
 	public CryptVideo() {
+		
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
 
 		if (JobConfig.getAudienceLevel() == 8) {
 			this.audienceLevel = "multicode-"
@@ -232,8 +238,9 @@ public class CryptVideo {
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(
 							null,
-							"Une erreur de type exception s'est produite :"
-									+ e.getMessage(), "Erreur du programme",
+							res.getString("cryptVideo.exceptionError")
+									+ " " + e.getMessage(), 
+							res.getString("cryptVideo.exceptionError.title"),
 							JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 					System.exit(1);
@@ -256,8 +263,9 @@ public class CryptVideo {
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(
 							null,
-							"Une erreur de type exception s'est produite :"
-									+ e.getMessage(), "Erreur du programme",
+							res.getString("cryptVideo.exceptionError")
+									+ " " + e.getMessage(), 
+									res.getString("cryptVideo.exceptionError.title"),
 							JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 					System.exit(1);
@@ -275,7 +283,7 @@ public class CryptVideo {
 			vidPlayer.addImage(buff);			
 			vidPlayer.showImage();
 			device.skipFrame();
-			updateProgress("codage");			
+			updateProgress();			
 		}
 		else{
 		BufferedImage bi = save;
@@ -305,7 +313,7 @@ public class CryptVideo {
 		if(JobConfig.isStop() || this.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();			
 		}
-		updateProgress("codage");		
+		updateProgress();		
 		}
 	}
 	
@@ -319,7 +327,7 @@ public class CryptVideo {
 			vidPlayer.addImage(buff);
 			vidPlayer.showImage();
 			device.skipFrame();
-			updateProgress("décodage");			
+			updateProgress();			
 		}
 		else{
 		BufferedImage bi;		
@@ -338,7 +346,7 @@ public class CryptVideo {
 		if(JobConfig.isStop() || this.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();			
 		}
-		updateProgress("décodage");		
+		updateProgress();		
 		}
 	}
 
@@ -359,7 +367,7 @@ public class CryptVideo {
 			}			
 			vid.addFrame(buff, (long)(this.timeBase * timingFrame));
 			device.skipFrame();
-			updateProgress("codage");			
+			updateProgress();			
 		} else {			
 			BufferedImage bi;	
 			bi = this.device.transform(buff);
@@ -367,7 +375,7 @@ public class CryptVideo {
 			if (bi != null) {
 				vid.addFrame(bi, (long)(this.timeBase * timingFrame));
 			}			
-			updateProgress("codage");
+			updateProgress();
 		}
 	}
 	
@@ -379,7 +387,7 @@ public class CryptVideo {
 			}			
 			vid.addFrame(buff, (long)(this.timeBase * timingFrame));
 			device.skipFrame();
-			updateProgress("décodage");			
+			updateProgress();			
 		} else {			
 			BufferedImage bi;
 			bi = this.device.transform(buff);
@@ -387,7 +395,7 @@ public class CryptVideo {
 			if (bi != null) {
 				vid.addFrame(bi, (long)(this.timeBase * timingFrame));
 			}
-			updateProgress("décodage");
+			updateProgress();
 		}
 	}
 	
@@ -397,7 +405,7 @@ public class CryptVideo {
 			JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
-						+ "Fichier décodé : " + this.outputFilename +"_dec" +
+						+ res.getString("cryptVideo.progress.fin.decodage") + this.outputFilename +"_dec" +
 						 "." + JobConfig.getExtension());			
 		}
 		else
@@ -406,7 +414,7 @@ public class CryptVideo {
 			JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
-						+ "Fichier codé : " + this.outputFilename + "_c" +
+						+ res.getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
 						this.keyWord +
 						this.fileAudienceLevel + fileKeyboardCode
 								+  "." + JobConfig.getExtension());
@@ -415,7 +423,7 @@ public class CryptVideo {
 				JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
-						+ "Fichier codé : " + this.outputFilename + "_c" +
+						+ res.getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
 						"syster" + "." + JobConfig.getExtension());
 			}
 		}		
@@ -453,15 +461,16 @@ public class CryptVideo {
 
 					bfw.close();
 					JobConfig.getGui().getTextInfos()
-							.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + "Rapport : "
-									+ this.outputFilename + "_c" + this.keyWord + this.fileAudienceLevel
+							.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" 
+					+ res.getString("cryptVideo.log") 
+					+ " " + this.outputFilename + "_c" + this.keyWord + this.fileAudienceLevel
 									+ fileKeyboardCode + ".txt");
 				} catch (IOException e) {
 					JOptionPane
 					.showMessageDialog(
 							JobConfig.getGui().getFrame(),
-							"Erreur lors de l'écriture du rapport",
-							"erreur d'écriture I/O",
+							res.getString("cryptVideo.errorLog"),
+							res.getString("cryptVideo.errorIO.title"),
 							JOptionPane.ERROR_MESSAGE);					
 				}
 			}
@@ -469,7 +478,7 @@ public class CryptVideo {
 		else {
 			if (isDecoding != true) {
 				JobConfig.getGui().getTextInfos()
-				.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + "Fichier de décodage : "
+				.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + res.getString("cryptVideo.progress.fin.decodage.logfile")
 						+ this.outputFilename + ".dec");
 			}
 		}
@@ -483,12 +492,20 @@ public class CryptVideo {
 	 * @param step
 	 *            the type of process ( encoded or decoded )
 	 */
-	private void updateProgress(String step) {	
+	private void updateProgress() {	
 		String stats = "";
 		if (JobConfig.getSystemCrypt() == 0 && !JobConfig.isWantDecCorrel()) {
 			if (this.strictMode) {
-				stats = "audience en cours : " + device.getAudienceLevel();
+				stats = res.getString("cryptVideo.progress.audience") + device.getAudienceLevel();
 			}
+		}
+		
+		String messFrames;
+		if(isDecoding){
+			messFrames = res.getString("cryptVideo.progress.frames.decode");
+		}
+		else {
+			messFrames = res.getString("cryptVideo.progress.frames.code");
 		}
 		
 		JobConfig.getGui().getProgress().setValue(this.frameCount);
@@ -496,7 +513,7 @@ public class CryptVideo {
 					.getGui()
 					.getTextInfos()
 					.setText(
-							"Trames en cours de " + step + " " + frameCount
+							messFrames + " " + frameCount
 									+ "/" + this.videoLengthFrames +
 									"\n\r" + stats);
 		

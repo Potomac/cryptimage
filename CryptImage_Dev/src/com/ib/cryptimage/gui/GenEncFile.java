@@ -30,7 +30,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Locale;
 import java.util.Random;
+import java.util.ResourceBundle;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -46,6 +48,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.MaskFormatter;
+
+import com.ib.cryptimage.core.JobConfig;
 
 /**
  * @author Mannix54
@@ -65,7 +69,7 @@ public class GenEncFile extends JDialog {
 	private JButton btnExit;
 	private JLabel labLines;
 	private JFormattedTextField txtLines;
-	
+	private ResourceBundle res;
 
 	/**
 	 * 
@@ -87,6 +91,9 @@ public class GenEncFile extends JDialog {
 	}
 	
 	private void initGUI(){
+		
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
 		JPanel panGlobal = new JPanel();
 		panGlobal.setLayout(new BoxLayout(panGlobal, BoxLayout.Y_AXIS));
 		
@@ -97,13 +104,13 @@ public class GenEncFile extends JDialog {
 		JPanel panBtn = new JPanel();
 		panBtn.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		
-		labTable = new JLabel("table :" );
+		labTable = new JLabel(res.getString("genEncFile.labTable"));
 		
-		String[] tab = {"table primaire 1", "table primaire 2"};
+		String[] tab = {res.getString("genEncFile.tab1"), res.getString("genEncFile.tab2")};
 		combTable = new JComboBox<String>(tab);
 		combTable.setSelectedIndex(1);
 		
-		labLines = new JLabel("Nombres de trames :");
+		labLines = new JLabel(res.getString("genEncFile.labLines"));
 		MaskFormatter mask;
 		try {
 			mask = new MaskFormatter("######");
@@ -124,7 +131,7 @@ public class GenEncFile extends JDialog {
 		
 		txtLines.setText("200000");
 		
-		btnOpen = new JButton("Fichier");
+		btnOpen = new JButton(res.getString("genEncFile.btnOpen"));
 		btnOpen.setIcon(new ImageIcon(this.getClass().getResource("/icons/filesave.png")));
 		btnOpen.addActionListener(new ActionListener() {			
 			@Override
@@ -137,7 +144,7 @@ public class GenEncFile extends JDialog {
 		txtFile = new JTextField(40);
 		txtFile.setEditable(false);
 		
-		btnValid = new JButton("Valider");
+		btnValid = new JButton(res.getString("genEncFile.btnValid"));
 		btnValid.setIcon(new ImageIcon(this.getClass().getResource("/icons/apply.png")));
 		btnValid.addActionListener(new ActionListener() {			
 			@Override
@@ -145,8 +152,8 @@ public class GenEncFile extends JDialog {
 				try {
 					if (genFile()) {
 						JOptionPane.showMessageDialog(null, 
-								"Fichier d'encodage généré avec succès",								
-								"fichier généré",
+								res.getString("genEncFile.success"),								
+								res.getString("genEncFile.successTitle"),
 								JOptionPane.INFORMATION_MESSAGE);
 					}
 				} catch (IOException e1) {
@@ -156,7 +163,7 @@ public class GenEncFile extends JDialog {
 					.showMessageDialog(
 							null,
 						e1.getMessage(),
-							"erreur i/o",
+						res.getString("genEncFile.errorIO"),
 							JOptionPane.ERROR_MESSAGE);
 					dispose();
 				}
@@ -164,7 +171,7 @@ public class GenEncFile extends JDialog {
 			}
 		});
 		
-		btnExit = new JButton("Quitter");
+		btnExit = new JButton(res.getString("genEncFile.btnExit"));
 		btnExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
 		btnExit.addActionListener(new ActionListener() {			
 			@Override
@@ -194,16 +201,21 @@ public class GenEncFile extends JDialog {
 	}
 	
 	private void setSaveFile() {
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
 		JFileChooser dialogue = new JFileChooser();
+				
+		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
+		dialogue.updateUI();
 		
 		dialogue.setAcceptAllFileFilterUsed(false);
-		dialogue.setDialogTitle("Sélectionnez le nom du fichier qui sera crée");
+		dialogue.setDialogTitle(res.getString("genEncFile.dialogTitle"));
 
 		FileNameExtensionFilter filter;
 		String[] extension;
 
 		extension = new String[] { "enc" };
-		filter = new FileNameExtensionFilter("fichier d'encodage *.enc", extension);
+		filter = new FileNameExtensionFilter(res.getString("genEncFile.filenameExtensionFilter"), extension);
 
 		dialogue.setFileFilter(filter);
 
@@ -219,15 +231,17 @@ public class GenEncFile extends JDialog {
 
 	}
 	
-	private boolean genFile() throws IOException{		
+	private boolean genFile() throws IOException{
+		
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
 		if( this.txtLines.getText().trim().equals("") 
 				|| Integer.valueOf(this.txtLines.getText().toString().trim()) < 1 ){
 			JOptionPane
 			.showMessageDialog(
 					this,
-					"Vous devez au moins taper un nombre supérieur "
-					+ "à zéro dans le champ \"nombre de trames\"",
-					"nombre de trames égale à zéro",
+					res.getString("genEncFile.errorGenFileFrames"),
+					res.getString("genEncFile.errorGenFileFramesTitle"),
 					JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
@@ -235,8 +249,8 @@ public class GenEncFile extends JDialog {
 			JOptionPane
 			.showMessageDialog(
 					this,
-					"Vous devez sélectionner le fichier de sortie",
-					"pas de fichier de sortie",
+					res.getString("genEncFile.errorNoFileName"),
+					res.getString("genEncFile.errorNoFileNameTitle"),
 					JOptionPane.WARNING_MESSAGE);
 			return false;
 		}

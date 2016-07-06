@@ -23,6 +23,8 @@
 package com.ib.cryptimage.core;
 
 import java.awt.image.BufferedImage;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
@@ -32,7 +34,7 @@ public class FramesPlayer {
 
 	private ImageSnapListener imgListen;
 	private IMediaReader mediaReader;	
-	
+	private ResourceBundle res;
 	
 	
 	/**
@@ -40,6 +42,7 @@ public class FramesPlayer {
 	 * @param job the JobConfig object who stores all settings	
 	 */
 	public FramesPlayer() {
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));		
 				
 		StreamsFinder streamFinder = new StreamsFinder(JobConfig.getInput_file());
 		
@@ -70,7 +73,7 @@ public class FramesPlayer {
 				JobConfig.getGui().getTextInfos().setText(
 						JobConfig.getGui().getTextInfos().getText()
 						+ "\n\r"
-						+ "Opération interrompue par l'utilisateur");
+						+ res.getString("framesPlayer.abort"));
 				imgListen.getCryptVid().closeVideo();
 				imgListen.getCryptVid().saveDatFileVideo();
 				imgListen.getCryptVid().getDevice().closeFileData();

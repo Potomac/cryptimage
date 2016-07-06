@@ -22,6 +22,8 @@
 
 package com.ib.cryptimage.core;
 import java.awt.image.BufferedImage;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.JOptionPane;
 
@@ -43,6 +45,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	private FramesPlayer frmV;
 	private IAudioResampler audioResampler = null;
 	private int AUDIORATE;
+	private ResourceBundle res;
 
 	/**
 	 * constructor
@@ -51,6 +54,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	public ImageSnapListener(int nbFrames, FramesPlayer frmV,
 			int videoIndex, int audioIndex) {		
 		super();
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
 		this.AUDIORATE = JobConfig.getAudioRate();
 		this.frmV = frmV;
 		this.count = 0;
@@ -116,8 +120,8 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		JOptionPane
 		.showMessageDialog(
 				null,
-				"présence de son multicanal non compatible avec cryptimage, la gestion du son sera désactivée",
-				"son multicanal détecté",
+				res.getString("imageSnapListener.multicanalSound"),
+				res.getString("imageSnapListener.multicanalSound.title"),
 				JOptionPane.WARNING_MESSAGE);
 		JobConfig.setDisableSound(true);
 	}

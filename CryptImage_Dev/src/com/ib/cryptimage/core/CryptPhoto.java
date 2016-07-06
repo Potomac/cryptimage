@@ -26,7 +26,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Random;
+import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -40,8 +42,10 @@ public class CryptPhoto {
 	private int key11bits;
 	private int offset;
 	private int increment;
+	private ResourceBundle res;
 	
-	public CryptPhoto(){			
+	public CryptPhoto(){	
+		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));		
 	}
 	
 	public boolean run(){
@@ -53,8 +57,8 @@ public class CryptPhoto {
 			JOptionPane
 			.showMessageDialog(
 					JobConfig.getGui().getFrame(),
-					"Erreur lors du chargement de l'image",
-					"erreur de chargement I/O",
+					res.getString("cryptPhoto.errorLoad"),
+					res.getString("cryptPhoto.errorLoadIO"),
 					JOptionPane.ERROR_MESSAGE);		
 			return false;
 		}		
@@ -277,7 +281,7 @@ public class CryptPhoto {
 				ImageIO.write(bi, "png", outputfile);
 				if (JobConfig.isHasGUI()) {
 
-					JobConfig.getGui().getTextInfos().setText("Image codée : " + JobConfig.getOutput_file() + "_c"
+					JobConfig.getGui().getTextInfos().setText(res.getString("cryptPhoto.saveImage.codage") + JobConfig.getOutput_file() + "_c"
 							+ JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
 				}
 			}
@@ -285,8 +289,8 @@ public class CryptPhoto {
 			JOptionPane
 			.showMessageDialog(
 					JobConfig.getGui().getFrame(),
-					"Erreur lors de l'écriture de l'image cryptée",
-					"erreur d'écriture I/O",
+					res.getString("cryptPhoto.errorCryptIO"),
+					res.getString("cryptPhoto.errorCryptIO.title"),
 					JOptionPane.ERROR_MESSAGE);		
 			return false;
 		}
@@ -303,13 +307,13 @@ public class CryptPhoto {
 				JOptionPane
 				.showMessageDialog(
 						JobConfig.getGui().getFrame(),
-						"Erreur lors de l'écriture de l'image cryptée",
-						"erreur d'écriture I/O",
+						res.getString("cryptPhoto.errorCryptIO"),
+						res.getString("cryptPhoto.errorCryptIO.title"),
 						JOptionPane.ERROR_MESSAGE);	
 				return false;
 			}
 			if (JobConfig.isHasGUI()) {
-				JobConfig.getGui().getTextInfos().setText("Image codée : " + JobConfig.getOutput_file() + "_c"
+				JobConfig.getGui().getTextInfos().setText(res.getString("cryptPhoto.saveImage.codage") + JobConfig.getOutput_file() + "_c"
 						+ "syster.png");
 			}
 		}
@@ -332,7 +336,7 @@ public class CryptPhoto {
 
 				if (JobConfig.isHasGUI()) {
 					JobConfig.getGui().getTextInfos()
-							.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + "Rapport : "
+							.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + res.getString("cryptPhoto.saveImage.rapport")
 									+ JobConfig.getOutput_file() + "_c" + JobConfig.getWord16bits() + "-"
 									+ this.key11bits + ".txt");
 				}
@@ -341,8 +345,8 @@ public class CryptPhoto {
 				JOptionPane
 				.showMessageDialog(
 						JobConfig.getGui().getFrame(),
-						"Erreur lors de l'écriture du rapport",
-						"erreur d'écriture I/O",
+						res.getString("cryptPhoto.errorLog"),
+						res.getString("cryptPhoto.errorCryptIO.title"),						
 						JOptionPane.ERROR_MESSAGE);	
 				return false;
 			}
@@ -351,6 +355,7 @@ public class CryptPhoto {
 	}
 	
 	public  boolean saveDecryptFile(BufferedImage bi,String output_file, int key11){
+		
 		if (JobConfig.getSystemCrypt() == 0) {
 			try {
 				// retrieve image
@@ -359,15 +364,16 @@ public class CryptPhoto {
 				ImageIO.write(bi, "png", outputfile);
 				if (JobConfig.isHasGUI()) {
 					JobConfig.getGui().getTextInfos().setText(
-							"Image décodée : " + output_file + "_d" + 
+							res.getString("cryptPhoto.saveImage.decodage") + output_file + "_d" + 
 					JobConfig.getWord16bits() + "-" + key11 + ".png");
 				}				
 			} catch (IOException e) {
 				JOptionPane
 				.showMessageDialog(
 						JobConfig.getGui().getFrame(),
-						"Erreur lors de l'écriture de l'image décryptée",
-						"erreur d'écriture I/O",
+						res.getString("cryptPhoto.errorDecryptIO"),
+						res.getString("cryptPhoto.errorDecryptIO.title"),
+						
 						JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
@@ -380,15 +386,15 @@ public class CryptPhoto {
 				ImageIO.write(bi, "png", outputfile);
 				if (JobConfig.isHasGUI()) {
 					JobConfig.getGui().getTextInfos().setText(
-							"Image décodée : " + output_file + "_d" + 
+							res.getString("cryptPhoto.saveImage.decodage") + output_file + "_d" + 
 					"syster.png");
 				}				
 			} catch (IOException e) {
 				JOptionPane
 				.showMessageDialog(
 						JobConfig.getGui().getFrame(),
-						"Erreur lors de l'écriture de l'image décryptée",
-						"erreur d'écriture I/O",
+						res.getString("cryptPhoto.errorDecryptIO"),
+						res.getString("cryptPhoto.errorDecryptIO.title"),
 						JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
