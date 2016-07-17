@@ -239,10 +239,7 @@ public class MainGui {
 	private TitledBorder titlePanSysterSubRdiCoding;
 	private TitledBorder titlePanSysterSubRdiDecoding;
 	
-	public MainGui(){		
-		
-		System.out.println("Default locale : " + Locale.getDefault());		
-			
+	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
 		
 		controler = new MainGui_ActionListener(this);
@@ -402,11 +399,11 @@ public class MainGui {
 	}
 	
 	private void copyNewHelpVersion(){		
-		String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		//String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		
-		File config = new File(binPath + "cryptimage_fr.pdf");
+		//File config = new File(binPath + "cryptimage_fr.pdf");
 
-		if (!config.exists() && !JobConfig.getLaunch().equals(JobConfig.getVERSION())) {
+		if (!JobConfig.getLaunch().equals(JobConfig.getVERSION())) {
 			
 			// test if cryptimage directory exists
 			boolean success = new File(System.getProperty("user.home")
@@ -419,127 +416,68 @@ public class MainGui {
 			
 			// we install the documentation to the home user
 			// french version
-			String userHome = System.getProperty("user.home");
-			File configPDF = new File(userHome + File.separator + "cryptimage"
-					+ File.separator + "cryptimage_fr.pdf");
-			
-			 InputStream is = this.getClass().getResourceAsStream("/ressources/cryptimage_fr.pdf");
-			
-			 File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "cryptimage_fr.pdf");
-			 FileOutputStream fos = null;				
-			try {
-				fos = new FileOutputStream(newFile);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}  
-			 
-			 int read = 0;
-		     byte[] bytes = new byte[1024];
-			 
-		     try {
-				while ((read = is.read(bytes)) != -1) {
-					 try {
-						fos.write(bytes, 0, read);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					}
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			installHelpFile("cryptimage_fr.pdf");
+			// english version
+			installHelpFile("cryptimage_en.pdf");
+			// polish version
+			installHelpFile("cryptimage_pl.pdf");
+		}
+	}
+	
+	public void installHelpFile(String fileName){
+		// we install the documentation to the home user
+		String userHome = System.getProperty("user.home");
+		File configPDF = new File(userHome + File.separator + "cryptimage" + File.separator + fileName);
+
+		InputStream is = this.getClass().getResourceAsStream("/ressources/" + fileName);
+
+		File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + fileName);
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(newFile);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		int read = 0;
+		byte[] bytes = new byte[1024];
+
+		try {
+			while ((read = is.read(bytes)) != -1) {
+				try {
+					fos.write(bytes, 0, read);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-						 
-			 try {
-				fos.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-											 
-			 try {
-				Files.copy(newFile.toPath(), 
-						 configPDF.toPath(), REPLACE_EXISTING);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				JOptionPane
-				.showMessageDialog(
-						this.frame,
-						JobConfig.getRes().getString("mainGui.help.errorInstall"),
-						JobConfig.getRes().getString("mainGui.help.errorInstall.title"),
-						JOptionPane.ERROR_MESSAGE);
-			}
-			 
-			try {
-				Files.delete(newFile.toPath());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			// english version						
-			File configPDF_en = new File(userHome + File.separator + "cryptimage"
-					+ File.separator + "cryptimage_en.pdf");
-			
-			 InputStream is_en= this.getClass().getResourceAsStream("/ressources/cryptimage_en.pdf");
-			
-			 File newFile_en = new File(System.getProperty("java.io.tmpdir") + File.separator + "cryptimage_en.pdf");
-			 FileOutputStream fos_en = null;				
-			try {
-				fos_en = new FileOutputStream(newFile_en);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}  
-			 
-			 int read_en = 0;
-		     byte[] bytes_en = new byte[1024];
-			 
-		     try {
-				while ((read_en = is_en.read(bytes_en)) != -1) {
-					 try {
-						fos_en.write(bytes_en, 0, read_en);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					}
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-						 
-			 try {
-				fos_en.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-											 
-			 try {
-				Files.copy(newFile_en.toPath(), 
-						configPDF_en.toPath(), REPLACE_EXISTING);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				JOptionPane
-				.showMessageDialog(
-						this.frame,
-						JobConfig.getRes().getString("mainGui.help.errorInstall"),
-						JobConfig.getRes().getString("mainGui.help.errorInstall.title"),
-						JOptionPane.ERROR_MESSAGE);
-			}
-			 
-			try {
-				Files.delete(newFile_en.toPath());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		try {
+			fos.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		try {
+			Files.copy(newFile.toPath(), configPDF.toPath(), REPLACE_EXISTING);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this.frame, JobConfig.getRes().getString("mainGui.help.errorInstall"),
+					JobConfig.getRes().getString("mainGui.help.errorInstall.title"), JOptionPane.ERROR_MESSAGE);
+		}
+
+		try {
+			Files.delete(newFile.toPath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

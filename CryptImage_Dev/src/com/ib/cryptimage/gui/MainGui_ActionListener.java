@@ -39,13 +39,9 @@ import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 
-import static java.nio.file.StandardCopyOption.*;
 import java.util.Hashtable;
 
 import javax.swing.JButton;
@@ -741,38 +737,31 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}else if (src.equals(this.mainGui.getmDocumentation())){
 			launchDocumentation();
 		}
-		else if(src.equals(this.mainGui.getmAuto())){
-			System.out.println("Auto");
+		else if(src.equals(this.mainGui.getmAuto())){			
 			manageLang();
 			JobConfig.setLang(0);
 		}
-		else if(src.equals(this.mainGui.getmGerman())){
-			System.out.println("German");
+		else if(src.equals(this.mainGui.getmGerman())){			
 			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN)); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(1);
-		}else if(src.equals(this.mainGui.getmEnglish())){
-			System.out.println("English");
+		}else if(src.equals(this.mainGui.getmEnglish())){			
 			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(2);
-		}else if(src.equals(this.mainGui.getmSpanish())){
-			System.out.println("Spanish");
+		}else if(src.equals(this.mainGui.getmSpanish())){			
 			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("es"))); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(3);
-		}else if(src.equals(this.mainGui.getmFrench())){
-			System.out.println("French");
+		}else if(src.equals(this.mainGui.getmFrench())){			
 			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(4);
-		}else if(src.equals(this.mainGui.getmItalian())){
-			System.out.println("Italian");
+		}else if(src.equals(this.mainGui.getmItalian())){			
 			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("it"))); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(5);
-		}else if(src.equals(this.mainGui.getmPolish())){
-			System.out.println("Polish");
+		}else if(src.equals(this.mainGui.getmPolish())){			
 			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"))); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(6);
@@ -808,10 +797,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 	
 		String help_name_file = "";
-		if(JobConfig.getUserLanguage().equals("fr")){
+		if (JobConfig.getUserLanguage().equals("fr")) {
 			help_name_file = "cryptimage_fr.pdf";
-		}
-		else{
+		} else if (JobConfig.getUserLanguage().equals("pl")) {
+			help_name_file = "cryptimage_pl.pdf";
+		} else if (JobConfig.getUserLanguage().equals("en")) {
+			help_name_file = "cryptimage_en.pdf";
+		} else {
 			help_name_file = "cryptimage_en.pdf";
 		}
 		
@@ -867,62 +859,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 			}
 			else {
-				// we install the documentation to the home user				 
-				 InputStream is = this.getClass().getResourceAsStream("/ressources/" + help_name_file);
-				
-				 File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + help_name_file);
-				 FileOutputStream fos = null;				
-				try {
-					fos = new FileOutputStream(newFile);
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}  
-				 
-				 int read = 0;
-			     byte[] bytes = new byte[1024];
-				 
-			     try {
-					while ((read = is.read(bytes)) != -1) {
-						 try {
-							fos.write(bytes, 0, read);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						}
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				 				 
-				 try {
-					fos.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-												 
-				 try {
-					Files.copy(newFile.toPath(), 
-							 configPDF.toPath(), REPLACE_EXISTING);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					JOptionPane
-					.showMessageDialog(
-							mainGui.getFrame(),
-							JobConfig.getRes().getString("mainGui.help.errorInstall"),
-							JobConfig.getRes().getString("mainGui.help.errorInstall.title"),
-							JOptionPane.ERROR_MESSAGE);
-				}
-				 
-				try {
-					Files.delete(newFile.toPath());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				// we install the documentation to the home user
+				this.mainGui.installHelpFile(help_name_file);
 				 
 				 if (Desktop.isDesktopSupported()) {
 						try {						
