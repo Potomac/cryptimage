@@ -97,8 +97,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private MainGui mainGui;
 	private Thread thread = null;	
-	
-	private ResourceBundle res;
+		
 	
 	public MainGui_ActionListener(MainGui mainGui) {
 		this.mainGui = mainGui;		
@@ -749,63 +748,63 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 		else if(src.equals(this.mainGui.getmGerman())){
 			System.out.println("German");
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN)); 
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN)); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(1);
 		}else if(src.equals(this.mainGui.getmEnglish())){
 			System.out.println("English");
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(2);
 		}else if(src.equals(this.mainGui.getmSpanish())){
 			System.out.println("Spanish");
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("es"))); 
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("es"))); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(3);
 		}else if(src.equals(this.mainGui.getmFrench())){
 			System.out.println("French");
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(4);
 		}else if(src.equals(this.mainGui.getmItalian())){
 			System.out.println("Italian");
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("it"))); 
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("it"))); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(5);
 		}else if(src.equals(this.mainGui.getmPolish())){
 			System.out.println("Polish");
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"))); 
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"))); 
 			this.mainGui.refreshGUI();
 			JobConfig.setLang(6);
 		}
 	}
 	
 	private void manageLang(){
-		if (this.mainGui.getLocale().getLanguage().equals("de")){
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN)); 
-		} else if(this.mainGui.getLocale().getLanguage().equals("en")){
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
+		if (Locale.getDefault().getLanguage().equals("de")){
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN)); 
+		} else if(Locale.getDefault().getLanguage().equals("en")){
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
 			}
-		else if(this.mainGui.getLocale().getLanguage().equals("es")){
-				this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("es"))); 
+		else if(Locale.getDefault().getLanguage().equals("es")){
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("es"))); 
 				}
-		else if(this.mainGui.getLocale().getLanguage().equals("fr")){
-					this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
+		else if(Locale.getDefault().getLanguage().equals("fr")){
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH)); 
 				}
-		else if(this.mainGui.getLocale().getLanguage().equals("it")){
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("it"))); 
+		else if(Locale.getDefault().getLanguage().equals("it")){
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("it"))); 
 			}
-		else if(this.mainGui.getLocale().getLanguage().equals("pl")){
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"))); 
+		else if(Locale.getDefault().getLanguage().equals("pl")){
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"))); 
 			}		
 		else{
-			this.mainGui.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
+			JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH)); 
 		}
 		this.mainGui.refreshGUI();
 	}
 	
 	private void launchDocumentation() {
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
 		String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 	
 		String help_name_file = "";
@@ -827,8 +826,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							res.getString("mainGui.help.errorLaunch"),
-							res.getString("mainGui.help.errorLaunch.title"),
+							JobConfig.getRes().getString("mainGui.help.errorLaunch"),
+							JobConfig.getRes().getString("mainGui.help.errorLaunch.title"),
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -860,8 +859,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						JOptionPane
 						.showMessageDialog(
 								mainGui.getFrame(),
-								res.getString("mainGui.help.errorLaunchUserDir"),
-								res.getString("mainGui.help.errorLaunch.title"),
+								JobConfig.getRes().getString("mainGui.help.errorLaunchUserDir"),
+								JobConfig.getRes().getString("mainGui.help.errorLaunch.title"),
 								JOptionPane.ERROR_MESSAGE);
 					}
 				}
@@ -913,8 +912,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							res.getString("mainGui.help.errorInstall"),
-							res.getString("mainGui.help.errorInstall.title"),
+							JobConfig.getRes().getString("mainGui.help.errorInstall"),
+							JobConfig.getRes().getString("mainGui.help.errorInstall.title"),
 							JOptionPane.ERROR_MESSAGE);
 				}
 				 
@@ -932,8 +931,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 							JOptionPane
 							.showMessageDialog(
 									mainGui.getFrame(),
-									res.getString("mainGui.help.errorLaunchUserDirGeneral"),
-									res.getString("mainGui.help.errorLaunch.title"),
+									JobConfig.getRes().getString("mainGui.help.errorLaunchUserDirGeneral"),
+									JobConfig.getRes().getString("mainGui.help.errorLaunch.title"),
 									JOptionPane.ERROR_MESSAGE);
 						}
 					}				
@@ -941,9 +940,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 	}
 	
-	private void genRandomSyster(){
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
-		GenEncFile gen = new GenEncFile(mainGui.getFrame(), res.getString("manageGenFile.title"), true);
+	private void genRandomSyster(){		
+		GenEncFile gen = new GenEncFile(mainGui.getFrame(), JobConfig.getRes().getString("manageGenFile.title"), true);
 		gen.display();
 	}
 
@@ -967,9 +965,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 				.showMessageDialog(
 						mainGui.getFrame(),
-						res.getString("mainGui.exceptionError") + " " +
+						JobConfig.getRes().getString("mainGui.exceptionError") + " " +
 						e.getMessage(),
-						res.getString("mainGui.exceptionError.title"),
+						JobConfig.getRes().getString("mainGui.exceptionError.title"),
 						JOptionPane.ERROR_MESSAGE);
 				System.exit(1);
 			}
@@ -981,9 +979,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 				.showMessageDialog(
 						mainGui.getFrame(),
-						res.getString("mainGui.exceptionError") + " " +
+						JobConfig.getRes().getString("mainGui.exceptionError") + " " +
 						e.getMessage(),
-						res.getString("mainGui.exceptionError.title"),
+						JobConfig.getRes().getString("mainGui.exceptionError.title"),
 						JOptionPane.ERROR_MESSAGE);
 				System.exit(1);
 			}			
@@ -998,13 +996,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private void showAbout() {
-		
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
-		
+				
 		JLabel label = new JLabel();
 
 		String deb = "CryptImage v" + JobConfig.getVERSION() + "<br/>"
-				+ "Copyright (C) 2015-12-15 Mannix54 <br/>";
+				+ "Copyright (C) "+ JobConfig.getReleaseDate() + " Mannix54 <br/>";
 
 		String link = "<a href=\"http://ibsoftware.free.fr/cryptimage.php\">http://ibsoftware.free.fr/cryptimage.php</a>"
 				+ "<br/><br/>";
@@ -1041,7 +1037,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		ep.setBackground(label.getBackground());
 		
 		JPanel pan = new JPanel();
-		JButton btnLicense = new JButton(res.getString("showAbout.license"));
+		JButton btnLicense = new JButton(JobConfig.getRes().getString("showAbout.license"));
 		btnLicense.addActionListener(new ActionListener() {
 			
 			@Override
@@ -1059,21 +1055,19 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		pan.add(ep, BorderLayout.CENTER);
 		pan.add(panBtn, BorderLayout.SOUTH);
 
-		JOptionPane.showMessageDialog(null, pan, res.getString("showAbout.about"),
+		JOptionPane.showMessageDialog(null, pan, JobConfig.getRes().getString("showAbout.about"),
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	private void manageSave() {
 		JFileChooser dialogue = new JFileChooser();
-		
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
-		
+				
 		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
 		dialogue.updateUI();
 		
 		
 		dialogue.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		dialogue.setDialogTitle(res.getString("manageSave.dialogTitle"));
+		dialogue.setDialogTitle(JobConfig.getRes().getString("manageSave.dialogTitle"));
 		
 		File file;
 		if (dialogue.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -1082,8 +1076,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
-								res.getString("manageSave.errorFolder"),
-								res.getString("manageSave.errorFolder.title"),
+								JobConfig.getRes().getString("manageSave.errorFolder"),
+								JobConfig.getRes().getString("manageSave.errorFolder.title"),
 								JOptionPane.WARNING_MESSAGE);
 			} else {
 				mainGui.getTxtOutputFile().setText(file.getAbsolutePath());
@@ -1093,13 +1087,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private void openFileSysterEnc(){
 		JFileChooser dialogue = new JFileChooser();
-		
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
-		
+				
 		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
 		dialogue.updateUI();
 		
-		dialogue.setDialogTitle(res.getString("openFileSysterEnc.dialogTitle"));
+		dialogue.setDialogTitle(JobConfig.getRes().getString("openFileSysterEnc.dialogTitle"));
 		File file;
 
 		dialogue.setAcceptAllFileFilterUsed(false);
@@ -1107,7 +1099,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		String[] extension;
 
 		extension = new String[] { "enc" };
-		filter = new FileNameExtensionFilter(res.getString("openFileSysterEnc.filters"), extension);
+		filter = new FileNameExtensionFilter(JobConfig.getRes().getString("openFileSysterEnc.filters"), extension);
 		
 
 		dialogue.setFileFilter(filter);
@@ -1124,8 +1116,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
-								res.getString("openFileSysterEnc.errorIO"),
-								res.getString("openFileSysterEnc.errorIO.title"),
+								JobConfig.getRes().getString("openFileSysterEnc.errorIO"),
+								JobConfig.getRes().getString("openFileSysterEnc.errorIO.title"),
 								JOptionPane.ERROR_MESSAGE);
 			} else {
 				//TODO
@@ -1144,13 +1136,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	
 	private void openFileSysterDec(){
 		JFileChooser dialogue = new JFileChooser();
-		
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
-		
+				
 		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
 		dialogue.updateUI();
 		
-		dialogue.setDialogTitle(res.getString("openFileSysterDec.dialogTitle"));
+		dialogue.setDialogTitle(JobConfig.getRes().getString("openFileSysterDec.dialogTitle"));
 		File file;
 
 		FileNameExtensionFilter filter;
@@ -1158,7 +1148,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		dialogue.setAcceptAllFileFilterUsed(false);
 		extension = new String[] { "dec" };
-		filter = new FileNameExtensionFilter(res.getString("openFileSysterDec.filters"), extension);
+		filter = new FileNameExtensionFilter(JobConfig.getRes().getString("openFileSysterDec.filters"), extension);
 		
 
 		dialogue.setFileFilter(filter);
@@ -1175,8 +1165,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
-								res.getString("openFileSysterDec.errorIO"),
-								res.getString("openFileSysterDec.errorIO.title"),
+								JobConfig.getRes().getString("openFileSysterDec.errorIO"),
+								JobConfig.getRes().getString("openFileSysterDec.errorIO.title"),
 								JOptionPane.ERROR_MESSAGE);
 			} else {
 				//TODO
@@ -1215,11 +1205,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						JOptionPane
 						.showMessageDialog(
 								mainGui.getFrame(),
-								res.getString("mainGui.validityError.blankLine") + " " 
+								JobConfig.getRes().getString("mainGui.validityError.blankLine") + " " 
 								+ compt + " " 
-					     		+ res.getString("mainGui.validityError.file") 
+					     		+ JobConfig.getRes().getString("mainGui.validityError.file") 
 								+ " " + decEnc,
-								res.getString("mainGui.validityError.title") + " " + decEnc,
+								JobConfig.getRes().getString("mainGui.validityError.title") + " " + decEnc,
 								JOptionPane.ERROR_MESSAGE);
 						fileInBuff.close();
 						return false;
@@ -1229,11 +1219,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						JOptionPane
 						.showMessageDialog(
 								mainGui.getFrame(),
-								res.getString("mainGui.validityError.syntax") 
+								JobConfig.getRes().getString("mainGui.validityError.syntax") 
 								+ " " + compt + " " 
-								+ res.getString("mainGui.validityError.file")  
+								+ JobConfig.getRes().getString("mainGui.validityError.file")  
 								+ " " + decEnc,
-								res.getString("mainGui.validityError.title") + " " + decEnc,
+								JobConfig.getRes().getString("mainGui.validityError.title") + " " + decEnc,
 								JOptionPane.ERROR_MESSAGE);
 						fileInBuff.close();
 						return false;
@@ -1250,9 +1240,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 				.showMessageDialog(
 						mainGui.getFrame(),
-						res.getString("mainGui.validityError.title") + " " + decEnc
+						JobConfig.getRes().getString("mainGui.validityError.title") + " " + decEnc
 						+ ", " + e.getMessage() ,
-						res.getString("mainGui.validityError.title") + " " + decEnc,
+						JobConfig.getRes().getString("mainGui.validityError.title") + " " + decEnc,
 						JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
@@ -1275,9 +1265,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							res.getString("mainGui.validityError.file.name") + " " + decEnc
-							+ " " + res.getString("mainGui.validityError.file.name2"),
-							res.getString("mainGui.validityError.file.name3") + " " + decEnc,
+							JobConfig.getRes().getString("mainGui.validityError.file.name") + " " + decEnc
+							+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name2"),
+							JobConfig.getRes().getString("mainGui.validityError.file.name3") + " " + decEnc,
 							JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
@@ -1287,9 +1277,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							res.getString("mainGui.validityError.file.name") + " " + decEnc
-							+ " " + res.getString("mainGui.validityError.file.name4"),
-							res.getString("mainGui.validityError.file.name3") + " " + decEnc,
+							JobConfig.getRes().getString("mainGui.validityError.file.name") + " " + decEnc
+							+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name4"),
+							JobConfig.getRes().getString("mainGui.validityError.file.name3") + " " + decEnc,
 							JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
@@ -1299,9 +1289,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							res.getString("mainGui.validityError.file.name") + " " + decEnc
-							+ " " + res.getString("mainGui.validityError.file.name5"),
-							res.getString("mainGui.validityError.file.name3") + " " + decEnc,
+							JobConfig.getRes().getString("mainGui.validityError.file.name") + " " + decEnc
+							+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name5"),
+							JobConfig.getRes().getString("mainGui.validityError.file.name3") + " " + decEnc,
 							JOptionPane.ERROR_MESSAGE);
 					return false;
 				}		
@@ -1362,10 +1352,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
 		dialogue.updateUI();
-		
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
-		
-		dialogue.setDialogTitle(res.getString("manageFileOpen.dialogTitle"));
+				
+		dialogue.setDialogTitle(JobConfig.getRes().getString("manageFileOpen.dialogTitle"));
 		File file;
 
 		FileNameExtensionFilter filter;
@@ -1374,11 +1362,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (mainGui.getRdiVideo().isSelected()) {
 			extension = new String[] { "avi", "mp4", "mpeg", "mkv", "mpeg2",
 					"mpg","ts", "m2t", "wmv" };
-			filter = new FileNameExtensionFilter(res.getString("manageFileOpen.filenameExtensionFiltersVideo"), extension);
+			filter = new FileNameExtensionFilter(JobConfig.getRes().getString("manageFileOpen.filenameExtensionFiltersVideo"), extension);
 		} else {
 			extension = new String[] { "jpeg", "jpg", "bmp", "gif", "png",
 					"tiff" };
-			filter = new FileNameExtensionFilter(res.getString("manageFileOpen.filenameExtensionFiltersPhoto"), extension);
+			filter = new FileNameExtensionFilter(JobConfig.getRes().getString("manageFileOpen.filenameExtensionFiltersPhoto"), extension);
 		}
 
 		dialogue.setFileFilter(filter);
@@ -1395,8 +1383,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JOptionPane
 						.showMessageDialog(
 								dialogue,
-								res.getString("manageFileOpen.errorOpen"),
-								res.getString("manageFileOpen.errorOpenTitle"),
+								JobConfig.getRes().getString("manageFileOpen.errorOpen"),
+								JobConfig.getRes().getString("manageFileOpen.errorOpenTitle"),
 								JOptionPane.ERROR_MESSAGE);
 			} else {
 
@@ -1424,9 +1412,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageEnter() {
-		
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
-		
+				
 		if (mainGui.getCombAudience().getSelectedIndex() == 7
 				&& mainGui.getTxtMultiCode().getText().replaceAll("#", "")
 						.replaceAll(" ", "").equals("")
@@ -1434,8 +1420,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
-							res.getString("manageEnter.errorMulticode"),
-							res.getString("manageEnter.errorMulticodeTitle"),
+							JobConfig.getRes().getString("manageEnter.errorMulticode"),
+							JobConfig.getRes().getString("manageEnter.errorMulticodeTitle"),
 							JOptionPane.WARNING_MESSAGE);
 		} 
 		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
@@ -1445,8 +1431,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JOptionPane
 			.showMessageDialog(
 					mainGui.getFrame(),
-					res.getString("manageEnter.errorSysterFileEnc"),
-					res.getString("manageEnter.errorSysterFileEncTitle"),
+					JobConfig.getRes().getString("manageEnter.errorSysterFileEnc"),
+					JobConfig.getRes().getString("manageEnter.errorSysterFileEncTitle"),
 					JOptionPane.WARNING_MESSAGE);		
 		}
 		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
@@ -1456,8 +1442,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JOptionPane
 			.showMessageDialog(
 					mainGui.getFrame(),
-					res.getString("manageEnter.errorSysterFileDec"),
-					res.getString("manageEnter.errorSysterFileDecTitle"),
+					JobConfig.getRes().getString("manageEnter.errorSysterFileDec"),
+					JobConfig.getRes().getString("manageEnter.errorSysterFileDecTitle"),
 					JOptionPane.WARNING_MESSAGE);		
 		}		
 		else {
@@ -1884,10 +1870,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 	}
 	
-	private void alertTsM2t() {
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+	private void alertTsM2t() {		
 		mainGui.getTextInfos().setForeground(Color.red);
-		mainGui.getTextInfos().append(res.getString("mainGui.alertTsM2t"));
+		mainGui.getTextInfos().append(JobConfig.getRes().getString("mainGui.alertTsM2t"));
 		this.mainGui.getChkDisableSound().setSelected(true);
 		this.mainGui.getChkSound().setSelected(false);
 		this.mainGui.getChkSound().setEnabled(false);

@@ -33,6 +33,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 import com.ib.cryptimage.gui.MainGui;
 
@@ -89,9 +90,10 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "0.0.15";
+	private static String VERSION = "0.0.99";
+	private static String releaseDate = "2016-07-16";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
-	
+	private static ResourceBundle res;
 
 	private JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -873,6 +875,18 @@ public final class JobConfig {
 
 	public static void setLang(int lang) {
 		JobConfig.lang = lang;
+	}
+
+	public static ResourceBundle getRes() {
+		return res;
+	}
+
+	public static void setRes(ResourceBundle res) {
+		JobConfig.res = res;
+	}
+
+	public static String getReleaseDate() {
+		return releaseDate;
 	}
 	
 }

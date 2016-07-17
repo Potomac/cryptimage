@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Random;
-import java.util.ResourceBundle;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -69,7 +68,7 @@ public class GenEncFile extends JDialog {
 	private JButton btnExit;
 	private JLabel labLines;
 	private JFormattedTextField txtLines;
-	private ResourceBundle res;
+
 
 	/**
 	 * 
@@ -90,9 +89,8 @@ public class GenEncFile extends JDialog {
 		this.setVisible(true);
 	}
 	
-	private void initGUI(){
+	private void initGUI(){		
 		
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
 		
 		JPanel panGlobal = new JPanel();
 		panGlobal.setLayout(new BoxLayout(panGlobal, BoxLayout.Y_AXIS));
@@ -104,13 +102,13 @@ public class GenEncFile extends JDialog {
 		JPanel panBtn = new JPanel();
 		panBtn.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		
-		labTable = new JLabel(res.getString("genEncFile.labTable"));
+		labTable = new JLabel(JobConfig.getRes().getString("genEncFile.labTable"));
 		
-		String[] tab = {res.getString("genEncFile.tab1"), res.getString("genEncFile.tab2")};
+		String[] tab = {JobConfig.getRes().getString("genEncFile.tab1"), JobConfig.getRes().getString("genEncFile.tab2")};
 		combTable = new JComboBox<String>(tab);
 		combTable.setSelectedIndex(1);
 		
-		labLines = new JLabel(res.getString("genEncFile.labLines"));
+		labLines = new JLabel(JobConfig.getRes().getString("genEncFile.labLines"));
 		MaskFormatter mask;
 		try {
 			mask = new MaskFormatter("######");
@@ -131,7 +129,7 @@ public class GenEncFile extends JDialog {
 		
 		txtLines.setText("200000");
 		
-		btnOpen = new JButton(res.getString("genEncFile.btnOpen"));
+		btnOpen = new JButton(JobConfig.getRes().getString("genEncFile.btnOpen"));
 		btnOpen.setIcon(new ImageIcon(this.getClass().getResource("/icons/filesave.png")));
 		btnOpen.addActionListener(new ActionListener() {			
 			@Override
@@ -144,7 +142,7 @@ public class GenEncFile extends JDialog {
 		txtFile = new JTextField(40);
 		txtFile.setEditable(false);
 		
-		btnValid = new JButton(res.getString("genEncFile.btnValid"));
+		btnValid = new JButton(JobConfig.getRes().getString("genEncFile.btnValid"));
 		btnValid.setIcon(new ImageIcon(this.getClass().getResource("/icons/apply.png")));
 		btnValid.addActionListener(new ActionListener() {			
 			@Override
@@ -152,8 +150,8 @@ public class GenEncFile extends JDialog {
 				try {
 					if (genFile()) {
 						JOptionPane.showMessageDialog(null, 
-								res.getString("genEncFile.success"),								
-								res.getString("genEncFile.successTitle"),
+								JobConfig.getRes().getString("genEncFile.success"),								
+								JobConfig.getRes().getString("genEncFile.successTitle"),
 								JOptionPane.INFORMATION_MESSAGE);
 					}
 				} catch (IOException e1) {
@@ -163,7 +161,7 @@ public class GenEncFile extends JDialog {
 					.showMessageDialog(
 							null,
 						e1.getMessage(),
-						res.getString("genEncFile.errorIO"),
+						JobConfig.getRes().getString("genEncFile.errorIO"),
 							JOptionPane.ERROR_MESSAGE);
 					dispose();
 				}
@@ -171,7 +169,7 @@ public class GenEncFile extends JDialog {
 			}
 		});
 		
-		btnExit = new JButton(res.getString("genEncFile.btnExit"));
+		btnExit = new JButton(JobConfig.getRes().getString("genEncFile.btnExit"));
 		btnExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
 		btnExit.addActionListener(new ActionListener() {			
 			@Override
@@ -201,21 +199,20 @@ public class GenEncFile extends JDialog {
 	}
 	
 	private void setSaveFile() {
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
-		
+				
 		JFileChooser dialogue = new JFileChooser();
 				
 		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
 		dialogue.updateUI();
 		
 		dialogue.setAcceptAllFileFilterUsed(false);
-		dialogue.setDialogTitle(res.getString("genEncFile.dialogTitle"));
+		dialogue.setDialogTitle(JobConfig.getRes().getString("genEncFile.dialogTitle"));
 
 		FileNameExtensionFilter filter;
 		String[] extension;
 
 		extension = new String[] { "enc" };
-		filter = new FileNameExtensionFilter(res.getString("genEncFile.filenameExtensionFilter"), extension);
+		filter = new FileNameExtensionFilter(JobConfig.getRes().getString("genEncFile.filenameExtensionFilter"), extension);
 
 		dialogue.setFileFilter(filter);
 
@@ -231,17 +228,15 @@ public class GenEncFile extends JDialog {
 
 	}
 	
-	private boolean genFile() throws IOException{
-		
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+	private boolean genFile() throws IOException{		
 		
 		if( this.txtLines.getText().trim().equals("") 
 				|| Integer.valueOf(this.txtLines.getText().toString().trim()) < 1 ){
 			JOptionPane
 			.showMessageDialog(
 					this,
-					res.getString("genEncFile.errorGenFileFrames"),
-					res.getString("genEncFile.errorGenFileFramesTitle"),
+					JobConfig.getRes().getString("genEncFile.errorGenFileFrames"),
+					JobConfig.getRes().getString("genEncFile.errorGenFileFramesTitle"),
 					JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
@@ -249,8 +244,8 @@ public class GenEncFile extends JDialog {
 			JOptionPane
 			.showMessageDialog(
 					this,
-					res.getString("genEncFile.errorNoFileName"),
-					res.getString("genEncFile.errorNoFileNameTitle"),
+					JobConfig.getRes().getString("genEncFile.errorNoFileName"),
+					JobConfig.getRes().getString("genEncFile.errorNoFileNameTitle"),
 					JOptionPane.WARNING_MESSAGE);
 			return false;
 		}

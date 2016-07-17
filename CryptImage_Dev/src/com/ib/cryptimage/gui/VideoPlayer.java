@@ -41,8 +41,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 //import javax.sound.sampled.AudioFormat;
 //import javax.sound.sampled.AudioSystem;
@@ -65,7 +63,7 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 	private double frameRate;
 	private long systemPreviousCurrentTime = 0;	
 	private boolean inverse;
-	private ResourceBundle res;
+
 	
 	//private SourceDataLine mLine;
 	
@@ -75,7 +73,7 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 //		if (JobConfig.isWantSound()){
 //			openJavaSound();
 //		}
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+		
 		
 		frame = new JDialog();	
 		frame.addWindowListener(this);
@@ -93,13 +91,13 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 		panLabel.setSize(icon.getIconWidth()+10, icon.getIconHeight()+10);
 			
 		
-		this.btnInverse = new JButton(res.getString("videoPlayer.btnInverse"));
-		this.btnExit = new JButton(res.getString("videoPlayer.btnExit"));
+		this.btnInverse = new JButton(JobConfig.getRes().getString("videoPlayer.btnInverse"));
+		this.btnExit = new JButton(JobConfig.getRes().getString("videoPlayer.btnExit"));
 		panBtn = new JPanel();
 		panBtn.setLayout(new BorderLayout());
 		panBtn.add(btnInverse, BorderLayout.WEST);
 		
-		labelState = new JLabel(res.getString("videoPlayer.labelState"));
+		labelState = new JLabel(JobConfig.getRes().getString("videoPlayer.labelState"));
 		labelState.setForeground(Color.green);
 		panBtn.add(labelState,BorderLayout.CENTER);
 		panBtn.add(btnExit,BorderLayout.EAST);
@@ -273,12 +271,12 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 			if(src.equals(this.btnInverse)){
 				if(inverse == true){
 					this.inverse = false;
-					this.labelState.setText(res.getString("videoPlayer.labelState.green"));
+					this.labelState.setText(JobConfig.getRes().getString("videoPlayer.labelState.green"));
 					labelState.setForeground(Color.green);
 				}
 				else{
 					this.inverse = true;
-					this.labelState.setText(res.getString("videoPlayer.labelState.red"));
+					this.labelState.setText(JobConfig.getRes().getString("videoPlayer.labelState.red"));
 					labelState.setForeground(Color.red);
 					}				
 			} else if(src.equals(this.btnExit)){

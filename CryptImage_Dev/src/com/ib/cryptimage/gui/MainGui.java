@@ -84,8 +84,8 @@ import com.ib.cryptimage.core.JobConfig;
  */
 public class MainGui {
 	
-	private Locale locale;
-	private ResourceBundle res;
+//	private Locale locale;
+//	private ResourceBundle res;
 	
 	private JFrame frame;
 	
@@ -241,10 +241,9 @@ public class MainGui {
 	
 	public MainGui(){		
 		
-		System.out.println("Locale par defaut : ");		
-		locale = Locale.getDefault();	
-		System.out.println(locale.getLanguage());
-		res = ResourceBundle.getBundle("ressources/mainGui", locale); 		
+		System.out.println("Default locale : " + Locale.getDefault());		
+			
+		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
 		
 		controler = new MainGui_ActionListener(this);
 			
@@ -309,31 +308,31 @@ public class MainGui {
 			
 			switch (JobConfig.getLang()) {
 			case 0:
-				res = ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault());
+				JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault()));
 				mAuto.setSelected(true);
 				break;
 			case 1:
-				res = ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN);
+				JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.GERMAN));
 				mGerman.setSelected(true);				
 				break;
 			case 2:
-				res = ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH);
+				JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ENGLISH));
 				mEnglish.setSelected(true);				
 				break;
 			case 3:
-				res = ResourceBundle.getBundle("ressources/mainGui", new Locale("es"));
+				JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("es")));
 				mSpanish.setSelected(true);				
 				break;
 			case 4:
-				res = ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH);
+				JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.FRENCH));
 				mFrench.setSelected(true);				
 				break;
 			case 5:
-				res = ResourceBundle.getBundle("ressources/mainGui", Locale.ITALIAN);
+				JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.ITALIAN));
 				mItalian.setSelected(true);				
 				break;
 			case 6:
-				res = ResourceBundle.getBundle("ressources/mainGui", new Locale("pl"));
+				JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", new Locale("pl")));
 				mPolish.setSelected(true);				
 				break;
 			default:
@@ -402,8 +401,7 @@ public class MainGui {
 		this.combAudience.setSelectedIndex(JobConfig.getAudienceLevel());
 	}
 	
-	private void copyNewHelpVersion(){
-		res = ResourceBundle.getBundle("ressources/mainGui", new Locale(JobConfig.getUserLanguage()));
+	private void copyNewHelpVersion(){		
 		String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		
 		File config = new File(binPath + "cryptimage_fr.pdf");
@@ -469,8 +467,8 @@ public class MainGui {
 				JOptionPane
 				.showMessageDialog(
 						this.frame,
-						res.getString("mainGui.help.errorInstall"),
-						res.getString("mainGui.help.errorInstall.title"),
+						JobConfig.getRes().getString("mainGui.help.errorInstall"),
+						JobConfig.getRes().getString("mainGui.help.errorInstall.title"),
 						JOptionPane.ERROR_MESSAGE);
 			}
 			 
@@ -529,8 +527,8 @@ public class MainGui {
 				JOptionPane
 				.showMessageDialog(
 						this.frame,
-						res.getString("mainGui.help.errorInstall"),
-						res.getString("mainGui.help.errorInstall.title"),
+						JobConfig.getRes().getString("mainGui.help.errorInstall"),
+						JobConfig.getRes().getString("mainGui.help.errorInstall.title"),
 						JOptionPane.ERROR_MESSAGE);
 			}
 			 
@@ -547,111 +545,111 @@ public class MainGui {
 	
 	public void refreshGUI(){
 		//menu bar
-		mFile.setText(res.getString("mFile"));
-		mTools.setText(res.getString("mTools"));
-		mLang.setText(res.getString("mLang"));
-		mHelp.setText(res.getString("mHelp"));
-		mOpen.setText(res.getString("mOpenFile"));
-		mExit.setText(res.getString("mExit"));
-		mGen.setText(res.getString("mGen"));
-		mEnglish.setText(res.getString("mEnglish"));
-		mFrench.setText(res.getString("mFrench"));
-		mSpanish.setText(res.getString("mSpanish"));
-		mGerman.setText(res.getString("mGerman"));
-		mItalian.setText(res.getString("mItalian"));
-		mPolish.setText(res.getString("mPolish"));
-		mDocumentation.setText(res.getString("mDocumentation"));
-		mAbout.setText(res.getString("mAbout"));
+		mFile.setText(JobConfig.getRes().getString("mFile"));
+		mTools.setText(JobConfig.getRes().getString("mTools"));
+		mLang.setText(JobConfig.getRes().getString("mLang"));
+		mHelp.setText(JobConfig.getRes().getString("mHelp"));
+		mOpen.setText(JobConfig.getRes().getString("mOpenFile"));
+		mExit.setText(JobConfig.getRes().getString("mExit"));
+		mGen.setText(JobConfig.getRes().getString("mGen"));
+		mEnglish.setText(JobConfig.getRes().getString("mEnglish"));
+		mFrench.setText(JobConfig.getRes().getString("mFrench"));
+		mSpanish.setText(JobConfig.getRes().getString("mSpanish"));
+		mGerman.setText(JobConfig.getRes().getString("mGerman"));
+		mItalian.setText(JobConfig.getRes().getString("mItalian"));
+		mPolish.setText(JobConfig.getRes().getString("mPolish"));
+		mDocumentation.setText(JobConfig.getRes().getString("mDocumentation"));
+		mAbout.setText(JobConfig.getRes().getString("mAbout"));
 		
 		//panLog
-		titlePanLog.setTitle(res.getString("panLog.informations"));
-		btnEnter.setText(res.getString("panLog.enter"));
-		btnExit.setText(res.getString("panLog.exit"));
-		btnCancel.setText(res.getString("panLog.cancel"));
+		titlePanLog.setTitle(JobConfig.getRes().getString("panLog.informations"));
+		btnEnter.setText(JobConfig.getRes().getString("panLog.enter"));
+		btnExit.setText(JobConfig.getRes().getString("panLog.exit"));
+		btnCancel.setText(JobConfig.getRes().getString("panLog.cancel"));
 		
 		//panMode
-		titlePanMode.setTitle(res.getString("panMode.mode"));
-		rdiVideo.setText(res.getString("panMode.video"));
-		rdiVideo.setToolTipText(res.getString("panMode.tooltip.video"));
-		rdiPhoto.setText(res.getString("panMode.photo"));
-		rdiPhoto.setToolTipText(res.getString("panMode.tooltip.photo"));
-		chkStrictMode.setText(res.getString("panMode.respectNorme"));
-		chkStrictMode.setToolTipText(res.getString("panMode.tooltip.respectNorme"));
-		lblSystemCrypt.setText(res.getString("panMode.lblSystem"));
-		btnAbout.setText(res.getString("mAbout"));
+		titlePanMode.setTitle(JobConfig.getRes().getString("panMode.mode"));
+		rdiVideo.setText(JobConfig.getRes().getString("panMode.video"));
+		rdiVideo.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.video"));
+		rdiPhoto.setText(JobConfig.getRes().getString("panMode.photo"));
+		rdiPhoto.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.photo"));
+		chkStrictMode.setText(JobConfig.getRes().getString("panMode.respectNorme"));
+		chkStrictMode.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.respectNorme"));
+		lblSystemCrypt.setText(JobConfig.getRes().getString("panMode.lblSystem"));
+		btnAbout.setText(JobConfig.getRes().getString("mAbout"));
 		
 		//panfile
-		titlePanFile.setTitle(res.getString("panFile.title"));
-		btnInputFile.setText(res.getString("panFile.open"));
-		btnInputFile.setToolTipText(res.getString("panFile.tooltip.open"));
-		btnOutputFile.setText(res.getString("panFile.folder"));
-		btnOutputFile.setToolTipText(res.getString("panFile.tooltip.folder"));
+		titlePanFile.setTitle(JobConfig.getRes().getString("panFile.title"));
+		btnInputFile.setText(JobConfig.getRes().getString("panFile.open"));
+		btnInputFile.setToolTipText(JobConfig.getRes().getString("panFile.tooltip.open"));
+		btnOutputFile.setText(JobConfig.getRes().getString("panFile.folder"));
+		btnOutputFile.setToolTipText(JobConfig.getRes().getString("panFile.tooltip.folder"));
 		
 		//panDiscret11
-		titlePanDiscret11.setTitle(res.getString("panDiscret11.title"));
-		rdiDiscretCoding.setText(res.getString("panDiscret11.coding"));
-		rdiDiscretDecoding.setText(res.getString("panDiscret11.decoding"));
-		rdiDiscretCorrel.setText(res.getString("panDiscret11.decodingCorrel"));
-		lab16bitsWord.setText(res.getString("panDiscret11.lab16bits"));
+		titlePanDiscret11.setTitle(JobConfig.getRes().getString("panDiscret11.title"));
+		rdiDiscretCoding.setText(JobConfig.getRes().getString("panDiscret11.coding"));
+		rdiDiscretDecoding.setText(JobConfig.getRes().getString("panDiscret11.decoding"));
+		rdiDiscretCorrel.setText(JobConfig.getRes().getString("panDiscret11.decodingCorrel"));
+		lab16bitsWord.setText(JobConfig.getRes().getString("panDiscret11.lab16bits"));
 		
-		labAudience.setText(res.getString("panDiscret11.labAudience"));
+		labAudience.setText(JobConfig.getRes().getString("panDiscret11.labAudience"));
 		int index = combAudience.getSelectedIndex();
-		String[] tab = {res.getString("panDiscret11.AudienceLevel1"),res.getString("panDiscret11.AudienceLevel2"),res.getString("panDiscret11.AudienceLevel3"),res.getString("panDiscret11.AudienceLevel4"),
-				res.getString("panDiscret11.AudienceLevel5"),res.getString("panDiscret11.AudienceLevel6"),res.getString("panDiscret11.AudienceLevel7"),res.getString("panDiscret11.AudienceLevelMulti")};
+		String[] tab = {JobConfig.getRes().getString("panDiscret11.AudienceLevel1"),JobConfig.getRes().getString("panDiscret11.AudienceLevel2"),JobConfig.getRes().getString("panDiscret11.AudienceLevel3"),JobConfig.getRes().getString("panDiscret11.AudienceLevel4"),
+				JobConfig.getRes().getString("panDiscret11.AudienceLevel5"),JobConfig.getRes().getString("panDiscret11.AudienceLevel6"),JobConfig.getRes().getString("panDiscret11.AudienceLevel7"),JobConfig.getRes().getString("panDiscret11.AudienceLevelMulti")};
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>( tab );
 		combAudience.setModel(model);
 		combAudience.setSelectedIndex(index);
 		
-		lbl11bitsInfo.setToolTipText(res.getString("panDiscret11.lab11bits.tooltip"));
-		txtMultiCode.setToolTipText(res.getString("panDiscret11.txtMultiCode.tooltip"));
-		lblMultiAudience.setText(res.getString("panDiscret11.labMultiAudience"));
-		lblCycle.setText(res.getString("panDiscret11.labCycle"));
-		jspCycle.setToolTipText(res.getString("panDiscret11.jspCycle.tooltip"));
-		chkDelay.setText(res.getString("panDiscret11.chkDelay"));
-		labDelay1.setText(res.getString("panDiscret11.labDelay1"));
-		labDelay2.setText(res.getString("panDiscret11.labDelay2"));
-		labFrameStart.setText(res.getString("panDiscret11.labFrameStart"));
-		slideFrameStart.setToolTipText(res.getString("panDiscret11.slideFrameStart.tooltip"));
-		chkNoBlackBar.setText(res.getString("panDiscret11.chkNoBlackBar"));
-		chkNoBlackBar.setToolTipText(res.getString("panDiscret11.chkNoBlackBar.tooltip"));
-		chkSound.setText(res.getString("panDiscret11.chkSound"));
-		chkSound.setToolTipText(res.getString("panDiscret11.chkSound.tooltip"));
-		chkDisableSound.setText(res.getString("panDiscret11.chkDisableSound"));
-		chkDisableSound.setToolTipText(res.getString("panDiscret11.chkDisableSound.tooltip"));
+		lbl11bitsInfo.setToolTipText(JobConfig.getRes().getString("panDiscret11.lab11bits.tooltip"));
+		txtMultiCode.setToolTipText(JobConfig.getRes().getString("panDiscret11.txtMultiCode.tooltip"));
+		lblMultiAudience.setText(JobConfig.getRes().getString("panDiscret11.labMultiAudience"));
+		lblCycle.setText(JobConfig.getRes().getString("panDiscret11.labCycle"));
+		jspCycle.setToolTipText(JobConfig.getRes().getString("panDiscret11.jspCycle.tooltip"));
+		chkDelay.setText(JobConfig.getRes().getString("panDiscret11.chkDelay"));
+		labDelay1.setText(JobConfig.getRes().getString("panDiscret11.labDelay1"));
+		labDelay2.setText(JobConfig.getRes().getString("panDiscret11.labDelay2"));
+		labFrameStart.setText(JobConfig.getRes().getString("panDiscret11.labFrameStart"));
+		slideFrameStart.setToolTipText(JobConfig.getRes().getString("panDiscret11.slideFrameStart.tooltip"));
+		chkNoBlackBar.setText(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar"));
+		chkNoBlackBar.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar.tooltip"));
+		chkSound.setText(JobConfig.getRes().getString("panDiscret11.chkSound"));
+		chkSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkSound.tooltip"));
+		chkDisableSound.setText(JobConfig.getRes().getString("panDiscret11.chkDisableSound"));
+		chkDisableSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkDisableSound.tooltip"));
 			
 		//createPanKeyboard
-		titlePanKeyboard.setTitle(res.getString("panKeyboard.titlePanKeyboard"));
-		labSerial.setText(res.getString("panKeyboard.labSerial"));
-		labCode.setText(res.getString("panKeyboard.labCode"));
+		titlePanKeyboard.setTitle(JobConfig.getRes().getString("panKeyboard.titlePanKeyboard"));
+		labSerial.setText(JobConfig.getRes().getString("panKeyboard.labSerial"));
+		labCode.setText(JobConfig.getRes().getString("panKeyboard.labCode"));
 		
 		//createPanVideo
-		titlePanVideo.setTitle(res.getString("panVideo.titlePanVideo"));
-		labAudioCodec.setText(res.getString("panVideo.labAudioCodec"));
-		chkPlayer.setText(res.getString("panVideo.chkPlayer"));
-		chkPlayer.setToolTipText(res.getString("panVideo.chkPlayer.tooltip"));
-		chkHorodatage.setText(res.getString("panVideo.chkHorodatage"));
-		chkHorodatage.setToolTipText(res.getString("panVideo.chkHorodatage.tooltip"));
-		labCodec.setText(res.getString("panVideo.labCodec"));
-		labBitrate.setText(res.getString("panVideo.labBitrate"));
-		labNbFrames.setText(res.getString("panVideo.labNbFrames"));
-		lblExtension.setText(res.getString("panVideo.lblExtension"));
+		titlePanVideo.setTitle(JobConfig.getRes().getString("panVideo.titlePanVideo"));
+		labAudioCodec.setText(JobConfig.getRes().getString("panVideo.labAudioCodec"));
+		chkPlayer.setText(JobConfig.getRes().getString("panVideo.chkPlayer"));
+		chkPlayer.setToolTipText(JobConfig.getRes().getString("panVideo.chkPlayer.tooltip"));
+		chkHorodatage.setText(JobConfig.getRes().getString("panVideo.chkHorodatage"));
+		chkHorodatage.setToolTipText(JobConfig.getRes().getString("panVideo.chkHorodatage.tooltip"));
+		labCodec.setText(JobConfig.getRes().getString("panVideo.labCodec"));
+		labBitrate.setText(JobConfig.getRes().getString("panVideo.labBitrate"));
+		labNbFrames.setText(JobConfig.getRes().getString("panVideo.labNbFrames"));
+		lblExtension.setText(JobConfig.getRes().getString("panVideo.lblExtension"));
 		
 		//createPanSyster
-		titlePanSyster.setTitle(res.getString("panSyster.titlePanSyster"));
-		titlePanSysterCodingGen.setTitle(res.getString("panSyster.titlePanSysterCodingGen"));
-		titlePanSysterDecodingGen.setTitle(res.getString("panSyster.titlePanSysterDecodingGen"));
-		rdiSysterCodingGen.setText(res.getString("panSyster.rdiSysterCodingGen"));
-		rdiSysterDecodingGen.setText(res.getString("panSyster.rdiSysterDecodingGen"));
-		btnFileSysterEnc.setText(res.getString("panSyster.btnFileSysterEnc"));
-		btnFileSysterDec.setText(res.getString("panSyster.btnFileSysterDec"));
-		rdiSysterCodingRandom.setText(res.getString("panSyster.rdiSysterCodingRandom"));
-		rdiSysterCodingFile.setText(res.getString("panSyster.rdiSysterCodingFile"));
-		chkTags.setText(res.getString("panSyster.chkTags"));
+		titlePanSyster.setTitle(JobConfig.getRes().getString("panSyster.titlePanSyster"));
+		titlePanSysterCodingGen.setTitle(JobConfig.getRes().getString("panSyster.titlePanSysterCodingGen"));
+		titlePanSysterDecodingGen.setTitle(JobConfig.getRes().getString("panSyster.titlePanSysterDecodingGen"));
+		rdiSysterCodingGen.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingGen"));
+		rdiSysterDecodingGen.setText(JobConfig.getRes().getString("panSyster.rdiSysterDecodingGen"));
+		btnFileSysterEnc.setText(JobConfig.getRes().getString("panSyster.btnFileSysterEnc"));
+		btnFileSysterDec.setText(JobConfig.getRes().getString("panSyster.btnFileSysterDec"));
+		rdiSysterCodingRandom.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingRandom"));
+		rdiSysterCodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingFile"));
+		chkTags.setText(JobConfig.getRes().getString("panSyster.chkTags"));
 		
 		int indexSysterEnc = getComboTableSysterEnc().getSelectedIndex();
 		int indexSysterDec = comboTableSysterDec.getSelectedIndex();
-		String[] tabSyster ={res.getString("panSyster.comboTableSysterEnc.menu1"),
-				res.getString("panSyster.comboTableSysterEnc.menu2")};
+		String[] tabSyster ={JobConfig.getRes().getString("panSyster.comboTableSysterEnc.menu1"),
+				JobConfig.getRes().getString("panSyster.comboTableSysterEnc.menu2")};
 		
 		DefaultComboBoxModel<String> modelSysterEnc = new DefaultComboBoxModel<String>( tabSyster );
 		DefaultComboBoxModel<String> modelSysterDec = new DefaultComboBoxModel<String>( tabSyster );
@@ -660,15 +658,15 @@ public class MainGui {
 		comboTableSysterDec.setModel(modelSysterDec);
 		comboTableSysterDec.setSelectedIndex(indexSysterDec);
 		
-		rdiSysterDecodingFile.setText(res.getString("panSyster.rdiSysterDecodingFile"));
-		rdiSysterDeCodingTags.setText(res.getString("panSyster.rdiSysterDeCodingTags"));
-		rdiSysterDecodingCorrel.setText(res.getString("panSyster.rdiSysterDecodingCorrel"));
-		labFrameStartSyster.setText(res.getString("panSyster.labFrameStartSyster"));
-		slideFrameStartSyster.setToolTipText(res.getString("panSyster.labFrameStartSyster.tooltip"));
-		chkSoundSyster.setText(res.getString("panSyster.chkSoundSyster"));
-		chkSoundSyster.setToolTipText(res.getString("panSyster.chkSoundSyster.tooltip"));
-		chkDisableSoundSyster.setText(res.getString("panSyster.chkDisableSoundSyster"));
-		chkDisableSoundSyster.setToolTipText(res.getString("panSyster.chkDisableSoundSyster.tooltip"));
+		rdiSysterDecodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterDecodingFile"));
+		rdiSysterDeCodingTags.setText(JobConfig.getRes().getString("panSyster.rdiSysterDeCodingTags"));
+		rdiSysterDecodingCorrel.setText(JobConfig.getRes().getString("panSyster.rdiSysterDecodingCorrel"));
+		labFrameStartSyster.setText(JobConfig.getRes().getString("panSyster.labFrameStartSyster"));
+		slideFrameStartSyster.setToolTipText(JobConfig.getRes().getString("panSyster.labFrameStartSyster.tooltip"));
+		chkSoundSyster.setText(JobConfig.getRes().getString("panSyster.chkSoundSyster"));
+		chkSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkSoundSyster.tooltip"));
+		chkDisableSoundSyster.setText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster"));
+		chkDisableSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster.tooltip"));
 		
 		
 		
@@ -681,50 +679,50 @@ public class MainGui {
 	
 	private void createMenu(){				
 		menuBar = new JMenuBar();
-		mFile = new JMenu(res.getString("mFile"));
-		mTools = new JMenu(res.getString("mTools"));
-		mLang = new JMenu(res.getString("mLang"));
-		mHelp = new JMenu(res.getString("mHelp"));
-		mOpen = new JMenuItem(res.getString("mOpenFile"));
+		mFile = new JMenu(JobConfig.getRes().getString("mFile"));
+		mTools = new JMenu(JobConfig.getRes().getString("mTools"));
+		mLang = new JMenu(JobConfig.getRes().getString("mLang"));
+		mHelp = new JMenu(JobConfig.getRes().getString("mHelp"));
+		mOpen = new JMenuItem(JobConfig.getRes().getString("mOpenFile"));
 		mOpen.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		mOpen.addActionListener(controler);
-		mExit = new JMenuItem(res.getString("mExit"));
+		mExit = new JMenuItem(JobConfig.getRes().getString("mExit"));
 		mExit.addActionListener(controler);
 		mExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
-		mGen = new JMenuItem(res.getString("mGen"));
+		mGen = new JMenuItem(JobConfig.getRes().getString("mGen"));
 		mGen.addActionListener(controler);
 		mGen.setIcon(new ImageIcon(this.getClass().getResource("/icons/encrypted.png")));
 		
 		mAuto = new JRadioButtonMenuItem("Auto");
 		mAuto.addActionListener(controler);
-		mEnglish = new JRadioButtonMenuItem(res.getString("mEnglish"));
+		mEnglish = new JRadioButtonMenuItem(JobConfig.getRes().getString("mEnglish"));
 		mEnglish.setIcon(new ImageIcon(this.getClass().getResource("/icons/gb.png")));
 		mEnglish.addActionListener(controler);
 		
-		mFrench = new JRadioButtonMenuItem(res.getString("mFrench"));
+		mFrench = new JRadioButtonMenuItem(JobConfig.getRes().getString("mFrench"));
 		mFrench.setIcon(new ImageIcon(this.getClass().getResource("/icons/fr.png")));
 		mFrench.addActionListener(controler);
 		
-		mGerman = new JRadioButtonMenuItem(res.getString("mGerman"));
+		mGerman = new JRadioButtonMenuItem(JobConfig.getRes().getString("mGerman"));
 		mGerman.setIcon(new ImageIcon(this.getClass().getResource("/icons/de.png")));
 		mGerman.addActionListener(controler);
 		
-		mSpanish = new JRadioButtonMenuItem(res.getString("mSpanish"));
+		mSpanish = new JRadioButtonMenuItem(JobConfig.getRes().getString("mSpanish"));
 		mSpanish.setIcon(new ImageIcon(this.getClass().getResource("/icons/es.png")));
 		mSpanish.addActionListener(controler);
 		
-		mItalian = new JRadioButtonMenuItem(res.getString("mItalian"));
+		mItalian = new JRadioButtonMenuItem(JobConfig.getRes().getString("mItalian"));
 		mItalian.setIcon(new ImageIcon(this.getClass().getResource("/icons/it.png")));
 		mItalian.addActionListener(controler);
 		
-		mPolish = new JRadioButtonMenuItem(res.getString("mPolish"));
+		mPolish = new JRadioButtonMenuItem(JobConfig.getRes().getString("mPolish"));
 		mPolish.setIcon(new ImageIcon(this.getClass().getResource("/icons/pl.png")));
 		mPolish.addActionListener(controler);
 		
-		mAbout = new JMenuItem(res.getString("mAbout"));		
+		mAbout = new JMenuItem(JobConfig.getRes().getString("mAbout"));		
 		mAbout.addActionListener(controler);
 		mAbout.setIcon(new ImageIcon(this.getClass().getResource("/icons/help.png")));
-		mDocumentation = new JMenuItem(res.getString("mDocumentation"));
+		mDocumentation = new JMenuItem(JobConfig.getRes().getString("mDocumentation"));
 		mDocumentation.addActionListener(controler);
 		mDocumentation.setIcon(new ImageIcon(this.getClass().getResource("/icons/documentation.png")));
 		
@@ -768,36 +766,36 @@ public class MainGui {
 		panMode = new JPanel();		
 				
 		titlePanMode = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panMode.mode"));
+				JobConfig.getRes().getString("panMode.mode"));
 		panMode.setBorder(titlePanMode);
 		
-		rdiVideo = new JRadioButton(res.getString("panMode.video"));
+		rdiVideo = new JRadioButton(JobConfig.getRes().getString("panMode.video"));
 		rdiVideo.setSelected(true);
 		rdiVideo.addActionListener(controler);
-		rdiVideo.setToolTipText(res.getString("panMode.tooltip.video")); //("pour coder ou décoder des fichiers vidéos");
-		rdiPhoto = new JRadioButton(res.getString("panMode.photo"));
+		rdiVideo.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.video")); //("pour coder ou décoder des fichiers vidéos");
+		rdiPhoto = new JRadioButton(JobConfig.getRes().getString("panMode.photo"));
 		rdiPhoto.addActionListener(controler);
-		rdiPhoto.setToolTipText(res.getString("panMode.tooltip.photo"));//("pour coder ou décoder des fichiers images");
+		rdiPhoto.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.photo"));//("pour coder ou décoder des fichiers images");
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(rdiVideo);
 		btnGroup.add(rdiPhoto);
 		
-		chkStrictMode = new JCheckBox(res.getString("panMode.respectNorme"));		
+		chkStrictMode = new JCheckBox(JobConfig.getRes().getString("panMode.respectNorme"));		
 		chkStrictMode.addActionListener(controler);
 		chkStrictMode.setSelected(true);
-		chkStrictMode.setToolTipText(res.getString("panMode.tooltip.respectNorme"));
+		chkStrictMode.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.respectNorme"));
 				/*"<html>-si option activée : gestion des lignes 310/622,"
 				+ "<br/>redimensionnement automatique vers le format 4/3 720x576 ou 768x576<br/>"
 				+ "-si option désactivée : pas de gestion des lignes 310/622 et "
 				+ "la vidéo garde sa résolution originale</html>");*/
 		
-		lblSystemCrypt = new JLabel(res.getString("panMode.lblSystem"));
+		lblSystemCrypt = new JLabel(JobConfig.getRes().getString("panMode.lblSystem"));
 		String [] tab = {"Discret11", "Nagravision syster"};
 		combSystemCrypt = new JComboBox<>(tab);
 		combSystemCrypt.addActionListener(controler);
 		
 		
-		btnAbout = new JButton(res.getString("mAbout"));
+		btnAbout = new JButton(JobConfig.getRes().getString("mAbout"));
 		btnAbout.setIcon(new ImageIcon(this.getClass().getResource("/icons/help.png")));
 		btnAbout.addActionListener(controler);
 		
@@ -858,22 +856,22 @@ public class MainGui {
 		panFile = new JPanel();
 				
 		titlePanFile = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panFile.title"));
+				JobConfig.getRes().getString("panFile.title"));
 		panFile.setBorder(titlePanFile);
 		
 		txtInputFile = new JTextField(40);
 		txtInputFile.setEditable(false);
 		txtOutputFile = new JTextField(40);
 		txtOutputFile.setEditable(false);
-		btnInputFile = new JButton(res.getString("panFile.open"));
+		btnInputFile = new JButton(JobConfig.getRes().getString("panFile.open"));
 		btnInputFile.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
-		btnInputFile.setToolTipText(res.getString("panFile.tooltip.open"));
+		btnInputFile.setToolTipText(JobConfig.getRes().getString("panFile.tooltip.open"));
 		btnInputFile.addActionListener(controler);
-		btnOutputFile = new JButton(res.getString("panFile.folder"));
+		btnOutputFile = new JButton(JobConfig.getRes().getString("panFile.folder"));
 		btnOutputFile.setIcon(new ImageIcon(this.getClass().getResource("/icons/fileopen.png")));
 		btnOutputFile.setEnabled(true);
 		btnOutputFile.addActionListener(controler);
-		btnOutputFile.setToolTipText(res.getString("panFile.tooltip.folder"));
+		btnOutputFile.setToolTipText(JobConfig.getRes().getString("panFile.tooltip.folder"));
 		
 		
 		GridBagLayout gbl = new GridBagLayout();
@@ -916,7 +914,7 @@ public class MainGui {
 		panKeyboardCode = new JPanel();
 		
 		titlePanKeyboard = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panKeyboard.titlePanKeyboard"));
+				JobConfig.getRes().getString("panKeyboard.titlePanKeyboard"));
 		panKeyboardCode.setBorder(titlePanKeyboard);
 		
 		GridBagLayout gbl = new GridBagLayout();
@@ -942,8 +940,8 @@ public class MainGui {
 		chkAutorisation6.setSelected(true);
 		
 		
-		labSerial = new JLabel(res.getString("panKeyboard.labSerial"));		
-		labCode = new JLabel(res.getString("panKeyboard.labCode"));
+		labSerial = new JLabel(JobConfig.getRes().getString("panKeyboard.labSerial"));		
+		labCode = new JLabel(JobConfig.getRes().getString("panKeyboard.labCode"));
 		
 		MaskFormatter mask;
 		
@@ -1057,26 +1055,26 @@ public class MainGui {
 		//panOptionsSyster.setLayout(new GridLayout(3, 1));
 		
 		titlePanSyster = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panSyster.titlePanSyster"));
+				JobConfig.getRes().getString("panSyster.titlePanSyster"));
 		panOptionsSyster.setBorder(titlePanSyster);		
 				
 		panCoderSyster = new JPanel();
 		
 		titlePanSysterCodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panSyster.titlePanSysterCodingGen"));
+				JobConfig.getRes().getString("panSyster.titlePanSysterCodingGen"));
 		panCoderSyster.setBorder(titlePanSysterCodingGen);
 		//panCoderSyster.setLayout(new BoxLayout(panCoderSyster, BoxLayout.Y_AXIS));
 		
 		panDecoderSyster = new JPanel();
 		
 		titlePanSysterDecodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panSyster.titlePanSysterDecodingGen"));
+				JobConfig.getRes().getString("panSyster.titlePanSysterDecodingGen"));
 		panDecoderSyster.setBorder(titlePanSysterDecodingGen);
 		panDecoderSyster.setLayout(new BoxLayout(panDecoderSyster, BoxLayout.Y_AXIS));
 		
-		rdiSysterCodingGen = new JRadioButton(res.getString("panSyster.rdiSysterCodingGen"));
+		rdiSysterCodingGen = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterCodingGen"));
 		rdiSysterCodingGen.addActionListener(controler);
-		rdiSysterDecodingGen = new JRadioButton(res.getString("panSyster.rdiSysterDecodingGen"));
+		rdiSysterDecodingGen = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterDecodingGen"));
 		rdiSysterDecodingGen.addActionListener(controler);
 		
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -1085,26 +1083,26 @@ public class MainGui {
 		
 		
 		
-		btnFileSysterEnc = new JButton(res.getString("panSyster.btnFileSysterEnc"));
+		btnFileSysterEnc = new JButton(JobConfig.getRes().getString("panSyster.btnFileSysterEnc"));
 		btnFileSysterEnc.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		btnFileSysterEnc.addActionListener(controler);
-		btnFileSysterDec = new JButton(res.getString("panSyster.btnFileSysterDec"));
+		btnFileSysterDec = new JButton(JobConfig.getRes().getString("panSyster.btnFileSysterDec"));
 		btnFileSysterDec.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		btnFileSysterDec.addActionListener(controler);
 		
 		//sub rdi coding
-		rdiSysterCodingRandom = new JRadioButton(res.getString("panSyster.rdiSysterCodingRandom"));
+		rdiSysterCodingRandom = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterCodingRandom"));
 		rdiSysterCodingRandom.addActionListener(controler);
-		rdiSysterCodingFile = new JRadioButton(res.getString("panSyster.rdiSysterCodingFile"));
+		rdiSysterCodingFile = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterCodingFile"));
 		rdiSysterCodingFile.addActionListener(controler);
-		chkTags = new JCheckBox(res.getString("panSyster.chkTags"));
+		chkTags = new JCheckBox(JobConfig.getRes().getString("panSyster.chkTags"));
 		chkTags.addActionListener(controler);
 		
 		ButtonGroup btnSubOptionsCoding = new ButtonGroup();
 		btnSubOptionsCoding.add(rdiSysterCodingRandom);
 		btnSubOptionsCoding.add(rdiSysterCodingFile);		
 				
-		String[] tab = {res.getString("panSyster.comboTableSysterEnc.menu1"),res.getString("panSyster.comboTableSysterEnc.menu2")};
+		String[] tab = {JobConfig.getRes().getString("panSyster.comboTableSysterEnc.menu1"),JobConfig.getRes().getString("panSyster.comboTableSysterEnc.menu2")};
 		comboTableSysterEnc = new JComboBox<String>(tab);
 		comboTableSysterEnc.setSelectedIndex(1);
 		
@@ -1186,11 +1184,11 @@ public class MainGui {
 				1, 1,1,1);		
 		
 		//decoding
-		rdiSysterDecodingFile = new JRadioButton(res.getString("panSyster.rdiSysterDecodingFile"));
+		rdiSysterDecodingFile = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterDecodingFile"));
 		rdiSysterDecodingFile.addActionListener(controler);
-		rdiSysterDeCodingTags = new JRadioButton(res.getString("panSyster.rdiSysterDeCodingTags"));
+		rdiSysterDeCodingTags = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterDeCodingTags"));
 		rdiSysterDeCodingTags.addActionListener(controler);
-		rdiSysterDecodingCorrel = new JRadioButton(res.getString("panSyster.rdiSysterDecodingCorrel"));
+		rdiSysterDecodingCorrel = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterDecodingCorrel"));
 		rdiSysterDecodingCorrel.addActionListener(controler);
 		
 		ButtonGroup btnSubOptionsDecoding = new ButtonGroup();
@@ -1296,9 +1294,9 @@ public class MainGui {
 		
 		//pan syster misc
 		//frame start    
-		labFrameStartSyster = new JLabel(res.getString("panSyster.labFrameStartSyster"));
+		labFrameStartSyster = new JLabel(JobConfig.getRes().getString("panSyster.labFrameStartSyster"));
 		slideFrameStartSyster = new JSlider(JSlider.HORIZONTAL,1,200000,1);
-		slideFrameStartSyster.setToolTipText(res.getString("panSyster.labFrameStartSyster.tooltip"));
+		slideFrameStartSyster.setToolTipText(JobConfig.getRes().getString("panSyster.labFrameStartSyster.tooltip"));
 		jspFrameStartSyster = new JSpinner();	
 		jspFrameStartSyster.addChangeListener(controler);		
 		JSpinner.NumberEditor spinnerEditor3 = new JSpinner.NumberEditor(jspFrameStartSyster);
@@ -1324,13 +1322,13 @@ public class MainGui {
 		slideFrameStartSyster.setPaintLabels(true);		
 		slideFrameStartSyster.setPaintTicks(true);
 		
-		chkSoundSyster = new JCheckBox(res.getString("panSyster.chkSoundSyster"));
+		chkSoundSyster = new JCheckBox(JobConfig.getRes().getString("panSyster.chkSoundSyster"));
 		chkSoundSyster.setSelected(true);
-		chkSoundSyster.setToolTipText(res.getString("panSyster.chkSoundSyster.tooltip"));
+		chkSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkSoundSyster.tooltip"));
 		
-		chkDisableSoundSyster = new JCheckBox(res.getString("panSyster.chkDisableSoundSyster"));		
+		chkDisableSoundSyster = new JCheckBox(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster"));		
 		chkDisableSoundSyster.setSelected(false);
-		chkDisableSoundSyster.setToolTipText(res.getString("panSyster.chkDisableSoundSyster.tooltip"));
+		chkDisableSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster.tooltip"));
 		chkDisableSoundSyster.addActionListener(controler);
 		
 		
@@ -1421,14 +1419,14 @@ public class MainGui {
 		panOptionsDiscret11 = new JPanel();
 		
 		titlePanDiscret11 = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panDiscret11.title"));
+				JobConfig.getRes().getString("panDiscret11.title"));
 		panOptionsDiscret11.setBorder(titlePanDiscret11);
 		GridBagLayout gbl = new GridBagLayout();
 		
-		rdiDiscretCoding = new JRadioButton(res.getString("panDiscret11.coding"));
+		rdiDiscretCoding = new JRadioButton(JobConfig.getRes().getString("panDiscret11.coding"));
 		rdiDiscretCoding.setSelected(true);
-		rdiDiscretDecoding = new JRadioButton(res.getString("panDiscret11.decoding"));
-		rdiDiscretCorrel = new JRadioButton(res.getString("panDiscret11.decodingCorrel"));
+		rdiDiscretDecoding = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decoding"));
+		rdiDiscretCorrel = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decodingCorrel"));
 		
 		rdiDiscretCoding.addActionListener(controler);
 		rdiDiscretDecoding.addActionListener(controler);
@@ -1443,7 +1441,7 @@ public class MainGui {
 		JPanel pan16bits = new JPanel();
 		GridBagLayout gbl_pan16bits = new GridBagLayout();
 		
-		lab16bitsWord = new JLabel(res.getString("panDiscret11.lab16bits"));
+		lab16bitsWord = new JLabel(JobConfig.getRes().getString("panDiscret11.lab16bits"));
 		slid16bitsWord = new JSlider(JSlider.HORIZONTAL,32,65535,58158);
 		slid16bitsWord.addChangeListener(controler);			
 		
@@ -1525,16 +1523,16 @@ public class MainGui {
 		//GridBagLayout gblAudience = new GridBagLayout();
 				
 		
-		labAudience = new JLabel(res.getString("panDiscret11.labAudience"));		
-		String[] tab = {res.getString("panDiscret11.AudienceLevel1"),res.getString("panDiscret11.AudienceLevel2"),res.getString("panDiscret11.AudienceLevel3"),res.getString("panDiscret11.AudienceLevel4"),
-				res.getString("panDiscret11.AudienceLevel5"),res.getString("panDiscret11.AudienceLevel6"),res.getString("panDiscret11.AudienceLevel7"),res.getString("panDiscret11.AudienceLevelMulti")};
+		labAudience = new JLabel(JobConfig.getRes().getString("panDiscret11.labAudience"));		
+		String[] tab = {JobConfig.getRes().getString("panDiscret11.AudienceLevel1"),JobConfig.getRes().getString("panDiscret11.AudienceLevel2"),JobConfig.getRes().getString("panDiscret11.AudienceLevel3"),JobConfig.getRes().getString("panDiscret11.AudienceLevel4"),
+				JobConfig.getRes().getString("panDiscret11.AudienceLevel5"),JobConfig.getRes().getString("panDiscret11.AudienceLevel6"),JobConfig.getRes().getString("panDiscret11.AudienceLevel7"),JobConfig.getRes().getString("panDiscret11.AudienceLevelMulti")};
 		combAudience = new JComboBox<String>(tab);
 		combAudience.setSelectedIndex(0);
 		combAudience.addActionListener(controler);
 		
 		lbl11bitsInfo = new JLabel();
 		lbl11bitsInfo.setFont(new Font("Serif", Font.PLAIN, 11));
-		lbl11bitsInfo.setToolTipText(res.getString("panDiscret11.lab11bits.tooltip"));
+		lbl11bitsInfo.setToolTipText(JobConfig.getRes().getString("panDiscret11.lab11bits.tooltip"));
 		
 		//multimode components		
 		
@@ -1558,14 +1556,14 @@ public class MainGui {
 		txtMultiCode.setFocusLostBehavior(JFormattedTextField.COMMIT);	
 		//txtMultiCode.setHorizontalAlignment(JTextField.RIGHT);
 		
-		txtMultiCode.setToolTipText(res.getString("panDiscret11.txtMultiCode.tooltip"));
+		txtMultiCode.setToolTipText(JobConfig.getRes().getString("panDiscret11.txtMultiCode.tooltip"));
 		
-		lblMultiAudience = new JLabel(res.getString("panDiscret11.labMultiAudience"));
-		lblCycle = new JLabel(res.getString("panDiscret11.labCycle"));
+		lblMultiAudience = new JLabel(JobConfig.getRes().getString("panDiscret11.labMultiAudience"));
+		lblCycle = new JLabel(JobConfig.getRes().getString("panDiscret11.labCycle"));
 				
 		jspCycle = new JSpinner();
 		
-		jspCycle.setToolTipText(res.getString("panDiscret11.jspCycle.tooltip"));
+		jspCycle.setToolTipText(JobConfig.getRes().getString("panDiscret11.jspCycle.tooltip"));
 		
 		JSpinner.NumberEditor spinnerEditorMultiMode = new JSpinner.NumberEditor(jspCycle);
 		jspCycle.setEditor(spinnerEditorMultiMode);
@@ -1592,13 +1590,13 @@ public class MainGui {
 	    panAudience.add(lbl11bitsInfo);	    
 
 		  
-		chkDelay = new JCheckBox(res.getString("panDiscret11.chkDelay"));
+		chkDelay = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkDelay"));
 		chkDelay.setSelected(true);
 		chkDelay.addActionListener(controler);
 		
-		labDelay1 = new JLabel(res.getString("panDiscret11.labDelay1"));
+		labDelay1 = new JLabel(JobConfig.getRes().getString("panDiscret11.labDelay1"));
 		txtDelay1 = new JTextField(5);
-		labDelay2 = new JLabel(res.getString("panDiscret11.labDelay2"));
+		labDelay2 = new JLabel(JobConfig.getRes().getString("panDiscret11.labDelay2"));
 		txtDelay2 = new JTextField(5);
 		txtDelay1.setEditable(false);
 		txtDelay2.setEditable(false);
@@ -1688,9 +1686,9 @@ public class MainGui {
 		
 		
 		//frame start    
-		labFrameStart = new JLabel(res.getString("panDiscret11.labFrameStart"));
+		labFrameStart = new JLabel(JobConfig.getRes().getString("panDiscret11.labFrameStart"));
 		slideFrameStart = new JSlider(JSlider.HORIZONTAL,1,200000,1);
-		slideFrameStart.setToolTipText(res.getString("panDiscret11.slideFrameStart.tooltip"));
+		slideFrameStart.setToolTipText(JobConfig.getRes().getString("panDiscret11.slideFrameStart.tooltip"));
 		jspFrameStart = new JSpinner();	
 		jspFrameStart.addChangeListener(controler);		
 		JSpinner.NumberEditor spinnerEditor2 = new JSpinner.NumberEditor(jspFrameStart);
@@ -1744,16 +1742,16 @@ public class MainGui {
 				20,25,
 				1, 1,1,1);
 		
-		chkNoBlackBar = new JCheckBox(res.getString("panDiscret11.chkNoBlackBar"));
+		chkNoBlackBar = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar"));
 		chkNoBlackBar.addActionListener(controler);
-		chkNoBlackBar.setToolTipText(res.getString("panDiscret11.chkNoBlackBar.tooltip"));
-		chkSound = new JCheckBox(res.getString("panDiscret11.chkSound"));
+		chkNoBlackBar.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar.tooltip"));
+		chkSound = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkSound"));
 		chkSound.setSelected(true);
-		chkSound.setToolTipText(res.getString("panDiscret11.chkSound.tooltip"));
+		chkSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkSound.tooltip"));
 		
-		chkDisableSound = new JCheckBox(res.getString("panDiscret11.chkDisableSound"));		
+		chkDisableSound = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkDisableSound"));		
 		chkDisableSound.setSelected(false);
-		chkDisableSound.setToolTipText(res.getString("panDiscret11.chkDisableSound.tooltip"));
+		chkDisableSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkDisableSound.tooltip"));
 		chkDisableSound.addActionListener(controler);
 		
 		//initialisation serial decoder
@@ -1883,7 +1881,7 @@ public class MainGui {
 		panVideoOptions = new JPanel();
 		
 		titlePanVideo = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panVideo.titlePanVideo"));
+				JobConfig.getRes().getString("panVideo.titlePanVideo"));
 		panVideoOptions.setBorder(titlePanVideo);
 		GridBagLayout gbl = new GridBagLayout();
 		
@@ -1894,7 +1892,7 @@ public class MainGui {
 		btngrp.add(rdi720);
 		btngrp.add(rdi768);
 		
-		labAudioCodec = new JLabel(res.getString("panVideo.labAudioCodec"));
+		labAudioCodec = new JLabel(JobConfig.getRes().getString("panVideo.labAudioCodec"));
 		String[] tabAudio = {"mp3 96 kbs","mp3 128 kbs","mp3 160 kbs",
 				"mp3 192 kbs","mp3 224 kbs","mp3 320 kbs","wav (mkv)"};
 		combAudioCodec = new JComboBox<String>(tabAudio);		
@@ -1905,19 +1903,19 @@ public class MainGui {
 		combAudioRate = new JComboBox<String>(tabAudioRate);
 		combAudioRate.addActionListener(controler);
 		
-		chkPlayer = new JCheckBox(res.getString("panVideo.chkPlayer"));
+		chkPlayer = new JCheckBox(JobConfig.getRes().getString("panVideo.chkPlayer"));
 		chkPlayer.addActionListener(controler);
-		chkPlayer.setToolTipText(res.getString("panVideo.chkPlayer.tooltip"));
+		chkPlayer.setToolTipText(JobConfig.getRes().getString("panVideo.chkPlayer.tooltip"));
 		
-		chkHorodatage = new JCheckBox(res.getString("panVideo.chkHorodatage"));		
-		chkHorodatage.setToolTipText(res.getString("panVideo.chkHorodatage.tooltip"));
+		chkHorodatage = new JCheckBox(JobConfig.getRes().getString("panVideo.chkHorodatage"));		
+		chkHorodatage.setToolTipText(JobConfig.getRes().getString("panVideo.chkHorodatage.tooltip"));
 				
 		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2", "FFV1"};
 		combCodec = new JComboBox<String>(tab);	
 		combCodec.addActionListener(controler);				
-		labCodec = new JLabel(res.getString("panVideo.labCodec"));
+		labCodec = new JLabel(JobConfig.getRes().getString("panVideo.labCodec"));
 		
-		labBitrate = new JLabel(res.getString("panVideo.labBitrate"));
+		labBitrate = new JLabel(JobConfig.getRes().getString("panVideo.labBitrate"));
 		slidBitrate = new JSlider(JSlider.HORIZONTAL,1,20000,10000);
 		slidBitrate.addChangeListener(controler);
 		slidBitrate.setMajorTickSpacing(5000);
@@ -1942,13 +1940,13 @@ public class MainGui {
 		slidFrames.setLabelTable(labelTable2);
 		slidFrames.setPaintLabels(true);		
 		slidFrames.setPaintTicks(true);
-		labNbFrames = new JLabel(res.getString("panVideo.labNbFrames"));
+		labNbFrames = new JLabel(JobConfig.getRes().getString("panVideo.labNbFrames"));
 		txtNbFrames = new JTextField(10);		
 		txtNbFrames.setEditable(false);		
 		txtNbFrames.setText("200000");
 		
 		
-		lblExtension = new JLabel(res.getString("panVideo.lblExtension"));		
+		lblExtension = new JLabel(JobConfig.getRes().getString("panVideo.lblExtension"));		
 		String[] tabExtension = {"mp4","avi","mkv", "mpeg", "ts"};
 		jcbExtension = new JComboBox<String>(tabExtension);
 		jcbExtension.setSelectedIndex(0);
@@ -2132,7 +2130,7 @@ public class MainGui {
 		panProgress = new JPanel();
 		//panProgress.setLayout(new BorderLayout());
 		titlePanLog = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				res.getString("panLog.informations"));
+				JobConfig.getRes().getString("panLog.informations"));
 		panProgress.setBorder(titlePanLog);		
 		GridBagLayout gbl = new GridBagLayout();	
 		
@@ -2149,16 +2147,16 @@ public class MainGui {
 		//scrollPane.setSize(500, 100);
 		
 		
-		btnEnter = new JButton(res.getString("panLog.enter"));
+		btnEnter = new JButton(JobConfig.getRes().getString("panLog.enter"));
 		btnEnter.setIcon(new ImageIcon(this.getClass().getResource("/icons/apply.png")));
 		btnEnter.setEnabled(false);
 		btnEnter.addActionListener(controler);
 		
-		btnExit = new JButton(res.getString("panLog.exit"));
+		btnExit = new JButton(JobConfig.getRes().getString("panLog.exit"));
 		btnExit.setIcon(new ImageIcon(this.getClass().getResource("/icons/exit.png")));
 		btnExit.addActionListener(controler);
 		
-		btnCancel = new JButton(res.getString("panLog.cancel"));
+		btnCancel = new JButton(JobConfig.getRes().getString("panLog.cancel"));
 		btnCancel.setIcon(new ImageIcon(this.getClass().getResource("/icons/cancel.png")));
 		btnCancel.addActionListener(controler);
 		btnCancel.addMouseListener(controler);
@@ -2742,21 +2740,21 @@ public class MainGui {
 		return mFrench;
 	}
 
-	public Locale getLocale() {
-		return locale;
-	}
+//	public Locale getLocale() {
+//		return locale;
+//	}
 
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-	}
+//	public void setLocale(Locale locale) {
+//		this.locale = locale;
+//	}
 
-	public ResourceBundle getRes() {
-		return res;
-	}
-
-	public void setRes(ResourceBundle res) {
-		this.res = res;
-	}
+//	public ResourceBundle getRes() {
+//		return res;
+//	}
+//
+//	public void setRes(ResourceBundle res) {
+//		this.res = res;
+//	}
 
 	public JPanel getPanGlobal() {
 		return panGlobal;
