@@ -291,6 +291,37 @@ public class PalEngine {
 		for (int y = 0; y < 576; y++) {
 			for (int x = 0; x < 768; x++) {
 				if (pol == 1) { // 45 degrees
+					raster.setPixel(x, y, yuvCalc.getRotateRGB_U(raster.getPixel(x, y, new int[3]), -45));
+				} else {// -45 degrees
+					raster.setPixel(x, y, yuvCalc.getRotateRGB_U(raster.getPixel(x, y, new int[3]), 45));
+				}
+			}
+			pol = pol * -1;
+			y++;
+		}
+
+		pol=1;
+		// odd field
+		for (int y = 1; y < 576; y++) {
+			for (int x = 0; x < 768; x++) {
+				if (pol == 1) { // 45 degrees
+					raster.setPixel(x, y, yuvCalc.getRotateRGB_U(raster.getPixel(x, y, new int[3]), -45));
+				} else {// -45 degrees
+					raster.setPixel(x, y, yuvCalc.getRotateRGB_U(raster.getPixel(x, y, new int[3]), 45));
+				}
+			}
+			pol = pol * -1;
+			y++;
+		}
+	}
+	
+	private void backup_rephase45(){		
+		// odd field
+		int pol = 1;
+		
+		for (int y = 0; y < 576; y++) {
+			for (int x = 0; x < 768; x++) {
+				if (pol == 1) { // 45 degrees
 					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, new int[3]), -45));
 				} else {// -45 degrees
 					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, new int[3]), 45));
@@ -532,7 +563,42 @@ public class PalEngine {
 				
 				//Additional step : -45 degrees for odd lines, 45 degrees for even lines
 				if(JobConfig.isWantDec()){
-					pixel = yuvCalc.getRotateRGB(pixel, angle );
+					pixel = yuvCalc.getRotateRGB_V(pixel, angle ); //v
+					pixel = yuvCalc.getRotateRGB_U(pixel, phase);
+				}
+				else{
+					pixel = yuvCalc.getRotateRGB_V(pixel, angle ); //v
+					pixel = yuvCalc.getRotateRGB_U(pixel, phase); //u
+				}
+				raster.setPixel(x, y, pixel);				
+			}
+		}		
+	}
+	
+	private void backup_palInverseOddFrame(int pol){		
+		//int pol = sens;	
+		//pol = -1;
+		int[] pixel = new int[3];
+		int cpt = 0;	
+		int angle = 0;
+		int phase = pol;
+		
+		for (int y = 0; y < 576; y++) {
+			// check angle
+			pixel = raster.getPixel(0, y, new int[3]);			
+			angle = getAngle(pixel, y);			
+			if(cpt == 2){
+				cpt = 0;
+				phase = phase * -1;	
+			}
+			cpt++;			
+						
+			for (int x = 0; x < 768; x++) {				
+					pixel = raster.getPixel(x, y, new int[3]);				
+				
+				//Additional step : -45 degrees for odd lines, 45 degrees for even lines
+				if(JobConfig.isWantDec()){
+					pixel = yuvCalc.getRotateRGB(pixel, angle ); //v
 				}
 				else{					
 					pixel = yuvCalc.getRotateRGB(pixel, angle + phase);

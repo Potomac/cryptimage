@@ -92,6 +92,71 @@ public class YuvCalc extends InitException {
 		return rgbTab;		
 	}
 	
+	public int[] getRotateRGB_V(int[] tabRGB,float angle){
+		setRGB((float)tabRGB[0], (float)tabRGB[1],(float)tabRGB[2]);
+				
+		convertRGBtoYUV();				
+		
+		float u_temp = u -128;
+		float v_temp = v -128;		
+	
+		float new_u_temp, new_v_temp;		
+		
+//		new_u_temp = (float) (u_temp * Math.cos(angle * Math.PI/180d)
+//				- v_temp * Math.sin(angle*Math.PI/180d));
+		new_u_temp = u_temp;
+		new_v_temp = (float) (u_temp * Math.sin(angle * Math.PI/180d)
+				+ v_temp * Math.cos(angle*Math.PI/180d));		
+				
+		float y_temp = y;
+		new_u_temp = new_u_temp +128;
+		new_v_temp = new_v_temp +128;
+		
+		setYUV(y_temp, new_u_temp, new_v_temp);
+		convertYUVtoRGB();
+		
+		int[] rgbTab = new int[3];
+		rgbTab[0] = (int) red;
+		rgbTab[1] = (int) green;
+		rgbTab[2] = (int) blue;
+		
+		return rgbTab;		
+	}
+	
+	public int[] getRotateRGB_U(int[] tabRGB,float angle){
+		setRGB((float)tabRGB[0], (float)tabRGB[1],(float)tabRGB[2]);
+				
+		convertRGBtoYUV();				
+		
+		float u_temp = u -128;
+		float v_temp = v -128;		
+	
+		float new_u_temp, new_v_temp;		
+		
+		new_u_temp = (float) (u_temp * Math.cos(angle * Math.PI/180d)
+				- v_temp * Math.sin(angle*Math.PI/180d));
+//		new_v_temp = (float) (u_temp * Math.sin(angle * Math.PI/180d)
+//				+ v_temp * Math.cos(angle*Math.PI/180d));		
+		new_v_temp = v_temp;
+		
+		
+		float y_temp = y;
+		new_u_temp = new_u_temp +128;
+		new_v_temp = new_v_temp +128;
+		
+		setYUV(y_temp, new_u_temp, new_v_temp);
+		convertYUVtoRGB();
+		
+		int[] rgbTab = new int[3];
+		rgbTab[0] = (int) red;
+		rgbTab[1] = (int) green;
+		rgbTab[2] = (int) blue;
+		
+		return rgbTab;		
+	}
+	
+	
+	
 	public void convertRGBtoYUV(){
 		if(!rgb){
 			try {
