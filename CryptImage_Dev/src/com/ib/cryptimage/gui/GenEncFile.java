@@ -210,6 +210,10 @@ public class GenEncFile extends JDialog {
 
 		FileNameExtensionFilter filter;
 		String[] extension;
+		
+		if(new File(JobConfig.getGui().getTxtOutputFile().getText()).exists()){
+			dialogue.setCurrentDirectory(new File(JobConfig.getGui().getTxtOutputFile().getText()));
+		}
 
 		extension = new String[] { "enc" };
 		filter = new FileNameExtensionFilter(JobConfig.getRes().getString("genEncFile.filenameExtensionFilter"), extension);

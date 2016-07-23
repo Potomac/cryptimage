@@ -90,11 +90,14 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.0.0";
-	private static String releaseDate = "2016-07-17";
+	private static String VERSION = "1.1.0 beta";
+	private static String releaseDate = "2016-07-23";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
-
+	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
+	private static boolean averagingPal = false;
+	
+	
 	private JobConfig() {
 		// TODO Auto-generated constructor stub
 	}
@@ -887,6 +890,22 @@ public final class JobConfig {
 
 	public static String getReleaseDate() {
 		return releaseDate;
+	}
+
+	public static int getColorMode() {
+		return colorMode;
+	}
+
+	public static void setColorMode(int colorMode) {
+		JobConfig.colorMode = colorMode;
+	}
+
+	public static boolean isAveragingPal() {
+		return averagingPal;
+	}
+
+	public static void setAveragingPal(boolean averagingPal) {
+		JobConfig.averagingPal = averagingPal;
 	}
 	
 }

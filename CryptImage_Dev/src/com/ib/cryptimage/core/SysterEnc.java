@@ -96,6 +96,12 @@ public class SysterEnc extends Syster {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
 		
+		//encodage pal
+		if(JobConfig.getColorMode() == 1){
+			palEngine.setImg(image);
+			image = palEngine.encode();
+		}
+		
 		if (JobConfig.isWantSysterEncRandom() == false) {
 			this.readFileData();			
 			this.offset = this.offSetOdd;
@@ -106,11 +112,12 @@ public class SysterEnc extends Syster {
 		
 		this.initPermut();
 		this.crypt();
+		//coder en secam si choix secam
 		this.cryptOddFrame(image);
 		
-		if (JobConfig.isWantSysterEncRandom() == false ) {
-			this.offset = this.offSetEven;
-			this.increment = this.incrementEven;
+		if (JobConfig.isWantSysterEncRandom() == false ) {			
+				this.offset = this.offSetEven;
+				this.increment = this.incrementEven;			
 		} else {
 			//this.genOffsetIncrement();
 			//this.genOffsetIncrementEven();
@@ -118,8 +125,10 @@ public class SysterEnc extends Syster {
 		
 		this.initPermut();
 		this.crypt();
+		//coder en secam si choix secam
 		this.cryptEvenFrame(image);
-				
+		
+		//appel décodeur pal ou secam si choix pal/secam
 		return this.getCompletFrame();
 	}
 	
@@ -137,6 +146,12 @@ public class SysterEnc extends Syster {
 		
 		this.initPermut();
 		this.crypt();
+		//coder en secam si choix secam
+		if(JobConfig.getColorMode() == 1){
+			palEngine.setImg(image);
+			image = palEngine.encode();			
+		}
+		////////à decommenter
 		this.cryptOddFrame(image);
 		
 		this.offset = offset2;
@@ -144,10 +159,56 @@ public class SysterEnc extends Syster {
 		
 		this.initPermut();
 		this.crypt();
+		//coder en secam si choix secam
 		this.cryptEvenFrame(image);
-				
+		///à decommenter
+		//this.ready = true; // à supprimer
+		//this.completFrame = image;//à supprimer	
+		
+		//appel décodeur pal ou secam si choix pal/secam
 		return this.getCompletFrame();
 	}
+	
+	/**
+	 * crypt an image that have been added 
+	 * 
+	 * @param image
+	 *            the image to be transformed	
+	 */
+	public BufferedImage transformPhoto(BufferedImage image, boolean readFile) {
+		numFrames++;		
+		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
+		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
+			image = this.getScaledImage(image, this.sWidth, 576);
+		}
+		
+		//encodage pal
+		if(JobConfig.getColorMode() == 1){
+			palEngine.setImg(image);
+			image = palEngine.encode();
+		}
+		
+		if (readFile == true) {
+			this.readFileData();			
+			this.offset = this.offSetOdd;
+			this.increment = this.incrementOdd;
+		}
+		
+		this.initPermut();
+		this.crypt();
+		//coder en secam si choix secam
+		this.cryptOddFrame(image);		
+		
+		
+		this.initPermut();
+		this.crypt();
+		//coder en secam si choix secam
+		this.cryptEvenFrame(image);
+		
+		//appel décodeur pal ou secam si choix pal/secam
+		return this.getCompletFrame();
+	}
+	
 	
 	
 	
@@ -218,7 +279,7 @@ public class SysterEnc extends Syster {
 		raster.setPixels(0, 0, this.sWidth, 255, raster.getPixels(0, 32, sWidth, 255, new int[sWidth * 3 * 255]));
 		
 		
-		// push 1-32 lines from frame 3 to frame 2 256-287
+		// push 1-32 lines from frame 3 to frame 2 256-287			
 		raster.setPixels(0, 255, this.sWidth, 32, vecFrame.get(2).getRaster().getPixels(0, 0, sWidth, 32, new int[sWidth * 3 * 32]));
 		
 		//create new crypted frame from frame 1 and 2

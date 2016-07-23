@@ -239,6 +239,11 @@ public class MainGui {
 	private TitledBorder titlePanSysterSubRdiCoding;
 	private TitledBorder titlePanSysterSubRdiDecoding;
 	
+	private JComboBox<String> cbColorMode;
+	private JLabel lblColorMode;
+	private JCheckBox cbAveragePal;
+	
+	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
 		
@@ -281,6 +286,7 @@ public class MainGui {
 		createPanFile();
 		createPanKeyboardCode();
 		createPanDiscret11();
+		createColorMode();
 		createPanSyster();
 		createPanVideo();
 		createPanLog();
@@ -607,12 +613,17 @@ public class MainGui {
 		chkDisableSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster.tooltip"));
 		
 		
+		int indexColor = cbColorMode.getSelectedIndex();
+		String[] tabColor = {JobConfig.getRes().getString("cbColorMode.rgb"),
+				JobConfig.getRes().getString("cbColorMode.pal"),
+				JobConfig.getRes().getString("cbColorMode.secam")};
+		DefaultComboBoxModel<String> modelColor = new DefaultComboBoxModel<String>( tabColor );
+		cbColorMode.setModel(modelColor);
+		cbColorMode.setSelectedIndex(indexColor);		
 		
+		lblColorMode.setText(JobConfig.getRes().getString("lblColorMode.text"));
+		cbAveragePal.setText(JobConfig.getRes().getString("cbAveragePal.text"));
 		
-		
-		
-		
-	
 	}
 	
 	private void createMenu(){				
@@ -988,6 +999,22 @@ public class MainGui {
 		
 	}
 	
+	private void createColorMode(){
+		String[] tab = {JobConfig.getRes().getString("cbColorMode.rgb"),
+				JobConfig.getRes().getString("cbColorMode.pal"),
+				JobConfig.getRes().getString("cbColorMode.secam")};
+		cbColorMode = new JComboBox<String>(tab);
+		cbColorMode.addActionListener(controler);
+		
+		lblColorMode = new JLabel(JobConfig.getRes().getString("lblColorMode.text"));
+	
+		cbAveragePal = new JCheckBox(JobConfig.getRes().getString("cbAveragePal.text"));
+		cbAveragePal.setSelected(false);
+		cbAveragePal.addActionListener(controler);
+		
+		
+	}
+	
 	private void createPanSyster(){
 		panOptionsSyster = new JPanel();
 		//panOptionsSyster.setLayout(new GridLayout(3, 1));
@@ -1042,7 +1069,7 @@ public class MainGui {
 				
 		String[] tab = {JobConfig.getRes().getString("panSyster.comboTableSysterEnc.menu1"),JobConfig.getRes().getString("panSyster.comboTableSysterEnc.menu2")};
 		comboTableSysterEnc = new JComboBox<String>(tab);
-		comboTableSysterEnc.setSelectedIndex(1);
+		comboTableSysterEnc.setSelectedIndex(0);
 		
 		
 		JPanel subRdiCoding = new JPanel();
@@ -1146,7 +1173,7 @@ public class MainGui {
 		
 		
 		comboTableSysterDec = new JComboBox<String>(tab);
-		comboTableSysterDec.setSelectedIndex(1);
+		comboTableSysterDec.setSelectedIndex(0);
 		comboTableSysterDec.setEnabled(false);
 		
 		GridBagLayout gblRdiDecoding = new GridBagLayout();
@@ -1274,22 +1301,32 @@ public class MainGui {
 		panSysterMisc = new JPanel();
 		GridBagLayout gblSysterMisc = new GridBagLayout();
 		
+		JPanel panColor = new JPanel();
+		panColor.add(lblColorMode);
+		panColor.add(cbColorMode);
+		panColor.add(cbAveragePal);
+		
+		JPanel panSound = new JPanel();
+		panSound.add(chkSoundSyster);
+		panSound.add(chkDisableSoundSyster);
+		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
-				chkSoundSyster,
+				panColor,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 0,
 				1,1,
-				0,33,
-				1, 1,1,1);
+				0,50,
+				1, 1,1,1);		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
-				chkDisableSoundSyster,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				panSound,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
 				1, 0,
 				1,1,
-				10,33,
+				0,50,
 				1, 1,1,1);
+		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
 				labFrameStartSyster,
@@ -1303,14 +1340,14 @@ public class MainGui {
 				slideFrameStartSyster,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				1, 1,
-				1,1,
+				2,1,
 				70,33,
 				1, 1,1,1);
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
 				jspFrameStartSyster,
 				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
-				2, 1,
+				3, 1,
 				1,1,
 				20,33,
 				1, 1,1,1);
@@ -2085,6 +2122,8 @@ public class MainGui {
 		//scrollPane.setSize(500, 100);
 		
 		
+		
+		
 		btnEnter = new JButton(JobConfig.getRes().getString("panLog.enter"));
 		btnEnter.setIcon(new ImageIcon(this.getClass().getResource("/icons/apply.png")));
 		btnEnter.setEnabled(false);
@@ -2712,6 +2751,22 @@ public class MainGui {
 
 	public JRadioButtonMenuItem getmPolish() {
 		return mPolish;
+	}
+
+	public JComboBox<String> getCbColorMode() {
+		return cbColorMode;
+	}
+
+	public void setCbColorMode(JComboBox<String> cbColorMode) {
+		this.cbColorMode = cbColorMode;
+	}
+
+	public JCheckBox getCbAveragePal() {
+		return cbAveragePal;
+	}
+
+	public void setCbAveragePal(JCheckBox cbAveragePal) {
+		this.cbAveragePal = cbAveragePal;
 	}
 
 }

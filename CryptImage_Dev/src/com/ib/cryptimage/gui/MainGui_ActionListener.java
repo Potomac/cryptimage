@@ -133,6 +133,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageCheckBoxes(JCheckBox src) {
 		
+		if (src.equals(this.mainGui.getCbAveragePal())) {
+			if (this.mainGui.getCbAveragePal().isSelected()) {
+				JobConfig.setAveragingPal(true);
+			} else {
+				JobConfig.setAveragingPal(false);
+			}
+		}
+
 		if(src.equals(this.mainGui.getChkDisableSoundSyster())){
 			if(src.isSelected()){
 				this.mainGui.getChkSoundSyster().setSelected(false);
@@ -281,6 +289,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageComboBoxes(JComboBox<?> src) {
+		if(src.equals(this.mainGui.getCbColorMode())){
+			JobConfig.setColorMode(this.mainGui.getCbColorMode().getSelectedIndex());
+			if(this.mainGui.getCbColorMode().getSelectedIndex()==0){
+				this.mainGui.getCbAveragePal().setEnabled(false);
+			}
+			if(this.mainGui.getCbColorMode().getSelectedIndex()==1){
+				this.mainGui.getCbAveragePal().setEnabled(true);
+			}
+			if(this.mainGui.getCbColorMode().getSelectedIndex()==2){
+				this.mainGui.getCbAveragePal().setEnabled(false);
+			}
+		}
 		
 		if(src.equals(this.mainGui.getCombSystemCrypt())){
 			switch (this.mainGui.getCombSystemCrypt().getSelectedIndex()) {
@@ -1039,6 +1059,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		extension = new String[] { "enc" };
 		filter = new FileNameExtensionFilter(JobConfig.getRes().getString("openFileSysterEnc.filters"), extension);
 		
+		if(new File(this.mainGui.getTxtOutputFile().getText()).exists()){
+			dialogue.setCurrentDirectory(new File(this.mainGui.getTxtOutputFile().getText()));
+		}
 
 		dialogue.setFileFilter(filter);
 
@@ -1083,6 +1106,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		FileNameExtensionFilter filter;
 		String[] extension;
+		
+		if(new File(this.mainGui.getTxtOutputFile().getText()).exists()){
+			dialogue.setCurrentDirectory(new File(this.mainGui.getTxtOutputFile().getText()));
+		}
 
 		dialogue.setAcceptAllFileFilterUsed(false);
 		extension = new String[] { "dec" };
@@ -1296,6 +1323,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		FileNameExtensionFilter filter;
 		String[] extension;
+		
+		if(new File(this.mainGui.getTxtOutputFile().getText()).exists()){
+			dialogue.setCurrentDirectory(new File(this.mainGui.getTxtOutputFile().getText()));
+		}
+		
 
 		if (mainGui.getRdiVideo().isSelected()) {
 			extension = new String[] { "avi", "mp4", "mpeg", "mkv", "mpeg2",

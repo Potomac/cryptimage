@@ -103,6 +103,12 @@ public class SysterDec extends Syster {
 		}
 		this.imageSource = deepCopy(image);		
 		
+		//encodage pal
+				if(JobConfig.getColorMode() == 1){
+					palEngine.setImg(image);
+					image = palEngine.encode();
+				}
+		
 		if(numFrames > 1){
 		deCryptOddFrame(image);
 		}		

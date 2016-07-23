@@ -71,7 +71,8 @@ public abstract class Syster extends Device {
 	protected String [] parts;
 	protected FileWriter fileOut;
 	
-	protected boolean enable;	
+	protected boolean enable;
+	protected PalEngine palEngine;
 
 	/**
 	 * 
@@ -79,6 +80,7 @@ public abstract class Syster extends Device {
 	 * @param wantCrypt set true if we want a crypt operation	
 	 */
 	public Syster(int typeTable, boolean wantCrypt) {
+		palEngine = new PalEngine();
 		this.typeTable = typeTable;		
 		this.wantCrypt = wantCrypt;		
 		this.vecFrame = new Vector<BufferedImage>();
@@ -345,12 +347,19 @@ public abstract class Syster extends Device {
 	}
 
 	protected BufferedImage getCompletFrame() {
-		if (this.ready){
-		this.ready = false;
-		return completFrame;
+		if (this.ready) {
+			this.ready = false;
+			// appel décodeur pal ou secam si choix pal/secam
+			if ( JobConfig.getColorMode() == 1) {
+				palEngine.setImg(completFrame);
+				return palEngine.decode();
+			} else {
+				return completFrame;
+			}
 		}
-		else
+		else {
 			return null;
+		}
 	}
 	
 }

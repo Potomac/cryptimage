@@ -123,14 +123,16 @@ public class CryptPhoto {
 		BufferedImage imgRes = null;
 		
 		if (JobConfig.getGui().getRdiSysterCodingFile().isSelected()) {
-			imgRes = systerEnc.transform(img);
+			imgRes = systerEnc.transformPhoto(img,true);
 			if (imgRes == null) {
-				imgRes = systerEnc.transform(img);
+				imgRes = systerEnc.transformPhoto(img,false);
 			}
-			imgRes = systerEnc.transform(img);
+			imgRes = systerEnc.transformPhoto(img,false);
+			
+			
+			
 			systerEnc.closeFileData();
-		}
-		
+		}		
 		else{
 			genOffsetIncrement();
 			offset1 = this.offset;
@@ -163,7 +165,8 @@ public class CryptPhoto {
 		BufferedImage imgRes = device.transform(img);		
 		while(imgRes == null){			
 			imgRes = device.transform(img);
-		}		
+		}
+		
 		device.closeFileData();
 		
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);	
@@ -178,7 +181,8 @@ public class CryptPhoto {
 		BufferedImage imgRes = device.transform(img);		
 		while(imgRes == null){			
 			imgRes = device.transform(img);
-		}
+		}		
+		
 		device.closeFileData();
 		
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);	
