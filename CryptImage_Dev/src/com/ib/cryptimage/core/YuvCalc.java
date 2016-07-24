@@ -126,6 +126,28 @@ public class YuvCalc extends InitException {
 		
 	}
 	
+	public int[] convertYUVtoRGB(int[] pixelYUV){
+		setYUV(pixelYUV[0], pixelYUV[1], pixelYUV[2]);
+		convertYUVtoRGB();
+		
+		int[] pixRGB = new int[3];
+		pixRGB[0] = this.getRed();
+		pixRGB[1] = this.getGreen();
+		pixRGB[2] = this.getBlue();
+		return pixRGB;		
+	}
+	
+	public int[] convertRGBtoYUV(int[] pixelRGB){
+		setRGB(pixelRGB[0], pixelRGB[1], pixelRGB[2]);
+		convertRGBtoYUV();
+		
+		int[] pixYUV = new int[3];
+		pixYUV[0] = (int)this.getY();
+		pixYUV[1] = (int)this.getU();
+		pixYUV[2] = (int)this.getV();
+		return pixYUV;		
+	}
+	
 	public void convertYUVtoRGB(){
 		if(!yuv){
 			try {
