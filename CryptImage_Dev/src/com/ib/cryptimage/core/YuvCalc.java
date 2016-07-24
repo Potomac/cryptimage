@@ -40,12 +40,14 @@ public class YuvCalc extends InitException {
 	private float blue;
 	private boolean yuv = false;
 	private boolean rgb = false;
+	private CosSinus cosSin;
 
 	/**
 	 * 
 	 */
 	public YuvCalc() {
 		// TODO Auto-generated constructor stub
+		cosSin = new CosSinus();
 	}
 	
 	public void setRGB(float r, float g, float b){
@@ -72,10 +74,15 @@ public class YuvCalc extends InitException {
 	
 		float new_u_temp, new_v_temp;		
 		
-		new_u_temp = (float) (u_temp * Math.cos(angle * Math.PI/180d)
-				- v_temp * Math.sin(angle*Math.PI/180d));
-		new_v_temp = (float) (u_temp * Math.sin(angle * Math.PI/180d)
-				+ v_temp * Math.cos(angle*Math.PI/180d));		
+//		new_u_temp = (float) (u_temp * Math.cos(angle * Math.PI/180d)
+//				- v_temp * Math.sin(angle*Math.PI/180d));
+//		new_v_temp = (float) (u_temp * Math.sin(angle * Math.PI/180d)
+//				+ v_temp * Math.cos(angle*Math.PI/180d));	
+		
+		new_u_temp =  (float) ((u_temp * cosSin.getCos((int) angle)
+				- v_temp * cosSin.getSin((int) angle)));
+		new_v_temp = (float) ((u_temp * cosSin.getSin((int) angle)
+				+ v_temp * cosSin.getCos((int) angle)));	
 				
 		float y_temp = y;
 		new_u_temp = new_u_temp +128;

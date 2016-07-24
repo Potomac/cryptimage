@@ -69,8 +69,9 @@ public class PalEngine {
 	
 		if (JobConfig.isAveragingPal() == true) {
 			convertToYUV();
-			palAverageEvenFrame();
+		    palAverageEvenFrame();
 			palAverageOddFrame();
+			//palAverage();
 			convertToRGB();
 		}
 				
@@ -255,6 +256,37 @@ public class PalEngine {
 			y+=3;//3
 		}		
 	}
+	
+	private void palAverage(){
+		int[] tabLines = raster.getPixels(0, 0, 768, 576, new int[768*576*3]);
+		
+		int val = 768*3;
+		//odd field
+		for (int y = 0; y < 576; y++) {
+			for (int size = 0; size < 768; size++) {
+				tabLines[3*size +1 + val*y] = ( tabLines[3*size +1 +val*y] + tabLines[3*size +1 +val* (y +2)] ) /2;
+				tabLines[3*size +2 + val*y] = ( tabLines[3*size +2 +val*y] + tabLines[3*size +2 +val*(y +2)] ) /2;
+				tabLines[3*size +1 + val*(y +2)] = tabLines[3*size +1 +val*y];
+				tabLines[3*size +2 + val*(y +2)] = tabLines[3*size +2 +val*y];
+			}
+			y+=3;//3
+		}
+		
+		//even field
+				for (int y = 1; y < 576; y++) {
+					for (int size = 0; size < 768; size++) {
+						tabLines[3*size + 1 + val*y] = ( tabLines[3*size +1 +val*y] + tabLines[3*size +1 +val* (y +2)] ) /2;
+						tabLines[3*size +2 + val*y] = ( tabLines[3*size +2 +val*y] + tabLines[3*size +2 +val*(y +2)] ) /2;
+						tabLines[3*size +1 + val*(y +2)] = tabLines[3*size +1 +val*y];
+						tabLines[3*size +2 + val*(y +2)] = tabLines[3*size +2 +val*y];
+					}
+					y+=3;//3
+				}
+		
+		raster.setPixels(0, 0, 768, 576, tabLines);
+		
+	}
+	
 	
 	private int[] averageLine(int[] line1, int[] line2, int y){
 		for (int i = 0; i < 768; i++) {
