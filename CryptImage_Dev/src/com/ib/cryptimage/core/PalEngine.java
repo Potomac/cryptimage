@@ -52,10 +52,10 @@ public class PalEngine {
 	
 	public void setImg(BufferedImage img_){		
 		this.img = img_;
-		raster = img.getRaster();				
-
-	}
+		raster = img.getRaster();
+	}	
 	
+		
 	public BufferedImage decode(){	    
 		if(JobConfig.isWantDec()){
 			tagLines();
@@ -88,7 +88,7 @@ public class PalEngine {
 			tagLines();
 		}
 		
-		return img; //newImage;
+		return img;
 	}
 		
 	

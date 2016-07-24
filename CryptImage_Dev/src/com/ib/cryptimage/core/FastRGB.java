@@ -53,7 +53,7 @@ public class FastRGB
 
     }
 
-    int getRGB(int x, int y)
+    public int getRGB(int x, int y)
     {
         int pos = (y * pixelLength * width) + (x * pixelLength);
 
@@ -67,5 +67,12 @@ public class FastRGB
         argb += (((int) pixels[pos++] & 0xff) << 8); // green
         argb += (((int) pixels[pos++] & 0xff) << 16); // red
         return argb;
+    }
+    
+    public void setRGB(int x, int y,byte red, byte green, byte blue){
+    	int pos = (y * pixelLength * width) + (x * pixelLength);
+    	pixels[pos++] = red;
+    	pixels[pos++] = green;
+    	pixels[pos++] = blue;
     }
 }

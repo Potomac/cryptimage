@@ -57,7 +57,12 @@ public class CryptPhoto {
 					JobConfig.getRes().getString("cryptPhoto.errorLoadIO"),
 					JOptionPane.ERROR_MESSAGE);		
 			return false;
-		}		
+		}
+		
+		BufferedImage imgNew = new BufferedImage(img.getWidth(),
+				img.getHeight(), BufferedImage.TYPE_INT_BGR);
+		imgNew.getGraphics().drawImage(img, 0, 0, null);
+		img = imgNew;
 		
 		if(JobConfig.isModePhoto() && JobConfig.isWantDec()){
 			if(JobConfig.getSystemCrypt() == 0 && !JobConfig.isStrictMode())

@@ -300,5 +300,6 @@ public class VideoRecorder {
 	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
 		    
 	    return target;
-	}	
+	}
+	
 }
