@@ -56,7 +56,15 @@ public class PalEngine {
 	
 		
 	public BufferedImage decode(){	    
-		palInversePhase(1);
+		if(JobConfig.isWantDec()){
+			tagLines();
+		}
+		if(JobConfig.isWantDec()){
+			palInversePhase(-45); //-45
+		}
+		else {
+			palInversePhase(45); //45
+		}		
 	
 		if (JobConfig.isAveragingPal() == true) {
 			convertToYUV();
@@ -66,36 +74,33 @@ public class PalEngine {
 			convertToRGB();
 		}
 				
-		//removeTags();
+		removeTags();
 		
 		return img;
 	}
 	
 	public BufferedImage encode(){		
-//		if(JobConfig.isWantDec()){
-//			//rephase45();
-//		}
-//		if(!JobConfig.isWantDec()){			
-//			tagLines();
-//		}
-		
-		phase();
-		tagLines();		
+		if(JobConfig.isWantDec()){
+			rephase45();
+		}
+		if(!JobConfig.isWantDec()){			
+			tagLines();
+		}
 		
 		return img;
 	}
 		
 	
-	private void phase(){		
+	private void rephase45(){		
 		// odd field
 		int pol = 1;
 		
 		for (int y = 0; y < 576; y++) {
 			for (int x = 0; x < 768; x++) {
 				if (pol == 1) { // 45 degrees
-					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 225));//-45
+					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), -45));//-45
 				} else {// -45 degrees
-					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 135));//45
+					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 45));//45
 				}
 			}
 			pol = pol * -1;
@@ -107,9 +112,9 @@ public class PalEngine {
 		for (int y = 1; y < 576; y++) {
 			for (int x = 0; x < 768; x++) {
 				if (pol == 1) { // 45 degrees
-					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 225));//-45
+					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), -45));//-45
 				} else {// -45 degrees
-					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 135));//45
+					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 45));//45
 				}
 			}
 			pol = pol * -1;
@@ -127,10 +132,10 @@ public class PalEngine {
 		// odd field
 		int pol = 1;
 		for (int i = 0; i < 576; i++) {
-			if (pol == 1) { // 180 degrees
+			if (pol == 1) { // 45 degrees
 				raster.setPixel(0, i, new int[] { 0, 0, 0 });
-			} else {// -180 degrees
-				raster.setPixel(0, i, new int[] { 255, 1, 0  });
+			} else {// 315 degrees
+				raster.setPixel(0, i, new int[] { 64, 1, 0  });
 			}
 			i++;
 			pol = pol * -1;
@@ -139,9 +144,9 @@ public class PalEngine {
 		// even field
 		pol = 1;
 		for (int i = 1; i < 576; i++) {
-			if (pol == 1) { // 180 degrees
-				raster.setPixel(0, i, new int[] { 0, 0, 0 });
-			} else {// -180 degrees
+			if (pol == 1) { // 135 degrees
+				raster.setPixel(0, i, new int[] { 128, 0, 0 });
+			} else {// 225 degrees
 				raster.setPixel(0, i, new int[] { 255, 1, 0 });
 			}
 			i++;
@@ -161,23 +166,40 @@ public class PalEngine {
 	private int getAngle(int[] pixel, int line){		
 		if(pixel[0] == 0 ){//45			
 			if(JobConfig.isWantDec() ){ //if(op ==0 ){
-			return 135;//315;
+			return -315;//315;
 			}
 			else {				
-				return 225;
+				return 315;
 			}
 		}
 		
-		if(pixel[0] == 255){//315			
+		if(pixel[0] == 64){//315			
 			if(JobConfig.isWantDec() ){ //if(op ==0 ){
-			return 0;//45;
+			return -45;//45;
 			}
 			else {				
+				return 45;
+			}
+		}
+		
+		if(pixel[0] == 128){//135			
+			if(JobConfig.isWantDec() ){ //if(op != 0 ){
+			return -225;//225;
+			}
+			else {			
+				return 225;//225;
+			}
+		}
+		
+		if(pixel[0] == 255){//225						
+			if(JobConfig.isWantDec() ){ //if(op != 0 ){
+			return -135 ;//135;
+			}
+			else {			
 				return 135;
 			}
 		}
-				
-		System.out.println("pas de couleur");
+		
 		return 0;
 	}	
 	
@@ -205,10 +227,10 @@ public class PalEngine {
 				
 				//Additional step : -45 degrees for odd lines, 45 degrees for even lines
 				if(JobConfig.isWantDec()){
-					pixel = yuvCalc.getRotateRGB(pixel, angle * phase );
+					pixel = yuvCalc.getRotateRGB(pixel, angle );
 				}
 				else{					
-					pixel = yuvCalc.getRotateRGB(pixel, angle * phase );
+					pixel = yuvCalc.getRotateRGB(pixel, angle + phase);
 				}
 				raster.setPixel(x, y, pixel);				
 			}
