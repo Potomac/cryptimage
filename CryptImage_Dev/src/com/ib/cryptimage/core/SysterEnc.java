@@ -151,19 +151,19 @@ public class SysterEnc extends Syster {
 			palEngine.setImg(image);
 			image = palEngine.encode();			
 		}
-		////////à decommenter
-		this.cryptOddFrame(image);
-		
-		this.offset = offset2;
-		this.increment = increment2;
-		
-		this.initPermut();
-		this.crypt();
-		//coder en secam si choix secam
-		this.cryptEvenFrame(image);
-		///à decommenter
-		//this.ready = true; // à supprimer
-		//this.completFrame = image;//à supprimer	
+//		////////à decommenter
+//		this.cryptOddFrame(image);
+//		
+//		this.offset = offset2;
+//		this.increment = increment2;
+//		
+//		this.initPermut();
+//		this.crypt();
+//		//coder en secam si choix secam
+//		this.cryptEvenFrame(image);
+//		///à decommenter
+		this.ready = true; // à supprimer
+		this.completFrame = image;//à supprimer	
 		
 		//appel décodeur pal ou secam si choix pal/secam
 		return this.getCompletFrame();
