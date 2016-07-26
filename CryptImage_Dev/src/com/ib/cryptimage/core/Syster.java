@@ -351,7 +351,8 @@ public abstract class Syster extends Device {
 			this.ready = false;
 			// appel décodeur pal ou secam si choix pal/secam
 			if ( JobConfig.getColorMode() == 1) {
-				palEngine.setImg(completFrame);
+				palEngine.setImg(completFrame);							
+				
 				return palEngine.decode();
 			} else {
 				return completFrame;

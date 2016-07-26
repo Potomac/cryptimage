@@ -97,7 +97,7 @@ public class SysterEnc extends Syster {
 		}
 		
 		//encodage pal
-		if(JobConfig.getColorMode() == 1){
+		if(JobConfig.getColorMode() == 1){			
 			palEngine.setImg(image);
 			image = palEngine.encode();
 		}
@@ -147,7 +147,7 @@ public class SysterEnc extends Syster {
 		this.initPermut();
 		this.crypt();
 		//coder en secam si choix secam
-		if(JobConfig.getColorMode() == 1){
+		if(JobConfig.getColorMode() == 1){			
 			palEngine.setImg(image);
 			image = palEngine.encode();			
 		}

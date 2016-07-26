@@ -131,7 +131,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 	}
 
-	private void manageCheckBoxes(JCheckBox src) {
+	private void manageCheckBoxes(JCheckBox src) {		
 		
 		if (src.equals(this.mainGui.getCbAveragePal())) {
 			if (this.mainGui.getCbAveragePal().isSelected()) {
@@ -274,7 +274,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					mainGui.getJcbExtension().setEnabled(true);
 				}
 			}
-		}
+		}		
 		
 	}
 
@@ -289,6 +289,19 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageComboBoxes(JComboBox<?> src) {
+		
+		if(src.equals(this.mainGui.getCbYUV())){
+			if(this.mainGui.getCbYUV().getSelectedIndex() == 0){
+				JobConfig.setTypeYUV(0);
+			}
+			if(this.mainGui.getCbYUV().getSelectedIndex() == 1){
+				JobConfig.setTypeYUV(1);
+			}
+			if(this.mainGui.getCbYUV().getSelectedIndex() == 2){
+				JobConfig.setTypeYUV(2);
+			}
+		}
+		
 		if(src.equals(this.mainGui.getCbColorMode())){
 			JobConfig.setColorMode(this.mainGui.getCbColorMode().getSelectedIndex());
 			if(this.mainGui.getCbColorMode().getSelectedIndex()==0){

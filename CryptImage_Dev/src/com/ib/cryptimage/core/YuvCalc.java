@@ -41,12 +41,95 @@ public class YuvCalc extends InitException {
 	private boolean yuv = false;
 	private boolean rgb = false;
 	private CosSinus cosSin;
+	float redCoef1, redCoef2, redCoef3, greenCoef1, 
+	greenCoef2, greenCoef3, blueCoef1, blueCoef2, blueCoef3;
+	float uCoef1, uCoef2, uCoef3, vCoef1, vCoef2, vCoef3;
 
 	/**
 	 * 
 	 */
 	public YuvCalc() {
 		// TODO Auto-generated constructor stub
+		
+		switch (JobConfig.getTypeYUV()) {
+		case 0:			
+			// bt.601
+			redCoef1 = 0.299f;
+			redCoef2 = -0.14713f;
+			redCoef3 = 0.615f;
+
+			greenCoef1 = 0.587f;
+			greenCoef2 = -0.28886f;
+			greenCoef3 = -0.51499f;
+
+			blueCoef1 = 0.114f;
+			blueCoef2 = 0.436f;
+			blueCoef3 = -0.10001f;
+
+			uCoef1 = 0;
+			uCoef2 = -0.39465f;
+			uCoef3 = 2.03211f;
+
+			vCoef1 = 1.13983f;
+			vCoef2 = -0.5860f;
+			vCoef3 = 0;
+			break;
+		case 1:			
+			// bt.709
+			redCoef1 = 0.2126f;
+			redCoef2 = -0.09991f;
+			redCoef3 = 0.615f;
+
+			greenCoef1 = 0.7152f;
+			greenCoef2 = -0.33609f;
+			greenCoef3 = -0.55861f;
+
+			blueCoef1 = 0.0722f;
+			blueCoef2 = 0.436f;
+			blueCoef3 = -0.05639f;
+
+			uCoef1 = 0;
+			uCoef2 = -0.21482f;
+			uCoef3 = 2.12798f;
+
+			vCoef1 = 1.28033f;
+			vCoef2 = -0.38059f;
+			vCoef3 = 0;
+			break;
+		case 2:			
+			// other
+			redCoef1 = 0.299f;
+			redCoef2 = -0.168736f;
+			redCoef3 = 0.5f;
+
+			greenCoef1 = 0.587f;
+			greenCoef2 = -0.331264f;
+			greenCoef3 = -0.418688f;
+
+			blueCoef1 = 0.114f;
+			blueCoef2 = 0.5f;
+			blueCoef3 = -0.081312f;
+
+			uCoef1 = 0;
+			uCoef2 = -0.3455f;
+			uCoef3 = 1.7790f;
+
+			vCoef1 = 1.4075f;
+			vCoef2 = -0.7169f;
+			vCoef3 = 0;
+
+			break;
+		default:
+			break;
+		}
+		
+		
+		
+		
+		
+		
+		
+		
 		cosSin = new CosSinus();
 	}
 	
@@ -108,9 +191,9 @@ public class YuvCalc extends InitException {
 				e.printStackTrace();
 			}
 		}
-		y = red *  0.299f + green *  0.587f + blue *  0.114f;//coef1 * red + coef2 * green + coef3 * blue;
-		u = red * -0.168736f + green * -0.331264f + blue *  0.500000f + 128f; //coef4 * (blue - y);
-		v = red *  0.5f + green * -0.418688f + blue * -0.081312f + 128f;
+		y = red *  redCoef1 + green *  greenCoef1 + blue *  blueCoef1;//coef1 * red + coef2 * green + coef3 * blue;
+		u = red * redCoef2 + green * greenCoef2 + blue *  blueCoef2 + 128f; //coef4 * (blue - y);
+		v = red *  redCoef3 + green * greenCoef3 + blue * blueCoef3 + 128f;
 		
 		if(y > 255){
 			y = 255;			
@@ -153,7 +236,7 @@ public class YuvCalc extends InitException {
 		pixYUV[1] = (int)this.getU();
 		pixYUV[2] = (int)this.getV();
 		return pixYUV;		
-	}
+	}	
 	
 	public void convertYUVtoRGB(){
 		if(!yuv){
@@ -164,9 +247,9 @@ public class YuvCalc extends InitException {
 				e.printStackTrace();
 			}
 		}
-		red = y + 1.4075f * (v - 128f);
-		green = y - 0.3455f * (u - 128f) - (0.7169f * (v - 128f));
-		blue = y + 1.7790f * (u - 128f);
+		red = y + vCoef1 * (v - 128f) + uCoef1* (u - 128f);
+		green = y + uCoef2 * (u - 128f) + vCoef2 * (v - 128f);
+		blue = y + uCoef3 * (u - 128f) + vCoef3 * (v - 128f);
 		if(red > 255){
 			red = 255;			
 		}

@@ -242,7 +242,8 @@ public class MainGui {
 	private JComboBox<String> cbColorMode;
 	private JLabel lblColorMode;
 	private JCheckBox cbAveragePal;
-	
+	private JLabel lblYUV;
+	private JComboBox<String> cbYUV;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -623,6 +624,14 @@ public class MainGui {
 		
 		lblColorMode.setText(JobConfig.getRes().getString("lblColorMode.text"));
 		cbAveragePal.setText(JobConfig.getRes().getString("cbAveragePal.text"));
+		
+		lblYUV.setText(JobConfig.getRes().getString("lblYUV.title"));
+	    int indexYUV = cbYUV.getSelectedIndex();
+		String[] tabYUV = {"bt.601", "bt.709",
+				JobConfig.getRes().getString("cbYUV.special")};
+		DefaultComboBoxModel<String> modelYUV = new DefaultComboBoxModel<String>( tabYUV );
+		cbYUV.setModel(modelYUV);
+		cbYUV.setSelectedIndex(indexYUV);	
 		
 	}
 	
@@ -1301,32 +1310,36 @@ public class MainGui {
 		panSysterMisc = new JPanel();
 		GridBagLayout gblSysterMisc = new GridBagLayout();
 		
+		lblYUV = new JLabel(JobConfig.getRes().getString("lblYUV.title"));
+		String[] tabYUV = {"bt.601", "bt.709", JobConfig.getRes().getString("cbYUV.special")};
+		cbYUV = new JComboBox<String>(tabYUV);
+		cbYUV.addActionListener(controler);
+		
+		
+		
 		JPanel panColor = new JPanel();
 		panColor.add(lblColorMode);
 		panColor.add(cbColorMode);
 		panColor.add(cbAveragePal);
+		panColor.add(lblYUV);
+		panColor.add(cbYUV);
+		panColor.add(chkSoundSyster);
+		panColor.add(chkDisableSoundSyster);
 		
-		JPanel panSound = new JPanel();
-		panSound.add(chkSoundSyster);
-		panSound.add(chkDisableSoundSyster);
+		
+//		JPanel panSound = new JPanel();
+//		panSound.add(chkSoundSyster);
+//		panSound.add(chkDisableSoundSyster);
+		
 		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
 				panColor,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
 				0, 0,
-				1,1,
-				0,50,
+				3,1,
+				0,30,
 				1, 1,1,1);		
-		this.placerComposants(panSysterMisc,
-				gblSysterMisc,
-				panSound,
-				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
-				1, 0,
-				1,1,
-				0,50,
-				1, 1,1,1);
-		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
 				labFrameStartSyster,
@@ -1340,14 +1353,14 @@ public class MainGui {
 				slideFrameStartSyster,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				1, 1,
-				2,1,
+				1,1,
 				70,33,
 				1, 1,1,1);
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
 				jspFrameStartSyster,
 				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
-				3, 1,
+				2, 1,
 				1,1,
 				20,33,
 				1, 1,1,1);
@@ -1884,7 +1897,9 @@ public class MainGui {
 		
 		chkHorodatage = new JCheckBox(JobConfig.getRes().getString("panVideo.chkHorodatage"));		
 		chkHorodatage.setToolTipText(JobConfig.getRes().getString("panVideo.chkHorodatage.tooltip"));
-				
+		chkHorodatage.addActionListener(controler);
+		
+		
 		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2", "FFV1"};
 		combCodec = new JComboBox<String>(tab);	
 		combCodec.addActionListener(controler);				
@@ -2767,6 +2782,10 @@ public class MainGui {
 
 	public void setCbAveragePal(JCheckBox cbAveragePal) {
 		this.cbAveragePal = cbAveragePal;
+	}
+
+	public JComboBox<String> getCbYUV() {
+		return cbYUV;
 	}
 
 }
