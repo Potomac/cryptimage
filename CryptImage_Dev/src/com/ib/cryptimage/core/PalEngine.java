@@ -207,57 +207,34 @@ public class PalEngine {
 
 	
 	private void palInversePhase(int pol){		
-		int[] pixel = new int[3];		
+		int[] pixel = new int[3];
+		int cpt = 0;	
 		int angle = 0;
-								
-		// odd field
-				pol = 1;
+		int phase = pol;
+		
+		for (int y = 0; y < 576; y++) {
+			// check angle
+			pixel = raster.getPixel(0, y, pixelTab);			
+			angle = getAngle(pixel, y);			
+			if(cpt == 2){
+				cpt = 0;
+				phase = phase * -1;	
+			}
+			cpt++;			
+						
+			for (int x = 0; x < 768; x++) {				
+					pixel = raster.getPixel(x, y, pixelTab);				
 				
-				for (int y = 0; y < 576; y++) {
-					// check angle
-					pixel = raster.getPixel(0, y, pixelTab);			
-					angle = getAngle(pixel, y);
-					
-					
-					for (int x = 0; x < 768; x++) {
-						pixel = raster.getPixel(x, y, pixelTab);
-						if (pol == 1) { // 45 degrees
-							pixel = yuvCalc.getRotateRGB(pixel, angle + 45);
-							raster.setPixel(x, y, pixel);//-45
-						} else {// -45 degrees
-							pixel = yuvCalc.getRotateRGB(pixel, angle  - 45);
-							raster.setPixel(x, y, pixel);
-						}
-					}
-					pol = pol * -1;
-					y++;
+				//Additional step : -45 degrees for odd lines, 45 degrees for even lines
+				if(JobConfig.isWantDec()){
+					pixel = yuvCalc.getRotateRGB(pixel, angle );
 				}
-
-				pol=1;
-				// odd field
-				for (int y = 1; y < 576; y++) {
-					// check angle
-					pixel = raster.getPixel(0, y, pixelTab);			
-					angle = getAngle(pixel, y);
-					
-					for (int x = 0; x < 768; x++) {
-						pixel = raster.getPixel(x, y, pixelTab);
-						if (pol == 1) { // 45 degrees
-							pixel = yuvCalc.getRotateRGB(pixel, angle + 45);
-							raster.setPixel(x, y, pixel);//-45
-						} else {// -45 degrees
-							pixel = yuvCalc.getRotateRGB(pixel, angle - 45);
-							raster.setPixel(x, y, pixel);
-						}
-					}
-					pol = pol * -1;
-					y++;
+				else{					
+					pixel = yuvCalc.getRotateRGB(pixel, angle + phase);
 				}
-		
-		
-		
-		
-		
+				raster.setPixel(x, y, pixel);				
+			}
+		}		
 	}
 	
 	private void palAverageOddFrame(){		
