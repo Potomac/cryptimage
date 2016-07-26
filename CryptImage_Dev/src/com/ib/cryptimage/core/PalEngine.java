@@ -49,15 +49,7 @@ public class PalEngine {
 		yuvCalc = new YuvCalc();			
 	}
 		
-	public void setImg(BufferedImage img_){	
-		
-//		//ajout
-//		BufferedImage raw = new BufferedImage(img_.getWidth(),
-//				img_.getHeight(), BufferedImage.TYPE_INT_BGR);
-//		raw.getGraphics().drawImage(img_, 0, 0, null);
-//		img_ = raw;//fin ajout
-		
-		
+	public void setImg(BufferedImage img_){		
 		this.img = img_;
 		raster = img.getRaster();
 	}	
@@ -71,7 +63,7 @@ public class PalEngine {
 			palInversePhase(-45); //-45
 		}
 		else {
-			palInversePhase(45); //45			
+			palInversePhase(45); //45
 		}		
 	
 		if (JobConfig.isAveragingPal() == true) {
@@ -83,12 +75,6 @@ public class PalEngine {
 		}
 				
 		removeTags();
-		
-//		//ajout		
-//		BufferedImage raw = new BufferedImage(img.getWidth(),
-//					img.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-//				raw.getGraphics().drawImage(img, 0, 0, null);
-//				img = raw;//fin ajout
 		
 		return img;
 	}
@@ -180,25 +166,25 @@ public class PalEngine {
 	private int getAngle(int[] pixel, int line){		
 		if(pixel[0] == 0 ){//45			
 			if(JobConfig.isWantDec() ){ //if(op ==0 ){
-			return -315;//-315;
+			return -315;//315;
 			}
 			else {				
-				return 315; //315
+				return 315;
 			}
 		}
 		
 		if(pixel[0] == 64){//315			
 			if(JobConfig.isWantDec() ){ //if(op ==0 ){
-			return -45;//-45;
+			return -45;//45;
 			}
 			else {				
-				return 45;//45
+				return 45;
 			}
 		}
 		
 		if(pixel[0] == 128){//135			
 			if(JobConfig.isWantDec() ){ //if(op != 0 ){
-			return -225;//-225;
+			return -225;//225;
 			}
 			else {			
 				return 225;//225;
@@ -207,10 +193,10 @@ public class PalEngine {
 		
 		if(pixel[0] == 255){//225						
 			if(JobConfig.isWantDec() ){ //if(op != 0 ){
-			return -135 ;//-135;
+			return -135 ;//135;
 			}
 			else {			
-				return 135;//135
+				return 135;
 			}
 		}
 		
@@ -250,38 +236,6 @@ public class PalEngine {
 			}
 		}		
 	}
-	
-//	private void phase45(){		
-//		// odd field
-//		int pol = 1;
-//		
-//		for (int y = 0; y < 576; y++) {
-//			for (int x = 0; x < 768; x++) {
-//				if (pol == 1) { // 45 degrees
-//					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), -45));//-45
-//				} else {// -45 degrees
-//					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 45));//45
-//				}
-//			}
-//			pol = pol * -1;
-//			y++;
-//		}
-//
-//		pol=1;
-//		// odd field
-//		for (int y = 1; y < 576; y++) {
-//			for (int x = 0; x < 768; x++) {
-//				if (pol == 1) { // 45 degrees
-//					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), -45));//-45
-//				} else {// -45 degrees
-//					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 45));//45
-//				}
-//			}
-//			pol = pol * -1;
-//			y++;
-//		}
-//	}
-	
 	
 	private void palAverageOddFrame(){		
 		for (int y = 0; y < 576; y++) { // 2			
