@@ -1018,7 +1018,8 @@ public class MainGui {
 		lblColorMode = new JLabel(JobConfig.getRes().getString("lblColorMode.text"));
 	
 		cbAveragePal = new JCheckBox(JobConfig.getRes().getString("cbAveragePal.text"));
-		cbAveragePal.setSelected(false);
+		cbAveragePal.setSelected(true);
+		JobConfig.setAveragingPal(true);
 		cbAveragePal.addActionListener(controler);
 		
 		

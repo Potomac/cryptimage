@@ -136,7 +136,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (src.equals(this.mainGui.getCbAveragePal())) {
 			if (this.mainGui.getCbAveragePal().isSelected()) {
 				JobConfig.setAveragingPal(true);
-			} else {
+			} 
+			else{
 				JobConfig.setAveragingPal(false);
 			}
 		}

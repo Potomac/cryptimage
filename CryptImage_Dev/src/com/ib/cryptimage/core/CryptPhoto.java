@@ -38,9 +38,21 @@ public class CryptPhoto {
 		
 	private int key11bits;
 	private int offset;
-	private int increment;	
+	private int increment;
+	private String colorMode;
 	
-	public CryptPhoto(){	
+	public CryptPhoto(){
+		if (JobConfig.getSystemCrypt() == 1) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
+				this.colorMode = "RGB";
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
+				this.colorMode = "pal";
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
+				this.colorMode = "secam";
+			}
+		}
 		
 	}
 	
@@ -304,7 +316,7 @@ public class CryptPhoto {
 			// retrieve image
 			File outputfile = new File(
 					JobConfig.getOutput_file() + "_c" + 
-			"syster.png");
+			"syster" + "_" + colorMode + ".png");
 			try {
 				ImageIO.write(bi, "png", outputfile);
 			} catch (IOException e) {
@@ -319,7 +331,7 @@ public class CryptPhoto {
 			}
 			if (JobConfig.isHasGUI()) {
 				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + JobConfig.getOutput_file() + "_c"
-						+ "syster.png");
+						+ "syster" + "_" + colorMode + ".png");
 			}
 		}
 		
@@ -387,12 +399,12 @@ public class CryptPhoto {
 			try {
 				// retrieve image
 				File outputfile = new File(output_file + "_d" + 
-				"syster.png");
+						"syster" + "_" + colorMode + ".png");
 				ImageIO.write(bi, "png", outputfile);
 				if (JobConfig.isHasGUI()) {
 					JobConfig.getGui().getTextInfos().setText(
 							JobConfig.getRes().getString("cryptPhoto.saveImage.decodage") + output_file + "_d" + 
-					"syster.png");
+									"syster" + "_" + colorMode + ".png");
 				}				
 			} catch (IOException e) {
 				JOptionPane

@@ -227,7 +227,7 @@ public class PalEngine {
 				
 				//Additional step : -45 degrees for odd lines, 45 degrees for even lines
 				if(JobConfig.isWantDec()){
-					pixel = yuvCalc.getRotateRGB(pixel, angle );
+					pixel = yuvCalc.getRotateRGB(pixel, angle);
 				}
 				else{					
 					pixel = yuvCalc.getRotateRGB(pixel, angle + phase);
@@ -319,7 +319,8 @@ public class PalEngine {
 //	}
 	
 	
-	private int[] averageLine(int[] line1, int[] line2, int y){
+	private int[] averageLine(int[] line1, int[] line2, int y){	
+		
 		for (int i = 0; i < 768; i++) {
 			line1[3*i +1] = ( line1[3*i +1] + line2[3*i +1] ) /2;
 			line1[3*i +2] = ( line1[3*i +2] + line2[3*i +2] ) /2;
@@ -328,6 +329,57 @@ public class PalEngine {
 		}
 		raster.setPixels(0, y+2, 768,1,line2);
 		return line1;
+		
+//		for (int i = 0; i < 768; i++) {
+//			line1[3*i +1] = ( line1[3*i +1] + line2[3*i +1] ) /2;
+//			line1[3*i +2] = ( line1[3*i +2] + line2[3*i +2] ) /2;
+//			line2[3*i +1] = line1[3*i +1];
+//			line2[3*i +2] = line1[3*i +2];
+//		}
+//		raster.setPixels(0, y+2, 768,1,line2);
+//		return line1;
+		
+//		
+//		for (int i = 0; i < 768; i++) {
+//			line1[3*i +1] = line2[3*i +2];
+//			line1[3*i +2] = line2[3*i +1];
+//			line2[3*i +1] = line1[3*i +1];
+//			line2[3*i +2] = line1[3*i +2];
+//		}
+//		raster.setPixels(0, y+2, 768,1,line2);
+//		return line1;
+		
+		
+//		int uLine1;
+//		int vLine1;
+//		
+//		int uLine2;
+//		int vLine2;
+//		
+//		for (int i = 0; i < 768; i++) {
+//			pixelTab[0] = line1[3*i];
+//			pixelTab[1] = line1[3*i +1];
+//			pixelTab[2] = line1[3*i +1];
+//			pixelTab = yuvCalc.getRotateYUV(pixelTab, 45);
+//			uLine1 = pixelTab[1];
+//			pixelTab = yuvCalc.getRotateYUV(pixelTab, -45);
+//			vLine1 = pixelTab[2];
+//			
+//			pixelTab[0] = line2[3*i];
+//			pixelTab[1] = line2[3*i +1];
+//			pixelTab[2] = line2[3*i +1];
+//			pixelTab = yuvCalc.getRotateYUV(pixelTab, 45);
+//			uLine2 = pixelTab[1];
+//			pixelTab = yuvCalc.getRotateYUV(pixelTab, -45);
+//			vLine2 = pixelTab[2];			
+//			
+//			line1[3*i +1] = ( uLine1+ uLine2) /2;
+//			line1[3*i +2] = (vLine1 + vLine2)/2;
+//			line2[3*i +1] = ( uLine1+ uLine2) /2;
+//			line2[3*i +2] = (vLine1 + vLine2)/2;
+//		}
+//		raster.setPixels(0, y+2, 768,1,line2);
+//		return line1;
 	}
 	
 

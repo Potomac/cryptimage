@@ -68,7 +68,7 @@ public class CryptVideo {
 	private int cycle;
 	private String fileAudienceLevel;
 	private String fileKeyboardCode;
-		
+	private String colorMode;	
 	
 	private VideoPlayer vidPlayer;	
 	
@@ -76,7 +76,19 @@ public class CryptVideo {
 	
 	
 	
-	public CryptVideo() {		 
+	public CryptVideo() {	
+		
+		if (JobConfig.getSystemCrypt() == 1) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
+				this.colorMode = "RGB";
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
+				this.colorMode = "pal";
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
+				this.colorMode = "secam";
+			}
+		}
 
 		if (JobConfig.getAudienceLevel() == 8) {
 			this.audienceLevel = "multicode-"
@@ -216,7 +228,7 @@ public class CryptVideo {
 			}
 			else {
 				device = new SysterEnc(JobConfig.getTableSyster(),
-						outputFilename,
+						outputFilename + "_csyster" + "_" + this.colorMode,
 						JobConfig.getFileDataEncSyster(),
 						JobConfig.getGui().getChkPlayer().isSelected());
 			}
@@ -250,7 +262,7 @@ public class CryptVideo {
 					}
 					else {
 						vid = new VideoRecorder(outputFilename + info
-								+ "syster" + "."
+								+ "syster" +  "_" + this.colorMode + "."
 								+ JobConfig.getExtension(), width, height,
 								frameRate, JobConfig.getAudioRate());
 					}
@@ -419,7 +431,7 @@ public class CryptVideo {
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
-						"syster" + "." + JobConfig.getExtension());
+						"syster" + "_" + this.colorMode + "." + JobConfig.getExtension());
 			}
 		}		
 	}
@@ -474,7 +486,7 @@ public class CryptVideo {
 			if (isDecoding != true) {
 				JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + JobConfig.getRes().getString("cryptVideo.progress.fin.decodage.logfile")
-						+ this.outputFilename + ".dec");
+						+ this.outputFilename + "_csyster" + "_" + this.colorMode + ".dec");
 			}
 		}
 	}

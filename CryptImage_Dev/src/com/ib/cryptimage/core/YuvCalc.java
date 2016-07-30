@@ -182,6 +182,56 @@ public class YuvCalc extends InitException {
 		return rgbTab;		
 	}
 	
+	public int[] getRGBInverseV(int[] tabRGB, int phase){
+		setRGB((float)tabRGB[0], (float)tabRGB[1],(float)tabRGB[2]);
+		
+		convertRGBtoYUV();	
+		
+		int[] yuv = new int[3];
+		
+		yuv[0] = (int)y;
+		yuv[1] = (int)u;
+		
+		
+		int temp = (int) (( v -128 ) * phase +128);
+		yuv[2] = temp;
+		
+		return convertYUVtoRGB(yuv);
+	}
+	
+	public int[] getRotateYUV(int[] tabYUV,float angle){
+		setYUV((float)tabYUV[0], (float)tabYUV[1],(float)tabYUV[2]);		
+		
+		
+		float u_temp = u -128;
+		float v_temp = v -128;		
+	
+		float new_u_temp, new_v_temp;		
+		
+//		new_u_temp = (float) (u_temp * Math.cos(angle * Math.PI/180d)
+//				- v_temp * Math.sin(angle*Math.PI/180d));
+//		new_v_temp = (float) (u_temp * Math.sin(angle * Math.PI/180d)
+//				+ v_temp * Math.cos(angle*Math.PI/180d));	
+		
+		new_u_temp =  (float) ((u_temp * cosSin.getCos((int) angle)
+				- v_temp * cosSin.getSin((int) angle)));
+		new_v_temp = (float) ((u_temp * cosSin.getSin((int) angle)
+				+ v_temp * cosSin.getCos((int) angle)));	
+				
+		float y_temp = y;
+		new_u_temp = new_u_temp +128;
+		new_v_temp = new_v_temp +128;
+		
+		setYUV(y_temp, new_u_temp, new_v_temp);
+		
+		tabYUV[0] = (int) y;
+		tabYUV[1] = (int) u;
+		tabYUV[2] = (int) v;
+		
+		return tabYUV;		
+	}
+	
+	
 	public void convertRGBtoYUV(){
 		if(!rgb){
 			try {

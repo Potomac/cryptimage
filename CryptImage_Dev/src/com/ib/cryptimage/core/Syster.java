@@ -73,6 +73,7 @@ public abstract class Syster extends Device {
 	
 	protected boolean enable;
 	protected PalEngine palEngine;
+	protected SecamEngine secamEngine;
 
 	/**
 	 * 
@@ -81,6 +82,7 @@ public abstract class Syster extends Device {
 	 */
 	public Syster(int typeTable, boolean wantCrypt) {
 		palEngine = new PalEngine();
+		secamEngine = new SecamEngine();
 		this.typeTable = typeTable;		
 		this.wantCrypt = wantCrypt;		
 		this.vecFrame = new Vector<BufferedImage>();
@@ -350,9 +352,15 @@ public abstract class Syster extends Device {
 		if (this.ready) {
 			this.ready = false;
 			// appel décodeur pal ou secam si choix pal/secam
+			// encodage secam
+			if (JobConfig.getColorMode() == 2 && !JobConfig.isWantDec()) {
+				secamEngine.setImg(completFrame);				
+				return secamEngine.decode();
+			}
+			
+			
 			if ( JobConfig.getColorMode() == 1) {
-				palEngine.setImg(completFrame);							
-				
+				palEngine.setImg(completFrame);				
 				return palEngine.decode();
 			} else {
 				return completFrame;

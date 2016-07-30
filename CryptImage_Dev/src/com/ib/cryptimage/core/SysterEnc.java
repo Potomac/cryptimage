@@ -101,6 +101,11 @@ public class SysterEnc extends Syster {
 			palEngine.setImg(image);
 			image = palEngine.encode();
 		}
+		//encodage secam
+		if(JobConfig.getColorMode() == 2){			
+			secamEngine.setImg(image);
+			image = secamEngine.encode();			
+		}
 		
 		if (JobConfig.isWantSysterEncRandom() == false) {
 			this.readFileData();			
@@ -151,6 +156,12 @@ public class SysterEnc extends Syster {
 			palEngine.setImg(image);
 			image = palEngine.encode();			
 		}
+		//encodage secam
+		if(JobConfig.getColorMode() == 2){			
+			secamEngine.setImg(image);
+			image = secamEngine.encode();			
+		}
+		
 		////////à decommenter
 		this.cryptOddFrame(image);
 		
@@ -186,6 +197,11 @@ public class SysterEnc extends Syster {
 		if(JobConfig.getColorMode() == 1){
 			palEngine.setImg(image);
 			image = palEngine.encode();
+		}
+		// encodage secam
+		if (JobConfig.getColorMode() == 2) {
+			secamEngine.setImg(image);
+			image = secamEngine.encode();
 		}
 		
 		if (readFile == true) {
