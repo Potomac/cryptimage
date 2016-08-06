@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -44,11 +45,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.MaskFormatter;
 
 import com.ib.cryptimage.core.JobConfig;
+
+import sun.management.jdp.JdpGenericPacket;
 
 /**
  * @author Mannix54
@@ -68,6 +73,8 @@ public class GenEncFile extends JDialog {
 	private JButton btnExit;
 	private JLabel labLines;
 	private JFormattedTextField txtLines;
+	private JRadioButton rdiSyster;
+	private JRadioButton rdiVideocrypt;
 
 
 	/**
@@ -75,7 +82,7 @@ public class GenEncFile extends JDialog {
 	 */
 	public GenEncFile(JFrame parent, String title, boolean modal) {
 		super(parent, title, modal);
-		this.setSize(580, 180);
+		this.setSize(580, 200);
 		this.setLocationRelativeTo(null);	
 		
 		initGUI();
@@ -102,11 +109,23 @@ public class GenEncFile extends JDialog {
 		JPanel panBtn = new JPanel();
 		panBtn.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		
+		rdiSyster = new JRadioButton("Nagravision syster");
+		rdiVideocrypt = new JRadioButton("Videocrypt");
+		
+		ButtonGroup btnGroup = new ButtonGroup();
+		btnGroup.add(rdiSyster);
+		btnGroup.add(rdiVideocrypt);
+		
+		JPanel panRdi = new JPanel();
+		panRdi.add(rdiSyster);
+		panRdi.add(rdiVideocrypt);
+		rdiSyster.setSelected(true);
+		
 		labTable = new JLabel(JobConfig.getRes().getString("genEncFile.labTable"));
 		
 		String[] tab = {JobConfig.getRes().getString("genEncFile.tab1"), JobConfig.getRes().getString("genEncFile.tab2")};
 		combTable = new JComboBox<String>(tab);
-		combTable.setSelectedIndex(1);
+		combTable.setSelectedIndex(0);
 		
 		labLines = new JLabel(JobConfig.getRes().getString("genEncFile.labLines"));
 		MaskFormatter mask;
@@ -189,6 +208,7 @@ public class GenEncFile extends JDialog {
 		panBtn.add(btnValid);
 		panBtn.add(btnExit);
 		
+		panGlobal.add(panRdi);
 		panGlobal.add(panTable);
 		panGlobal.add(panLines);
 		panGlobal.add(panFile);
@@ -196,6 +216,32 @@ public class GenEncFile extends JDialog {
 		
 		this.getContentPane().add(panGlobal, BorderLayout.CENTER);
 		
+		rdiSyster.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				manageRdi();	
+			}
+		});
+		rdiVideocrypt.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				manageRdi();	
+			}
+		});
+		
+	}
+	
+	private void manageRdi(){
+		if(rdiSyster.isSelected()){
+			combTable.setEnabled(true);
+			labTable.setEnabled(true);
+			txtFile.setText("");
+		}
+		else{
+			combTable.setEnabled(false);
+			labTable.setEnabled(false);
+			txtFile.setText("");
+		}		
 	}
 	
 	private void setSaveFile() {
@@ -215,17 +261,28 @@ public class GenEncFile extends JDialog {
 			dialogue.setCurrentDirectory(new File(JobConfig.getGui().getTxtOutputFile().getText()));
 		}
 
-		extension = new String[] { "enc" };
-		filter = new FileNameExtensionFilter(JobConfig.getRes().getString("genEncFile.filenameExtensionFilter"), extension);
-
+		if (rdiSyster.isSelected()) {
+			extension = new String[] { "enc" };
+		} else {
+			extension = new String[] { "vid" };
+		}
+		
+		if (rdiSyster.isSelected()) {
+			filter = new FileNameExtensionFilter(JobConfig.getRes().getString("genEncFile.filenameExtensionFilter"),
+					extension);
+		} else {
+			filter = new FileNameExtensionFilter(JobConfig.getRes().getString("genEncFile.filenameExtensionFilterVideocrypt"),
+					extension);
+		}
+		
 		dialogue.setFileFilter(filter);
 
 		File file;
 		if (dialogue.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			file = dialogue.getSelectedFile();
 			String path = file.getAbsolutePath();
-			if (!path.endsWith(".enc")) {
-				path = path + ".enc";
+			if (!path.endsWith("." + extension[0])) {
+				path = path + "." + extension[0];
 			}
 			this.txtFile.setText(path);
 		}
@@ -266,6 +323,7 @@ public class GenEncFile extends JDialog {
 		int min = 0;
 		int max = 255;
 		double val;
+		int valVideocrypt;
 		min = 1;
 		max = 127;	
 		
@@ -274,48 +332,37 @@ public class GenEncFile extends JDialog {
 		fileOut = new FileWriter(txtFile.getText());
 
 		for (int i = 0; i < lines; i++) {
-			rand = new Random();
-			min = 0;
-			max = 255;
-			
-			offset1 = rand.nextInt(max - min + 1) + min;
+			if (rdiSyster.isSelected()) {
+				rand = new Random();
+				min = 0;
+				max = 255;
 
-			min = 1;
-			max = 127;
-			
-			val = rand.nextInt(max - min + 1) + min;
-			if ((val / 2) - (int) (val / 2) == 0) {
-				increment1 = (int) (val + 1);
+				offset1 = rand.nextInt(max - min + 1) + min;
+
+				min = 1;
+				max = 127;
+
+				val = rand.nextInt(max - min + 1) + min;
+				if ((val / 2) - (int) (val / 2) == 0) {
+					increment1 = (int) (val + 1);
+				} else {
+					increment1 = (int) (val);
+				}
+
+				offset2 = offset1;
+
+				fileOut.write("frame " + (i + 1) + ";" + typeTable + ";" + offset1 + ";" + increment1 + ";" + offset2
+						+ ";" + increment1 + "\r\n");
 			} else {
-				increment1 = (int) (val);
+				rand = new Random();
+				min = 1;
+				max = 16777216;
+
+				valVideocrypt = (int) (rand.nextInt(max - min + 1) + min);
+
+				fileOut.write(valVideocrypt + "\r\n");
 			}
-			////
-			rand = new Random();
-			
-			min = 0;
-			max = 255;
 
-//			offset2 = rand.nextInt(max - min + 1) + min;
-
-//			min = 1;
-//			max = 127;
-//			
-//			val = rand.nextInt(max - min + 1) + min;
-//			if ((val / 2) - (int) (val / 2) == 0) {
-//				increment2 = (int) (val + 1);
-//			} else {
-//				increment2 = (int) (val);
-//			}
-
-			offset2 = offset1;
-//			if(offset2 > 255){
-//				offset2 = offset2 - 256;
-//			}
-			
-			fileOut.write("frame " + (i + 1) + ";" + typeTable + ";" 
-			+ offset1 + ";" + increment1 + ";" + offset2 + ";"
-					+ increment1 + "\r\n");			
-			
 		}
 
 		fileOut.close();		

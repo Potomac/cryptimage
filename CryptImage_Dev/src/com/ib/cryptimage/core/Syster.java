@@ -74,6 +74,7 @@ public abstract class Syster extends Device {
 	protected boolean enable;
 	protected PalEngine palEngine;
 	protected SecamEngine secamEngine;
+	protected boolean skip;
 
 	/**
 	 * 
@@ -189,6 +190,7 @@ public abstract class Syster extends Device {
 			parts = line.split(";");
 			
 			if(parts[1].equals("skip")){
+				this.skip = true;
 				return false;
 			}
 			
@@ -207,6 +209,7 @@ public abstract class Syster extends Device {
 			this.offSetEven = Integer.valueOf(parts[4]);
 			this.incrementEven = Integer.valueOf(parts[5]);
 			
+			this.skip = false;
 			return true;
 						
 		} catch (IOException e) {
@@ -361,7 +364,7 @@ public abstract class Syster extends Device {
 			
 			if ( JobConfig.getColorMode() == 1) {
 				palEngine.setImg(completFrame);				
-				return palEngine.decode();
+				return palEngine.decode(this.skip);
 			} else {
 				return completFrame;
 			}

@@ -261,9 +261,11 @@ public class SysterDec extends Syster {
 			this.completFrame = this.imageSource;
 			this.ready = true;
 			this.enable = false;
+			this.skip = true;
 			return false;
 		}
 		
+		this.skip = false;
 		return true;
 		
 	}
@@ -426,6 +428,7 @@ public class SysterDec extends Syster {
 		
 		//check values
 		if (!checkValuesTags(typeTable, offsetBin1, offsetBin2, incrementBin1, incrementBin2)){
+			this.skip = true;
 			return false;
 		}
 		
@@ -440,6 +443,7 @@ public class SysterDec extends Syster {
 			this.incrementOdd = Integer.parseInt(incrementBin1, 2);
 			this.incrementEven = Integer.parseInt(incrementBin2, 2);
 			
+			this.skip = false;
 			return true;		
 	}
 	
@@ -453,7 +457,7 @@ public class SysterDec extends Syster {
 						if(Integer.parseInt(incrementBin1, 2) > 0 && Integer.parseInt(incrementBin1, 2) < 128){
 							if(isOdd(Integer.parseInt(incrementBin1, 2))){
 								if(Integer.parseInt(incrementBin2, 2) > 0 && Integer.parseInt(incrementBin2, 2) < 128){
-									if(isOdd(Integer.parseInt(incrementBin2, 2))){
+									if(isOdd(Integer.parseInt(incrementBin2, 2))){										
 										return true;
 									}
 								}
@@ -463,10 +467,9 @@ public class SysterDec extends Syster {
 				}
 			}
 			
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			return false;
-		}
-		
+		}		
 		return false;
 	}
 	
@@ -647,9 +650,7 @@ public class SysterDec extends Syster {
 				for (j=i+1; j<287; j++)
 					matdist[i][j] = matdist [j][i] = -1; 	// Distance unknown
 
-			// Search the 32768 possible permutations , to find the lowest distance
-			//System.out.println("Searching the best solution... Please wait \r\n");
-		   
+			// Search the 32768 possible permutations , to find the lowest distance		   
 		   
 			for (offset = 0; offset < 256; offset++) {//
 				for (incr = 1; incr < 256; incr += 2) {

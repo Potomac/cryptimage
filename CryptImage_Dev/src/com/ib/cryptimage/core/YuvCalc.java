@@ -141,6 +141,25 @@ public class YuvCalc extends InitException {
 	}
 	
 	public void setYUV(float y, float u, float v){
+		if(y > 255){
+			y = 255;			
+		}
+		if(y < 0){
+			y = 0;			
+		}
+		if(u > 255){
+			u = 255;			
+		}
+		if(u < 0){
+			u = 0;			
+		}
+		if(v > 255){
+			v = 255;			
+		}
+		if(v < 0){
+			v = 0;			
+		}
+		
 		this.y =y;
 		this.u = u;
 		this.v = v;
@@ -166,6 +185,12 @@ public class YuvCalc extends InitException {
 				- v_temp * cosSin.getSin((int) angle)));
 		new_v_temp = (float) ((u_temp * cosSin.getSin((int) angle)
 				+ v_temp * cosSin.getCos((int) angle)));	
+		
+//		float vector = (float) Math.sqrt(u_temp * u_temp + v_temp*v_temp);
+//		
+//		new_u_temp =  (float) (( cosSin.getCos((int) angle) * vector ));
+//		
+//		new_v_temp = (float) ((cosSin.getSin((int) angle) * vector ));
 				
 		float y_temp = y;
 		new_u_temp = new_u_temp +128;
@@ -241,7 +266,7 @@ public class YuvCalc extends InitException {
 				e.printStackTrace();
 			}
 		}
-		y = red *  redCoef1 + green *  greenCoef1 + blue *  blueCoef1;//coef1 * red + coef2 * green + coef3 * blue;
+		y = red *  redCoef1 + green *  greenCoef1 + blue *  blueCoef1 +16f; //coef1 * red + coef2 * green + coef3 * blue;
 		u = red * redCoef2 + green * greenCoef2 + blue *  blueCoef2 + 128f; //coef4 * (blue - y);
 		v = red *  redCoef3 + green * greenCoef3 + blue * blueCoef3 + 128f;
 		
@@ -297,9 +322,10 @@ public class YuvCalc extends InitException {
 				e.printStackTrace();
 			}
 		}
-		red = y + vCoef1 * (v - 128f) + uCoef1* (u - 128f);
-		green = y + uCoef2 * (u - 128f) + vCoef2 * (v - 128f);
-		blue = y + uCoef3 * (u - 128f) + vCoef3 * (v - 128f);
+				
+		red = y + vCoef1 * (v - 128f) + uCoef1* (u - 128f) -16f;
+		green = y + uCoef2 * (u - 128f) + vCoef2 * (v - 128f) -16f;
+		blue = y + uCoef3 * (u - 128f) + vCoef3 * (v - 128f) -16f;
 		if(red > 255){
 			red = 255;			
 		}

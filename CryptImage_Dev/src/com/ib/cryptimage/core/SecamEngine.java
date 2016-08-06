@@ -182,6 +182,97 @@ public class SecamEngine {
 		}
 	}
 	
+	public BufferedImage averageSpecial(){		
+		secamAverageEvenFrameVideoCrypt();
+		secamAverageOddFrameVideoCrypt();
+		return img;
+	}
+	
+	private void secamAverageOddFrameVideoCrypt(){		
+		int[] pixelL1 = new int[3];
+		int[] pixelL2 = new int[3];		
+		
+		for (int y = 0; y < 576; y++) { // 2
+			pixelL1 = raster.getPixel(0, y, pixelL1);
+			pixelL2 = raster.getPixel(0, y + 2, pixelL2);						
+			
+			raster.setPixels(0, y, 768, 1, averageLine(raster.getPixels(
+					0, y, 768, 1, linePixels),
+					raster.getPixels(0, y + 2, 768, 1, linePixels2),y));
+			y += 3;
+		}
+
+	}
+	
+	private void secamAverageEvenFrameVideoCrypt(){		
+		int[] pixelL1 = new int[3];
+		int[] pixelL2 = new int[3];	
+		
+		for (int y = 1; y < 574; y++) { // 2
+			pixelL1 = raster.getPixel(0, y, pixelL1);
+			pixelL2 = raster.getPixel(0, y + 2, pixelL2);
+			
+			
+			raster.setPixels(0, y, 768, 1, averageLine(raster.getPixels(
+					0, y, 768, 1, linePixels),
+					raster.getPixels(0, y + 2, 768, 1, linePixels2),y));
+			y += 3;
+		}
+	}
+	
+	private int[] averageLine(int[] line1, int[] line2, int y) {
+		int[] tempPix = new int[3];
+		
+		
+		for (int i = 1; i < 768; i++) {
+			tempPix[0] = line1[3 * i ];
+			tempPix[1] = line1[3 * i + 1];
+			tempPix[2] = line1[3 * i + 2];
+			
+			tempPix = yuvCalc.convertRGBtoYUV(tempPix);
+			
+			line1[3 * i ] = tempPix[0];
+			line1[3 * i + 1] = tempPix[1];
+			line1[3 * i + 2] = tempPix[2];
+						
+			tempPix[0] = line2[3 * i ];
+			tempPix[1] = line2[3 * i + 1];
+			tempPix[2] = line2[3 * i + 2];
+			
+			tempPix = yuvCalc.convertRGBtoYUV(tempPix);
+			
+			line2[3 * i ] = tempPix[0];
+			line2[3 * i + 1] = tempPix[1];
+			line2[3 * i + 2] = tempPix[2];
+			
+			
+			line1[3 * i + 1] = line2[3 * i + 1];
+			line2[3 * i + 2] = line1[3 * i + 2];
+			
+			tempPix[0] = line1[3 * i ];
+			tempPix[1] = line1[3 * i + 1];
+			tempPix[2] = line1[3 * i + 2];
+			
+			tempPix = yuvCalc.convertYUVtoRGB(tempPix);
+			
+			line1[3 * i ] = tempPix[0];
+			line1[3 * i + 1] = tempPix[1];
+			line1[3 * i + 2] = tempPix[2];
+			
+			tempPix[0] = line2[3 * i ];
+			tempPix[1] = line2[3 * i + 1];
+			tempPix[2] = line2[3 * i + 2];
+			
+			tempPix = yuvCalc.convertYUVtoRGB(tempPix);
+			
+			line2[3 * i ] = tempPix[0];
+			line2[3 * i + 1] = tempPix[1];
+			line2[3 * i + 2] = tempPix[2];
+			
+		}
+		raster.setPixels(0, y + 2, 768, 1, line2);
+		return line1;
+	}
 	
 	private int[] averageLine(int[] line1, int[] line2, int y, String seq){
 		

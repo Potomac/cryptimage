@@ -153,6 +153,17 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}
 		}
 		
+		if(src.equals(this.mainGui.getChkDisableSoundVideocrypt())){
+			if(src.isSelected()){
+				this.mainGui.getChkSoundVideocrypt().setSelected(false);
+				this.mainGui.getChkSoundVideocrypt().setEnabled(false);				
+			}
+			else{
+				//this.mainGui.getChkSoundVideocrypt().setSelected(true);
+				this.mainGui.getChkSoundVideocrypt().setEnabled(true);		
+			}
+		}
+		
 		if(src.equals(this.mainGui.getChkNoBlackBar())){
 			JobConfig.setNoBlackBar(
 					this.mainGui.getChkNoBlackBar().isSelected());
@@ -319,11 +330,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if(src.equals(this.mainGui.getCombSystemCrypt())){
 			switch (this.mainGui.getCombSystemCrypt().getSelectedIndex()) {
 			case 0:
+			JobConfig.setSystemCrypt(0);
 			this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Discret11");
 			this.mainGui.getChkStrictMode().setEnabled(true);
 			//rdiVideoSelected();
 				break;				
 			case 1:
+				JobConfig.setSystemCrypt(1);
 				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Syster");
 				if(!this.mainGui.getChkStrictMode().isSelected()){
 					setMultiCodeComboBox();
@@ -350,6 +363,34 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				//setMultiCodeComboBox();
 				this.mainGui.getChkStrictMode().setEnabled(false);
 				break;
+			case 2:
+				JobConfig.setSystemCrypt(2);
+				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Videocrypt");
+				if(!this.mainGui.getChkStrictMode().isSelected()){
+					setMultiCodeComboBox();
+				}
+				this.mainGui.getChkStrictMode().setSelected(true);
+				if(this.mainGui.getRdiVideo().isSelected()){
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+					this.mainGui.getSlid16bitsWord().setEnabled(true);
+					this.mainGui.getJsp16bitKeyword().setEnabled(true);
+					enableComboAudience();
+				}
+				if(this.mainGui.getRdiPhoto().isSelected()){
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+					this.mainGui.getSlid16bitsWord().setEnabled(true);
+					this.mainGui.getJsp16bitKeyword().setEnabled(true);
+					enableComboAudience();
+				}
+				mainGui.getRdi720().setEnabled(true);
+				mainGui.getRdi768().setEnabled(true);
+				//setMultiCodeComboBox();
+				this.mainGui.getChkStrictMode().setEnabled(false);			
+				break;		
 			default:
 				break;
 			}
@@ -446,7 +487,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		else if(src.equals(mainGui.getSlideFrameStartSyster())){
 			mainGui.getJspFrameStartSyster().setValue(
 					mainGui.getSlideFrameStartSyster().getValue());
-		} else if(src.equals(mainGui.getSlidBitrate())){
+		} 	else if(src.equals(mainGui.getSlideFrameStartVideocrypt())){
+			mainGui.getJspFrameStartVideocrypt().setValue(
+					mainGui.getSlideFrameStartVideocrypt().getValue());
+		}else if(src.equals(mainGui.getSlidBitrate())){
 			mainGui.getTxtBitrate().setText(String.valueOf(src.getValue()));
 		}else if(src.equals(mainGui.getSlidFrames())){
 			String time = "";
@@ -467,10 +511,59 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		} else if(src.equals(this.mainGui.getJspFrameStartSyster())){
 			mainGui.getSlideFrameStartSyster().setValue(
 					(int) src.getValue());
+		} else if(src.equals(this.mainGui.getJspFrameStartVideocrypt())){
+			mainGui.getSlideFrameStartVideocrypt().setValue(
+					(int) src.getValue());
 		}
 	}
 
 	private void manageRadioButton(JRadioButton src) {
+		
+		
+		if(src.equals(this.mainGui.getRdiVideocryptCoding())){
+			if(src.isSelected()){
+				this.mainGui.getCardEncDecVideocrypt().show(this.mainGui.getPanVideocryptEncDecCard(),
+						"VideocryptCoding");			
+			}
+		}
+		
+		if(src.equals(this.mainGui.getRdiVideocryptDecoding())){
+			if(src.isSelected()){
+				if(src.isSelected()){
+					this.mainGui.getCardEncDecVideocrypt().show(this.mainGui.getPanVideocryptEncDecCard(),
+							"VideocryptDecoding");			
+				}			
+			}
+		}
+		
+		if(src.equals(this.mainGui.getRdiVideocryptCorrel())){
+			if(src.isSelected()){				
+				this.mainGui.getTxtVideocryptDec().setEnabled(false);
+				this.mainGui.getBtnVideocryptDec().setEnabled(false);	
+			}
+		}
+		
+		if(src.equals(this.mainGui.getRdiVideocryptDecodingFile())){
+			if(src.isSelected()){				
+				this.mainGui.getTxtVideocryptDec().setEnabled(true);
+				this.mainGui.getBtnVideocryptDec().setEnabled(true);	
+			}
+		}
+		
+		if(src.equals(this.mainGui.getRdiVideocryptCodingAuto())){
+			if(src.isSelected()){				
+				this.mainGui.getTxtVideocryptEnc().setEnabled(false);
+				this.mainGui.getBtnVideocryptEnc().setEnabled(false);	
+			}
+		}
+		
+		if(src.equals(this.mainGui.getRdiVideocryptCodingFile())){
+			if(src.isSelected()){				
+				this.mainGui.getTxtVideocryptEnc().setEnabled(true);
+				this.mainGui.getBtnVideocryptEnc().setEnabled(true);	
+			}
+		}	
+		
 		
 		if(src.equals(this.mainGui.getRdiSysterCodingRandom())){
 			if(src.isSelected()){
@@ -642,7 +735,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				//mainGui.getJcbExtension().setEnabled(true);
 				mainGui.getSlidFrames().setEnabled(true);
 				mainGui.getTxtNbFrames().setEnabled(true);
-				if(this.mainGui.getCombSystemCrypt().getSelectedIndex() !=1
+				if(this.mainGui.getCombSystemCrypt().getSelectedIndex() !=2 && this.mainGui.getCombSystemCrypt().getSelectedIndex() !=1
 					 && !this.mainGui.getRdiDiscretCorrel().isSelected()){
 					mainGui.getChkStrictMode().setEnabled(true);
 					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
@@ -919,6 +1012,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageButtons(JButton src) {
 		
+		if(src.equals(this.mainGui.getBtnVideocryptDec()) ||
+				src.equals(this.mainGui.getBtnVideocryptEnc())){
+			openFileVideocrypt();
+		}
+		
 		if(src.equals(this.mainGui.getBtnFileSysterEnc())){
 			openFileSysterEnc();
 		}
@@ -1108,6 +1206,154 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 		
 	}
+	
+	private void openFileVideocrypt(){
+		JFileChooser dialogue = new JFileChooser();
+		
+		dialogue.setLocale(new Locale(JobConfig.getUserLanguage()));
+		dialogue.updateUI();
+		
+		dialogue.setDialogTitle(JobConfig.getRes().getString("openFileVideocrypt.dialogTitle"));
+		File file;
+
+		FileNameExtensionFilter filter;
+		String[] extension;
+		
+		if(new File(this.mainGui.getTxtOutputFile().getText()).exists()){
+			dialogue.setCurrentDirectory(new File(this.mainGui.getTxtOutputFile().getText()));
+		}
+
+		dialogue.setAcceptAllFileFilterUsed(false);
+		extension = new String[] { "vid" };
+		filter = new FileNameExtensionFilter(JobConfig.getRes().getString("openFileVideocrypt.filters"), extension);
+		
+
+		dialogue.setFileFilter(filter);
+
+		if (dialogue.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			
+			file = dialogue.getSelectedFile();
+
+			if (!file.canRead()) {
+				mainGui.getFrame().setCursor(
+						Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				JOptionPane
+						.showMessageDialog(
+								dialogue,
+								JobConfig.getRes().getString("openFileVideocrypt.errorIO"),
+								JobConfig.getRes().getString("openFileVideocrypt.errorIO.title"),
+								JOptionPane.ERROR_MESSAGE);
+			} else {				
+				//check the validity of the file
+				if (checkValidityFileVideocrypt(file)) {
+					if(this.mainGui.getRdiVideocryptDecodingFile().isSelected() 
+							&& this.mainGui.getRdiVideocryptDecoding().isSelected())
+					this.mainGui.getTxtVideocryptDec().setText(file.getAbsolutePath());
+					
+					if(this.mainGui.getRdiVideocryptCodingFile().isSelected()
+							&& this.mainGui.getRdiVideocryptCoding().isSelected())
+					this.mainGui.getTxtVideocryptEnc().setText(file.getAbsolutePath());
+				
+				}
+				else{
+					if(this.mainGui.getRdiVideocryptDecodingFile().isSelected() 
+							&& this.mainGui.getRdiVideocryptDecoding().isSelected())
+					this.mainGui.getTxtVideocryptDec().setText("");
+					
+					if(this.mainGui.getRdiVideocryptCodingFile().isSelected()
+							&& this.mainGui.getRdiVideocryptCoding().isSelected())
+						this.mainGui.getTxtVideocryptEnc().setText("");
+				}
+			}
+			mainGui.getFrame().setCursor(
+					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
+	}
+	
+	private boolean checkValidityFileVideocrypt(File file){
+		BufferedReader fileInBuff = null;
+		
+		try {
+			fileInBuff = new BufferedReader(new FileReader(file.getAbsolutePath()));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}		
+	
+	String line;
+	int compt = 0;
+	int val;	
+
+		try {
+			while ((line = fileInBuff.readLine()) != null) {
+				compt++;
+				if (!line.equals("skip")) {
+					val = Integer.valueOf(line);
+					if (val > 16777216 || val < 1) {
+						JOptionPane.showMessageDialog(mainGui.getFrame(),
+								JobConfig.getRes().getString("mainGui.validityError.title"),
+								JobConfig.getRes().getString("mainGui.validityError.title"), JOptionPane.ERROR_MESSAGE);
+						return false;
+					}
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		catch ( Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			JOptionPane
+			.showMessageDialog(
+					mainGui.getFrame(),
+					JobConfig.getRes().getString("mainGui.validityError.title"),
+					JobConfig.getRes().getString("mainGui.validityError.title"),
+					JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+	
+	
+	try {
+		fileInBuff.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	//check if possible the size of lines with the frame lenght of the video
+		if(!this.mainGui.getTxtInputFile().getText().equals("")){			
+			if(compt  < mainGui.getSlideFrameStart().getMaximum()
+					&& this.mainGui.getRdiVideo().isSelected()){
+				JOptionPane
+				.showMessageDialog(
+						mainGui.getFrame(),
+						JobConfig.getRes().getString("mainGui.validityError.file.name") 
+						+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name2"),
+						JobConfig.getRes().getString("mainGui.validityError.file.name3"),
+						JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+			
+			if(compt  < 1
+					&& this.mainGui.getRdiPhoto().isSelected()
+					&& this.mainGui.getRdiVideocryptDecoding().isSelected()){
+				JOptionPane
+				.showMessageDialog(
+						mainGui.getFrame(),
+						JobConfig.getRes().getString("mainGui.validityError.file.name") 
+						+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name5"),
+						JobConfig.getRes().getString("mainGui.validityError.file.name3"),
+						JOptionPane.ERROR_MESSAGE);
+				return false;
+			}		
+		}
+	
+	return true;
+	}
+	
 	
 	private void openFileSysterDec(){
 		JFileChooser dialogue = new JFileChooser();
@@ -1390,6 +1636,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			//reset enc and dec files
 			this.mainGui.getTxtSysterEnc().setText("");
 			this.mainGui.getTxtSysterDec().setText("");
+			this.mainGui.getTxtVideocryptDec().setText("");
+			this.mainGui.getTxtVideocryptEnc().setText("");
 			mainGui.getFrame().setCursor(
 					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
@@ -1407,7 +1655,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 							JobConfig.getRes().getString("manageEnter.errorMulticode"),
 							JobConfig.getRes().getString("manageEnter.errorMulticodeTitle"),
 							JOptionPane.WARNING_MESSAGE);
-		} 
+		} else if(mainGui.getRdiVideocryptDecoding().isSelected() 
+				&& this.mainGui.getCombSystemCrypt().getSelectedIndex() == 2
+				&& mainGui.getRdiVideocryptCorrel().isSelected()){
+			
+			JOptionPane
+			.showMessageDialog(
+					mainGui.getFrame(),
+					"decoding by correlation line is not again finished, work in progress",
+					"work in progress",
+					JOptionPane.INFORMATION_MESSAGE);
+			
+		}
 		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
 				&& mainGui.getTxtSysterEnc().getText().equals("")
 				&& mainGui.getRdiSysterCodingGen().isSelected()
@@ -1417,6 +1676,27 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					mainGui.getFrame(),
 					JobConfig.getRes().getString("manageEnter.errorSysterFileEnc"),
 					JobConfig.getRes().getString("manageEnter.errorSysterFileEncTitle"),
+					JOptionPane.WARNING_MESSAGE);		
+		}else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 2
+				&& mainGui.getTxtVideocryptDec().getText().equals("")
+				&& mainGui.getRdiVideocryptDecodingFile().isSelected()
+				&& mainGui.getRdiVideocryptDecoding().isSelected()){		
+			JOptionPane
+			.showMessageDialog(
+					mainGui.getFrame(),
+					JobConfig.getRes().getString("manageEnter.errorVideocryptFile"),
+					JobConfig.getRes().getString("manageEnter.errorVideocryptTitle"),
+					JOptionPane.WARNING_MESSAGE);		
+		}
+		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 2
+				&& mainGui.getTxtVideocryptEnc().getText().equals("")
+				&& mainGui.getRdiVideocryptCodingFile().isSelected()
+				&& mainGui.getRdiVideocryptCoding().isSelected()){
+			JOptionPane
+			.showMessageDialog(
+					mainGui.getFrame(),
+					JobConfig.getRes().getString("manageEnter.errorVideocryptFile"),
+					JobConfig.getRes().getString("manageEnter.errorVideocryptTitle"),
 					JOptionPane.WARNING_MESSAGE);		
 		}
 		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
@@ -1485,9 +1765,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if (JobConfig.getSystemCrypt() == 0) {
 				JobConfig.setPositionSynchro(
 						(int) mainGui.getJspFrameStart().getValue());
-			} else {
+			} else if(JobConfig.getSystemCrypt() == 1) {
 				JobConfig.setPositionSynchro(
 						(int) mainGui.getJspFrameStartSyster().getValue());
+			}else if(JobConfig.getSystemCrypt() == 2) {
+				JobConfig.setPositionSynchro(
+						(int) mainGui.getJspFrameStartVideocrypt().getValue());
 			}
 			
 			//discret dec enc normal
@@ -1547,6 +1830,40 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}
 			}
 			
+			//videocrypt dec enc
+			if(mainGui.getRdiVideocryptCoding().isSelected()
+					&& JobConfig.getSystemCrypt() == 2){
+				JobConfig.setWantDec(false);
+				if(mainGui.getRdiVideocryptCodingFile().isSelected()){
+					JobConfig.setFileDataEncVideocrypt(
+							this.mainGui.getTxtVideocryptEnc().getText());
+				}
+				if(mainGui.getRdiVideocryptCodingAuto().isSelected()){
+					JobConfig.setWantVideocryptEncRandom(true);					
+				}
+				else {
+					JobConfig.setWantVideocryptEncRandom(false);
+				}	
+			}
+			
+			if(mainGui.getRdiVideocryptDecoding().isSelected() 
+					&& JobConfig.getSystemCrypt() == 2){
+				JobConfig.setWantDec(true);
+				if(mainGui.getRdiVideocryptCorrel().isSelected()){
+					JobConfig.setWantDecCorrel(true);					
+				}
+				else {
+					JobConfig.setWantDecCorrel(false);	
+				}
+				
+				if(mainGui.getRdiVideocryptDecodingFile().isSelected()){
+					JobConfig.setFileDataDecVideocrypt(
+							this.mainGui.getTxtVideocryptDec().getText());
+				}
+			}
+			
+			
+			
 			JobConfig.setWantPlay(mainGui.getChkPlayer().isSelected());
 			JobConfig.setModePhoto(mainGui.getRdiPhoto().isSelected());
 			JobConfig.setExtension(
@@ -1557,10 +1874,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JobConfig.setDisableSound(
 					mainGui.getChkDisableSound().isSelected());
 			}
-			else {
+			else if(JobConfig.getSystemCrypt() == 1) {
 				JobConfig.setWantSound(mainGui.getChkSoundSyster().isSelected());
 				JobConfig.setDisableSound(
 					mainGui.getChkDisableSoundSyster().isSelected());
+			}else if(JobConfig.getSystemCrypt() == 2) {
+				JobConfig.setWantSound(mainGui.getChkSoundVideocrypt().isSelected());
+				JobConfig.setDisableSound(
+					mainGui.getChkDisableSoundVideocrypt().isSelected());
 			}
 			
 			JobConfig.setAutorisations(getAutorisationTab());
@@ -1805,9 +2126,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			this.mainGui.getChkDisableSound().setSelected(false);
 			this.mainGui.getChkSound().setSelected(true);
 			this.mainGui.getChkSound().setEnabled(true);
+			
 			this.mainGui.getChkDisableSoundSyster().setSelected(false);
 			this.mainGui.getChkSoundSyster().setSelected(true);
 			this.mainGui.getChkSoundSyster().setEnabled(true);
+			
+			this.mainGui.getChkDisableSoundVideocrypt().setSelected(false);
+			//this.mainGui.getChkSoundVideocrypt().setSelected(true);
+			this.mainGui.getChkSoundVideocrypt().setEnabled(true);
 		}
 		
 		JobConfig.setFrameRate(frameRate);
@@ -1833,12 +2159,26 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		Hashtable<Integer, JLabel> labelTable2 = new Hashtable<Integer, JLabel>();
 		labelTable2.put( new Integer( 1 ), new JLabel("1"));		
 		labelTable2.put( new Integer( nb_frames_def ), 
-				new JLabel(String.valueOf(nb_frames_def)));
+				new JLabel(String.valueOf(nb_frames_def)));		
 		mainGui.getSlideFrameStartSyster().setLabelTable(labelTable2);
 		mainGui.getSlideFrameStartSyster().setMajorTickSpacing((int) (0.5 * nb_frames_def));
 		mainGui.getSlideFrameStartSyster().setMinorTickSpacing((int) (0.05 * nb_frames_def));
 		mainGui.getSlideFrameStartSyster().setPaintLabels(true);		
 		mainGui.getSlideFrameStartSyster().setPaintTicks(true);
+		
+		mainGui.getSlideFrameStartVideocrypt().setMaximum(nb_frames_def);
+		mainGui.getSlideFrameStartVideocrypt().setValue(1);
+		Hashtable<Integer, JLabel> labelTable3 = new Hashtable<Integer, JLabel>();
+		labelTable3.put( new Integer( 1 ), new JLabel("1"));		
+		labelTable3.put( new Integer( nb_frames_def ), 
+				new JLabel(String.valueOf(nb_frames_def)));		
+		mainGui.getSlideFrameStartVideocrypt().setLabelTable(labelTable3);
+		mainGui.getSlideFrameStartVideocrypt().setMajorTickSpacing((int) (0.5 * nb_frames_def));
+		mainGui.getSlideFrameStartVideocrypt().setMinorTickSpacing((int) (0.05 * nb_frames_def));
+		mainGui.getSlideFrameStartVideocrypt().setPaintLabels(true);		
+		mainGui.getSlideFrameStartVideocrypt().setPaintTicks(true);
+		
+		
 		
 		mainGui.getSlidFrames().setMaximum(nb_frames_def);
 		mainGui.getSlidFrames().setValue((int) (0.10 * nb_frames_def));		
@@ -1860,9 +2200,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		this.mainGui.getChkDisableSound().setSelected(true);
 		this.mainGui.getChkSound().setSelected(false);
 		this.mainGui.getChkSound().setEnabled(false);
+		
 		this.mainGui.getChkDisableSoundSyster().setSelected(true);
 		this.mainGui.getChkSoundSyster().setSelected(false);
 		this.mainGui.getChkSoundSyster().setEnabled(false);
+		
+		this.mainGui.getChkDisableSoundVideocrypt().setSelected(true);
+		this.mainGui.getChkSoundVideocrypt().setSelected(false);
+		this.mainGui.getChkSoundVideocrypt().setEnabled(false);
 	}
 
 	
@@ -1871,7 +2216,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 		if(e.getSource().equals(mainGui.getJsp16bitKeyword()) 
 				|| e.getSource().equals(mainGui.getJspFrameStart())
-				|| e.getSource().equals(mainGui.getJspFrameStartSyster())){
+				|| e.getSource().equals(mainGui.getJspFrameStartSyster())
+				|| e.getSource().equals(mainGui.getJspFrameStartVideocrypt())){
 			JSpinner spi = (JSpinner)e.getSource();
 			manageSpinners(spi);
 		} 		

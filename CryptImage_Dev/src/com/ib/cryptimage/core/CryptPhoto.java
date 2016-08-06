@@ -42,9 +42,10 @@ public class CryptPhoto {
 	private String colorMode;
 	
 	public CryptPhoto(){
-		if (JobConfig.getSystemCrypt() == 1) {
+		if (JobConfig.getSystemCrypt() == 1
+				|| JobConfig.getSystemCrypt() == 2) {
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
-				this.colorMode = "RGB";
+				this.colorMode = "rgb";
 			}
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
 				this.colorMode = "pal";
@@ -99,9 +100,22 @@ public class CryptPhoto {
 					&& JobConfig.isWantDecCorrel())
 			{
 			decPhotoSysterCorrel(img);
-			}			
+			}		
+			
+			//videocrypt
+			if(JobConfig.getSystemCrypt() == 2 && JobConfig.isStrictMode()
+					&& !JobConfig.isWantDecCorrel())
+			{
+			decPhotoVideocrypt(img);
+			} else if (JobConfig.getSystemCrypt() == 2 && JobConfig.isStrictMode()
+					&& JobConfig.isWantDecCorrel())
+			{
+			decPhotoVideocryptCorrel(img);
+			}		
+			
 			
 		}
+		
 		else if(JobConfig.isModePhoto() && JobConfig.isWantDec()!=true
 				&& JobConfig.getSystemCrypt() == 0
 				&& !JobConfig.isStrictMode()){
@@ -114,8 +128,68 @@ public class CryptPhoto {
 		else if(JobConfig.isModePhoto() && JobConfig.isWantDec() != true
 				&& JobConfig.getSystemCrypt() == 1){
 			encPhotoSyster(img);
+		}else if(JobConfig.isModePhoto() && !JobConfig.isWantDec()
+				&& JobConfig.getSystemCrypt() == 2){
+			encPhotoVideocrypt(img);
 		}
+		
 		return true;
+	}
+	
+	private void decPhotoVideocryptCorrel(BufferedImage img) {
+		Device device;
+		device = new VideocryptDec(
+				JobConfig.getFileDataDecVideocrypt(),
+				JobConfig.isWantDecCorrel());
+		
+		BufferedImage imgRes = device.transform(img);		
+		
+		device.closeFileData();
+		
+		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
+		
+	}
+
+	private void decPhotoVideocrypt(BufferedImage img) {
+		Device device;
+		device = new VideocryptDec(
+				JobConfig.getFileDataDecVideocrypt(),
+				JobConfig.isWantDecCorrel());
+		
+		BufferedImage imgRes = device.transform(img);		
+		
+		device.closeFileData();
+		
+		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
+		
+	}
+
+	public void encPhotoVideocrypt(BufferedImage img){
+		VideocryptEnc videoCryptEnc;
+		
+		String output;
+		if (JobConfig.isHorodatage()) {
+			File file = new File(JobConfig.getOutput_file());
+			String fileName = JobConfig.getDateTime() + "_"
+					+ file.getName();
+			output = file.getParent() + File.separator + fileName;
+		} else {
+			output = JobConfig.getOutput_file();
+		}
+		
+		videoCryptEnc = new VideocryptEnc(output,
+					JobConfig.getFileDataEncVideocrypt(),
+					JobConfig.getGui().getChkPlayer().isSelected());
+		
+		BufferedImage imgRes = null;
+		
+		imgRes = videoCryptEnc.transform(img);
+		
+		videoCryptEnc.closeFileData();
+		
+		saveCryptImage(imgRes);
+		
+		
 	}
 	
 	public void encPhotoSyster(BufferedImage img){		
@@ -312,6 +386,31 @@ public class CryptPhoto {
 			return false;
 		}
 		
+		
+		if (JobConfig.getSystemCrypt() == 2) { //videocrypt
+			// retrieve image
+			File outputfile = new File(
+					JobConfig.getOutput_file() + "_c" + 
+			"videocrypt" + "_" + colorMode + ".png");
+			try {
+				ImageIO.write(bi, "png", outputfile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane
+				.showMessageDialog(
+						JobConfig.getGui().getFrame(),
+						JobConfig.getRes().getString("cryptPhoto.errorCryptIO"),
+						JobConfig.getRes().getString("cryptPhoto.errorCryptIO.title"),
+						JOptionPane.ERROR_MESSAGE);	
+				return false;
+			}
+			if (JobConfig.isHasGUI()) {
+				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + JobConfig.getOutput_file() + "_c"
+						+ "videocrypt" + "_" + colorMode + ".png");
+			}
+		}
+		
+		
 		if (JobConfig.getSystemCrypt() == 1) { //syster
 			// retrieve image
 			File outputfile = new File(
@@ -397,14 +496,21 @@ public class CryptPhoto {
 		}
 		else {
 			try {
+				String sys;
+				if(JobConfig.getSystemCrypt() == 1 ){
+					sys = "syster";
+				}
+				else{
+					sys = "videocrypt";
+				}
 				// retrieve image
 				File outputfile = new File(output_file + "_d" + 
-						"syster" + "_" + colorMode + ".png");
+						sys + "_" + colorMode + ".png");
 				ImageIO.write(bi, "png", outputfile);
 				if (JobConfig.isHasGUI()) {
 					JobConfig.getGui().getTextInfos().setText(
 							JobConfig.getRes().getString("cryptPhoto.saveImage.decodage") + output_file + "_d" + 
-									"syster" + "_" + colorMode + ".png");
+									sys + "_" + colorMode + ".png");
 				}				
 			} catch (IOException e) {
 				JOptionPane

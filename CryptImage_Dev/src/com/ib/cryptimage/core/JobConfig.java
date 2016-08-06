@@ -85,18 +85,25 @@ public final class JobConfig {
 	private static int tableSyster = 2;
 	private static String fileDataEncSyster ="";
 	private static String fileDataDecSyster = "";
+	private static String fileDataEncVideocrypt ="";
+	private static String fileDataDecVideocrypt = "";
+	
 	private static boolean wantDecCorrel = false;
 	private static boolean wantSysterTags = false;
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.1.3 beta";
-	private static String releaseDate = "2016-07-26";
+	private static String VERSION = "1.1.8 beta";
+	private static String releaseDate = "2016-08-05";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
 	private static boolean averagingPal = false;
 	private static int typeYUV = 0; // 0 -> bt.601, 1 -> bt.709, 2 -> other
+	
+	private static String fileDataVideocrypt ="";	
+	private static boolean wantDecCorrelVideoCrypt = false;
+	private static boolean wantVideocryptEncRandom = false;
 	
 	private JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -436,7 +443,8 @@ public final class JobConfig {
 		}
 		// system crypt
 		try {
-			if (Integer.valueOf(options[15]) != 0 && Integer.valueOf(options[15]) != 1) {
+			if (Integer.valueOf(options[15]) != 0 && Integer.valueOf(options[15]) != 1
+					 && Integer.valueOf(options[15]) != 2) {
 				options[15] = "0";
 			}
 		} catch (Exception e) {
@@ -914,6 +922,46 @@ public final class JobConfig {
 
 	public static void setTypeYUV(int typeYUV) {
 		JobConfig.typeYUV = typeYUV;
+	}
+
+	public static String getFileDataVideocrypt() {
+		return fileDataVideocrypt;
+	}
+
+	public static void setFileDataVideocrypt(String fileDataVideocrypt) {
+		JobConfig.fileDataVideocrypt = fileDataVideocrypt;
+	}
+
+	public static boolean isWantDecCorrelVideoCrypt() {
+		return wantDecCorrelVideoCrypt;
+	}
+
+	public static void setWantDecCorrelVideoCrypt(boolean wantDecCorrelVideoCrypt) {
+		JobConfig.wantDecCorrelVideoCrypt = wantDecCorrelVideoCrypt;
+	}
+
+	public static boolean isWantVideocryptEncRandom() {
+		return wantVideocryptEncRandom;
+	}
+
+	public static void setWantVideocryptEncRandom(boolean wantVideocryptEncRandom) {
+		JobConfig.wantVideocryptEncRandom = wantVideocryptEncRandom;
+	}
+
+	public static String getFileDataEncVideocrypt() {
+		return fileDataEncVideocrypt;
+	}
+
+	public static void setFileDataEncVideocrypt(String fileDataEncVideocrypt) {
+		JobConfig.fileDataEncVideocrypt = fileDataEncVideocrypt;
+	}
+
+	public static String getFileDataDecVideocrypt() {
+		return fileDataDecVideocrypt;
+	}
+
+	public static void setFileDataDecVideocrypt(String fileDataDecVideocrypt) {
+		JobConfig.fileDataDecVideocrypt = fileDataDecVideocrypt;
 	}
 	
 }

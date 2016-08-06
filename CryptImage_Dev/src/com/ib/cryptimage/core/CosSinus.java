@@ -37,6 +37,9 @@ public class CosSinus {
 		for (int angle = 0; angle <= 360; angle++) {
 			tabCos[angle] = (float) Math.cos( angle * Math.PI/180d);
 			tabSin[angle] = (float) Math.sin(angle * Math.PI/180d);
+			
+//			tabCos[angle] = (float) Math.cos( angle );
+//			tabSin[angle] = (float) Math.sin(angle );
 	    }
 		
 		

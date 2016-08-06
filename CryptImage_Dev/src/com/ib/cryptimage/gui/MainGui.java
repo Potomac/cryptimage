@@ -67,6 +67,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -238,12 +239,42 @@ public class MainGui {
 	private TitledBorder titlePanSysterDecodingGen;
 	private TitledBorder titlePanSysterSubRdiCoding;
 	private TitledBorder titlePanSysterSubRdiDecoding;
+	private TitledBorder titleColorMode;
 	
 	private JComboBox<String> cbColorMode;
 	private JLabel lblColorMode;
 	private JCheckBox cbAveragePal;
 	private JLabel lblYUV;
 	private JComboBox<String> cbYUV;
+	
+	private JRadioButton rdiVideocryptCoding;
+	private JRadioButton rdiVideocryptDecoding;
+	private JRadioButton rdiVideocryptCorrel;
+	private JRadioButton rdiVideocryptDecodingFile;
+	private JRadioButton rdiVideocryptCodingAuto;
+	private JRadioButton rdiVideocryptCodingFile;
+	private CardLayout cardEncDecVideocrypt;
+	private JPanel panVideocryptOptions;
+	private JTextField txtVideocryptDec;
+	private JButton btnVideocryptDec;	
+	
+	private JTextField txtVideocryptEnc;
+	private JButton btnVideocryptEnc;
+	
+	
+	private JCheckBox chkSoundVideocrypt;	
+	private JCheckBox chkDisableSoundVideocrypt;
+	private JLabel labFrameStartVideocrypt;
+	private JSpinner jspFrameStartVideocrypt;	
+	private JSlider slideFrameStartVideocrypt;
+	private TitledBorder titlePanVideocrypt;
+	private JPanel panColorMode;
+	
+	private TitledBorder titlePanVideocryptCodingGen;
+	private TitledBorder titlePanVideocryptDecodingGen;
+	private JPanel panVideocryptEncDecCard;
+	
+	private JTabbedPane tabbedPane;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -274,10 +305,10 @@ public class MainGui {
 		frame.setLayout(new GridLayout(1,1));
 		panGlobal = new JPanel();
 		
-		frame.setSize(740,830);
+		frame.setSize(740,700);
 		frame.setLocationRelativeTo(null);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(740, 830));
+		frame.setMinimumSize(new Dimension(740, 700));
 		frame.setResizable(true);		
 		frame.setIconImage(new ImageIcon(this.getClass().getResource("/icons/logo_jframe.png")).getImage());
 		
@@ -285,26 +316,33 @@ public class MainGui {
 		
 		createPanMode();
 		createPanFile();
-		createPanKeyboardCode();
+		//createPanKeyboardCode();
 		createPanDiscret11();
 		createColorMode();
 		createPanSyster();
 		createPanVideo();
 		createPanLog();
-		
+		createPanVideocrypt();
+				
 		panSystemCrypt = new JPanel();
 		card = new CardLayout();
 		panSystemCrypt.setLayout(card);
 		panSystemCrypt.add(panOptionsDiscret11, "Discret11");
 		panSystemCrypt.add(panOptionsSyster, "Syster");
+		panSystemCrypt.add(panVideocryptOptions, "Videocrypt");
+		
+		tabbedPane = new JTabbedPane();
+		tabbedPane.add("Device", panSystemCrypt);
+		tabbedPane.add("Colors rendering", panColorMode);
+		tabbedPane.add("Audio/video", panVideoOptions);
 		
 		panGlobal.setLayout(new BoxLayout(panGlobal, BoxLayout.Y_AXIS ));
 		panGlobal.add(panMode);
 		panGlobal.add(panFile);
-		panGlobal.add(panSystemCrypt);
-		//panGlobal.add(panOptionsDiscret11);
-		panGlobal.add(panKeyboardCode);
-		panGlobal.add(panVideoOptions);
+		//panGlobal.add(panSystemCrypt);
+		//panGlobal.add(panColorMode);
+		panGlobal.add(tabbedPane);
+		//panGlobal.add(panVideoOptions);
 		panGlobal.add(panProgress);
 
 		//load config
@@ -633,6 +671,24 @@ public class MainGui {
 		cbYUV.setModel(modelYUV);
 		cbYUV.setSelectedIndex(indexYUV);	
 		
+		//videocrypt options
+		titlePanVideocrypt.setTitle(JobConfig.getRes().getString("panVideocrypt.titlePanVideocrypt"));
+		rdiVideocryptCoding.setText(JobConfig.getRes().getString("panVideocrypt.rdiVideocryptCoding"));
+		rdiVideocryptDecoding.setText(JobConfig.getRes().getString("panVideocrypt.rdiVideocryptDecoding"));
+		rdiVideocryptCorrel.setText(JobConfig.getRes().getString("panVideocrypt.rdiVideocryptCorrel"));
+		chkSoundVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.chkSoundVideocrypt"));
+		chkDisableSoundVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.chkDisableSoundVideocrypt"));
+		btnVideocryptDec.setText(JobConfig.getRes().getString("panVideocrypt.btnDec"));
+		labFrameStartVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.lblFrameStart"));
+		
+		titleColorMode.setTitle(JobConfig.getRes().getString("panColorMode.title"));
+		
+		titlePanVideocryptCodingGen.setTitle(JobConfig.getRes().getString("panSyster.titlePanSysterCodingGen"));
+		titlePanVideocryptDecodingGen.setTitle(JobConfig.getRes().getString("panSyster.titlePanSysterDecodingGen"));
+		btnVideocryptEnc.setText(JobConfig.getRes().getString("panVideocrypt.btnDec"));
+		rdiVideocryptCodingAuto.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingRandom"));
+		rdiVideocryptDecodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterDecodingFile"));
+		rdiVideocryptCodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingFile"));
 	}
 	
 	private void createMenu(){				
@@ -748,7 +804,7 @@ public class MainGui {
 				+ "la vidéo garde sa résolution originale</html>");*/
 		
 		lblSystemCrypt = new JLabel(JobConfig.getRes().getString("panMode.lblSystem"));
-		String [] tab = {"Discret11", "Nagravision syster"};
+		String [] tab = {"Discret11", "Nagravision syster", "Videocrypt"};
 		combSystemCrypt = new JComboBox<>(tab);
 		combSystemCrypt.addActionListener(controler);
 		
@@ -1009,6 +1065,13 @@ public class MainGui {
 	}
 	
 	private void createColorMode(){
+		panColorMode = new JPanel();		
+		
+		titleColorMode = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				JobConfig.getRes().getString("panColorMode.title"));
+		panColorMode.setBorder(titleColorMode);
+		
+		
 		String[] tab = {JobConfig.getRes().getString("cbColorMode.rgb"),
 				JobConfig.getRes().getString("cbColorMode.pal"),
 				JobConfig.getRes().getString("cbColorMode.secam")};
@@ -1022,10 +1085,329 @@ public class MainGui {
 		JobConfig.setAveragingPal(true);
 		cbAveragePal.addActionListener(controler);
 		
+		lblYUV = new JLabel(JobConfig.getRes().getString("lblYUV.title"));
+		String[] tabYUV = {"bt.601", "bt.709", JobConfig.getRes().getString("cbYUV.special")};
+		cbYUV = new JComboBox<String>(tabYUV);
+		cbYUV.addActionListener(controler);
+		
+	
+		GridBagLayout gblColorMode = new GridBagLayout();
+		
+		this.placerComposants(panColorMode,
+				gblColorMode,
+				lblColorMode,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panColorMode,
+				gblColorMode,
+				cbColorMode,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panColorMode,
+				gblColorMode,
+				cbAveragePal,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 0,
+				1,1,
+				10,20,
+				1, 1,1,1);
+		this.placerComposants(panColorMode,
+				gblColorMode,
+				lblYUV,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+			    3, 0,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panColorMode,
+				gblColorMode,
+				cbYUV,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				4, 0,
+				1,1,
+				33,20,
+				1, 1,1,1);
+		
+		
+		
 		
 	}
 	
-	private void createPanSyster(){
+	private void createPanVideocrypt(){
+		panVideocryptOptions = new JPanel();
+		
+		titlePanVideocrypt = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				JobConfig.getRes().getString("panVideocrypt.titlePanVideocrypt"));
+		panVideocryptOptions.setBorder(titlePanVideocrypt);
+		
+		rdiVideocryptCoding = new JRadioButton(JobConfig.getRes().getString("panVideocrypt.rdiVideocryptCoding"));
+		rdiVideocryptCoding.addActionListener(controler);
+		
+		rdiVideocryptDecoding = new JRadioButton(JobConfig.getRes().getString("panVideocrypt.rdiVideocryptDecoding"));
+		rdiVideocryptDecoding.addActionListener(controler);		
+		
+		rdiVideocryptCodingAuto = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterCodingRandom"));
+		rdiVideocryptCodingAuto.addActionListener(controler);
+		
+		rdiVideocryptCodingFile = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterCodingFile"));
+		rdiVideocryptCodingFile.addActionListener(controler);
+			
+		rdiVideocryptDecodingFile = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterDecodingFile"));
+		rdiVideocryptDecodingFile.addActionListener(controler);
+		
+		rdiVideocryptCorrel = new JRadioButton(JobConfig.getRes().getString("panVideocrypt.rdiVideocryptCorrel"));
+		rdiVideocryptCorrel.addActionListener(controler);
+		
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(rdiVideocryptCoding);
+		buttonGroup.add(rdiVideocryptDecoding);
+		rdiVideocryptCoding.setSelected(true);
+		
+		ButtonGroup buttonGroup2 = new ButtonGroup();
+		buttonGroup2.add(rdiVideocryptCodingAuto);
+		buttonGroup2.add(rdiVideocryptCodingFile);
+		rdiVideocryptCodingAuto.setSelected(true);
+		
+		ButtonGroup buttonGroup3 = new ButtonGroup();
+		buttonGroup3.add(rdiVideocryptCorrel);
+		buttonGroup3.add(rdiVideocryptDecodingFile);
+		rdiVideocryptDecodingFile.setSelected(true);
+		
+		JPanel panRdi = new JPanel();
+		panRdi.add(rdiVideocryptCoding);
+		panRdi.add(rdiVideocryptDecoding);
+		
+		
+		JPanel panVideocryptCodingGen = new JPanel();
+		titlePanVideocryptCodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				JobConfig.getRes().getString("panSyster.titlePanSysterCodingGen"));
+		
+		
+		panVideocryptCodingGen.setBorder(titlePanVideocryptCodingGen);
+		
+		JPanel panVideocryptDecodingGen = new JPanel();
+		titlePanVideocryptDecodingGen = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				JobConfig.getRes().getString("panSyster.titlePanSysterDecodingGen"));
+		
+		
+		panVideocryptDecodingGen.setBorder(titlePanVideocryptDecodingGen);
+		
+		//pan cardlayout
+		panVideocryptEncDecCard = new JPanel();
+		
+		cardEncDecVideocrypt = new CardLayout();
+		panVideocryptEncDecCard.setLayout(cardEncDecVideocrypt);
+		panVideocryptEncDecCard.add(panVideocryptCodingGen,"VideocryptCoding");
+		panVideocryptEncDecCard.add(panVideocryptDecodingGen,"VideocryptDecoding");
+		
+		txtVideocryptDec = new JTextField(80);
+		txtVideocryptDec.setEditable(false);		
+		btnVideocryptDec = new JButton(JobConfig.getRes().getString("panVideocrypt.btnDec"));
+		btnVideocryptDec.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
+		btnVideocryptDec.addActionListener(controler);
+		
+		txtVideocryptEnc = new JTextField(80);
+		txtVideocryptEnc.setEditable(false);		
+		btnVideocryptEnc = new JButton(JobConfig.getRes().getString("panVideocrypt.btnDec"));
+		btnVideocryptEnc.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
+		btnVideocryptEnc.addActionListener(controler);
+		
+		//pan coding options
+		GridBagLayout gblCodingGen = new GridBagLayout();
+		
+		this.placerComposants(panVideocryptCodingGen,
+				gblCodingGen,
+				rdiVideocryptCodingAuto,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				0,33,
+				1, 1,1,1);
+		this.placerComposants(panVideocryptCodingGen,
+				gblCodingGen,
+				rdiVideocryptCodingFile,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,				
+				0, 1,
+				1,1,
+				0,33,
+				1, 1,1,1);
+		this.placerComposants(panVideocryptCodingGen,
+				gblCodingGen,
+				txtVideocryptEnc,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 1,
+				2,1,
+				70,33,
+				1, 1,1,1);
+		this.placerComposants(panVideocryptCodingGen,
+				gblCodingGen,
+				btnVideocryptEnc,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				3, 1,
+				1,1,
+				1,33,
+				1, 1,1,1);
+		
+		//pan decoding options
+				GridBagLayout gblDecodingGen = new GridBagLayout();
+				
+				this.placerComposants(panVideocryptDecodingGen,
+						gblDecodingGen,
+						rdiVideocryptDecodingFile,
+						GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+						0, 0,
+						1,1,
+						0,33,
+						1, 1,1,1);				
+				this.placerComposants(panVideocryptDecodingGen,
+						gblDecodingGen,
+						txtVideocryptDec,
+						GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+						1, 0,
+						2,1,
+						99,33,
+						1, 1,1,1);
+				this.placerComposants(panVideocryptDecodingGen,
+						gblDecodingGen,
+						btnVideocryptDec,
+						GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+						3, 0,
+						1,1,
+						1,33,
+						1, 1,1,1);
+				this.placerComposants(panVideocryptDecodingGen,
+						gblDecodingGen,
+						rdiVideocryptCorrel,
+						GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,				
+						0, 1,
+						1,1,
+						0,33,
+						1, 1,1,1);
+		
+		
+		
+		chkSoundVideocrypt = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkSoundVideocrypt"));
+		chkSoundVideocrypt.setSelected(false);
+		chkSoundVideocrypt.setToolTipText(JobConfig.getRes().getString("panSyster.chkSoundSyster.tooltip"));
+		chkSoundVideocrypt.addActionListener(controler);
+		
+		chkDisableSoundVideocrypt = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkDisableSoundVideocrypt"));		
+		chkDisableSoundVideocrypt.setSelected(false);
+		chkDisableSoundVideocrypt.setToolTipText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster.tooltip"));
+		chkDisableSoundVideocrypt.addActionListener(controler);
+				
+						
+		JPanel panSound = new JPanel();	
+		panSound.add(chkSoundVideocrypt);
+		panSound.add(chkDisableSoundVideocrypt);
+		
+		labFrameStartVideocrypt = new JLabel(JobConfig.getRes().getString("panVideocrypt.lblFrameStart"));
+		slideFrameStartVideocrypt = new JSlider(JSlider.HORIZONTAL,1,200000,1);
+		slideFrameStartVideocrypt.setToolTipText(JobConfig.getRes().getString("panSyster.labFrameStartSyster.tooltip"));
+		jspFrameStartVideocrypt = new JSpinner();	
+		jspFrameStartVideocrypt.addChangeListener(controler);		
+		JSpinner.NumberEditor spinnerEditor3 = new JSpinner.NumberEditor(jspFrameStartVideocrypt);
+		jspFrameStartVideocrypt.setEditor(spinnerEditor3);
+		JComponent editor2 = jspFrameStartVideocrypt.getEditor();
+		JFormattedTextField tf2 = ((JSpinner.DefaultEditor) editor2).getTextField();
+		tf2.setColumns(5);
+		tf2.setEditable(false);
+		spinnerEditor3.getModel().setMinimum(1);
+		spinnerEditor3.getModel().setMaximum(200000);
+		spinnerEditor3.getModel().setStepSize(1);
+		spinnerEditor3.getModel().setValue(1);
+		
+		slideFrameStartVideocrypt.addChangeListener(controler);			
+		slideFrameStartVideocrypt.setValue(1);
+		slideFrameStartVideocrypt.setMajorTickSpacing(50000);
+		slideFrameStartVideocrypt.setMinorTickSpacing(10000);
+		Hashtable<Integer, JLabel> labelTable4 = new Hashtable<Integer, JLabel>();
+		labelTable4.put( new Integer( 1 ), new JLabel("1"));		
+		labelTable4.put( new Integer( 200000 ), new JLabel("200000"));
+		slideFrameStartVideocrypt.setLabelTable(labelTable4);
+		slideFrameStartVideocrypt.setPaintLabels(true);		
+		slideFrameStartVideocrypt.setPaintTicks(true);
+		
+		JPanel panSlide = new JPanel();
+		GridBagLayout gblSlide = new GridBagLayout();
+		
+		this.placerComposants(panSlide,
+				gblSlide,
+				labFrameStartVideocrypt,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				10,33,
+				1, 1,1,1);
+		this.placerComposants(panSlide,
+				gblSlide,
+				slideFrameStartVideocrypt,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 0,
+				1,1,
+				70,33,
+				1, 1,1,1);
+		this.placerComposants(panSlide,
+				gblSlide,
+				jspFrameStartVideocrypt,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				2, 0,
+				1,1,
+				20,33,
+				1, 1,1,1);
+		
+		
+		
+		GridBagLayout gblVideocrypt = new GridBagLayout();
+		
+		this.placerComposants(panVideocryptOptions,
+				gblVideocrypt,
+				panRdi,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				3,1,
+				33,20,
+				1, 1,1,1);
+		this.placerComposants(panVideocryptOptions,
+				gblVideocrypt,
+				panVideocryptEncDecCard,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 1,
+				1,1,
+				100,20,
+				1, 1,1,1);		
+		this.placerComposants(panVideocryptOptions,
+				gblVideocrypt,
+				panSound,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 2,
+				3,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panVideocryptOptions,
+				gblVideocrypt,
+				panSlide,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 3,
+				3,1,
+				0,20,
+				1, 1,1,1);		
+		
+		rdiVideocryptCoding.setSelected(true);			
+		rdiVideocryptCodingAuto.setSelected(true);
+		txtVideocryptEnc.setEnabled(false);
+		btnVideocryptEnc.setEnabled(false);	
+		
+	}
+	
+	private void createPanSyster(){	
+		
 		panOptionsSyster = new JPanel();
 		//panOptionsSyster.setLayout(new GridLayout(3, 1));
 		
@@ -1311,21 +1693,10 @@ public class MainGui {
 		panSysterMisc = new JPanel();
 		GridBagLayout gblSysterMisc = new GridBagLayout();
 		
-		lblYUV = new JLabel(JobConfig.getRes().getString("lblYUV.title"));
-		String[] tabYUV = {"bt.601", "bt.709", JobConfig.getRes().getString("cbYUV.special")};
-		cbYUV = new JComboBox<String>(tabYUV);
-		cbYUV.addActionListener(controler);
+		JPanel panSound = new JPanel();				
 		
-		
-		
-		JPanel panColor = new JPanel();
-		panColor.add(lblColorMode);
-		panColor.add(cbColorMode);
-		panColor.add(cbAveragePal);
-		panColor.add(lblYUV);
-		panColor.add(cbYUV);
-		panColor.add(chkSoundSyster);
-		panColor.add(chkDisableSoundSyster);
+		panSound.add(chkSoundSyster);
+		panSound.add(chkDisableSoundSyster);
 		
 		
 //		JPanel panSound = new JPanel();
@@ -1335,7 +1706,7 @@ public class MainGui {
 		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
-				panColor,
+				panSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
 				0, 0,
 				3,1,
@@ -1393,7 +1764,8 @@ public class MainGui {
 				0, 2,
 				1,1,
 				100,45,
-				1, 1,1,1);
+				1, 1,1,1);		
+		
 //		panOptionsSyster.add(panSysterMode);		
 //		panOptionsSyster.add(panSysterEncDecCard);
 //		panOptionsSyster.add(panSysterMisc);
@@ -1405,6 +1777,9 @@ public class MainGui {
 	}
 	
 	private void createPanDiscret11(){
+		
+		createPanKeyboardCode();
+		
 		panOptionsDiscret11 = new JPanel();
 		
 		titlePanDiscret11 = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
@@ -1861,6 +2236,16 @@ public class MainGui {
 				6,1,
 				100,25,
 				1, 1,1,1);
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				panKeyboardCode,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 7,
+				6,1,
+				100,25,
+				1, 1,1,1);
+		
+		
 		
 		jsp16bitKeyword.addChangeListener(controler);
 	}
@@ -2788,5 +3173,90 @@ public class MainGui {
 	public JComboBox<String> getCbYUV() {
 		return cbYUV;
 	}
+
+	public CardLayout getCardEncDecVideocrypt() {
+		return cardEncDecVideocrypt;
+	}
+
+	public void setCardEncDecVideocrypt(CardLayout cardEncDecVideocrypt) {
+		this.cardEncDecVideocrypt = cardEncDecVideocrypt;
+	}
+
+	public JRadioButton getRdiVideocryptCoding() {
+		return rdiVideocryptCoding;
+	}
+
+	public JRadioButton getRdiVideocryptDecoding() {
+		return rdiVideocryptDecoding;
+	}
+
+	public JRadioButton getRdiVideocryptCorrel() {
+		return rdiVideocryptCorrel;
+	}
+
+	public JButton getBtnVideocryptDec() {
+		return btnVideocryptDec;
+	}
+
+	public JCheckBox getChkSoundVideocrypt() {
+		return chkSoundVideocrypt;
+	}
+
+	public void setChkSoundVideocrypt(JCheckBox chkSoundVideocrypt) {
+		this.chkSoundVideocrypt = chkSoundVideocrypt;
+	}
+
+	public JCheckBox getChkDisableSoundVideocrypt() {
+		return chkDisableSoundVideocrypt;
+	}
+
+	public void setChkDisableSoundVideocrypt(JCheckBox chkDisableSoundVideocrypt) {
+		this.chkDisableSoundVideocrypt = chkDisableSoundVideocrypt;
+	}
+
+	public JSpinner getJspFrameStartVideocrypt() {
+		return jspFrameStartVideocrypt;
+	}
+
+	public JSlider getSlideFrameStartVideocrypt() {
+		return slideFrameStartVideocrypt;
+	}
+
+	public JPanel getPanVideocryptOptions() {
+		return panVideocryptOptions;
+	}
+
+	public JTextField getTxtVideocryptDec() {
+		return txtVideocryptDec;
+	}
+
+	public void setTxtVideocryptDec(JTextField txtVideocryptDec) {
+		this.txtVideocryptDec = txtVideocryptDec;
+	}	
+
+	public JRadioButton getRdiVideocryptDecodingFile() {
+		return rdiVideocryptDecodingFile;
+	}
+
+	public JRadioButton getRdiVideocryptCodingAuto() {
+		return rdiVideocryptCodingAuto;
+	}
+
+	public JRadioButton getRdiVideocryptCodingFile() {
+		return rdiVideocryptCodingFile;
+	}
+
+	public JPanel getPanVideocryptEncDecCard() {
+		return panVideocryptEncDecCard;
+	}
+
+	public JTextField getTxtVideocryptEnc() {
+		return txtVideocryptEnc;
+	}
+
+	public JButton getBtnVideocryptEnc() {
+		return btnVideocryptEnc;
+	}
+	
 
 }

@@ -78,9 +78,9 @@ public class CryptVideo {
 	
 	public CryptVideo() {	
 		
-		if (JobConfig.getSystemCrypt() == 1) {
+		if (JobConfig.getSystemCrypt() == 1 || JobConfig.getSystemCrypt() == 2 ) {
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
-				this.colorMode = "RGB";
+				this.colorMode = "rgb";
 			}
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
 				this.colorMode = "pal";
@@ -220,7 +220,7 @@ public class CryptVideo {
 				}
 			}
 		}
-		else { //syster mode
+		else if (JobConfig.getSystemCrypt() == 1) { //syster mode
 			if(this.isDecoding){
 				device = new SysterDec(JobConfig.getTableSyster(),
 						JobConfig.getFileDataDecSyster(),
@@ -230,6 +230,18 @@ public class CryptVideo {
 				device = new SysterEnc(JobConfig.getTableSyster(),
 						outputFilename + "_csyster" + "_" + this.colorMode,
 						JobConfig.getFileDataEncSyster(),
+						JobConfig.getGui().getChkPlayer().isSelected());
+			}
+		} else{ //videocrypt
+			if(this.isDecoding){
+				device = new VideocryptDec(
+						JobConfig.getFileDataDecVideocrypt(),
+						JobConfig.isWantDecCorrel());
+			}
+			else {
+				device = new VideocryptEnc(
+						outputFilename + "_cvideocrypt" + "_" + this.colorMode,
+						JobConfig.getFileDataEncVideocrypt(),
 						JobConfig.getGui().getChkPlayer().isSelected());
 			}
 		}
@@ -252,7 +264,7 @@ public class CryptVideo {
 					e.printStackTrace();
 					System.exit(1);
 				}
-			} else {
+			} else { //encoding
 				try {
 					if(JobConfig.getSystemCrypt() == 0){
 					vid = new VideoRecorder(outputFilename + info + keyWord
@@ -260,9 +272,14 @@ public class CryptVideo {
 							+ JobConfig.getExtension(), width, height,
 							frameRate, JobConfig.getAudioRate());
 					}
-					else {
+					else if(JobConfig.getSystemCrypt() == 1) { //syster
 						vid = new VideoRecorder(outputFilename + info
 								+ "syster" +  "_" + this.colorMode + "."
+								+ JobConfig.getExtension(), width, height,
+								frameRate, JobConfig.getAudioRate());
+					} else{//videocrypt
+						vid = new VideoRecorder(outputFilename + info
+								+ "videocrypt" +  "_" + this.colorMode + "."
 								+ JobConfig.getExtension(), width, height,
 								frameRate, JobConfig.getAudioRate());
 					}
@@ -484,9 +501,18 @@ public class CryptVideo {
 		}
 		else {
 			if (isDecoding != true) {
+				String sys, extension = "";
+				if(JobConfig.getGui().getCombSystemCrypt().getSelectedIndex()== 1){
+					sys = "_csyster";
+					extension = ".dec";
+				}
+				else{
+					sys = "_cvideocrypt";
+					extension = ".vid";
+				}
 				JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + JobConfig.getRes().getString("cryptVideo.progress.fin.decodage.logfile")
-						+ this.outputFilename + "_csyster" + "_" + this.colorMode + ".dec");
+						+ this.outputFilename + sys + "_" + this.colorMode + extension);
 			}
 		}
 	}
