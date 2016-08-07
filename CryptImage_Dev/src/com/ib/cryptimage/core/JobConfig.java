@@ -93,8 +93,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.1.8 beta";
-	private static String releaseDate = "2016-08-05";
+	private static String VERSION = "1.1.9 beta";
+	private static String releaseDate = "2016-08-07";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -104,6 +104,8 @@ public final class JobConfig {
 	private static String fileDataVideocrypt ="";	
 	private static boolean wantDecCorrelVideoCrypt = false;
 	private static boolean wantVideocryptEncRandom = false;
+	private static int nbSkippedFrames = 0;
+	//private static int nbFrames = 0;
 	
 	private JobConfig() {
 		// TODO Auto-generated constructor stub
@@ -963,5 +965,21 @@ public final class JobConfig {
 	public static void setFileDataDecVideocrypt(String fileDataDecVideocrypt) {
 		JobConfig.fileDataDecVideocrypt = fileDataDecVideocrypt;
 	}
+
+	public static int getNbSkippedFrames() {
+		return nbSkippedFrames;
+	}
+
+	public static void setNbSkippedFrames(int nbSkippedFrames) {
+		JobConfig.nbSkippedFrames = nbSkippedFrames;
+	}
+
+//	public static int getNbFrames() {
+//		return nbFrames;
+//	}
+
+//	public static void setNbFrames(int nbFrames) {
+//		JobConfig.nbFrames = nbFrames;
+//	}
 	
 }

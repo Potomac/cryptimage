@@ -172,9 +172,9 @@ public class CryptPhoto {
 			File file = new File(JobConfig.getOutput_file());
 			String fileName = JobConfig.getDateTime() + "_"
 					+ file.getName();
-			output = file.getParent() + File.separator + fileName;
+			output = file.getParent() + File.separator + fileName +"_cvideocrypt_" + colorMode;
 		} else {
-			output = JobConfig.getOutput_file();
+			output = JobConfig.getOutput_file() +"_cvideocrypt_" + colorMode;
 		}
 		
 		videoCryptEnc = new VideocryptEnc(output,
@@ -201,9 +201,9 @@ public class CryptPhoto {
 			File file = new File(JobConfig.getOutput_file());
 			String fileName = JobConfig.getDateTime() + "_"
 					+ file.getName();
-			output = file.getParent() + File.separator + fileName;
+			output = file.getParent() + File.separator + fileName + "_csyster_" +colorMode;
 		} else {
-			output = JobConfig.getOutput_file();
+			output = JobConfig.getOutput_file()+ "_csyster_" +colorMode;
 		}
 				
 		systerEnc = new SysterEnc(JobConfig.getTableSyster(),
@@ -363,16 +363,24 @@ public class CryptPhoto {
 	}
 	
 	public  boolean saveCryptImage(BufferedImage bi) {
+		String output = JobConfig.getOutput_file();
+		if (JobConfig.isHorodatage()) {
+			File file = new File(JobConfig.getOutput_file());
+			String fileName = JobConfig.getDateTime() + "_"
+					+ file.getName();
+			output = file.getParent() + File.separator + fileName;		
+		}
+		
 		try {
 			if (JobConfig.getSystemCrypt() == 0) {
 				// retrieve image
 				File outputfile = new File(
-						JobConfig.getOutput_file() + "_c" + 
+						output + "_c" + 
 				JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
 				ImageIO.write(bi, "png", outputfile);
 				if (JobConfig.isHasGUI()) {
 
-					JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + JobConfig.getOutput_file() + "_c"
+					JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + output + "_c"
 							+ JobConfig.getWord16bits() + "-" + this.key11bits + ".png");
 				}
 			}
@@ -390,7 +398,7 @@ public class CryptPhoto {
 		if (JobConfig.getSystemCrypt() == 2) { //videocrypt
 			// retrieve image
 			File outputfile = new File(
-					JobConfig.getOutput_file() + "_c" + 
+					output + "_c" + 
 			"videocrypt" + "_" + colorMode + ".png");
 			try {
 				ImageIO.write(bi, "png", outputfile);
@@ -405,7 +413,7 @@ public class CryptPhoto {
 				return false;
 			}
 			if (JobConfig.isHasGUI()) {
-				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + JobConfig.getOutput_file() + "_c"
+				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + output + "_c"
 						+ "videocrypt" + "_" + colorMode + ".png");
 			}
 		}
@@ -414,7 +422,7 @@ public class CryptPhoto {
 		if (JobConfig.getSystemCrypt() == 1) { //syster
 			// retrieve image
 			File outputfile = new File(
-					JobConfig.getOutput_file() + "_c" + 
+					output + "_c" + 
 			"syster" + "_" + colorMode + ".png");
 			try {
 				ImageIO.write(bi, "png", outputfile);
@@ -429,7 +437,7 @@ public class CryptPhoto {
 				return false;
 			}
 			if (JobConfig.isHasGUI()) {
-				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + JobConfig.getOutput_file() + "_c"
+				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + output + "_c"
 						+ "syster" + "_" + colorMode + ".png");
 			}
 		}
@@ -438,7 +446,7 @@ public class CryptPhoto {
 		if (JobConfig.getSystemCrypt() == 0) {
 			try {
 				File dataFile = new File(
-						JobConfig.getOutput_file() + "_c" + JobConfig.getWord16bits() + "-" + this.key11bits + ".txt");
+						output + "_c" + JobConfig.getWord16bits() + "-" + this.key11bits + ".txt");
 				dataFile.createNewFile();
 				FileWriter ffw = new FileWriter(dataFile);
 				ffw.write("key 16 bits : " + JobConfig.getWord16bits() + "\r\n");
@@ -453,7 +461,7 @@ public class CryptPhoto {
 				if (JobConfig.isHasGUI()) {
 					JobConfig.getGui().getTextInfos()
 							.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + JobConfig.getRes().getString("cryptPhoto.saveImage.rapport")
-									+ JobConfig.getOutput_file() + "_c" + JobConfig.getWord16bits() + "-"
+									+ output + "_c" + JobConfig.getWord16bits() + "-"
 									+ this.key11bits + ".txt");
 				}
 
@@ -472,15 +480,23 @@ public class CryptPhoto {
 	
 	public  boolean saveDecryptFile(BufferedImage bi,String output_file, int key11){
 		
+		String output = JobConfig.getOutput_file();
+		if (JobConfig.isHorodatage()) {
+			File file = new File(JobConfig.getOutput_file());
+			String fileName = JobConfig.getDateTime() + "_"
+					+ file.getName();
+			output = file.getParent() + File.separator + fileName;		
+		}
+		
 		if (JobConfig.getSystemCrypt() == 0) {
 			try {
 				// retrieve image
-				File outputfile = new File(output_file + "_d" + 
+				File outputfile = new File(output + "_d" + 
 				JobConfig.getWord16bits() + "-" + key11 + ".png");
 				ImageIO.write(bi, "png", outputfile);
 				if (JobConfig.isHasGUI()) {
 					JobConfig.getGui().getTextInfos().setText(
-							JobConfig.getRes().getString("cryptPhoto.saveImage.decodage") + output_file + "_d" + 
+							JobConfig.getRes().getString("cryptPhoto.saveImage.decodage") + output + "_d" + 
 					JobConfig.getWord16bits() + "-" + key11 + ".png");
 				}				
 			} catch (IOException e) {
@@ -504,12 +520,12 @@ public class CryptPhoto {
 					sys = "videocrypt";
 				}
 				// retrieve image
-				File outputfile = new File(output_file + "_d" + 
+				File outputfile = new File(output + "_d" + 
 						sys + "_" + colorMode + ".png");
 				ImageIO.write(bi, "png", outputfile);
 				if (JobConfig.isHasGUI()) {
 					JobConfig.getGui().getTextInfos().setText(
-							JobConfig.getRes().getString("cryptPhoto.saveImage.decodage") + output_file + "_d" + 
+							JobConfig.getRes().getString("cryptPhoto.saveImage.decodage") + output + "_d" + 
 									sys + "_" + colorMode + ".png");
 				}				
 			} catch (IOException e) {

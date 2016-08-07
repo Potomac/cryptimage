@@ -83,11 +83,17 @@ public class FramesPlayer {
 				JobConfig.getGui().getTextInfos().setText(
 						JobConfig.getGui().getTextInfos().getText()
 						+ "\n\r"
-						+ e.getMessage());
+						+ e.getMessage());				
 			}
 			JobConfig.setVideo_frame(imgListen.getCount()-1);
 			imgListen.getCryptVid().closeVideo();
 			imgListen.getCryptVid().saveDatFileVideo();
+			
+			JobConfig.getGui().getBtnEnter().setEnabled(true);
+			JobConfig.getGui().getBtnCancel().setEnabled(false);
+			JobConfig.getGui().getBtnExit().setEnabled(true);
+			JobConfig.getGui().getBtnInputFile().setEnabled(true);
+			JobConfig.getGui().getBtnOutputFile().setEnabled(true);
 			//imgListen.getCryptVid().getDevice().closeFileData();
 		}		
 	}

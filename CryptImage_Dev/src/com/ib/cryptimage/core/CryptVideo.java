@@ -443,12 +443,20 @@ public class CryptVideo {
 						this.fileAudienceLevel + fileKeyboardCode
 								+  "." + JobConfig.getExtension());
 			}
-			else {
+			else if(JobConfig.getSystemCrypt() == 1){
+				
 				JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
 						"syster" + "_" + this.colorMode + "." + JobConfig.getExtension());
+			}else if(JobConfig.getSystemCrypt() == 2){
+				
+				JobConfig.getGui().getTextInfos()
+				.setText(JobConfig.getGui().getTextInfos().getText() 
+						+ "\n\r"
+						+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
+						"videocrypt" + "_" + this.colorMode + "." + JobConfig.getExtension());
 			}
 		}		
 	}

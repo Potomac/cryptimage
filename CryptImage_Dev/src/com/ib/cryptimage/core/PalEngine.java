@@ -37,10 +37,20 @@ public class PalEngine {
 	int[] linePixels = new int[768*3];
 	int[] linePixels2 = new int[768*3];
 	int[] pixelTab = new int[3];
-	int numFrame = 0;
-	
-	public PalEngine(){
-		yuvCalc = new YuvCalc();	
+	int numFrame = 0;	
+
+	public PalEngine() {
+		if (JobConfig.getSystemCrypt() == 2 && !JobConfig.isModePhoto() 
+				&& JobConfig.isWantDec()) {
+			int val = Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString());
+			if (val > 1 && JobConfig.getNbSkippedFrames() == 0) {
+				numFrame =  val - 1;
+			}
+			if (val -1 > JobConfig.getNbSkippedFrames()) {
+				numFrame =   ( val - 1 - JobConfig.getNbSkippedFrames() ) ;
+			}
+		}
+		yuvCalc = new YuvCalc();
 	}
 	
 	/**
@@ -52,7 +62,7 @@ public class PalEngine {
 	}
 		
 	public void setImg(BufferedImage img_){		
-		numFrame++;
+		numFrame++;				
 		this.img = img_;
 		raster = img.getRaster();
 	}	
@@ -89,7 +99,7 @@ public class PalEngine {
 	}
 	
 	public BufferedImage average(){		
-		palInversePhaseVideocrypt(0);
+		palInversePhaseVideocrypt();
 		
 		if (JobConfig.isAveragingPal() == true) {
 			convertToYUV();
@@ -287,15 +297,15 @@ public class PalEngine {
 
 	
 	private void palInversePhase(int pol){		
-		int[] pixel = new int[3];
+		//int[] pixel = new int[3];
 		int cpt = 0;	
 		int angle = 0;
 		int phase = pol;
 		
 		for (int y = 0; y < 576; y++) {
 			// check angle
-			pixel = raster.getPixel(0, y, pixelTab);			
-			angle = getAngle(pixel, y);			
+			pixelTab = raster.getPixel(0, y, pixelTab);			
+			angle = getAngle(pixelTab, y);			
 			if(cpt == 2){
 				cpt = 0;
 				phase = phase * -1;	
@@ -303,16 +313,16 @@ public class PalEngine {
 			cpt++;			
 						
 			for (int x = 1; x < 768; x++) {				
-					pixel = raster.getPixel(x, y, pixelTab);				
+				pixelTab = raster.getPixel(x, y, pixelTab);				
 				
 				//Additional step : -45 degrees for odd lines, 45 degrees for even lines
 				if(JobConfig.isWantDec()){
-					pixel = yuvCalc.getRotateRGB(pixel, angle);
+					pixelTab = yuvCalc.getRotateRGB(pixelTab, angle);
 				}
 				else{					
-					pixel = yuvCalc.getRotateRGB(pixel, angle + phase);
+					pixelTab = yuvCalc.getRotateRGB(pixelTab, angle + phase);
 				}
-				raster.setPixel(x, y, pixel);				
+				raster.setPixel(x, y, pixelTab);				
 			}
 		}		
 	}
@@ -349,34 +359,19 @@ public class PalEngine {
 		return 0;
 	}
 	
-	private void palInversePhaseVideocrypt(int pol){	
+	private void palInversePhaseVideocrypt(){		
 		Random rand = new Random(numFrame);
-		int[] pixel = new int[3];
-		int cpt = 0;	
-		int angle = 0;
-		int phase = pol;
+
+		int angle = 0;		
 		
 		for (int y = 0; y < 576; y++) {
-			// check angle
-			//pixel = raster.getPixel(0, y, pixelTab);			
-			angle = getAngleVideocrypt(rand);			
-			if(cpt == 2){
-				cpt = 0;
-				phase = phase * -1;	
-			}
-			cpt++;			
+			// check angle			
+			angle = getAngleVideocrypt(rand);					
 						
 			for (int x = 1; x < 768; x++) {				
-					pixel = raster.getPixel(x, y, pixelTab);				
-				
-				//Additional step : -45 degrees for odd lines, 45 degrees for even lines
-				if(JobConfig.isWantDec()){
-					pixel = yuvCalc.getRotateRGB(pixel, angle);
-				}
-				else{					
-					pixel = yuvCalc.getRotateRGB(pixel, angle + phase);
-				}
-				raster.setPixel(x, y, pixel);				
+				pixelTab = raster.getPixel(x, y, pixelTab);									
+				pixelTab = yuvCalc.getRotateRGB(pixelTab, angle);				
+				raster.setPixel(x, y, pixelTab);				
 			}
 		}		
 	}

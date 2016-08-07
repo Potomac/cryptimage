@@ -689,7 +689,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkPlayer().setEnabled(false);
 				mainGui.getChkSound().setEnabled(false);
 				mainGui.getChkDisableSound().setEnabled(false);
-				mainGui.getChkHorodatage().setEnabled(false);				
+				//mainGui.getChkHorodatage().setEnabled(false);				
 			}
 		} else if(src.equals(mainGui.getRdiVideo())){
 			
@@ -1285,6 +1285,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	String line;
 	int compt = 0;
 	int val;	
+	int nbSkip = 0;
 
 		try {
 			while ((line = fileInBuff.readLine()) != null) {
@@ -1297,6 +1298,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 								JobConfig.getRes().getString("mainGui.validityError.title"), JOptionPane.ERROR_MESSAGE);
 						return false;
 					}
+				}else{
+					if(JobConfig.getGui().getRdiVideocryptCoding().isSelected()){
+						JOptionPane.showMessageDialog(mainGui.getFrame(),
+								JobConfig.getRes().getString("mainGui.validityError.title"),
+								JobConfig.getRes().getString("mainGui.validityError.title"), JOptionPane.ERROR_MESSAGE);
+						return false;
+					}
+					nbSkip++;
 				}
 			}
 		} catch (IOException e) {
@@ -1350,6 +1359,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				return false;
 			}		
 		}
+		
+		JobConfig.setNbSkippedFrames(nbSkip);		
 	
 	return true;
 	}
@@ -1655,18 +1666,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 							JobConfig.getRes().getString("manageEnter.errorMulticode"),
 							JobConfig.getRes().getString("manageEnter.errorMulticodeTitle"),
 							JOptionPane.WARNING_MESSAGE);
-		} else if(mainGui.getRdiVideocryptDecoding().isSelected() 
-				&& this.mainGui.getCombSystemCrypt().getSelectedIndex() == 2
-				&& mainGui.getRdiVideocryptCorrel().isSelected()){
-			
-			JOptionPane
-			.showMessageDialog(
-					mainGui.getFrame(),
-					"decoding by correlation line is not again finished, work in progress",
-					"work in progress",
-					JOptionPane.INFORMATION_MESSAGE);
-			
-		}
+		} 
 		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
 				&& mainGui.getTxtSysterEnc().getText().equals("")
 				&& mainGui.getRdiSysterCodingGen().isSelected()

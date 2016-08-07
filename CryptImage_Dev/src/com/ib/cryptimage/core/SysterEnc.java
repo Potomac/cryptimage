@@ -49,7 +49,7 @@ public class SysterEnc extends Syster {
 		super(typeTable,true);
 		this.bPreviewMode = bPreviewMode;
 		try {
-			if(!bPreviewMode){
+			if(!bPreviewMode){				
 				fileOut = new FileWriter(nameDataFile + ".dec");
 			}
 		} catch (IOException e) {

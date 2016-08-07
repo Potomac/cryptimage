@@ -49,19 +49,8 @@ public class VideocryptEnc extends Videocrypt {
 		this.bPreviewMode = bPreviewMode;
 		
 		try {
-			if(!bPreviewMode){
-				String colorMode ="";
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
-					colorMode = "rgb";
-				}
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
-					colorMode = "pal";
-				}
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
-					colorMode = "secam";
-				}
-				
-				fileOut = new FileWriter(nameDataFile + "_" + colorMode + ".vid");
+			if(!bPreviewMode){				
+				fileOut = new FileWriter(nameDataFile + ".vid");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -127,6 +116,8 @@ public class VideocryptEnc extends Videocrypt {
 		if(!this.bPreviewMode){
 			this.feedFileData();
 		}
+		
+		//JobConfig.setNbFrames(JobConfig.getNbFrames() + 1);
 		
 		//encodage pal
 		if(JobConfig.getColorMode() == 1){			

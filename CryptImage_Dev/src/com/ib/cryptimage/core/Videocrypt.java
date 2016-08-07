@@ -60,6 +60,7 @@ public abstract class Videocrypt extends Device {
 	 * 
 	 */
 	public Videocrypt(boolean wantCrypt) {
+		//JobConfig.setNbFrames(0);
 		palEngine = new PalEngine();
 		secamEngine = new SecamEngine();		
 		this.wantCrypt = wantCrypt;	
@@ -73,6 +74,8 @@ public abstract class Videocrypt extends Device {
 			line = fileInBuff.readLine();				
 			
 			if(line.equals("skip")){
+//				JobConfig.setNbSkippedFrames(JobConfig.getNbSkippedFrames() + 1);
+//				System.out.println(JobConfig.getNbSkippedFrames());
 				this.skip = true;
 				return false;
 			}
