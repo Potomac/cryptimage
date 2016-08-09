@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -49,6 +50,7 @@ public abstract class Videocrypt extends Device {
 	protected String line ="";
 	protected String[] para;
 	protected FileWriter fileOut;
+	protected FileWriter fileLog;
 	protected BufferedReader fileInBuff;
 	protected FileReader fileInReader;
 	
@@ -57,6 +59,9 @@ public abstract class Videocrypt extends Device {
 	protected int rangeStart;
 	protected int rangeEnd;
 	protected int typeRange;
+	protected int numFrame;
+	protected int frameLine;
+	private boolean bPreviewMode;
 //	protected final static int offset = 64;
 //	protected final static int offset2 = 128;
 
@@ -64,14 +69,69 @@ public abstract class Videocrypt extends Device {
 	 * 
 	 */
 	public Videocrypt(boolean wantCrypt) {
+		
+		if (!JobConfig.isModePhoto()) {
+			numFrame = Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString())-1;			
+		}
+		
+		
 		//JobConfig.setNbFrames(0);
 		palEngine = new PalEngine();
 		secamEngine = new SecamEngine();		
 		this.wantCrypt = wantCrypt;	
+		bPreviewMode = JobConfig.getGui().getChkPlayer().isSelected();
+		
+		try {
+			if(!bPreviewMode
+					&& JobConfig.isLogVideocrypt()){
+				String fileName = JobConfig.getGui().getTxtInputFile().getText();
+				fileName = fileName.substring(0, fileName.lastIndexOf("."));
+								
+				fileLog = new FileWriter(fileName + ".csv");
+				fileLog.write("frame;line;encrypting cutting point;decrypting cutting point"
+						+ "\r\n");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	abstract BufferedImage transform(BufferedImage img);
 	abstract void closeFileData();
+	
+	protected void feedLog(int nbFrame, int cuttingPoint){
+		frameLine++;
+		if ( frameLine == 577){
+			frameLine = 1;
+		}
+		if (cuttingPoint == -1) {
+			frameLine--;
+			try {
+				fileLog.write("frame " + numFrame + ";" + frameLine + ";"
+						+ "skip;skip" + "\r\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+
+			int encCuttingPoint,decCuttingPoint;			
+				encCuttingPoint = cuttingPoint;
+				decCuttingPoint = 256 - cuttingPoint;
+				
+			try {
+				fileLog.write("frame " + numFrame + ";" + frameLine +";" 
+						+ encCuttingPoint + ";"
+						+ decCuttingPoint + "\r\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	
 	protected boolean readFileData(){
 		
@@ -82,6 +142,9 @@ public abstract class Videocrypt extends Device {
 //				JobConfig.setNbSkippedFrames(JobConfig.getNbSkippedFrames() + 1);
 //				System.out.println(JobConfig.getNbSkippedFrames());
 				this.skip = true;
+				if (!bPreviewMode && JobConfig.isLogVideocrypt()) {
+					feedLog(numFrame, -1);
+				}
 				return false;
 			}
 			
@@ -110,7 +173,7 @@ public abstract class Videocrypt extends Device {
 			}
 			
 			this.seed = Integer.valueOf(para[1]);
-			generateValues(this.seed);
+			generateValues(this.seed);			
 			return true;
 						
 		} catch (IOException e) {
@@ -140,6 +203,11 @@ public abstract class Videocrypt extends Device {
 		for (int i = 0; i < valTab.length; i++) {			
 			
 			valVideocrypt = (int) (rand.nextInt(max - min + 1) + min);
+			
+			if(JobConfig.isLogVideocrypt() && !bPreviewMode){
+				feedLog(numFrame, valVideocrypt);
+			}
+			
 			valTab[i] = valVideocrypt*3;
 		}
 		

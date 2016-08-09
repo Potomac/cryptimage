@@ -133,6 +133,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageCheckBoxes(JCheckBox src) {
 		
+		if (src.equals(this.mainGui.getChkLogVideocrypt())) {
+			if (this.mainGui.getChkLogVideocrypt().isSelected()) {
+				JobConfig.setLogVideocrypt(true);
+			} 
+			else{
+				JobConfig.setLogVideocrypt(false);
+			}
+		}
+		
 		if (src.equals(this.mainGui.getChkRestrictRange())) {
 			if (this.mainGui.getChkRestrictRange().isSelected()) {
 				JobConfig.setRestrictRangeCuttingPoints(true);

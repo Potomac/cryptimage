@@ -80,6 +80,7 @@ public class VideocryptEnc extends Videocrypt {
 
 	@Override
 	BufferedImage transform(BufferedImage image) {
+		numFrame++;
 		this.enable = true;
 				
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
@@ -201,6 +202,11 @@ public class VideocryptEnc extends Videocrypt {
 		try {
 			fileOut.flush();
 			fileOut.close();
+			if(JobConfig.isLogVideocrypt() 
+					&& !JobConfig.getGui().getChkPlayer().isSelected()){
+				this.fileLog.flush();
+				this.fileLog.close();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

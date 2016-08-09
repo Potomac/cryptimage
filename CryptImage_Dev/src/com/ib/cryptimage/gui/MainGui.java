@@ -278,6 +278,7 @@ public class MainGui {
 	
 	private JCheckBox chkChangeOffsetIncrement;
 	private JCheckBox chkRestrictRange;
+	private JCheckBox chkLogVideocrypt;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -695,7 +696,7 @@ public class MainGui {
 		rdiVideocryptCodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingFile"));
 	
 		chkRestrictRange.setText(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
-		
+		chkLogVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.chkLogVideocrypt"));
 	}
 	
 	private void createMenu(){				
@@ -1229,6 +1230,9 @@ public class MainGui {
 		chkRestrictRange.addActionListener(controler);
 		chkRestrictRange.setSelected(true);
 		
+		chkLogVideocrypt = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkLogVideocrypt"));
+		chkLogVideocrypt.addActionListener(controler);
+		chkLogVideocrypt.setSelected(false);
 		
 		//pan coding options
 		GridBagLayout gblCodingGen = new GridBagLayout();
@@ -1383,6 +1387,8 @@ public class MainGui {
 				1, 1,1,1);
 		
 		
+		JPanel panLog = new JPanel();
+		panLog.add(chkLogVideocrypt);
 		
 		GridBagLayout gblVideocrypt = new GridBagLayout();
 		
@@ -1401,10 +1407,10 @@ public class MainGui {
 				0, 1,
 				1,1,
 				100,20,
-				1, 1,1,1);		
+				1, 1,1,1);
 		this.placerComposants(panVideocryptOptions,
 				gblVideocrypt,
-				panSound,
+				panLog,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 2,
 				3,1,
@@ -1412,9 +1418,17 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panVideocryptOptions,
 				gblVideocrypt,
+				panSound,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 3,
+				3,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panVideocryptOptions,
+				gblVideocrypt,
 				panSlide,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 3,
+				0, 4,
 				3,1,
 				0,20,
 				1, 1,1,1);		
@@ -1547,8 +1561,26 @@ public class MainGui {
 				1, 1,1,1);
 		
 		JPanel miscOptionsCoding = new JPanel();
-		miscOptionsCoding.add(chkTags);
-		miscOptionsCoding.add(chkChangeOffsetIncrement);
+		GridBagLayout gblCoderMiscOptions = new GridBagLayout();
+//		miscOptionsCoding.add(chkTags);
+//		miscOptionsCoding.add(chkChangeOffsetIncrement);
+		this.placerComposants(miscOptionsCoding,
+				gblCoderMiscOptions,
+				chkTags,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				0,25,
+				1, 1,1,1);		
+		this.placerComposants(miscOptionsCoding,
+				gblCoderMiscOptions,
+				chkChangeOffsetIncrement,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				0,25,
+				1, 1,1,1);
+				
 		
 		GridBagLayout gblCoderSyster = new GridBagLayout();
 		this.placerComposants(panCoderSyster,
@@ -1562,7 +1594,7 @@ public class MainGui {
 		this.placerComposants(panCoderSyster,
 				gblCoderSyster,
 				miscOptionsCoding,
-				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 1,
 				1,1,
 				100,25,
@@ -3295,6 +3327,10 @@ public class MainGui {
 
 	public JCheckBox getChkRestrictRange() {
 		return chkRestrictRange;
+	}
+
+	public JCheckBox getChkLogVideocrypt() {
+		return chkLogVideocrypt;
 	}
 	
 

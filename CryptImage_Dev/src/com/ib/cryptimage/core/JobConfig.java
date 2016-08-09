@@ -107,6 +107,7 @@ public final class JobConfig {
 	private static int nbSkippedFrames = 0;
 	private static boolean offsetIncrementChange = false;
 	private static boolean restrictRangeCuttingPoints = true;
+	private static boolean logVideocrypt = false;
 	
 //	private JobConfig() {
 //		// TODO Auto-generated constructor stub
@@ -989,6 +990,14 @@ public final class JobConfig {
 
 	public static void setRestrictRangeCuttingPoints(boolean restrictRangeCuttingPoints) {
 		JobConfig.restrictRangeCuttingPoints = restrictRangeCuttingPoints;
+	}
+
+	public static boolean isLogVideocrypt() {
+		return logVideocrypt;
+	}
+
+	public static void setLogVideocrypt(boolean logVideocrypt) {
+		JobConfig.logVideocrypt = logVideocrypt;
 	}
 
 //	public static int getNbFrames() {

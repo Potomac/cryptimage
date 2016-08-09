@@ -62,7 +62,7 @@ public class VideocryptDec extends Videocrypt {
 
 	@Override
 	BufferedImage transform(BufferedImage image) {		
-		
+		numFrame++;
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
@@ -174,6 +174,10 @@ public class VideocryptDec extends Videocrypt {
 					raster.getPixels(this.sWidth - valCut1, j, valCut1, 1, new int[valCut1 * 3]));
 			raster2.setPixels(valCut1, j, this.sWidth - valCut1, 1,
 					raster.getPixels(0, j, this.sWidth - valCut1, 1, new int[(this.sWidth - valCut1) * 3]));
+			
+			if(JobConfig.isLogVideocrypt() && !JobConfig.getGui().getChkPlayer().isSelected()){
+				feedLog(numFrame, valCut1/3);
+			}
 		}
 
 	}
@@ -265,7 +269,16 @@ public class VideocryptDec extends Videocrypt {
 
 	@Override
 	void closeFileData() {
-		// TODO Auto-generated method stub
+		try {			
+			if(JobConfig.isLogVideocrypt() 
+					&& !JobConfig.getGui().getChkPlayer().isSelected()){
+				this.fileLog.flush();
+				this.fileLog.close();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 		
 	}
 
