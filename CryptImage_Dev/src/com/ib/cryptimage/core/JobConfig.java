@@ -93,8 +93,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.1.9 beta";
-	private static String releaseDate = "2016-08-07";
+	private static String VERSION = "1.1.10 beta";
+	private static String releaseDate = "2016-08-09";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -105,11 +105,12 @@ public final class JobConfig {
 	private static boolean wantDecCorrelVideoCrypt = false;
 	private static boolean wantVideocryptEncRandom = false;
 	private static int nbSkippedFrames = 0;
-	//private static int nbFrames = 0;
+	private static boolean offsetIncrementChange = false;
+	private static boolean restrictRangeCuttingPoints = true;
 	
-	private JobConfig() {
-		// TODO Auto-generated constructor stub
-	}
+//	private JobConfig() {
+//		// TODO Auto-generated constructor stub
+//	}
 	
 	public static String getDateTime(){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
@@ -972,6 +973,22 @@ public final class JobConfig {
 
 	public static void setNbSkippedFrames(int nbSkippedFrames) {
 		JobConfig.nbSkippedFrames = nbSkippedFrames;
+	}
+
+	public static boolean isOffsetIncrementChange() {
+		return offsetIncrementChange;
+	}
+
+	public static void setOffsetIncrementChange(boolean offsetIncrementChange) {
+		JobConfig.offsetIncrementChange = offsetIncrementChange;
+	}
+
+	public static boolean isRestrictRangeCuttingPoints() {
+		return restrictRangeCuttingPoints;
+	}
+
+	public static void setRestrictRangeCuttingPoints(boolean restrictRangeCuttingPoints) {
+		JobConfig.restrictRangeCuttingPoints = restrictRangeCuttingPoints;
 	}
 
 //	public static int getNbFrames() {

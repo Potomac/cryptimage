@@ -37,6 +37,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -75,6 +76,8 @@ public class GenEncFile extends JDialog {
 	private JFormattedTextField txtLines;
 	private JRadioButton rdiSyster;
 	private JRadioButton rdiVideocrypt;
+	private JCheckBox chkOffsetIncrement;
+	private JCheckBox chkRestrictRange;
 
 
 	/**
@@ -82,7 +85,7 @@ public class GenEncFile extends JDialog {
 	 */
 	public GenEncFile(JFrame parent, String title, boolean modal) {
 		super(parent, title, modal);
-		this.setSize(580, 200);
+		this.setSize(580, 300);
 		this.setLocationRelativeTo(null);	
 		
 		initGUI();
@@ -121,6 +124,20 @@ public class GenEncFile extends JDialog {
 		panRdi.add(rdiVideocrypt);
 		rdiSyster.setSelected(true);
 		
+		chkOffsetIncrement = new JCheckBox(JobConfig.getRes().getString("panSyster.chkOffsetIncrement"));
+		chkOffsetIncrement.setSelected(false);
+		
+		JPanel panOffsetIncrement = new JPanel();
+		panOffsetIncrement.add(chkOffsetIncrement);
+		
+		chkRestrictRange = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
+		chkRestrictRange.setSelected(true);
+		chkRestrictRange.setEnabled(false);
+		
+		
+		JPanel panRestrictRange = new JPanel();
+		panRestrictRange.add(chkRestrictRange);
+				
 		labTable = new JLabel(JobConfig.getRes().getString("genEncFile.labTable"));
 		
 		String[] tab = {JobConfig.getRes().getString("genEncFile.tab1"), JobConfig.getRes().getString("genEncFile.tab2")};
@@ -209,6 +226,8 @@ public class GenEncFile extends JDialog {
 		panBtn.add(btnExit);
 		
 		panGlobal.add(panRdi);
+		panGlobal.add(panOffsetIncrement);
+		panGlobal.add(panRestrictRange);
 		panGlobal.add(panTable);
 		panGlobal.add(panLines);
 		panGlobal.add(panFile);
@@ -235,11 +254,15 @@ public class GenEncFile extends JDialog {
 		if(rdiSyster.isSelected()){
 			combTable.setEnabled(true);
 			labTable.setEnabled(true);
+			chkOffsetIncrement.setEnabled(true);
+			chkRestrictRange.setEnabled(false);
 			txtFile.setText("");
 		}
 		else{
 			combTable.setEnabled(false);
 			labTable.setEnabled(false);
+			chkOffsetIncrement.setEnabled(false);
+			chkRestrictRange.setEnabled(true);
 			txtFile.setText("");
 		}		
 	}
@@ -289,7 +312,16 @@ public class GenEncFile extends JDialog {
 
 	}
 	
-	private boolean genFile() throws IOException{		
+	private boolean genFile() throws IOException{
+		
+		int valRange;
+		
+		if(chkRestrictRange.isSelected()){
+			valRange = 1;
+		}
+		else{
+			valRange = 2;
+		}
 		
 		if( this.txtLines.getText().trim().equals("") 
 				|| Integer.valueOf(this.txtLines.getText().toString().trim()) < 1 ){
@@ -319,7 +351,7 @@ public class GenEncFile extends JDialog {
 				
 		int lines = Integer.valueOf(this.txtLines.getText().toString().trim());
 		int typeTable = combTable.getSelectedIndex() + 1;
-		int offset1, increment1, offset2;//, increment2;
+		int offset1, increment1, increment2, offset2;//, increment2;
 		int min = 0;
 		int max = 255;
 		double val;
@@ -348,11 +380,33 @@ public class GenEncFile extends JDialog {
 				} else {
 					increment1 = (int) (val);
 				}
+				
+				
+				if(chkOffsetIncrement.isSelected()){					
+					rand = new Random();
+					min = 0;
+					max = 255;
 
+					offset2 = rand.nextInt(max - min + 1) + min;
+
+					min = 1;
+					max = 127;
+
+					val = rand.nextInt(max - min + 1) + min;
+					if ((val / 2) - (int) (val / 2) == 0) {
+						increment2 = (int) (val + 1);
+					} else {
+						increment2 = (int) (val);
+					}					
+				}
+				else{			
 				offset2 = offset1;
-
+				increment2 = increment1;
+				}
+				
+				
 				fileOut.write("frame " + (i + 1) + ";" + typeTable + ";" + offset1 + ";" + increment1 + ";" + offset2
-						+ ";" + increment1 + "\r\n");
+						+ ";" + increment2 + "\r\n");
 			} else {
 				rand = new Random();
 				min = 1;
@@ -360,7 +414,7 @@ public class GenEncFile extends JDialog {
 
 				valVideocrypt = (int) (rand.nextInt(max - min + 1) + min);
 
-				fileOut.write(valVideocrypt + "\r\n");
+				fileOut.write(valRange + ";" + valVideocrypt + "\r\n");
 			}
 
 		}

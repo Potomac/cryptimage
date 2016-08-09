@@ -124,6 +124,9 @@ public class SysterEnc extends Syster {
 				this.offset = this.offSetEven;
 				this.increment = this.incrementEven;			
 		} else {
+			if(JobConfig.isOffsetIncrementChange()){
+				this.genOffsetIncrement();
+			}
 			//this.genOffsetIncrement();
 			//this.genOffsetIncrementEven();
 		}

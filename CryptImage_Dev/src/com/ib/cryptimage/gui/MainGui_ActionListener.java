@@ -131,7 +131,25 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 	}
 
-	private void manageCheckBoxes(JCheckBox src) {		
+	private void manageCheckBoxes(JCheckBox src) {
+		
+		if (src.equals(this.mainGui.getChkRestrictRange())) {
+			if (this.mainGui.getChkRestrictRange().isSelected()) {
+				JobConfig.setRestrictRangeCuttingPoints(true);
+			} 
+			else{
+				JobConfig.setRestrictRangeCuttingPoints(false);
+			}
+		}
+		
+		if (src.equals(this.mainGui.getChkChangeOffsetIncrement())) {
+			if (this.mainGui.getChkChangeOffsetIncrement().isSelected()) {
+				JobConfig.setOffsetIncrementChange(true);
+			} 
+			else{
+				JobConfig.setOffsetIncrementChange(false);
+			}
+		}
 		
 		if (src.equals(this.mainGui.getCbAveragePal())) {
 			if (this.mainGui.getCbAveragePal().isSelected()) {
@@ -553,20 +571,23 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if(src.equals(this.mainGui.getRdiVideocryptCodingAuto())){
 			if(src.isSelected()){				
 				this.mainGui.getTxtVideocryptEnc().setEnabled(false);
-				this.mainGui.getBtnVideocryptEnc().setEnabled(false);	
+				this.mainGui.getBtnVideocryptEnc().setEnabled(false);
+				this.mainGui.getChkRestrictRange().setEnabled(true);
 			}
 		}
 		
 		if(src.equals(this.mainGui.getRdiVideocryptCodingFile())){
 			if(src.isSelected()){				
 				this.mainGui.getTxtVideocryptEnc().setEnabled(true);
-				this.mainGui.getBtnVideocryptEnc().setEnabled(true);	
+				this.mainGui.getBtnVideocryptEnc().setEnabled(true);
+				this.mainGui.getChkRestrictRange().setEnabled(false);
 			}
 		}	
 		
 		
 		if(src.equals(this.mainGui.getRdiSysterCodingRandom())){
 			if(src.isSelected()){
+				this.mainGui.getChkChangeOffsetIncrement().setEnabled(true);
 				this.mainGui.getTxtSysterEnc().setEnabled(false);
 				this.mainGui.getBtnFileSysterEnc().setEnabled(false);
 				this.mainGui.getComboTableSysterEnc().setEnabled(true);
@@ -574,6 +595,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 		if(src.equals(this.mainGui.getRdiSysterCodingFile())){
 			if(src.isSelected()){
+				this.mainGui.getChkChangeOffsetIncrement().setEnabled(false);
 				this.mainGui.getTxtSysterEnc().setEnabled(true);
 				this.mainGui.getBtnFileSysterEnc().setEnabled(true);
 				this.mainGui.getComboTableSysterEnc().setEnabled(false);
@@ -1017,7 +1039,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			openFileVideocrypt();
 		}
 		
-		if(src.equals(this.mainGui.getBtnFileSysterEnc())){
+		if(src.equals(this.mainGui.getBtnFileSysterEnc())){			
 			openFileSysterEnc();
 		}
 		
@@ -1195,7 +1217,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			} else {
 				//TODO
 				if (checkValidityFileEncDec(file, "enc")) {
-					this.mainGui.getTxtSysterEnc().setText(file.getAbsolutePath());
+					this.mainGui.getTxtSysterEnc().setText(file.getAbsolutePath());					
 				}
 				else{
 					this.mainGui.getTxtSysterEnc().setText("");
@@ -1283,15 +1305,26 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}		
 	
 	String line;
+	String[] para;
 	int compt = 0;
 	int val;	
 	int nbSkip = 0;
 
 		try {
 			while ((line = fileInBuff.readLine()) != null) {
-				compt++;
+				compt++;				
 				if (!line.equals("skip")) {
-					val = Integer.valueOf(line);
+					para = line.split(";");
+					//check type range cutting points
+					val = Integer.valueOf(para[0]);					
+					if ( val !=1 && val != 2){						
+						JOptionPane.showMessageDialog(mainGui.getFrame(),
+								JobConfig.getRes().getString("mainGui.validityError.title"),
+								JobConfig.getRes().getString("mainGui.validityError.title"), JOptionPane.ERROR_MESSAGE);
+						return false; 
+					}
+					//check random value
+					val = Integer.valueOf(para[1]);
 					if (val > 16777216 || val < 1) {
 						JOptionPane.showMessageDialog(mainGui.getFrame(),
 								JobConfig.getRes().getString("mainGui.validityError.title"),
@@ -1299,12 +1332,6 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						return false;
 					}
 				}else{
-					if(JobConfig.getGui().getRdiVideocryptCoding().isSelected()){
-						JOptionPane.showMessageDialog(mainGui.getFrame(),
-								JobConfig.getRes().getString("mainGui.validityError.title"),
-								JobConfig.getRes().getString("mainGui.validityError.title"), JOptionPane.ERROR_MESSAGE);
-						return false;
-					}
 					nbSkip++;
 				}
 			}

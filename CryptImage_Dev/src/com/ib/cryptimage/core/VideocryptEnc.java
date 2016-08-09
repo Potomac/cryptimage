@@ -64,9 +64,18 @@ public class VideocryptEnc extends Videocrypt {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		
-		
+		}else{
+			if(JobConfig.isRestrictRangeCuttingPoints()){
+				this.rangeStart = 20;
+				this.rangeEnd = 236;
+				this.typeRange = 1;
+			}
+			else{
+				this.rangeStart = 1;
+				this.rangeEnd = 255;
+				this.typeRange = 2;
+			}
+		}		
 	}
 
 	@Override
@@ -96,6 +105,10 @@ public class VideocryptEnc extends Videocrypt {
 		if(JobConfig.isWantVideocryptEncRandom() == false ){
 			if(!this.readFileData()){
 				this.enable = false;
+				//skip
+				if (this.skip){
+					this.skipFrame();
+				}
 				return image;
 			}
 		}
@@ -147,7 +160,7 @@ public class VideocryptEnc extends Videocrypt {
 	
 	private void feedFileData(){
 		try {
-			fileOut.write(this.seed + "\r\n");		
+			fileOut.write(this.typeRange + ";" + this.seed + "\r\n");		
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

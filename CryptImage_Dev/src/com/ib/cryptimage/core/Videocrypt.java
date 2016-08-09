@@ -47,12 +47,16 @@ public abstract class Videocrypt extends Device {
 	protected final int sWidth = 768;
 	protected boolean wantCrypt;
 	protected String line ="";
+	protected String[] para;
 	protected FileWriter fileOut;
 	protected BufferedReader fileInBuff;
 	protected FileReader fileInReader;
 	
 	protected int[] valTab = new int[576];
 	protected int seed;
+	protected int rangeStart;
+	protected int rangeEnd;
+	protected int typeRange;
 //	protected final static int offset = 64;
 //	protected final static int offset2 = 128;
 
@@ -70,6 +74,7 @@ public abstract class Videocrypt extends Device {
 	abstract void closeFileData();
 	
 	protected boolean readFileData(){
+		
 		try {		
 			line = fileInBuff.readLine();				
 			
@@ -80,13 +85,32 @@ public abstract class Videocrypt extends Device {
 				return false;
 			}
 			
-			if(Integer.valueOf(line) < 1 || Integer.valueOf(line) > 16777216){
+			para = line.split(";");
+			
+			//check range value
+			if(Integer.valueOf(para[0]) !=1 && Integer.valueOf(para[0]) !=2){
+				return false;
+			}	
+			
+			//check random value
+			if(Integer.valueOf(para[1]) < 1 || Integer.valueOf(para[1]) > 16777216){
 				return false;
 			}		
 			
 			this.skip = false;
-			this.seed = Integer.valueOf(line);
-			generateValues(Integer.valueOf(line));
+			
+			if(Integer.valueOf(para[0]) == 1 ){
+				this.rangeStart = 20;
+				this.rangeEnd = 236;
+				this.typeRange = 1;
+			} else{
+				this.rangeStart = 1;
+				this.rangeEnd = 255;
+				this.typeRange = 2;
+			}
+			
+			this.seed = Integer.valueOf(para[1]);
+			generateValues(this.seed);
 			return true;
 						
 		} catch (IOException e) {
@@ -107,8 +131,8 @@ public abstract class Videocrypt extends Device {
 	}
 	
 	protected void generateValues(int seed){
-		int min = 1;
-		int max = 255;
+		int min = this.rangeStart;// 20;//1
+		int max = this.rangeEnd;// 236; //255
 		Random rand = new Random(seed);
 		
 		int valVideocrypt;

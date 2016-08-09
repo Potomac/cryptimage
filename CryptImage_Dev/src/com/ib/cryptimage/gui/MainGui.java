@@ -276,6 +276,9 @@ public class MainGui {
 	
 	private JTabbedPane tabbedPane;
 	
+	private JCheckBox chkChangeOffsetIncrement;
+	private JCheckBox chkRestrictRange;
+	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
 		
@@ -651,6 +654,7 @@ public class MainGui {
 		chkDisableSoundSyster.setText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster"));
 		chkDisableSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster.tooltip"));
 		
+		chkChangeOffsetIncrement.setText(JobConfig.getRes().getString("panSyster.chkOffsetIncrement"));
 		
 		int indexColor = cbColorMode.getSelectedIndex();
 		String[] tabColor = {JobConfig.getRes().getString("cbColorMode.rgb"),
@@ -689,6 +693,9 @@ public class MainGui {
 		rdiVideocryptCodingAuto.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingRandom"));
 		rdiVideocryptDecodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterDecodingFile"));
 		rdiVideocryptCodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingFile"));
+	
+		chkRestrictRange.setText(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
+		
 	}
 	
 	private void createMenu(){				
@@ -1218,6 +1225,11 @@ public class MainGui {
 		btnVideocryptEnc.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		btnVideocryptEnc.addActionListener(controler);
 		
+		chkRestrictRange = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
+		chkRestrictRange.addActionListener(controler);
+		chkRestrictRange.setSelected(true);
+		
+		
 		//pan coding options
 		GridBagLayout gblCodingGen = new GridBagLayout();
 		
@@ -1250,6 +1262,14 @@ public class MainGui {
 				btnVideocryptEnc,
 				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
 				3, 1,
+				1,1,
+				1,33,
+				1, 1,1,1);
+		this.placerComposants(panVideocryptCodingGen,
+				gblCodingGen,
+				chkRestrictRange,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				0, 2,
 				1,1,
 				1,33,
 				1, 1,1,1);
@@ -1466,9 +1486,9 @@ public class MainGui {
 		
 		JPanel subRdiCoding = new JPanel();
 		
-		titlePanSysterSubRdiCoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"");
-		subRdiCoding.setBorder(titlePanSysterSubRdiCoding);
+		//titlePanSysterSubRdiCoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+		//		"");
+		//subRdiCoding.setBorder(titlePanSysterSubRdiCoding);
 		//subRdiCoding.setLayout(new BoxLayout(subRdiCoding, BoxLayout.Y_AXIS));
 		txtSysterEnc = new JTextField(80);
 		txtSysterEnc.setEditable(false);		
@@ -1478,6 +1498,10 @@ public class MainGui {
 		txtSysterEnc.setEnabled(false);
 		btnFileSysterEnc.setEnabled(false);
 		//comboTableSysterEnc.setEnabled(false);
+		
+		chkChangeOffsetIncrement = new JCheckBox(JobConfig.getRes().getString("panSyster.chkOffsetIncrement"));
+		chkChangeOffsetIncrement.addActionListener(controler);
+		chkChangeOffsetIncrement.setSelected(false);
 		
 		GridBagLayout gblRdiCoding = new GridBagLayout();
 		
@@ -1522,6 +1546,10 @@ public class MainGui {
 				1,20,
 				1, 1,1,1);
 		
+		JPanel miscOptionsCoding = new JPanel();
+		miscOptionsCoding.add(chkTags);
+		miscOptionsCoding.add(chkChangeOffsetIncrement);
+		
 		GridBagLayout gblCoderSyster = new GridBagLayout();
 		this.placerComposants(panCoderSyster,
 				gblCoderSyster,
@@ -1533,12 +1561,13 @@ public class MainGui {
 				1, 1,1,1);		
 		this.placerComposants(panCoderSyster,
 				gblCoderSyster,
-				chkTags,
+				miscOptionsCoding,
 				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
 				0, 1,
 				1,1,
 				100,25,
-				1, 1,1,1);		
+				1, 1,1,1);
+		
 		
 		//decoding
 		rdiSysterDecodingFile = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterDecodingFile"));
@@ -1555,9 +1584,9 @@ public class MainGui {
 		
 		JPanel subRdiDecoding = new JPanel();
 		
-		titlePanSysterSubRdiDecoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-				"");
-		subRdiDecoding.setBorder(titlePanSysterSubRdiDecoding);
+//		titlePanSysterSubRdiDecoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+//				"");
+//		subRdiDecoding.setBorder(titlePanSysterSubRdiDecoding);
 		//subRdiDecoding.setLayout(new BoxLayout(subRdiDecoding, BoxLayout.Y_AXIS));
 //		subRdiDecoding.add(rdiSysterDecodingFile);
 //		subRdiDecoding.add(rdiSysterDeCodingTags);
@@ -1687,14 +1716,12 @@ public class MainGui {
 		chkDisableSoundSyster.setSelected(false);
 		chkDisableSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster.tooltip"));
 		chkDisableSoundSyster.addActionListener(controler);
-		
-		
-		
+						
 		panSysterMisc = new JPanel();
 		GridBagLayout gblSysterMisc = new GridBagLayout();
 		
 		JPanel panSound = new JPanel();				
-		
+				
 		panSound.add(chkSoundSyster);
 		panSound.add(chkDisableSoundSyster);
 		
@@ -3256,6 +3283,18 @@ public class MainGui {
 
 	public JButton getBtnVideocryptEnc() {
 		return btnVideocryptEnc;
+	}
+
+	public JCheckBox getChkChangeOffsetIncrement() {
+		return chkChangeOffsetIncrement;
+	}
+
+	public void setChkChangeOffsetIncrement(JCheckBox chkChangeOffsetIncrement) {
+		this.chkChangeOffsetIncrement = chkChangeOffsetIncrement;
+	}
+
+	public JCheckBox getChkRestrictRange() {
+		return chkRestrictRange;
 	}
 	
 
