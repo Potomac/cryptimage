@@ -84,10 +84,8 @@ public abstract class Videocrypt extends Device {
 		
 		try {
 			if(!bPreviewMode
-					&& JobConfig.isLogVideocrypt()){
-				fileName = JobConfig.getGui().getTxtInputFile().getText();
-				fileName = fileName.substring(0, fileName.lastIndexOf("."));
-								
+					&& JobConfig.isLogVideocrypt()){				
+				fileName = JobConfig.getOutput_file();							
 				fileLog = new FileWriter(fileName + "_videocrypt_" 
 						+  "part" + part +  ".csv");
 				fileLog.write("frame;line;cut point for encrypting;cut point for decrypting"
