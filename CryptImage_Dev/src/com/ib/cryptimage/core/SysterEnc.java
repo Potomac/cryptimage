@@ -95,13 +95,12 @@ public class SysterEnc extends Syster {
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
-		
-		//encodage pal
+				
 		if(JobConfig.getColorMode() == 1){			
 			palEngine.setImg(image);
 			image = palEngine.encode();
 		}
-		//encodage secam
+		
 		if(JobConfig.getColorMode() == 2){			
 			secamEngine.setImg(image);
 			image = secamEngine.encode();			
@@ -117,7 +116,7 @@ public class SysterEnc extends Syster {
 		
 		this.initPermut();
 		this.crypt();
-		//coder en secam si choix secam
+		
 		this.cryptOddFrame(image);
 		
 		if (JobConfig.isWantSysterEncRandom() == false ) {			
@@ -127,16 +126,14 @@ public class SysterEnc extends Syster {
 			if(JobConfig.isOffsetIncrementChange()){
 				this.genOffsetIncrement();
 			}
-			//this.genOffsetIncrement();
-			//this.genOffsetIncrementEven();
+			
 		}
 		
 		this.initPermut();
 		this.crypt();
-		//coder en secam si choix secam
-		this.cryptEvenFrame(image);
 		
-		//appel décodeur pal ou secam si choix pal/secam
+		this.cryptEvenFrame(image);		
+		
 		return this.getCompletFrame();
 	}
 	
@@ -154,18 +151,17 @@ public class SysterEnc extends Syster {
 		
 		this.initPermut();
 		this.crypt();
-		//coder en secam si choix secam
+		
 		if(JobConfig.getColorMode() == 1){			
 			palEngine.setImg(image);
 			image = palEngine.encode();			
 		}
-		//encodage secam
+		
 		if(JobConfig.getColorMode() == 2){			
 			secamEngine.setImg(image);
 			image = secamEngine.encode();			
 		}
-		
-		////////à decommenter
+			
 		this.cryptOddFrame(image);
 		
 		this.offset = offset2;
@@ -173,13 +169,9 @@ public class SysterEnc extends Syster {
 		
 		this.initPermut();
 		this.crypt();
-		//coder en secam si choix secam
-		this.cryptEvenFrame(image);
-		///à decommenter
-		//this.ready = true; // à supprimer
-		//this.completFrame = image;//à supprimer	
 		
-		//appel décodeur pal ou secam si choix pal/secam
+		this.cryptEvenFrame(image);
+				
 		return this.getCompletFrame();
 	}
 	
@@ -195,13 +187,12 @@ public class SysterEnc extends Syster {
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
-		
-		//encodage pal
+				
 		if(JobConfig.getColorMode() == 1){
 			palEngine.setImg(image);
 			image = palEngine.encode();
 		}
-		// encodage secam
+		
 		if (JobConfig.getColorMode() == 2) {
 			secamEngine.setImg(image);
 			image = secamEngine.encode();
@@ -215,16 +206,14 @@ public class SysterEnc extends Syster {
 		
 		this.initPermut();
 		this.crypt();
-		//coder en secam si choix secam
-		this.cryptOddFrame(image);		
 		
+		this.cryptOddFrame(image);				
 		
 		this.initPermut();
 		this.crypt();
-		//coder en secam si choix secam
-		this.cryptEvenFrame(image);
 		
-		//appel décodeur pal ou secam si choix pal/secam
+		this.cryptEvenFrame(image);
+				
 		return this.getCompletFrame();
 	}
 	

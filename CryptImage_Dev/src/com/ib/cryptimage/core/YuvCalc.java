@@ -174,23 +174,13 @@ public class YuvCalc extends InitException {
 		float u_temp = u -128;
 		float v_temp = v -128;		
 	
-		float new_u_temp, new_v_temp;		
-		
-//		new_u_temp = (float) (u_temp * Math.cos(angle * Math.PI/180d)
-//				- v_temp * Math.sin(angle*Math.PI/180d));
-//		new_v_temp = (float) (u_temp * Math.sin(angle * Math.PI/180d)
-//				+ v_temp * Math.cos(angle*Math.PI/180d));	
+		float new_u_temp, new_v_temp;			
+
 		
 		new_u_temp =  (float) ((u_temp * cosSin.getCos((int) angle)
 				- v_temp * cosSin.getSin((int) angle)));
 		new_v_temp = (float) ((u_temp * cosSin.getSin((int) angle)
 				+ v_temp * cosSin.getCos((int) angle)));	
-		
-//		float vector = (float) Math.sqrt(u_temp * u_temp + v_temp*v_temp);
-//		
-//		new_u_temp =  (float) (( cosSin.getCos((int) angle) * vector ));
-//		
-//		new_v_temp = (float) ((cosSin.getSin((int) angle) * vector ));
 				
 		float y_temp = y;
 		new_u_temp = new_u_temp +128;
@@ -233,10 +223,6 @@ public class YuvCalc extends InitException {
 	
 		float new_u_temp, new_v_temp;		
 		
-//		new_u_temp = (float) (u_temp * Math.cos(angle * Math.PI/180d)
-//				- v_temp * Math.sin(angle*Math.PI/180d));
-//		new_v_temp = (float) (u_temp * Math.sin(angle * Math.PI/180d)
-//				+ v_temp * Math.cos(angle*Math.PI/180d));	
 		
 		new_u_temp =  (float) ((u_temp * cosSin.getCos((int) angle)
 				- v_temp * cosSin.getSin((int) angle)));
@@ -266,8 +252,8 @@ public class YuvCalc extends InitException {
 				e.printStackTrace();
 			}
 		}
-		y = red *  redCoef1 + green *  greenCoef1 + blue *  blueCoef1 +16f; //coef1 * red + coef2 * green + coef3 * blue;
-		u = red * redCoef2 + green * greenCoef2 + blue *  blueCoef2 + 128f; //coef4 * (blue - y);
+		y = red *  redCoef1 + green *  greenCoef1 + blue *  blueCoef1 +16f;
+		u = red * redCoef2 + green * greenCoef2 + blue *  blueCoef2 + 128f;
 		v = red *  redCoef3 + green * greenCoef3 + blue * blueCoef3 + 128f;
 		
 		if(y > 255){
@@ -346,11 +332,7 @@ public class YuvCalc extends InitException {
 		}
 	}
 
-	public float getY() {
-		//System.out.println("Y : " + y);
-		if(y < 0 || y> 255){
-			System.out.println("Y bad " + y);
-		}
+	public float getY() {				
 		return y;
 	}
 
@@ -358,10 +340,7 @@ public class YuvCalc extends InitException {
 		this.y = y;
 	}
 
-	public float getU() {
-		if(u < 0 || u> 255){
-			System.out.println("u bad " + u);
-		}
+	public float getU() {		
 		return u;
 	}
 
@@ -369,10 +348,7 @@ public class YuvCalc extends InitException {
 		this.u = u;
 	}
 
-	public float getV() {
-		if(v < 0 || v> 255){
-			System.out.println("v bad " + v);
-		}
+	public float getV() {		
 		return v;
 	}
 
@@ -380,8 +356,7 @@ public class YuvCalc extends InitException {
 		this.v = v;
 	}
 
-	public int getRed() {
-		//System.out.println("Red : " + red);
+	public int getRed() {		
 		if(red < 0){
 			red = 0;
 		}
@@ -395,8 +370,7 @@ public class YuvCalc extends InitException {
 		this.red = red;
 	}
 
-	public int getGreen() {
-		//System.out.println("Green : " + green);
+	public int getGreen() {		
 		if(green < 0){
 			green = 0;
 		}
@@ -410,8 +384,7 @@ public class YuvCalc extends InitException {
 		this.green = green;
 	}
 
-	public int getBlue() {
-		//System.out.println("Blue : " + blue);
+	public int getBlue() {		
 		if(blue < 0){
 			blue = 0;
 		}

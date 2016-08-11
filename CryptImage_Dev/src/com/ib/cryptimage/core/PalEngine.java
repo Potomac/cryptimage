@@ -69,9 +69,7 @@ public class PalEngine {
 	
 		
 	public BufferedImage decode(boolean skip){
-		if(JobConfig.isWantDec() && skip == true){
-			//phase45();
-			//System.out.println("passe");
+		if(JobConfig.isWantDec() && skip == true){			
 			return img;
 		}
 		
@@ -88,8 +86,7 @@ public class PalEngine {
 		if (JobConfig.isAveragingPal() == true) {
 			convertToYUV();
 		    palAverageEvenFrame();
-			palAverageOddFrame();
-			//palAverage();
+			palAverageOddFrame();			
 			convertToRGB();
 		}
 				
@@ -122,37 +119,6 @@ public class PalEngine {
 		return img;
 	}
 		
-	
-//	private void phase45(){		
-//		// odd field
-//		int pol = 1;
-//		
-//		for (int y = 0; y < 576; y++) {
-//			for (int x = 0; x < 768; x++) {
-//				if (pol == 1) { // 45 degrees
-//					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), -90));//-45
-//				} else {// -45 degrees
-//					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 90));//45
-//				}
-//			}
-//			pol = pol * -1;
-//			y++;
-//		}
-//
-//		pol=1;
-//		// odd field
-//		for (int y = 1; y < 576; y++) {
-//			for (int x = 0; x < 768; x++) {
-//				if (pol == 1) { // 45 degrees
-//					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), -90));//-45
-//				} else {// -45 degrees
-//					raster.setPixel(x, y, yuvCalc.getRotateRGB(raster.getPixel(x, y, pixelTab), 90));//45
-//				}
-//			}
-//			pol = pol * -1;
-//			y++;
-//		}
-//	}
 	
 	
 	private void rephase45(){		
@@ -218,31 +184,6 @@ public class PalEngine {
 		}
 	}
 	
-//	private void tagLinesVideocrypt(){
-//		// odd field
-//		int pol = 1;
-//		for (int i = 0; i < 576; i++) {
-//			if (pol == 1) { // 45 degrees
-//				raster.setPixel(0, i, new int[] { 0, 1, 0 });
-//			} else {// 315 degrees
-//				raster.setPixel(0, i, new int[] { 128, 1, 0  });
-//			}
-//			i++;
-//			pol = pol * -1;
-//		}
-//
-//		// even field
-//		pol = 1;
-//		for (int i = 1; i < 576; i++) {
-//			if (pol == 1) { // 135 degrees
-//				raster.setPixel(0, i, new int[] { 64, 0, 0 });
-//			} else {// 225 degrees
-//				raster.setPixel(0, i, new int[] { 255, 1, 0 });
-//			}
-//			i++;
-//			pol = pol * -1;
-//		}
-//	}
 
 	private void convertToYUV(){
 		for (int y = 0; y < 576; y++) {
@@ -255,7 +196,7 @@ public class PalEngine {
 	
 	private int getAngle(int[] pixel, int line){		
 		if(pixel[0] == 0 ){//45			
-			if(JobConfig.isWantDec() ){ //if(op ==0 ){
+			if(JobConfig.isWantDec() ){
 			return -315;//315;
 			}
 			else {				
@@ -264,7 +205,7 @@ public class PalEngine {
 		}
 		
 		if(pixel[0] == 64){//315			
-			if(JobConfig.isWantDec() ){ //if(op ==0 ){
+			if(JobConfig.isWantDec() ){
 			return -45;//45;
 			}
 			else {				
@@ -273,7 +214,7 @@ public class PalEngine {
 		}
 		
 		if(pixel[0] == 128){//135			
-			if(JobConfig.isWantDec() ){ //if(op != 0 ){
+			if(JobConfig.isWantDec() ){
 			return -225;//225;
 			}
 			else {			
@@ -282,7 +223,7 @@ public class PalEngine {
 		}
 		
 		if(pixel[0] == 255){//225						
-			if(JobConfig.isWantDec() ){ //if(op != 0 ){
+			if(JobConfig.isWantDec() ){
 			return -135 ;//135;
 			}
 			else {			
@@ -296,8 +237,7 @@ public class PalEngine {
 	
 
 	
-	private void palInversePhase(int pol){		
-		//int[] pixel = new int[3];
+	private void palInversePhase(int pol){				
 		int cpt = 0;	
 		int angle = 0;
 		int phase = pol;
@@ -395,69 +335,6 @@ public class PalEngine {
 		}		
 	}
 	
-//	private void palAverage(){
-//		byte[] tabLines =  new byte[768*576*3];
-//		
-//		//byte[] pixels = ((DataBufferByte) raster.getDataBuffer()).getData();
-//		
-////		
-////		
-////		int val = 768*3;
-////		byte[] value = new int[3];
-////		
-////	    for (int y = 0; y < 576; y++) {
-////			for (int size = 0; size < 768; size++) {
-////				value[2] = pixels[3*size + val*y] ;
-////				value[1] = pixels[3*size +1 + val*y]; 
-////				value[0] = pixels[3*size + 2 + val*y];
-////				value = yuvCalc.convertRGBtoYUV(value);
-////				tabLines[3*size + val*y] = value[0];
-////				tabLines[3*size +1 + val*y] = value[1];
-////				tabLines[3*size + 2 + val*y] = value[2];
-////				//System.out.println(value[1]);
-////			}
-////		}		
-////		
-//		
-////		//odd field
-////		for (int y = 0; y < 576; y++) {
-////			for (int size = 0; size < 768; size++) {
-////				tabLines[3*size +1 + val*y] = ( tabLines[3*size +1 +val*y] + tabLines[3*size +1 +val* (y +2)] )/2;
-////				tabLines[3*size +2 + val*y] = ( tabLines[3*size +2 +val*y] + tabLines[3*size +2 +val*(y +2)] ) /2;
-////				tabLines[3*size +1 + val*(y +2)] = tabLines[3*size +1 +val*y];
-////				tabLines[3*size +2 + val*(y +2)] = tabLines[3*size +2 +val*y];
-////			}
-////			y+=3;//3
-////		}
-////		
-////		//even field
-////				for (int y = 1; y < 576; y++) {
-////					for (int size = 0; size < 768; size++) {
-////						tabLines[3*size +1 + val*y] = ( tabLines[3*size +1 +val*y] + tabLines[3*size +1 +val* (y +2)] )/2;
-////						tabLines[3*size +2 + val*y] = ( tabLines[3*size +2 +val*y] + tabLines[3*size +2 +val*(y +2)] ) /2;
-////						tabLines[3*size +1 + val*(y +2)] = tabLines[3*size +1 +val*y];
-////						tabLines[3*size +2 + val*(y +2)] = tabLines[3*size +2 +val*y];
-////					}
-////					y+=3;//3
-////				}
-//				
-////		for (int y = 0; y < 576; y++) {
-////			for (int size = 0; size < 768; size++) {
-////				value[0] = tabLines[3 * size + val * y] ;
-////				value[1] = tabLines[3 * size + 1 + val * y] ;
-////				value[2] = tabLines[3 * size + 2 + val * y] ;
-////				value = yuvCalc.convertYUVtoRGB(value);
-////				pixels[3 * size + val * y] = value[2];
-////				pixels[3 * size + 1 + val * y] =   (value[1]);
-////				pixels[3 * size + 2 + val * y] = ( value[2]);
-////			}
-////		}	
-//		
-//		//raster.setPixels(0, 0, 768, 576, tabLines);
-//		
-//	}
-	
-	
 	private int[] averageLine(int[] line1, int[] line2, int y){	
 		
 		for (int i = 1; i < 768; i++) {
@@ -468,57 +345,6 @@ public class PalEngine {
 		}
 		raster.setPixels(0, y+2, 768,1,line2);
 		return line1;
-		
-//		for (int i = 0; i < 768; i++) {
-//			line1[3*i +1] = ( line1[3*i +1] + line2[3*i +1] ) /2;
-//			line1[3*i +2] = ( line1[3*i +2] + line2[3*i +2] ) /2;
-//			line2[3*i +1] = line1[3*i +1];
-//			line2[3*i +2] = line1[3*i +2];
-//		}
-//		raster.setPixels(0, y+2, 768,1,line2);
-//		return line1;
-		
-//		
-//		for (int i = 0; i < 768; i++) {
-//			line1[3*i +1] = line2[3*i +2];
-//			line1[3*i +2] = line2[3*i +1];
-//			line2[3*i +1] = line1[3*i +1];
-//			line2[3*i +2] = line1[3*i +2];
-//		}
-//		raster.setPixels(0, y+2, 768,1,line2);
-//		return line1;
-		
-		
-//		int uLine1;
-//		int vLine1;
-//		
-//		int uLine2;
-//		int vLine2;
-//		
-//		for (int i = 0; i < 768; i++) {
-//			pixelTab[0] = line1[3*i];
-//			pixelTab[1] = line1[3*i +1];
-//			pixelTab[2] = line1[3*i +1];
-//			pixelTab = yuvCalc.getRotateYUV(pixelTab, 45);
-//			uLine1 = pixelTab[1];
-//			pixelTab = yuvCalc.getRotateYUV(pixelTab, -45);
-//			vLine1 = pixelTab[2];
-//			
-//			pixelTab[0] = line2[3*i];
-//			pixelTab[1] = line2[3*i +1];
-//			pixelTab[2] = line2[3*i +1];
-//			pixelTab = yuvCalc.getRotateYUV(pixelTab, 45);
-//			uLine2 = pixelTab[1];
-//			pixelTab = yuvCalc.getRotateYUV(pixelTab, -45);
-//			vLine2 = pixelTab[2];			
-//			
-//			line1[3*i +1] = ( uLine1+ uLine2) /2;
-//			line1[3*i +2] = (vLine1 + vLine2)/2;
-//			line2[3*i +1] = ( uLine1+ uLine2) /2;
-//			line2[3*i +2] = (vLine1 + vLine2)/2;
-//		}
-//		raster.setPixels(0, y+2, 768,1,line2);
-//		return line1;
 	}
 	
 
@@ -531,7 +357,5 @@ public class PalEngine {
 			}			
 		}		
 	}	
-	
-	
 
 }

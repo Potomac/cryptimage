@@ -76,9 +76,7 @@ public abstract class Videocrypt extends Device {
 		if (!JobConfig.isModePhoto()) {
 			numFrame = Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString())-1;			
 		}
-		
-		
-		//JobConfig.setNbFrames(0);
+				
 		palEngine = new PalEngine();
 		secamEngine = new SecamEngine();		
 		this.wantCrypt = wantCrypt;	
@@ -161,8 +159,6 @@ public abstract class Videocrypt extends Device {
 			line = fileInBuff.readLine();				
 			
 			if(line.equals("skip")){
-//				JobConfig.setNbSkippedFrames(JobConfig.getNbSkippedFrames() + 1);
-//				System.out.println(JobConfig.getNbSkippedFrames());
 				this.skip = true;
 				if (!bPreviewMode && JobConfig.isLogVideocrypt()) {
 					feedLog(numFrame, -1);
@@ -231,12 +227,8 @@ public abstract class Videocrypt extends Device {
 			}
 			
 			valTab[i] = valVideocrypt*3;
-		}
-		
-//		for (int i = 0; i < valTab.length; i++) {
-//			System.out.println(valTab[i]);
-//		}	
-		
+		}		
+
 	}
 	
 	/**

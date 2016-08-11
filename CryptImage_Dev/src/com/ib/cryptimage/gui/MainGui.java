@@ -85,9 +85,6 @@ import com.ib.cryptimage.core.JobConfig;
  */
 public class MainGui {
 	
-//	private Locale locale;
-//	private ResourceBundle res;
-	
 	private JFrame frame;
 	
 	private JPanel panGlobal;
@@ -317,8 +314,7 @@ public class MainGui {
 		createMenu();
 		
 		createPanMode();
-		createPanFile();
-		//createPanKeyboardCode();
+		createPanFile();		
 		createPanDiscret11();
 		createColorMode();
 		createPanSyster();
@@ -340,11 +336,8 @@ public class MainGui {
 		
 		panGlobal.setLayout(new BoxLayout(panGlobal, BoxLayout.Y_AXIS ));
 		panGlobal.add(panMode);
-		panGlobal.add(panFile);
-		//panGlobal.add(panSystemCrypt);
-		//panGlobal.add(panColorMode);
-		panGlobal.add(tabbedPane);
-		//panGlobal.add(panVideoOptions);
+		panGlobal.add(panFile);		
+		panGlobal.add(tabbedPane);		
 		panGlobal.add(panProgress);
 
 		//load config
@@ -445,11 +438,7 @@ public class MainGui {
 		this.combAudience.setSelectedIndex(JobConfig.getAudienceLevel());
 	}
 	
-	private void copyNewHelpVersion(){		
-		//String binPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		
-		//File config = new File(binPath + "cryptimage_fr.pdf");
-
+	private void copyNewHelpVersion(){
 		if (!JobConfig.getLaunch().equals(JobConfig.getVERSION())) {
 			
 			// test if cryptimage directory exists
@@ -808,10 +797,6 @@ public class MainGui {
 		chkStrictMode.addActionListener(controler);
 		chkStrictMode.setSelected(true);
 		chkStrictMode.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.respectNorme"));
-				/*"<html>-si option activée : gestion des lignes 310/622,"
-				+ "<br/>redimensionnement automatique vers le format 4/3 720x576 ou 768x576<br/>"
-				+ "-si option désactivée : pas de gestion des lignes 310/622 et "
-				+ "la vidéo garde sa résolution originale</html>");*/
 		
 		lblSystemCrypt = new JLabel(JobConfig.getRes().getString("panMode.lblSystem"));
 		String [] tab = {"Discret11", "Nagravision syster", "Videocrypt"};
@@ -824,8 +809,7 @@ public class MainGui {
 		btnAbout.addActionListener(controler);
 		
 		GridBagLayout gbl = new GridBagLayout();
-		
-		//panMode.setLayout(new BoxLayout(panMode, BoxLayout.LINE_AXIS));
+				
 		this.placerComposants(panMode,
 				gbl,
 				rdiVideo,
@@ -930,8 +914,7 @@ public class MainGui {
 				1, 1,
 				1,1,
 				1,50,
-				1, 1,1,1);	
-		
+				1, 1,1,1);		
 	}
 	
 	private void createPanKeyboardCode(){
@@ -1501,11 +1484,7 @@ public class MainGui {
 		
 		
 		JPanel subRdiCoding = new JPanel();
-		
-		//titlePanSysterSubRdiCoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-		//		"");
-		//subRdiCoding.setBorder(titlePanSysterSubRdiCoding);
-		//subRdiCoding.setLayout(new BoxLayout(subRdiCoding, BoxLayout.Y_AXIS));
+				
 		txtSysterEnc = new JTextField(80);
 		txtSysterEnc.setEditable(false);		
 		txtSysterDec = new JTextField(80);
@@ -1513,8 +1492,7 @@ public class MainGui {
 		
 		txtSysterEnc.setEnabled(false);
 		btnFileSysterEnc.setEnabled(false);
-		//comboTableSysterEnc.setEnabled(false);
-		
+				
 		chkChangeOffsetIncrement = new JCheckBox(JobConfig.getRes().getString("panSyster.chkOffsetIncrement"));
 		chkChangeOffsetIncrement.addActionListener(controler);
 		chkChangeOffsetIncrement.setSelected(false);
@@ -1564,8 +1542,7 @@ public class MainGui {
 		
 		JPanel miscOptionsCoding = new JPanel();
 		GridBagLayout gblCoderMiscOptions = new GridBagLayout();
-//		miscOptionsCoding.add(chkTags);
-//		miscOptionsCoding.add(chkChangeOffsetIncrement);
+
 		this.placerComposants(miscOptionsCoding,
 				gblCoderMiscOptions,
 				chkTags,
@@ -1617,16 +1594,7 @@ public class MainGui {
 		btnSubOptionsDecoding.add(rdiSysterDecodingCorrel);
 		
 		JPanel subRdiDecoding = new JPanel();
-		
-//		titlePanSysterSubRdiDecoding = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
-//				"");
-//		subRdiDecoding.setBorder(titlePanSysterSubRdiDecoding);
-		//subRdiDecoding.setLayout(new BoxLayout(subRdiDecoding, BoxLayout.Y_AXIS));
-//		subRdiDecoding.add(rdiSysterDecodingFile);
-//		subRdiDecoding.add(rdiSysterDeCodingTags);
-//		subRdiDecoding.add(rdiSysterDecodingCorrel);
-		
-		
+	
 		comboTableSysterDec = new JComboBox<String>(tab);
 		comboTableSysterDec.setSelectedIndex(0);
 		comboTableSysterDec.setEnabled(false);
@@ -1713,7 +1681,6 @@ public class MainGui {
 		panSysterEncDecCard.add(panDecoderSyster,"SysterDecoding");
 		
 		//pan syster misc
-		//frame start    
 		labFrameStartSyster = new JLabel(JobConfig.getRes().getString("panSyster.labFrameStartSyster"));
 		slideFrameStartSyster = new JSlider(JSlider.HORIZONTAL,1,200000,1);
 		slideFrameStartSyster.setToolTipText(JobConfig.getRes().getString("panSyster.labFrameStartSyster.tooltip"));
@@ -1759,12 +1726,6 @@ public class MainGui {
 		panSound.add(chkSoundSyster);
 		panSound.add(chkDisableSoundSyster);
 		
-		
-//		JPanel panSound = new JPanel();
-//		panSound.add(chkSoundSyster);
-//		panSound.add(chkDisableSoundSyster);
-		
-		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
 				panSound,
@@ -1797,10 +1758,7 @@ public class MainGui {
 				1,1,
 				20,33,
 				1, 1,1,1);
-		
-		//panOptionsSyster.add(rdiSysterCodingGen);
-		//panOptionsSyster.add(rdiSysterDecodingGen);
-		
+
 		GridBagLayout gblOptionsSyster = new GridBagLayout();
 		this.placerComposants(panOptionsSyster,
 				gblOptionsSyster,
@@ -1826,10 +1784,6 @@ public class MainGui {
 				1,1,
 				100,45,
 				1, 1,1,1);		
-		
-//		panOptionsSyster.add(panSysterMode);		
-//		panOptionsSyster.add(panSysterEncDecCard);
-//		panOptionsSyster.add(panSysterMisc);
 		
 		rdiSysterCodingGen.setSelected(true);
 		rdiSysterCodingRandom.setSelected(true);
@@ -1944,9 +1898,7 @@ public class MainGui {
 					1, 1,1,1);
 		
 		//init audience
-		JPanel panAudience = new JPanel();
-		//GridBagLayout gblAudience = new GridBagLayout();
-				
+		JPanel panAudience = new JPanel();				
 		
 		labAudience = new JLabel(JobConfig.getRes().getString("panDiscret11.labAudience"));		
 		String[] tab = {JobConfig.getRes().getString("panDiscret11.AudienceLevel1"),JobConfig.getRes().getString("panDiscret11.AudienceLevel2"),JobConfig.getRes().getString("panDiscret11.AudienceLevel3"),JobConfig.getRes().getString("panDiscret11.AudienceLevel4"),
@@ -1979,8 +1931,7 @@ public class MainGui {
 		txtMultiCode.getDocument().addDocumentListener(new MultiCode_DocumentListener(this));
 				
 		txtMultiCode.setFocusLostBehavior(JFormattedTextField.COMMIT);	
-		//txtMultiCode.setHorizontalAlignment(JTextField.RIGHT);
-		
+				
 		txtMultiCode.setToolTipText(JobConfig.getRes().getString("panDiscret11.txtMultiCode.tooltip"));
 		
 		lblMultiAudience = new JLabel(JobConfig.getRes().getString("panDiscret11.labMultiAudience"));
@@ -2001,14 +1952,13 @@ public class MainGui {
 		spinnerEditorMultiMode.getModel().setMinimum(1);
 		spinnerEditorMultiMode.getModel().setMaximum(99);
 		spinnerEditorMultiMode.getModel().setStepSize(1);
-		//spinnerEditorMultiMode.getModel().setValue(1);
+		
 		jspCycle.setValue(1);
 		
 	
 		panAudience.add(labAudience);
 		panAudience.add(combAudience);		  
-	    
-	    //panAudience.add(lblMultiAudience);
+	    	    
 	    panAudience.add(txtMultiCode);
 	    panAudience.add(lblCycle);
 	    panAudience.add(jspCycle);
@@ -2355,14 +2305,12 @@ public class MainGui {
 		labBitrate = new JLabel(JobConfig.getRes().getString("panVideo.labBitrate"));
 		slidBitrate = new JSlider(JSlider.HORIZONTAL,1,20000,10000);
 		slidBitrate.addChangeListener(controler);
-		slidBitrate.setMajorTickSpacing(5000);
-		//slidBitrate.setMinorTickSpacing(1000);
+		slidBitrate.setMajorTickSpacing(5000);		
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		labelTable.put( new Integer( 1 ), new JLabel("1"));	
 		labelTable.put( new Integer( 20000 ), new JLabel("20000"));
 		slidBitrate.setLabelTable(labelTable);
-		slidBitrate.setPaintLabels(true);		
-		//slidBitrate.setPaintTicks(true);
+		slidBitrate.setPaintLabels(true);				
 		txtBitrate = new JTextField(4);
 		txtBitrate.setEditable(false);
 		txtBitrate.setText("10000");
@@ -2564,8 +2512,7 @@ public class MainGui {
 	}
 	
 	private void createPanLog(){
-		panProgress = new JPanel();
-		//panProgress.setLayout(new BorderLayout());
+		panProgress = new JPanel();		
 		titlePanLog = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 				JobConfig.getRes().getString("panLog.informations"));
 		panProgress.setBorder(titlePanLog);		
@@ -2580,12 +2527,7 @@ public class MainGui {
 		textInfos.setAutoscrolls(true);
 		textInfos.setLineWrap(true);
 		JScrollPane scrollPane = new JScrollPane(textInfos,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		//textInfos.setSize(frame.getWidth(), 50);
-		//scrollPane.setSize(500, 100);
-		
-		
-		
-		
+				
 		btnEnter = new JButton(JobConfig.getRes().getString("panLog.enter"));
 		btnEnter.setIcon(new ImageIcon(this.getClass().getResource("/icons/apply.png")));
 		btnEnter.setEnabled(false);

@@ -108,10 +108,7 @@ public final class JobConfig {
 	private static boolean offsetIncrementChange = false;
 	private static boolean restrictRangeCuttingPoints = true;
 	private static boolean logVideocrypt = false;
-	
-//	private JobConfig() {
-//		// TODO Auto-generated constructor stub
-//	}
+
 	
 	public static String getDateTime(){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
@@ -999,13 +996,5 @@ public final class JobConfig {
 	public static void setLogVideocrypt(boolean logVideocrypt) {
 		JobConfig.logVideocrypt = logVideocrypt;
 	}
-
-//	public static int getNbFrames() {
-//		return nbFrames;
-//	}
-
-//	public static void setNbFrames(int nbFrames) {
-//		JobConfig.nbFrames = nbFrames;
-//	}
 	
 }

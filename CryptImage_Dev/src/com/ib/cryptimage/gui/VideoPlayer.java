@@ -32,7 +32,6 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 
 import com.ib.cryptimage.core.JobConfig;
-//import com.xuggle.xuggler.IAudioSamples;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,11 +41,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
-//import javax.sound.sampled.AudioFormat;
-//import javax.sound.sampled.AudioSystem;
-//import javax.sound.sampled.DataLine;
-//import javax.sound.sampled.LineUnavailableException;
-//import javax.sound.sampled.SourceDataLine;
+
 
 
 public class VideoPlayer  implements MouseListener, ActionListener, WindowListener {
@@ -63,17 +58,9 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 	private double frameRate;
 	private long systemPreviousCurrentTime = 0;	
 	private boolean inverse;
-
-	
-	//private SourceDataLine mLine;
 	
 
 	public VideoPlayer(double frameRate) {		
-				
-//		if (JobConfig.isWantSound()){
-//			openJavaSound();
-//		}
-		
 		
 		frame = new JDialog();	
 		frame.addWindowListener(this);
@@ -110,12 +97,9 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 		
 		
 		frame.setSize(panLabel.getWidth(), panLabel.getHeight() + 60);
-		
-		//frame.setAutoRequestFocus(true);
+				
 		frame.setAlwaysOnTop(true);
-		//frame.setModal(true);
-		frame.setResizable(false);
-		//frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		frame.setResizable(false);		
 		
 	}
 
@@ -124,32 +108,10 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 		label.setIcon(icon);
 		
 		panLabel.setSize(icon.getIconWidth()+10, icon.getIconHeight()+10);
-		frame.setSize(panLabel.getWidth() + 15, panLabel.getHeight() + 60);
-		
-		//label.revalidate();
-		//label.repaint();
-		//panLabel.revalidate();
-		//panLabel.repaint();
-		//panBtn.revalidate();
-		//panBtn.repaint();
-		//frame.revalidate();
-		//frame.repaint();
-		
-		
-	
-		//frame.setSize(panLabel.getWidth() + 10, panLabel.getHeight() + 50);
-
-//		frame.setMaximumSize(new Dimension(icon.getIconWidth() + 10, icon
-//				.getIconHeight() + 100));
-//		frame.setMinimumSize(new Dimension(icon.getIconWidth() + 10, icon
-//				.getIconHeight() + 100));
-//		frame.setPreferredSize(new Dimension(icon.getIconWidth() + 10, icon
-//				.getIconHeight() + 100));
-		
+		frame.setSize(panLabel.getWidth() + 15, panLabel.getHeight() + 60);		
 	}
 
-	public void showImage() {
-		// frame.setLocation(200,100);
+	public void showImage() {		
 		frame.setVisible(true);
 		
 		double systemClockCurrentTime = System.currentTimeMillis();
@@ -158,7 +120,7 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 		double time;
 		
 		if (diffTime >  (1000/frameRate) && this.systemPreviousCurrentTime !=0){
-			 time =  0;//(1000/frameRate);			 
+			 time =  0;		 
 		}
 		else if(this.systemPreviousCurrentTime == 0){
 			time = (1000/frameRate);			
@@ -181,55 +143,6 @@ public class VideoPlayer  implements MouseListener, ActionListener, WindowListen
 		this.frame.dispose();
 	}
 	
-//	private void openJavaSound()
-//	  {	    
-//	    AudioFormat audioFormat = new AudioFormat(48000, 16, 2, true, false);
-//	    DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-//	    try
-//	    {
-//	      mLine = (SourceDataLine) AudioSystem.getLine(info);
-//	      /**
-//	       * if that succeeded, try opening the line.
-//	       */
-//	      mLine.open(audioFormat);
-//	      /**
-//	       * And if that succeed, start the line.
-//	       */
-//	      mLine.start();
-//	    }
-//	    catch (LineUnavailableException e)
-//	    {
-//	      throw new RuntimeException("could not open audio line");
-//	    }	    
-//	  }
-	
-//	public void playJavaSound(IAudioSamples aSamples)
-//	  {
-//	    /**
-//	     * We're just going to dump all the samples into the line.
-//	     */
-//	    byte[] rawBytes = aSamples.getData().getByteArray(0, aSamples.getSize());	 
-//	    
-//	    mLine.write(rawBytes, 0, aSamples.getSize());
-//	  }
-//
-//	  public void closeJavaSound()
-//	  {
-//	    if (mLine != null)
-//	    {
-//	      /*
-//	       * Wait for the line to finish playing
-//	       */
-//	      mLine.drain();
-//	      /*
-//	       * Close the line.
-//	       */
-//	      mLine.close();
-//	      mLine=null;
-//	    }
-//	  }
-	
-
 	public boolean isInverse() {
 		return inverse;
 	}

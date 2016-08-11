@@ -82,7 +82,7 @@ public class SysterDec extends Syster {
 				order[i] = buffer[keyTable[j]];
 
 			buffer[keyTable[j]] = 32 + i;
-			j += increment; // Note that j is a BYTE
+			j += increment; 
 			if (j >= 256) {
 				j = j - 256;
 			}
@@ -90,8 +90,7 @@ public class SysterDec extends Syster {
 
 		for (i = 0; i < 32; i++)
 			order[255 + i] = buffer[i];
-
-		// offset=j;
+		
 	}
 
 	@Override
@@ -103,11 +102,11 @@ public class SysterDec extends Syster {
 		}
 		this.imageSource = deepCopy(image);		
 		
-		//encodage pal
-				if(JobConfig.getColorMode() == 1){					
-					palEngine.setImg(image);
-					image = palEngine.encode();
-				}
+		// encodage pal
+		if (JobConfig.getColorMode() == 1) {
+			palEngine.setImg(image);
+			image = palEngine.encode();
+		}
 		
 		if(numFrames > 1){
 		deCryptOddFrame(image);
@@ -138,7 +137,7 @@ public class SysterDec extends Syster {
 	
 	private void deCryptEvenFrame(BufferedImage image){
 		//WritableRaster raster;
-		raster2 = image.getRaster(); //deepCopy(image).getRaster();
+		raster2 = image.getRaster(); 
 		newImage = new BufferedImage(this.sWidth, 288, BufferedImage.TYPE_3BYTE_BGR);
 		raster = newImage.getRaster();
 				
@@ -481,107 +480,6 @@ public class SysterDec extends Syster {
 		else 
 			return false;
 	}
-	
-//	private void tagLineBack(Raster ra1, Raster ra2){		
-//		String typeTable = "";
-//		String offsetBin1 = "";
-//		String offsetBin2 = "";
-//		String incrementBin1 = "";
-//		String incrementBin2 = "";
-//		
-//		int[] tab = new int[3];
-//		double somme = 0;
-//		
-//		// tag typeTable
-//		for (int i = 0; i < 2; i++) {
-//			somme = (ra1.getPixel(i, 287, tab)[0] + ra1.getPixel(i, 287, tab)[1] + ra1.getPixel(i, 287, tab)[2]) / 3d;
-//			if (somme >= 0 && somme < 100) {
-//				typeTable = typeTable + "0";
-//			} else {
-//				if (somme > 200 && somme <= 255) {
-//					typeTable = typeTable + "1";
-//				}
-//			}
-//		}
-//		
-//		//tag offset1		
-//		for (int i = 0; i < 8; i++) {
-//			somme = ( ra1.getPixel(i + 2, 287,tab)[0] + ra1.getPixel(i + 2, 287,tab)[1] +ra1.getPixel(i + 2, 287,tab)[2] )/3d;
-//			if(somme >=0 && somme < 100){
-//				offsetBin1 = offsetBin1 + "0";				
-//			}
-//			else{
-//				if(somme >200 && somme <= 255){
-//					offsetBin1 = offsetBin1 + "1";		
-//				}
-//			}				
-//		}
-//		// tag offset2		
-//		for (int i = 0; i < 8; i++) {
-//			somme = (ra2.getPixel(i + 2, 287, tab)[0] + ra2.getPixel(i + 2, 287, tab)[1] + ra2.getPixel(i + 2, 287, tab)[2]) / 3d;
-//			if (somme >= 0 && somme < 100) {
-//				offsetBin2 = offsetBin2 + "0";	
-//			} else {
-//				if (somme > 200 && somme <= 255) {
-//					offsetBin2 = offsetBin2 + "1";		
-//				}
-//			}
-//		}
-//		
-//		
-//		//tag increment1		
-//		for (int i = 8; i < 16; i++) {
-//			somme = ( ra1.getPixel(i + 2, 287,tab)[0] + ra1.getPixel(i +2 , 287,tab)[1] +ra1.getPixel(i + 2, 287,tab)[2] )/3d;
-//			if(somme >=0 && somme < 10){
-//				incrementBin1 = incrementBin1 + "0";	
-//			}
-//			else{
-//				if(somme >240 && somme <= 255){
-//				    incrementBin1 = incrementBin1 + "1";	
-//				}
-//			}				
-//		}
-//		// tag increment2		
-//		for (int i = 8; i < 16; i++) {
-//			somme = (ra2.getPixel(i + 2, 287, tab)[0] + ra2.getPixel(i + 2, 287, tab)[1] + ra2.getPixel(i + 2, 287, tab)[2]) / 3d;
-//			if (somme >= 0 && somme < 10) {
-//				incrementBin2 = incrementBin2 + "0";
-//			} else {
-//				if (somme > 240 && somme <= 255) {
-//					incrementBin2 = incrementBin2 + "1";
-//				}
-//			}
-//		}
-//		
-//		this.setTypeTable(Integer.parseInt(typeTable,2));
-//		this.offSetOdd = Integer.parseInt(offsetBin1, 2);
-//		this.offSetEven = Integer.parseInt(offsetBin2, 2);
-//		this.incrementOdd = Integer.parseInt(incrementBin1, 2);
-//		this.incrementEven = Integer.parseInt(incrementBin2, 2);
-//		
-////		if(offSetOdd > 255 || offSetEven > 255 || incrementOdd > 127 || incrementEven > 127 
-////				|| incrementEven == 0 || incrementOdd == 0){
-////			this.offSetOdd = 20;
-////			this.offSetEven = 20;
-////			this.incrementOdd = 1;
-////			this.incrementEven = 1;
-////		}
-//		
-//		
-////		if (this.getTypeTable() < 1 || this.getTypeTable() > 2) {
-////			this.setTypeTable(2);
-////		}
-//		if(numFrames == 1){			
-//			this.initKeyTable();
-//			}
-//		
-//		
-////		System.out.println(this.offSetOdd + " - " + this.incrementOdd );
-////		System.out.println(this.offSetEven + " - " + this.incrementEven );
-////		System.out.println("---------");
-//		
-//		
-//	}
 	
 	// Calculates the distance between 2 image rows
 		private long distance (int n, int m, int[] tab)

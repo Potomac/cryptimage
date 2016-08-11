@@ -44,19 +44,13 @@ public class MultiCode_DocumentListener implements DocumentListener {
 	}
 
 	@Override
-	public void insertUpdate(DocumentEvent e) {
-		//SwingUtilities.invokeLater(updateGui);
-		computeAudienceMulti(mainGui.getTxtMultiCode().getText());
-		
-		//SwingUtilities.invokeLater(updateGui);
-		
+	public void insertUpdate(DocumentEvent e) {		
+		computeAudienceMulti(mainGui.getTxtMultiCode().getText());				
 	}
 
 	@Override
-	public void removeUpdate(DocumentEvent e) {
-		//SwingUtilities.invokeLater(updateGui);
-		computeAudienceMulti(mainGui.getTxtMultiCode().getText());
-		//SwingUtilities.invokeLater(updateGui);		
+	public void removeUpdate(DocumentEvent e) {	
+		computeAudienceMulti(mainGui.getTxtMultiCode().getText());			
 	}
 	
 	private void computeAudienceMulti(String audienceMulti){

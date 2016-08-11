@@ -111,17 +111,11 @@ public abstract class Syster extends Device {
 		}				
 	}
 	
-	protected void genOffsetIncrementEven() {		
-//		Random rand = new Random();
-//		int min = 0;
-//		int max = 255;
-
+	protected void genOffsetIncrementEven() {
 		this.offset = this.offset + this.increment;
 		if(this.offset > 255){
 			this.offset = offset - 256;
-		}
-		
-		//rand.nextInt(max - min + 1) + min;
+		}	
 			
 	}
 	
@@ -167,8 +161,7 @@ public abstract class Syster extends Device {
 			}
 		}
 		for (i=255;i<287;i++) 
-			permut[i]=i-255;
-		//offset=j;
+			permut[i]=i-255;		
 	}
 	
 	public void showPermut(){
@@ -353,14 +346,12 @@ public abstract class Syster extends Device {
 
 	protected BufferedImage getCompletFrame() {
 		if (this.ready) {
-			this.ready = false;
-			// appel décodeur pal ou secam si choix pal/secam
-			// encodage secam
+			this.ready = false;			
+			
 			if (JobConfig.getColorMode() == 2 && !JobConfig.isWantDec()) {
 				secamEngine.setImg(completFrame);				
 				return secamEngine.decode();
-			}
-			
+			}			
 			
 			if ( JobConfig.getColorMode() == 1) {
 				palEngine.setImg(completFrame);				
