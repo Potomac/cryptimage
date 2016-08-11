@@ -237,8 +237,6 @@ public class MainGui {
 	private TitledBorder titlePanSyster;
 	private TitledBorder titlePanSysterCodingGen;
 	private TitledBorder titlePanSysterDecodingGen;
-	private TitledBorder titlePanSysterSubRdiCoding;
-	private TitledBorder titlePanSysterSubRdiDecoding;
 	private TitledBorder titleColorMode;
 	
 	private JComboBox<String> cbColorMode;
@@ -336,9 +334,9 @@ public class MainGui {
 		panSystemCrypt.add(panVideocryptOptions, "Videocrypt");
 		
 		tabbedPane = new JTabbedPane();
-		tabbedPane.add("Device", panSystemCrypt);
-		tabbedPane.add("Colors rendering", panColorMode);
-		tabbedPane.add("Audio/video", panVideoOptions);
+		tabbedPane.add(JobConfig.getRes().getString("tabbedPane.Device"), panSystemCrypt);
+		tabbedPane.add(JobConfig.getRes().getString("tabbedPane.Colors"), panColorMode);
+		tabbedPane.add(JobConfig.getRes().getString("tabbedPane.AudioVideo"), panVideoOptions);
 		
 		panGlobal.setLayout(new BoxLayout(panGlobal, BoxLayout.Y_AXIS ));
 		panGlobal.add(panMode);
@@ -697,6 +695,10 @@ public class MainGui {
 	
 		chkRestrictRange.setText(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
 		chkLogVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.chkLogVideocrypt"));
+		
+		tabbedPane.setTitleAt(0, JobConfig.getRes().getString("tabbedPane.Device"));
+		tabbedPane.setTitleAt(1, JobConfig.getRes().getString("tabbedPane.Colors"));
+		tabbedPane.setTitleAt(2, JobConfig.getRes().getString("tabbedPane.AudioVideo"));
 	}
 	
 	private void createMenu(){				

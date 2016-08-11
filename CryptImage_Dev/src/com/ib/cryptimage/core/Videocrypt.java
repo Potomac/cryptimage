@@ -62,8 +62,12 @@ public abstract class Videocrypt extends Device {
 	protected int numFrame;
 	protected int frameLine;
 	private boolean bPreviewMode;
-//	protected final static int offset = 64;
-//	protected final static int offset2 = 128;
+	
+	private final int MAXLINES = 65089;
+	private int cptLines;
+	private int part = 1;
+	private String fileName;
+	
 
 	/**
 	 * 
@@ -84,11 +88,12 @@ public abstract class Videocrypt extends Device {
 		try {
 			if(!bPreviewMode
 					&& JobConfig.isLogVideocrypt()){
-				String fileName = JobConfig.getGui().getTxtInputFile().getText();
+				fileName = JobConfig.getGui().getTxtInputFile().getText();
 				fileName = fileName.substring(0, fileName.lastIndexOf("."));
 								
-				fileLog = new FileWriter(fileName + ".csv");
-				fileLog.write("frame;line;encrypting cutting point;decrypting cutting point"
+				fileLog = new FileWriter(fileName + "_videocrypt_" 
+						+  "part" + part +  ".csv");
+				fileLog.write("frame;line;cut point for encrypting;cut point for decrypting"
 						+ "\r\n");
 			}
 		} catch (IOException e) {
@@ -102,10 +107,28 @@ public abstract class Videocrypt extends Device {
 	abstract void closeFileData();
 	
 	protected void feedLog(int nbFrame, int cuttingPoint){
-		frameLine++;
+		frameLine++;		
 		if ( frameLine == 577){
 			frameLine = 1;
 		}
+		
+		cptLines++;
+		if(cptLines == MAXLINES){
+			try {
+				this.fileLog.flush();
+				this.fileLog.close();
+				part++;
+				cptLines = 1;
+				fileLog = new FileWriter(fileName + "_videocrypt_" 
+				+  "part" + part +  ".csv");
+				fileLog.write("frame;line;cut point for encrypting;cut point for decrypting"
+						+ "\r\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
+		
 		if (cuttingPoint == -1) {
 			frameLine--;
 			try {
