@@ -85,9 +85,15 @@ public abstract class Videocrypt extends Device {
 		try {
 			if(!bPreviewMode
 					&& JobConfig.isLogVideocrypt()){				
-				fileName = JobConfig.getOutput_file();							
-				fileLog = new FileWriter(fileName + "_videocrypt_" 
-						+  "part" + part +  ".csv");
+				fileName = JobConfig.getOutput_file();
+				if (JobConfig.getVideo_frame() - Integer.valueOf(JobConfig.getGui()
+						.getJspFrameStartVideocrypt().getValue().toString()) < 113 
+						|| JobConfig.isModePhoto()) {
+					fileLog = new FileWriter(fileName + "_videocrypt.csv");
+
+				} else {
+					fileLog = new FileWriter(fileName + "_videocrypt_" + "part" + part + ".csv");
+				}
 				fileLog.write("frame;line;cut point for encrypting;cut point for decrypting"
 						+ "\r\n");
 			}

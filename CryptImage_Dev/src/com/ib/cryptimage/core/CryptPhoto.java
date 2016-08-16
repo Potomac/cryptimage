@@ -216,10 +216,10 @@ public class CryptPhoto {
 		if (JobConfig.getGui().getRdiSysterCodingFile().isSelected()) {
 			imgRes = systerEnc.transformPhoto(img,true);
 			if (imgRes == null) {
-				imgRes = systerEnc.transformPhoto(img,false);
+				imgRes = systerEnc.transformPhoto(img,true); //false
 			}
-			imgRes = systerEnc.transformPhoto(img,false);
-			
+			//imgRes = systerEnc.transformPhoto(img,false); //false
+			imgRes = systerEnc.transformPhoto(img, systerEnc.getOffSetOdd(), systerEnc.getIncrementOdd(),systerEnc.getOffSetEven(), systerEnc.getIncrementEven());
 			
 			
 			systerEnc.closeFileData();
@@ -228,13 +228,16 @@ public class CryptPhoto {
 			genOffsetIncrement();
 			offset1 = this.offset;
 			increment1 = this.increment;
-			genOffsetIncrement();
-			offset2 = offset1; //this.offset;
-//			if(offset2 > 255){
-//				offset2 = offset2 - 256;
-//			}			
 			
-			increment2 = increment1; //this.increment;
+			if (JobConfig.getGui().getChkChangeOffsetIncrement().isSelected()) {
+				genOffsetIncrement();
+				offset2 = this.offset;
+				increment2 = this.increment;
+			} else {
+				offset2 = offset1;
+				increment2 = increment1;
+			}
+			
 			imgRes = systerEnc.transformPhoto(img, offset1,increment1, offset2, increment2);
 			if (imgRes == null) {				
 				imgRes = systerEnc.transformPhoto(img, offset1,increment1, offset2, increment2);

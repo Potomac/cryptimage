@@ -364,5 +364,21 @@ public abstract class Syster extends Device {
 			return null;
 		}
 	}
+
+	public int getOffSetOdd() {
+		return offSetOdd;
+	}
+
+	public int getOffSetEven() {
+		return offSetEven;
+	}
+
+	public int getIncrementOdd() {
+		return incrementOdd;
+	}
+
+	public int getIncrementEven() {
+		return incrementEven;
+	}
 	
 }

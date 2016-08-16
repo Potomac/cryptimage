@@ -207,7 +207,13 @@ public class SysterEnc extends Syster {
 		this.initPermut();
 		this.crypt();
 		
-		this.cryptOddFrame(image);				
+		this.cryptOddFrame(image);		
+		
+		//ajout
+		if (readFile == true) {
+			this.offset = this.offSetEven;
+			this.increment = this.incrementEven;	
+		}
 		
 		this.initPermut();
 		this.crypt();
