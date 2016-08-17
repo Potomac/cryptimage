@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -66,6 +67,8 @@ public abstract class Videocrypt extends Device {
 	private int cptLines;
 	private int part = 1;
 	private String fileName;
+	private String colorMode = "";
+	private String modeMachine = "";
 	
 
 	/**
@@ -83,19 +86,40 @@ public abstract class Videocrypt extends Device {
 		bPreviewMode = JobConfig.getGui().getChkPlayer().isSelected();
 		
 		try {
-			if(!bPreviewMode
-					&& JobConfig.isLogVideocrypt()){				
+			if (!bPreviewMode && JobConfig.isLogVideocrypt()) {				
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
+					colorMode = "rgb";
+				}
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
+					colorMode = "pal";
+				}
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
+					colorMode = "secam";
+				}
+				
+				if (JobConfig.isWantDec()) {
+					modeMachine = "d";
+				} else {
+					modeMachine = "c";
+				}
+
 				fileName = JobConfig.getOutput_file();
-				if (JobConfig.getVideo_frame() - Integer.valueOf(JobConfig.getGui()
-						.getJspFrameStartVideocrypt().getValue().toString()) < 113 
+				if (JobConfig.isHorodatage()) {
+					File file = new File(fileName);
+					fileName = JobConfig.getDateTime() + "_" + file.getName();
+					fileName = file.getParent() + File.separator + fileName;
+				}
+
+				if (JobConfig.getVideo_frame()
+						- Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString()) < 113
 						|| JobConfig.isModePhoto()) {
-					fileLog = new FileWriter(fileName + "_videocrypt.csv");
+					fileLog = new FileWriter(fileName + "_" + modeMachine + "videocrypt_" + colorMode + ".csv");
 
 				} else {
-					fileLog = new FileWriter(fileName + "_videocrypt_" + "part" + part + ".csv");
+					fileLog = new FileWriter(
+							fileName + "_" + modeMachine + "videocrypt_" + colorMode + "_" + "part" + part + ".csv");
 				}
-				fileLog.write("frame;line;cut point for encrypting;cut point for decrypting"
-						+ "\r\n");
+				fileLog.write("frame;line;cut point for encrypting;cut point for decrypting" + "\r\n");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -120,8 +144,8 @@ public abstract class Videocrypt extends Device {
 				this.fileLog.close();
 				part++;
 				cptLines = 1;
-				fileLog = new FileWriter(fileName + "_videocrypt_" 
-				+  "part" + part +  ".csv");
+				fileLog = new FileWriter(fileName + "_" + modeMachine +"videocrypt_" + colorMode  
+				+  "_part" + part +  ".csv");
 				fileLog.write("frame;line;cut point for encrypting;cut point for decrypting"
 						+ "\r\n");
 			} catch (IOException e) {

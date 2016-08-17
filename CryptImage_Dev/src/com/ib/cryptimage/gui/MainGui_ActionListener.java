@@ -563,6 +563,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}
 		}
 		
+		if(src.equals(this.mainGui.getRdiVideocryptTagsDecoding())){
+			if(src.isSelected()){				
+				this.mainGui.getTxtVideocryptDec().setEnabled(false);
+				this.mainGui.getBtnVideocryptDec().setEnabled(false);	
+			}
+		}
+		
 		if(src.equals(this.mainGui.getRdiVideocryptCorrel())){
 			if(src.isSelected()){				
 				this.mainGui.getTxtVideocryptDec().setEnabled(false);
@@ -1879,7 +1886,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}
 				else {
 					JobConfig.setWantVideocryptEncRandom(false);
-				}	
+				}
+				if(mainGui.getChkVideocryptTags().isSelected()){
+					JobConfig.setWantVideocryptTags(true);
+				}
+				else{
+					JobConfig.setWantVideocryptTags(false);
+				}
 			}
 			
 			if(mainGui.getRdiVideocryptDecoding().isSelected() 
@@ -1895,6 +1908,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				if(mainGui.getRdiVideocryptDecodingFile().isSelected()){
 					JobConfig.setFileDataDecVideocrypt(
 							this.mainGui.getTxtVideocryptDec().getText());
+				}
+				if(mainGui.getRdiVideocryptTagsDecoding().isSelected()){
+					JobConfig.setWantVideocryptTags(true);
+				}
+				else{
+					JobConfig.setWantVideocryptTags(false);
 				}
 			}
 			

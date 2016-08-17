@@ -131,6 +131,11 @@ public class VideocryptEnc extends Videocrypt {
 			secamEngine.setImg(newImage);
 			newImage = secamEngine.averageSpecial();			
 		}
+		
+		//tags
+		if(JobConfig.isWantVideocryptTags()){
+			tagLine();
+		}
 			
 		return newImage;
 	}
@@ -165,6 +170,55 @@ public class VideocryptEnc extends Videocrypt {
 		}
 	}
 	
+	private void tagLine(){
+		String binTypeRange = String.format
+				("%2s", Integer.toBinaryString(typeRange)).replace(" ", "0");
+		String binSeed = String.format
+				("%24s", Integer.toBinaryString(seed)).replace(" ", "0");
+		
+		
+		int[] black = {0,0,0};
+		int[] white = {255,255,255};
+		int incre = 0;
+		int nbPixels = 8;
+		
+		//tag type range
+		for (int i = 0; i < binTypeRange.length(); i++) {
+			if(binTypeRange.charAt(i) == '0'){
+				for (int j = 0; j < nbPixels; j++) {
+				raster2.setPixel( incre, 0, black);
+				incre++;
+				}
+
+			}
+			else{
+				for (int j = 0; j < nbPixels; j++) {
+				raster2.setPixel(incre, 0, white);
+				incre++;
+				}
+			}		
+		}
+		
+		incre = 0;
+		
+		//tag seed		
+		for (int i = 0; i < binSeed.length(); i++) {
+			if(binSeed.charAt(i) == '0'){
+				for (int j = 0; j < nbPixels; j++) {
+					raster2.setPixel( incre + 2*nbPixels, 0, black);
+					incre++;
+				}				
+			}
+			else{
+				for (int j = 0; j < nbPixels; j++) {
+					raster2.setPixel( incre + 2*nbPixels, 0, white);
+					incre++;
+				}	
+			}				
+		}
+		
+		
+	}
 
 	@Override
 	boolean isEnable() {

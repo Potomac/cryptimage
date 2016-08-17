@@ -274,6 +274,8 @@ public class MainGui {
 	private JCheckBox chkChangeOffsetIncrement;
 	private JCheckBox chkRestrictRange;
 	private JCheckBox chkLogVideocrypt;
+	private JCheckBox chkVideocryptTags;
+	private JRadioButton rdiVideocryptTagsDecoding;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -688,6 +690,9 @@ public class MainGui {
 		tabbedPane.setTitleAt(0, JobConfig.getRes().getString("tabbedPane.Device"));
 		tabbedPane.setTitleAt(1, JobConfig.getRes().getString("tabbedPane.Colors"));
 		tabbedPane.setTitleAt(2, JobConfig.getRes().getString("tabbedPane.AudioVideo"));
+		
+		chkVideocryptTags.setText(JobConfig.getRes().getString("panVideocrypt.chkTags"));
+		rdiVideocryptTagsDecoding.setText(JobConfig.getRes().getString("panVideocrypt.rdiTagsDecoding"));
 	}
 	
 	private void createMenu(){				
@@ -1157,6 +1162,9 @@ public class MainGui {
 		rdiVideocryptCorrel = new JRadioButton(JobConfig.getRes().getString("panVideocrypt.rdiVideocryptCorrel"));
 		rdiVideocryptCorrel.addActionListener(controler);
 		
+		rdiVideocryptTagsDecoding = new JRadioButton(JobConfig.getRes().getString("panVideocrypt.rdiTagsDecoding"));
+		rdiVideocryptTagsDecoding.addActionListener(controler);
+		
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(rdiVideocryptCoding);
 		buttonGroup.add(rdiVideocryptDecoding);
@@ -1164,12 +1172,13 @@ public class MainGui {
 		
 		ButtonGroup buttonGroup2 = new ButtonGroup();
 		buttonGroup2.add(rdiVideocryptCodingAuto);
-		buttonGroup2.add(rdiVideocryptCodingFile);
+		buttonGroup2.add(rdiVideocryptCodingFile);		
 		rdiVideocryptCodingAuto.setSelected(true);
 		
 		ButtonGroup buttonGroup3 = new ButtonGroup();
 		buttonGroup3.add(rdiVideocryptCorrel);
 		buttonGroup3.add(rdiVideocryptDecodingFile);
+		buttonGroup3.add(rdiVideocryptTagsDecoding);
 		rdiVideocryptDecodingFile.setSelected(true);
 		
 		JPanel panRdi = new JPanel();
@@ -1219,6 +1228,10 @@ public class MainGui {
 		chkLogVideocrypt.addActionListener(controler);
 		chkLogVideocrypt.setSelected(false);
 		
+		chkVideocryptTags = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkTags"));
+		chkVideocryptTags.addActionListener(controler);
+		chkVideocryptTags.setSelected(false);
+		
 		//pan coding options
 		GridBagLayout gblCodingGen = new GridBagLayout();
 		
@@ -1262,6 +1275,14 @@ public class MainGui {
 				1,1,
 				1,33,
 				1, 1,1,1);
+		this.placerComposants(panVideocryptCodingGen,
+				gblCodingGen,
+				chkVideocryptTags,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				1, 2,
+				1,1,
+				1,33,
+				1, 1,1,1);
 		
 		//pan decoding options
 				GridBagLayout gblDecodingGen = new GridBagLayout();
@@ -1292,9 +1313,17 @@ public class MainGui {
 						1, 1,1,1);
 				this.placerComposants(panVideocryptDecodingGen,
 						gblDecodingGen,
-						rdiVideocryptCorrel,
+						rdiVideocryptTagsDecoding,
 						GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,				
 						0, 1,
+						1,1,
+						0,33,
+						1, 1,1,1);
+				this.placerComposants(panVideocryptDecodingGen,
+						gblDecodingGen,
+						rdiVideocryptCorrel,
+						GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,				
+						0, 2,
 						1,1,
 						0,33,
 						1, 1,1,1);
@@ -3275,6 +3304,14 @@ public class MainGui {
 
 	public JCheckBox getChkLogVideocrypt() {
 		return chkLogVideocrypt;
+	}
+
+	public JCheckBox getChkVideocryptTags() {
+		return chkVideocryptTags;
+	}
+
+	public JRadioButton getRdiVideocryptTagsDecoding() {
+		return rdiVideocryptTagsDecoding;
 	}
 	
 

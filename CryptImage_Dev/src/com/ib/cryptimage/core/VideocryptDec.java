@@ -22,6 +22,7 @@
 package com.ib.cryptimage.core;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -72,14 +73,23 @@ public class VideocryptDec extends Videocrypt {
 		newImage = new BufferedImage(this.sWidth, 576, BufferedImage.TYPE_3BYTE_BGR);
 		raster2 = newImage.getRaster();
 		
-		if(this.wantCorrel == false ){
-			if(!this.readFileData()){				
-				this.enable = false;
-				return image;
+		if (this.wantCorrel == false) {
+
+			if (JobConfig.isWantVideocryptTags()) {
+				if (!tagLine()) {
+					this.enable = false;
+					return image;
+				}
+			} else {
+				if (!this.readFileData()) {
+					this.enable = false;
+					return image;
+				}
 			}
+			
 			cutAndRotate();
-		}
-		else{
+		
+		} else {
 			searchCorrel();
 		}		
 		
@@ -178,7 +188,104 @@ public class VideocryptDec extends Videocrypt {
 		}
 
 	}
+	
+	private boolean tagLine(){		
+		String binTypeRange = "";
+		String binSeed = "";
+		
+		int nbPixels = 8;
+		int whiteMin = 200;
+		int whiteMax = 255;
+		int blackMin = 0;
+		int blackMax = 127;
+		
+		int[] tab = new int[3];
+		double somme = 0;
+		int incre = 0;
+		
+		// tag type range
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < nbPixels; j++) {
+				somme += (raster.getPixel(incre, 0, tab)[0] + raster.getPixel(incre, 0, tab)[1] + raster.getPixel(incre, 0, tab)[2]) / 3d;
+			incre++;
+			}
+			somme = somme/nbPixels;
+			if (somme >= blackMin && somme < blackMax) {
+				binTypeRange = binTypeRange + "0";
+				somme = 0;
+			} else {
+				if (somme > whiteMin && somme <= whiteMax) {
+					binTypeRange = binTypeRange + "1";
+					somme = 0;
+				}
+			}			
+		}
+		
+		somme = 0;
+		incre = 0;
+		
+		//tag seed		
+		for (int i = 0; i < 24; i++) {
+			for (int j = 0; j < nbPixels; j++) {
+			somme += ( raster.getPixel(incre + 2*nbPixels, 0,tab)[0] + raster.getPixel(incre + 2*nbPixels, 0,tab)[1] +raster.getPixel(incre + 2*nbPixels, 0,tab)[2] )/3d;
+			incre++;
+			}
+			somme = somme/nbPixels;
+			if(somme >=blackMin && somme < blackMax){
+				binSeed = binSeed + "0";
+				somme = 0;
+			}
+			else{
+				if(somme >whiteMin && somme <= whiteMax){
+					binSeed = binSeed + "1";
+					somme = 0;
+				}
+			}				
+		}
+		
+		//check values
+		if (!checkValuesTags(binTypeRange, binSeed)){
+			this.skip = true;
+			if (!JobConfig.getGui().getChkPlayer().isSelected() && JobConfig.isLogVideocrypt()) {
+				feedLog(numFrame, -1);
+			}
+			return false;
+		}				
+			
+			this.typeRange = Integer.parseInt(binTypeRange, 2);
+			this.seed = Integer.parseInt(binSeed, 2);
+			
+			
+			if(this.typeRange == 1 ){
+				this.rangeStart = 20;
+				this.rangeEnd = 236;
+				this.typeRange = 1;
+			} else{
+				this.rangeStart = 1;
+				this.rangeEnd = 255;
+				this.typeRange = 2;
+			}		
+			
+			generateValues(this.seed);						
+			
+			this.skip = false;
+			return true;		
+	}
+	
+	private boolean checkValuesTags(String binTypeRange, String binSeed) {
 
+		try {
+			if (Integer.parseInt(binTypeRange, 2) == 1 || Integer.parseInt(binTypeRange, 2) == 2) {
+				if (Integer.parseInt(binSeed, 2) >= 1 && Integer.parseInt(binSeed, 2) <= 16777216) {
+					return true;
+				}
+			}
+
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
 
 	@Override
 	void closeFileData() {

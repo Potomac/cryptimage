@@ -563,6 +563,7 @@ public class SysterDec extends Syster {
 						
 		   this.offset = offset_opt;
 		   this.increment = incr_opt;		   
+		   
 		}
 		
 		// Calculates the distance between 2 image rows

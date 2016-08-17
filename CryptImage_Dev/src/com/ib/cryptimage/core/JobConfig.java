@@ -108,6 +108,7 @@ public final class JobConfig {
 	private static boolean offsetIncrementChange = false;
 	private static boolean restrictRangeCuttingPoints = true;
 	private static boolean logVideocrypt = false;
+	private static boolean wantVideocryptTags = false;
 
 	
 	public static String getDateTime(){
@@ -995,6 +996,14 @@ public final class JobConfig {
 
 	public static void setLogVideocrypt(boolean logVideocrypt) {
 		JobConfig.logVideocrypt = logVideocrypt;
+	}
+
+	public static boolean isWantVideocryptTags() {
+		return wantVideocryptTags;
+	}
+
+	public static void setWantVideocryptTags(boolean wantVideocryptTags) {
+		JobConfig.wantVideocryptTags = wantVideocryptTags;
 	}
 	
 }
