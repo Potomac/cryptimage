@@ -2236,7 +2236,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 		
 		mainGui.getSlidFrames().setMaximum(nb_frames_def);
-		mainGui.getSlidFrames().setValue((int) (0.10 * nb_frames_def));		
+		double percFrame = 1;
+//		if(nb_frames_def <= 15000 ){
+//			percFrame = 1;
+//		}
+//		else{
+//			percFrame = 0.10;
+//		}
+		mainGui.getSlidFrames().setValue((int) (percFrame * nb_frames_def));		
 		mainGui.getSlidFrames().setLabelTable(labelTable);
 		mainGui.getSlidFrames().setMajorTickSpacing((int) (0.5 * nb_frames_def));
 		mainGui.getSlidFrames().setMinorTickSpacing((int) (0.05 * nb_frames_def));

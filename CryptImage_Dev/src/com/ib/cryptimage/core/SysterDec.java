@@ -314,7 +314,7 @@ public class SysterDec extends Syster {
 		String incrementBin1 = "";
 		String incrementBin2 = "";
 		int nbPixels = 8;
-		int whiteMin = 200;
+		int whiteMin = 140;//200;
 		int whiteMax = 255;
 		int blackMin = 0;
 		int blackMax = 127;

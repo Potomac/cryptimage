@@ -194,7 +194,7 @@ public class VideocryptDec extends Videocrypt {
 		String binSeed = "";
 		
 		int nbPixels = 8;
-		int whiteMin = 200;
+		int whiteMin = 140; //200
 		int whiteMax = 255;
 		int blackMin = 0;
 		int blackMax = 127;
