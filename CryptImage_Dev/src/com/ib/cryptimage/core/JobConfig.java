@@ -93,8 +93,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.2.2";
-	private static String releaseDate = "2016-08-18";
+	private static String VERSION = "1.3.0";
+	private static String releaseDate = "2017-04-30";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -109,6 +109,7 @@ public final class JobConfig {
 	private static boolean restrictRangeCuttingPoints = true;
 	private static boolean logVideocrypt = false;
 	private static boolean wantVideocryptTags = false;
+	private static boolean nullDelay = false;
 
 	
 	public static String getDateTime(){
@@ -1004,6 +1005,14 @@ public final class JobConfig {
 
 	public static void setWantVideocryptTags(boolean wantVideocryptTags) {
 		JobConfig.wantVideocryptTags = wantVideocryptTags;
+	}
+
+	public static boolean isNullDelay() {
+		return nullDelay;
+	}
+
+	public static void setNullDelay(boolean nullDelay) {
+		JobConfig.nullDelay = nullDelay;
 	}
 	
 }

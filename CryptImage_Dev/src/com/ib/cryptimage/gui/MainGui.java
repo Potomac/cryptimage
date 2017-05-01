@@ -133,6 +133,7 @@ public class MainGui {
 	private JTextField txtDelay2;
 	private JSlider slidDelay2;
 	private JCheckBox chkDelay;
+	private JCheckBox chkNullDelay;
 	private JSpinner jsp16bitKeyword;
 	private JLabel labFrameStart;
 	private JLabel labFrameStartSyster;
@@ -306,10 +307,10 @@ public class MainGui {
 		frame.setLayout(new GridLayout(1,1));
 		panGlobal = new JPanel();
 		
-		frame.setSize(740,700);
+		frame.setSize(810,700);
 		frame.setLocationRelativeTo(null);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(740, 700));
+		frame.setMinimumSize(new Dimension(810, 700));
 		frame.setResizable(true);		
 		frame.setIconImage(new ImageIcon(this.getClass().getResource("/icons/logo_jframe.png")).getImage());
 		
@@ -592,6 +593,7 @@ public class MainGui {
 		chkSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkSound.tooltip"));
 		chkDisableSound.setText(JobConfig.getRes().getString("panDiscret11.chkDisableSound"));
 		chkDisableSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkDisableSound.tooltip"));
+		chkNullDelay.setText(JobConfig.getRes().getString("panDiscret11.chkNullDelay"));
 			
 		//createPanKeyboard
 		titlePanKeyboard.setTitle(JobConfig.getRes().getString("panKeyboard.titlePanKeyboard"));
@@ -1998,6 +2000,10 @@ public class MainGui {
 		chkDelay.setSelected(true);
 		chkDelay.addActionListener(controler);
 		
+		chkNullDelay = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkNullDelay"));
+		chkNullDelay.setSelected(false);
+		chkNullDelay.addActionListener(controler);
+		
 		labDelay1 = new JLabel(JobConfig.getRes().getString("panDiscret11.labDelay1"));
 		txtDelay1 = new JTextField(5);
 		labDelay2 = new JLabel(JobConfig.getRes().getString("panDiscret11.labDelay2"));
@@ -2238,12 +2244,21 @@ public class MainGui {
 				10,25,
 				1, 1,1,1);
 		
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				chkNullDelay,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 5,
+				1,1,
+				10,25,
+				1, 1,1,1);
+		
 		// enable/disable noBlackBar
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				chkNoBlackBar,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				2, 5,
+				3, 5,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -2253,7 +2268,7 @@ public class MainGui {
 				gbl,
 				chkSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				3, 5,
+				4, 5,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -2262,7 +2277,7 @@ public class MainGui {
 				gbl,
 				chkDisableSound,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				4, 5,
+				5, 5,
 				1,1,
 				10,25,
 				1, 1,1,1);
@@ -3312,6 +3327,10 @@ public class MainGui {
 
 	public JRadioButton getRdiVideocryptTagsDecoding() {
 		return rdiVideocryptTagsDecoding;
+	}
+
+	public JCheckBox getChkNullDelay() {
+		return chkNullDelay;
 	}
 	
 

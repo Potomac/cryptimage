@@ -196,6 +196,22 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					this.mainGui.getChkNoBlackBar().isSelected());
 		}
 		
+		if(src.equals(this.mainGui.getChkNullDelay())){
+			if(src.isSelected()){
+				this.mainGui.getSlidDelay1().setEnabled(false);
+				this.mainGui.getSlidDelay2().setEnabled(false);
+				this.mainGui.getChkDelay().setEnabled(false);
+				JobConfig.setNullDelay(true);
+			}
+			else {
+				this.mainGui.getSlidDelay1().setEnabled(true);
+				this.mainGui.getSlidDelay2().setEnabled(true);
+				this.mainGui.getChkDelay().setEnabled(true);
+				JobConfig.setNullDelay(false);
+			}
+			
+		}
+		
 		if (src.equals(this.mainGui.getChkStrictMode())) {			
 			if (src.isSelected()) {
 				if(this.mainGui.getRdiPhoto().isSelected()){					
@@ -352,7 +368,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if(this.mainGui.getCbColorMode().getSelectedIndex()==2){
 				this.mainGui.getCbAveragePal().setEnabled(false);
 			}
-		}
+		}		
 		
 		if(src.equals(this.mainGui.getCombSystemCrypt())){
 			switch (this.mainGui.getCombSystemCrypt().getSelectedIndex()) {

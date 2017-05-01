@@ -101,7 +101,13 @@ public class SoundCrypt {
 			} else {
 				sound = lowPassChebyShevChorus48000_pre(sound);
 			}
-		} 
+		}
+//		else
+//			if (this.rate == 44100) {				
+//				sound = lowPassChebyShevChorus44100_post(sound);
+//			} else {
+//				sound = lowPassChebyShevChorus48000_post(sound);
+//			}
 		
 		sound = crypt(sound, enable);
 
@@ -111,7 +117,13 @@ public class SoundCrypt {
 			} else {
 				sound = lowPassChebyShevChorus48000_post(sound);
 			}
-		} 
+		}
+//		else
+//			if (this.rate == 44100) {				
+//				sound = lowPassChebyShevChorus44100_pre(sound);
+//			} else {
+//				sound = lowPassChebyShevChorus48000_pre(sound);
+//			}
 		
 		return sound;
 	}

@@ -254,21 +254,29 @@ public class Discret11Dec extends Discret {
 	 * @param perc1 the percentage value of retard 1
 	 * @param perc2 the percentage value of retard 2
 	 */
-	private void initDecaPixels(double perc1, double perc2){
-						
-		decaPixels[0] = 0;
-		decaPixels[1] = (int)(Math.round(perc1 * this.sWidth )); // previous value : 0.018 0.0167 0.0167
-		decaPixels[2] = (int)(Math.round(perc2 * this.sWidth )); // previous value : 0.036 0.0347 0.0334
-		
-		if (decaPixels[1] == 0){
-			decaPixels[1] = 1;
+	private void initDecaPixels(double perc1, double perc2){						
+		if(JobConfig.isNullDelay()){
+			decaPixels[0] = 0;
+			decaPixels[1] = 0;
+			decaPixels[2] = 0;
+			JobConfig.setDelay1(decaPixels[1]);
+			JobConfig.setDelay2(decaPixels[2]);			
 		}
-		if (decaPixels[2] == 0 ){
-			decaPixels[2] = 2;
+		else{
+			decaPixels[0] = 0;
+			decaPixels[1] = (int)(Math.round(perc1 * this.sWidth )); // previous value : 0.018 0.0167 0.0167
+			decaPixels[2] = (int)(Math.round(perc2 * this.sWidth )); // previous value : 0.036 0.0347 0.0334
+			
+			if (decaPixels[1] == 0){
+				decaPixels[1] = 1;
+			}
+			if (decaPixels[2] == 0 ){
+				decaPixels[2] = 2;
+			}
+			
+			JobConfig.setDelay1(decaPixels[1]);
+			JobConfig.setDelay2(decaPixels[2]);
 		}
-		
-		JobConfig.setDelay1(decaPixels[1]);
-		JobConfig.setDelay2(decaPixels[2]);
 	}
 	
 	/**
