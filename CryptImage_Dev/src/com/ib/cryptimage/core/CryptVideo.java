@@ -146,10 +146,22 @@ public class CryptVideo {
 		IMediaReader reader = ToolFactory.makeReader(JobConfig
 				.getInput_file());
 		reader.readPacket();
+		
 		this.width = reader.getContainer().getStream(0).getStreamCoder()
 				.getWidth();
 		this.height = reader.getContainer().getStream(0).getStreamCoder()
 				.getHeight();
+		
+		if (JobConfig.isPanAndScan() && JobConfig.getSystemCrypt() == 0 && !JobConfig.isStrictMode()
+				&& !JobConfig.isWantDec()) {
+			if ((float) this.width / (float) this.height > 4f / 3f) {
+				this.width = (int) ((4f / 3f) * (float) this.height);
+			} else if ((float) this.width / (float) this.height < 4f / 3f) {
+				this.height = (int) ((float) this.width / (4f / 3f));
+			}
+		}
+		
+		
 		double frameRate = reader.getContainer().getStream(0).getStreamCoder()
 				.getFrameRate().getValue();
 		

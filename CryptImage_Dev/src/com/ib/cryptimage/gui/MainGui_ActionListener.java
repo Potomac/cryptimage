@@ -133,6 +133,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageCheckBoxes(JCheckBox src) {
 		
+		if(src.equals(this.mainGui.getChkPanAndScan())){
+			if (this.mainGui.getChkPanAndScan().isSelected()){
+				JobConfig.setPanAndScan(true);
+			}
+			else{
+				JobConfig.setPanAndScan(false);
+			}			
+		}
+		
 		if (src.equals(this.mainGui.getChkLogVideocrypt())) {
 			if (this.mainGui.getChkLogVideocrypt().isSelected()) {
 				JobConfig.setLogVideocrypt(true);
@@ -1127,6 +1136,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				+ "Copyright (C) "+ JobConfig.getReleaseDate() + " Mannix54 <br/>";
 
 		String link = "<a href=\"http://ibsoftware.free.fr/cryptimage.php\">http://ibsoftware.free.fr/cryptimage.php</a>"
+				+ "<br/>";
+		
+		String link2 = "<a href=\"http://cryptimage.vot.pl/\">http://cryptimage.vot.pl/</a>"
 				+ "<br/><br/>";
 
 		String end = "under the GNU GPL v3 license <br/><br/>"
@@ -1135,7 +1147,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				+ " it under certain conditions.";
 
 		JEditorPane ep = new JEditorPane("text/html", "<html><body>" //
-				+ deb + link + end + "</body></html>");
+				+ deb + link + link2 + end + "</body></html>");
 		
 		ep.addHyperlinkListener(new HyperlinkListener() {
 			@Override

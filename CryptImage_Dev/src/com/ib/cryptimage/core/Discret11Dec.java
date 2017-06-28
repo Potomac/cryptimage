@@ -28,6 +28,11 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 //import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -232,6 +237,23 @@ public class Discret11Dec extends Discret {
 		}
 	}
 	
+//	/**
+//	 * initialize the delay table, 
+//	 * we choose the right truth table to be compatible with
+//	 * the current operational mode of the Discret11 object
+//	 * truthTable[z][b0][b10]
+//	 */
+//	private void _initTruthTable() {
+//		truthTable[0][0][0] = 2;
+//		truthTable[0][0][1] = 1;
+//		truthTable[0][1][0] = 0;
+//		truthTable[0][1][1] = 0;
+//		truthTable[1][0][0] = 0;
+//		truthTable[1][0][1] = 2;
+//		truthTable[1][1][0] = 2;
+//		truthTable[1][1][1] = 1;
+//	}
+	
 	/**
 	 * initialize the delay table, 
 	 * we choose the right truth table to be compatible with
@@ -239,14 +261,14 @@ public class Discret11Dec extends Discret {
 	 * truthTable[z][b0][b10]
 	 */
 	private void initTruthTable() {
-		truthTable[0][0][0] = 2;
+		truthTable[0][0][0] = 0;
 		truthTable[0][0][1] = 1;
-		truthTable[0][1][0] = 0;
-		truthTable[0][1][1] = 0;
-		truthTable[1][0][0] = 0;
-		truthTable[1][0][1] = 2;
-		truthTable[1][1][0] = 2;
-		truthTable[1][1][1] = 1;
+		truthTable[0][1][0] = 2;
+		truthTable[0][1][1] = 2;
+		truthTable[1][0][0] = 2;
+		truthTable[1][0][1] = 0;
+		truthTable[1][1][0] = 0;
+		truthTable[1][1][1] = 1;		
 	}
 	
 	/**
@@ -297,6 +319,19 @@ public class Discret11Dec extends Discret {
 							+ j], z)];
 				}
 			}
+		}
+		//serialize delarray
+		File fichier =  new File("delarray.ser") ;
+		try {
+			ObjectOutputStream oos =  new ObjectOutputStream(new FileOutputStream(fichier)) ;
+			oos.writeObject(delayArray) ;
+			oos.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -628,6 +663,7 @@ public class Discret11Dec extends Discret {
 			return image;
 		}
 	}
+
 	
 	/**
 	 * Transform the lines of the even part of an image ( trame paire )
@@ -648,11 +684,11 @@ public class Discret11Dec extends Discret {
 			
 			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
 				// digital image ) or if next line is 623 ( 576 in digital image )
-				raster.setPixels(delayArray[index11bitsKey][this.seqFrame][cptArray] , y, this.sWidth
-						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(0,
+				raster.setPixels(0 , y, this.sWidth
+						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
 						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] , 1,
 						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray]) * 3]));
-				//draw black line at start of delay
+				//draw black line at end of delay
 				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
 				cptArray++;
 			}
@@ -660,6 +696,7 @@ public class Discret11Dec extends Discret {
 		}		
 		return image;		
 	}
+
 	
 	/**
 	 * Transform the lines of the odd part of an image ( trame impaire )
@@ -683,11 +720,11 @@ public class Discret11Dec extends Discret {
 
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
-				raster.setPixels(delayArray[index11bitsKey][this.seqFrame][cptArray] , y, this.sWidth
-						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(0,
+				raster.setPixels(0 , y, this.sWidth
+						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
 						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray], 1,
 						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] ) * 3]));
-				//draw black line at start of delay
+				//draw black line at end of delay
 				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
 				cptArray++;
 			}
@@ -695,6 +732,7 @@ public class Discret11Dec extends Discret {
 		}
 		return image;			
 	}
+
 	
 	/**
 	 * Transform the lines of the odd part of an image ( trame impaire )
@@ -716,11 +754,11 @@ public class Discret11Dec extends Discret {
 					
 			if (y != 574) { // we don't increment if it's line 310 ( 575 in
 				// digital image )
-				raster.setPixels(delayArray[index11bitsKey][5][cptArray] , y, this.sWidth
-						- delayArray[index11bitsKey][5][cptArray] , 1, raster.getPixels(0,
+				raster.setPixels(0 , y, this.sWidth
+						- delayArray[index11bitsKey][5][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][5][cptArray],
 						y, this.sWidth - delayArray[index11bitsKey][5][cptArray], 1,
 						new int[(this.sWidth - delayArray[index11bitsKey][5][cptArray] ) * 3]));
-				//draw black line at start of delay
+				//draw black line at end of delay
 				drawLine(delayArray[index11bitsKey][5][cptArray], y);
 				cptArray++;
 			}
@@ -728,10 +766,16 @@ public class Discret11Dec extends Discret {
 		}
 		return image;			
 	}
+
+	protected void _drawLine(int delay,int y){
+		//draw black line at start of delay
+		raster.setPixels(0, y,delay , 1, 
+				new int[delay  * 3]);			
+	}
 	
 	protected void drawLine(int delay,int y){
 		//draw black line at start of delay
-		raster.setPixels(0, y,delay , 1, 
+		raster.setPixels(this.sWidth - delay, y,delay , 1, 
 				new int[delay  * 3]);			
 	}
 

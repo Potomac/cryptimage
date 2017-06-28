@@ -174,6 +174,7 @@ public class MainGui {
 	private JLabel labAudioCodec;
 	private JComboBox<String> combAudioCodec;
 	private JComboBox<String> combAudioRate;
+	private JCheckBox chkPanAndScan;
 	
 	private JPanel panProgress;
 	private JProgressBar progress;
@@ -695,6 +696,8 @@ public class MainGui {
 		
 		chkVideocryptTags.setText(JobConfig.getRes().getString("panVideocrypt.chkTags"));
 		rdiVideocryptTagsDecoding.setText(JobConfig.getRes().getString("panVideocrypt.rdiTagsDecoding"));
+		
+		chkPanAndScan.setText(JobConfig.getRes().getString("panVideo.panAndScan"));
 	}
 	
 	private void createMenu(){				
@@ -2340,6 +2343,9 @@ public class MainGui {
 		chkHorodatage.setToolTipText(JobConfig.getRes().getString("panVideo.chkHorodatage.tooltip"));
 		chkHorodatage.addActionListener(controler);
 		
+		chkPanAndScan = new JCheckBox(JobConfig.getRes().getString("panVideo.panAndScan"));
+		chkPanAndScan.addActionListener(controler);
+		
 		
 		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2", "FFV1"};
 		combCodec = new JComboBox<String>(tab);	
@@ -2530,13 +2536,21 @@ public class MainGui {
 				1,1,
 				25,50,
 				1, 1,1,1);
+		this.placerComposants(panVideoOptions,
+				gbl,
+				chkPanAndScan,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 1,
+				7,1,
+				25,50,
+				1, 1,1,1);
 		
 		//codec video
 		this.placerComposants(panVideoOptions,
 				gbl,
 				panVideoCodec,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 1,
+				0, 2,
 				7,1,
 				100,50,
 				1, 1,1,1);
@@ -2546,7 +2560,7 @@ public class MainGui {
 				gbl,
 				panExtensionVideo,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 2,
+				0, 3,
 				7,1,
 				100,50,
 				1, 1,1,1);
@@ -3331,6 +3345,10 @@ public class MainGui {
 
 	public JCheckBox getChkNullDelay() {
 		return chkNullDelay;
+	}
+
+	public JCheckBox getChkPanAndScan() {
+		return chkPanAndScan;
 	}
 	
 

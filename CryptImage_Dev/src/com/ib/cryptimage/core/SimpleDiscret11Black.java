@@ -27,6 +27,8 @@ package com.ib.cryptimage.core;
  *
  */
 public class SimpleDiscret11Black extends SimpleDiscret11 {
+	int[] tabPixels;
+	int[] rgbPixel = new int[3];	
 
 	public SimpleDiscret11Black(int key16bits, int audienceLevel, int mode, int height, int width) {
 		super(key16bits, audienceLevel, mode, height, width);		
@@ -42,6 +44,27 @@ public class SimpleDiscret11Black extends SimpleDiscret11 {
 		//draw black line at start of delay
 		raster.setPixels(0, y, JobConfig.getDelay2(), 1, 
 				new int[JobConfig.getDelay2() * 3]);		
+	}
+	
+	protected void drawLineDec(int y){
+		//draw color line at end of delay
+		try {
+			rgbPixel = raster.getPixel(this.width - 1 - delayArray[this.seqFullFrame][y], y, 
+					new int[3]);
+		} catch (Exception e) {
+			rgbPixel = raster.getPixel(this.width - 1 - delayArray[this.seqFullFrame][y], y, 
+					new int[3]);
+		}
+					
+		tabPixels = new int[delayArray[this.seqFullFrame][y]*3];
+		for (int i = 0; i < tabPixels.length; i=i+3) {
+			tabPixels[i] = rgbPixel[0];
+			tabPixels[i+1] = rgbPixel[1];
+			tabPixels[i+2] = rgbPixel[2];
+		}
+		
+		raster.setPixels(this.width - delayArray[this.seqFullFrame][y], y,delayArray[this.seqFullFrame][y], 1, 
+				tabPixels);			
 	}
 
 }

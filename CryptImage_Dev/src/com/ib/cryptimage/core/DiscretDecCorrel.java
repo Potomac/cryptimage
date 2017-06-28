@@ -51,7 +51,7 @@ public class DiscretDecCorrel extends Discret {
 	 * in 3 dimension array who represents
 	 * the 6 TV frames,
 	 */
-	private int[][][]  delayArrayFull = new int[2047][6][286];
+	private int[][]  delayArrayFull = new int[8188][286];
 	
 	/**
 	 * array for storing the delay in pixels
@@ -78,7 +78,6 @@ public class DiscretDecCorrel extends Discret {
 	private BufferedImage imageEven;
 	
 	long[][] matdist;
-	private int key11Sol;
 	private int seqSol;
 	BufferedImage imgFinal;
 	
@@ -156,7 +155,7 @@ public class DiscretDecCorrel extends Discret {
         }
         
         try{
-            delayArrayFull = (int [][][])inputStream.readObject();            
+            delayArrayFull = (int [][])inputStream.readObject();       
             inputStream.close();
         }catch(Exception e){
             System.out.println("There was an issue reading from the file: " + e);
@@ -218,7 +217,7 @@ public class DiscretDecCorrel extends Discret {
 
 	
 	// Calculates the distance between 2 image rows
-	private long distance (int key11bits, int seq, int[] tab)
+	private long distance ( int seq, int[] tab)
 	{
 		
 		long res;
@@ -228,8 +227,8 @@ public class DiscretDecCorrel extends Discret {
 		for (i=100; i<220; i+=3){ // 100 220 i++=3
 			for (int j = 0; j < 600; j+=150) {
 				//res += Math.abs((long)(raster.getPixel(decaPixels[2] - decaPixels[delayArrayFull[key11bits][seq][ i]] + j, i, new int[3])[0] - raster.getPixel(decaPixels[2] - decaPixels[delayArrayFull[key11bits][seq][ i + 1]] + j, i+1, new int[3])[0]));
-				val = tab[(decaPixels[2] - decaPixels[delayArrayFull[key11bits][seq][ i]] + j) + i * 768];
-				val2 = tab[(decaPixels[2] - decaPixels[delayArrayFull[key11bits][seq][ i + 1]] + j) + (i+1) * 768];
+				val = tab[( decaPixels[delayArrayFull[seq][ i]] + j) + i * 768];
+				val2 = tab[( decaPixels[delayArrayFull[seq][ i + 1]] + j) + (i+1) * 768];
 				pix1 =((((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3);
 				pix2 =((((val2 >>16 ) & 0xFF) + ((val2 >>8 ) & 0xFF) + (val2 & 0xFF))/3);
 				res += Math.abs((long)(pix1 - pix2));	
@@ -240,11 +239,11 @@ public class DiscretDecCorrel extends Discret {
 		return res;
 	}
 	
-	private long correl(int key11bits, int seq, int[] tab) {
+	private long correl(int seq, int[] tab) {
 		long val;
 		long somme = 0; // Sum of the distances between rows.
 
-		val = distance(key11bits, seq, tab);
+		val = distance(seq, tab);
 		somme += val;
 
 		return somme;
@@ -256,35 +255,26 @@ public class DiscretDecCorrel extends Discret {
 		int[] tab ;
 		tab = image.getRGB(0, 0, 768, 288, null, 0, 768);
 
-		long distance_mini = 93466368856l;
-		int offset_opt = 0;
-		int incr_opt = 0;
-		int offset = -1;
+		long distance_mini = 93466368856l;	
+		int incr_opt = 0;	
 		int incr = -1;
 		
 		//TODO
 		//calcul image claire
 		val = distanceClear(tab);
 		if (val < distance_mini) {
-			distance_mini = val;
-			offset_opt = offset;
+			distance_mini = val;	
 			incr_opt = incr;
 		}		
 		
-		for (offset = 1; offset < 2047; offset++) {//
-			
-				
-			for (incr = 0; incr < 6; incr++) {
-				val = correl(offset,incr, tab);
+			for (incr = 1; incr < 8188; incr++) {
+				val = correl(incr, tab);
 				if (val < distance_mini) {
-					distance_mini = val;
-					offset_opt = offset;
+					distance_mini = val;	
 					incr_opt = incr;
 				}
 			}
-		}
-		 
-		 this.key11Sol = offset_opt;
+		
 		 this.seqSol = incr_opt;		
 	}
 	
@@ -324,10 +314,10 @@ public class DiscretDecCorrel extends Discret {
 		return this.imgFinal;
 	}
 	
-	
+		
 	private void decryptImgOdd() {
 		// clear image
-		if (key11Sol == -1 && seqSol == -1) {
+		if ( seqSol == -1) {
 			this.enable = false;
 			WritableRaster raster2;
 			raster2 = imgFinal.getRaster();
@@ -353,21 +343,22 @@ public class DiscretDecCorrel extends Discret {
 			int ligne = 0;
 
 			for (int i = 0; i < 286; i++) {
-				raster2.setPixels(decaPixels[delayArrayFull[key11Sol][seqSol][i]], ligne * 2,
-						768 - decaPixels[delayArrayFull[key11Sol][seqSol][i]], 1,
-						raster.getPixels(0, i + 0, this.sWidth - decaPixels[delayArrayFull[key11Sol][seqSol][i]], 1,
-								new int[(this.sWidth - decaPixels[delayArrayFull[key11Sol][seqSol][i]]) * 3]));
-				// draw black line at start of delay
-				raster2.setPixels(0, ligne * 2, decaPixels[delayArrayFull[key11Sol][seqSol][i]], 1,
-						new int[decaPixels[delayArrayFull[key11Sol][seqSol][i]] * 3]);
+				raster2.setPixels(0, ligne * 2,
+						768 - decaPixels[delayArrayFull[seqSol][i]], 1,
+						raster.getPixels(decaPixels[delayArrayFull[seqSol][i]], i + 0, this.sWidth - decaPixels[delayArrayFull[seqSol][i]], 1,
+								new int[(this.sWidth - decaPixels[delayArrayFull[seqSol][i]]) * 3]));
+				// draw black line at end of delay
+				raster2.setPixels(this.sWidth - decaPixels[delayArrayFull[seqSol][i]], ligne * 2, decaPixels[delayArrayFull[seqSol][i]], 1,
+						getEndPixels(decaPixels[delayArrayFull[seqSol][i]], i));
 				ligne++;
 			}
 		}
 	}
-	
+
+
 	private void decryptImgEven() {
 		// clear image
-		if (key11Sol == -1 && seqSol == -1) {
+		if (seqSol == -1) {
 			this.enable = false;
 			WritableRaster raster2;
 			raster2 = imgFinal.getRaster();
@@ -395,13 +386,13 @@ public class DiscretDecCorrel extends Discret {
 			int ligne = 0;
 
 			for (int i = 0; i < 286; i++) {
-				raster2.setPixels(decaPixels[delayArrayFull[key11Sol][seqSol][i]], ligne * 2 + 1,
-						768 - decaPixels[delayArrayFull[key11Sol][seqSol][i]], 1,
-						raster.getPixels(0, i, this.sWidth - decaPixels[delayArrayFull[key11Sol][seqSol][i]], 1,
-								new int[(this.sWidth - decaPixels[delayArrayFull[key11Sol][seqSol][i]]) * 3]));
-				// draw black line at start of delay
-				raster2.setPixels(0, ligne * 2 + 1, decaPixels[delayArrayFull[key11Sol][seqSol][i]], 1,
-						new int[decaPixels[delayArrayFull[key11Sol][seqSol][i]] * 3]);
+				raster2.setPixels(0, ligne * 2 + 1,
+						768 - decaPixels[delayArrayFull[seqSol][i]], 1,
+						raster.getPixels(decaPixels[delayArrayFull[seqSol][i]], i, this.sWidth - decaPixels[delayArrayFull[seqSol][i]], 1,
+								new int[(this.sWidth - decaPixels[delayArrayFull[seqSol][i]]) * 3]));
+				// draw black line at end of delay
+				raster2.setPixels(this.sWidth - decaPixels[delayArrayFull[seqSol][i]], ligne * 2 + 1, decaPixels[delayArrayFull[seqSol][i]], 1,
+						getEndPixels(decaPixels[delayArrayFull[seqSol][i]], i));
 				ligne++;
 			}
 		}
@@ -490,6 +481,35 @@ public class DiscretDecCorrel extends Discret {
 		}
 		return image;
 	}
+	
+	
+	private int[] getEndPixels(int delay, int y){
+		
+		if(!JobConfig.isNoBlackBar()){
+			return new int[delay * 3];
+		}
+		
+		int[] tabPixels;
+		int[] rgbPixel = new int[3];
+		
+		try {	
+			rgbPixel = raster.getPixel(this.sWidth - 1 - delay, y, 
+					new int[3]);
+		} catch (Exception e) {
+			rgbPixel = raster.getPixel(this.sWidth - delay, y, 
+					new int[3]);
+		}
+					
+		tabPixels = new int[delay * 3];
+		for (int i = 0; i < tabPixels.length; i=i+3) {
+			tabPixels[i] = rgbPixel[0];
+			tabPixels[i+1] = rgbPixel[1];
+			tabPixels[i+2] = rgbPixel[2];
+		}
+		
+		return tabPixels;
+		
+	}
 
 	@Override
 	boolean isEnable() {
@@ -506,7 +526,7 @@ public class DiscretDecCorrel extends Discret {
 	@Override
 	int getKey11bits() {
 		// TODO Auto-generated method stub
-		return key11Sol;
+		return seqSol;
 	}
 
 	@Override

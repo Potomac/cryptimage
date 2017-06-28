@@ -22,7 +22,6 @@
 package com.ib.cryptimage.core;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.FileReader;

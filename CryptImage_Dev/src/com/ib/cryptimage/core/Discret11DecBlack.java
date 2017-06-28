@@ -27,6 +27,8 @@ package com.ib.cryptimage.core;
  *
  */
 public class Discret11DecBlack extends Discret11Dec {
+	int[] tabPixels;
+	int[] rgbPixel = new int[3];	
 	
 	public Discret11DecBlack(int key16bits) {
 		super(key16bits);		
@@ -36,10 +38,34 @@ public class Discret11DecBlack extends Discret11Dec {
 		super(key16bits, perc1, perc2);		
 	}
 
-	protected void drawLine(int delay, int y){
+	protected void _drawLine(int delay, int y){
 		//draw black line at start of delay
 		raster.setPixels(0, y, JobConfig.getDelay2() , 1, 
 				new int[JobConfig.getDelay2()  * 3]);		
+	}
+	
+	protected void drawLine(int delay, int y){
+		//draw black line at start of delay
+//		raster.setPixels(this.sWidth - JobConfig.getDelay2(), y, JobConfig.getDelay2() , 1, 
+//				new int[JobConfig.getDelay2()  * 3]);
+		//draw color line at end of delay
+		try {
+			rgbPixel = raster.getPixel(this.sWidth - 1 - delay, y, 
+					new int[3]);
+		} catch (Exception e) {
+			rgbPixel = raster.getPixel(this.sWidth - 1 - delay, y, 
+					new int[3]);
+		}
+					
+		tabPixels = new int[delay * 3];
+		for (int i = 0; i < tabPixels.length; i=i+3) {
+			tabPixels[i] = rgbPixel[0];
+			tabPixels[i+1] = rgbPixel[1];
+			tabPixels[i+2] = rgbPixel[2];
+		}
+		
+		raster.setPixels(this.sWidth - delay, y,delay, 1, 
+				tabPixels);	
 	}
 
 

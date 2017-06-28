@@ -255,30 +255,39 @@ public class SimpleDiscret11 extends Discret {
 	 * truthTable[z][b0][b10]
 	 */
 	private void initTruthTable(){
-		switch (this.currentMode) {
-		case 0: //encoding mode			
-			truthTable[0][0][0] = 0;
-			truthTable[0][0][1] = 1;
-			truthTable[0][1][0] = 2;
-			truthTable[0][1][1] = 2;
-			truthTable[1][0][0] = 2;
-			truthTable[1][0][1] = 0;
-			truthTable[1][1][0] = 0;
-			truthTable[1][1][1] = 1;			
-			break;
-		case 1: //decoding mode
-			truthTable[0][0][0] = 2;
-			truthTable[0][0][1] = 1;
-			truthTable[0][1][0] = 0;
-			truthTable[0][1][1] = 0;
-			truthTable[1][0][0] = 0;
-			truthTable[1][0][1] = 2;
-			truthTable[1][1][0] = 2;
-			truthTable[1][1][1] = 1;
-			break;
-		default:
-			break;
-		}	
+		truthTable[0][0][0] = 0;
+		truthTable[0][0][1] = 1;
+		truthTable[0][1][0] = 2;
+		truthTable[0][1][1] = 2;
+		truthTable[1][0][0] = 2;
+		truthTable[1][0][1] = 0;
+		truthTable[1][1][0] = 0;
+		truthTable[1][1][1] = 1;
+		
+//		switch (this.currentMode) {
+//		case 0: //encoding mode			
+//			truthTable[0][0][0] = 0;
+//			truthTable[0][0][1] = 1;
+//			truthTable[0][1][0] = 2;
+//			truthTable[0][1][1] = 2;
+//			truthTable[1][0][0] = 2;
+//			truthTable[1][0][1] = 0;
+//			truthTable[1][1][0] = 0;
+//			truthTable[1][1][1] = 1;			
+//			break;
+//		case 1: //decoding mode
+//			truthTable[0][0][0] = 2;
+//			truthTable[0][0][1] = 1;
+//			truthTable[0][1][0] = 0;
+//			truthTable[0][1][1] = 0;
+//			truthTable[1][0][0] = 0;
+//			truthTable[1][0][1] = 2;
+//			truthTable[1][1][0] = 2;
+//			truthTable[1][1][1] = 1;
+//			break;
+//		default:
+//			break;
+//		}	
 	}
 	
 	/**
@@ -422,13 +431,23 @@ public class SimpleDiscret11 extends Discret {
 		raster = image.getRaster();		
 			
 		
-		for (int y = 0; y < this.height; y++) {
-			raster.setPixels(delayArray[this.seqFullFrame][y], y, this.width
-					- delayArray[this.seqFullFrame][y], 1, raster.getPixels(0,
-					y, this.width - delayArray[this.seqFullFrame][y], 1,
-					new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
-			//draw black line at start of delay
-			drawLine(y);
+		if (this.currentMode == MODE_ENC) {
+			for (int y = 0; y < this.height; y++) {
+				raster.setPixels(delayArray[this.seqFullFrame][y], y, this.width - delayArray[this.seqFullFrame][y], 1,
+						raster.getPixels(0, y, this.width - delayArray[this.seqFullFrame][y], 1,
+								new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
+				// draw black line at start of delay
+				drawLine(y);
+			}
+		}
+		else{
+			for (int y = 0; y < this.height; y++) {
+				raster.setPixels(0, y, this.width - delayArray[this.seqFullFrame][y], 1,
+						raster.getPixels(delayArray[this.seqFullFrame][y], y, this.width - delayArray[this.seqFullFrame][y], 1,
+								new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
+				// draw black line at end of delay
+				drawLineDec(y);
+			}
 		}
 		
 		this.seqFullFrame++;
@@ -448,6 +467,11 @@ public class SimpleDiscret11 extends Discret {
 				new int[delayArray[this.seqFullFrame][y] * 3]);		
 	}
 
+	protected void drawLineDec(int y){
+		//draw black line at end of delay
+		raster.setPixels(this.width - delayArray[this.seqFullFrame][y], y, delayArray[this.seqFullFrame][y], 1, 
+				new int[delayArray[this.seqFullFrame][y] * 3]);		
+	}
 	
 	/**
 	 * Convert a source image to a desired BufferedImage type

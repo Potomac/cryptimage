@@ -22,6 +22,7 @@
 
 package com.ib.cryptimage.core;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -70,6 +71,11 @@ public class CryptPhoto {
 					JobConfig.getRes().getString("cryptPhoto.errorLoadIO"),
 					JOptionPane.ERROR_MESSAGE);		
 			return false;
+		}
+		
+		//pan and scan
+		if (JobConfig.isPanAndScan() && !JobConfig.isWantDec()){
+			img = doPanAndScan(img);
 		}
 		
 		BufferedImage imgNew = new BufferedImage(img.getWidth(),
@@ -560,6 +566,40 @@ public class CryptPhoto {
 		} else {
 			this.increment = (int) (val);
 		}				
+	}
+	
+	private BufferedImage doPanAndScan(BufferedImage ori_img) {
+		int optimal_width = 0;
+		int optimal_height = 0;
+		int hori_cropBorders = 0;
+		int verti_cropBorders = 0;
+		BufferedImage imgCropped;
+
+		if ((float) ori_img.getWidth() / (float) ori_img.getHeight() > 4f / 3f) {
+			optimal_height = ori_img.getHeight();
+			optimal_width = (int) ((4f / 3f) * (float) ori_img.getHeight());
+			hori_cropBorders = (ori_img.getWidth() - optimal_width) / 2;
+			
+			imgCropped = ori_img.getSubimage(hori_cropBorders, 0, ori_img.getWidth() - (hori_cropBorders * 2),
+					optimal_height);
+
+		} else if ((float) ori_img.getWidth() / (float) ori_img.getHeight() < 4f / 3f) {			
+			optimal_width = ori_img.getWidth();
+			optimal_height = (int) ((float) ori_img.getWidth() / (4f / 3f));
+			verti_cropBorders = (ori_img.getHeight() - optimal_height) / 2;
+
+			imgCropped = ori_img.getSubimage(0, verti_cropBorders, optimal_width, optimal_height);
+		} else {
+			return ori_img;
+		}
+
+		BufferedImage copyOfImage = new BufferedImage(imgCropped.getWidth(), imgCropped.getHeight(),
+				imgCropped.getType());
+		Graphics g = copyOfImage.createGraphics();
+		g.drawImage(imgCropped, 0, 0, null);
+
+		return copyOfImage;
+
 	}
 
 }

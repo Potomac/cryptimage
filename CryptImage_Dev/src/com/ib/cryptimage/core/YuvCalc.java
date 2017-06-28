@@ -252,6 +252,41 @@ public class YuvCalc extends InitException {
 				e.printStackTrace();
 			}
 		}
+		
+		y = red *  redCoef1 + green *  greenCoef1 + blue *  blueCoef1;
+		u = red * redCoef2 + green * greenCoef2 + blue *  blueCoef2 + 128f;
+		v = red *  redCoef3 + green * greenCoef3 + blue * blueCoef3 + 128f;
+		
+		if(y > 255){
+			y = 255;			
+		}
+		if(y < 0){
+			y = 0;			
+		}
+		if(u > 255){
+			u = 255;			
+		}
+		if(u < 0){
+			u = 0;			
+		}
+		if(v > 255){
+			v = 255;			
+		}
+		if(v < 0){
+			v = 0;			
+		}
+		
+	}
+	
+	public void original_convertRGBtoYUV(){
+		if(!rgb){
+			try {
+				throw new InitException("rgb values not initialized");
+			} catch (InitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		y = red *  redCoef1 + green *  greenCoef1 + blue *  blueCoef1 +16f;
 		u = red * redCoef2 + green * greenCoef2 + blue *  blueCoef2 + 128f;
 		v = red *  redCoef3 + green * greenCoef3 + blue * blueCoef3 + 128f;
@@ -309,6 +344,39 @@ public class YuvCalc extends InitException {
 			}
 		}
 				
+		red = y + vCoef1 * (v - 128f) + uCoef1* (u - 128f) ;
+		green = y + uCoef2 * (u - 128f) + vCoef2 * (v - 128f) ;
+		blue = y + uCoef3 * (u - 128f) + vCoef3 * (v - 128f) ;
+		if(red > 255){
+			red = 255;			
+		}
+		if(red < 0){
+			red = 0;			
+		}
+		if(green > 255){
+			green = 255;			
+		}
+		if(green < 0){
+			green = 0;			
+		}
+		if(blue > 255){
+			blue = 255;			
+		}
+		if(blue < 0){
+			blue = 0;			
+		}
+	}
+
+	public void original_convertYUVtoRGB(){
+		if(!yuv){
+			try {
+				throw new InitException("yuv values not initialized");
+			} catch (InitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+				
 		red = y + vCoef1 * (v - 128f) + uCoef1* (u - 128f) -16f;
 		green = y + uCoef2 * (u - 128f) + vCoef2 * (v - 128f) -16f;
 		blue = y + uCoef3 * (u - 128f) + vCoef3 * (v - 128f) -16f;
@@ -331,7 +399,9 @@ public class YuvCalc extends InitException {
 			blue = 0;			
 		}
 	}
-
+	
+	
+	
 	public float getY() {				
 		return y;
 	}
