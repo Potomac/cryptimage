@@ -26,7 +26,9 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Vector;
 
 
 /**
@@ -43,6 +45,9 @@ public class SysterDec extends Syster {
 	BufferedImage frame;
 	BufferedImage newImage;
 	BufferedImage imageSource;
+	private boolean bPreviewMode;
+	private Vector<Integer> vOffset = new Vector<Integer>();
+	private Vector<Integer> vIncrement = new Vector<Integer>();
 	
 	public SysterDec(int typeTable, String nameDataFile,
 			boolean wantCorrel) {
@@ -58,6 +63,24 @@ public class SysterDec extends Syster {
 				e.printStackTrace();
 			}
 		}
+		
+		// set the encoding parameter output file if mode is autocorelation and not preview mode
+		this.bPreviewMode = JobConfig.isWantPlay();
+		if (this.wantCorrel && this.bPreviewMode == false) {
+			try {
+				if (!bPreviewMode) {
+					String path = JobConfig.getGui().getTxtInputFile().getText();
+					path = path.substring(0,path.lastIndexOf("."));														
+					
+					fileOut = new FileWriter(path + ".enc");
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		//end encoding parameter file
+		
 		
 		if (wantCorrel == true) {
 			matdist = new long[287][287];
@@ -303,8 +326,16 @@ public class SysterDec extends Syster {
 	
 	@Override
 	void closeFileData() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
+		if (this.wantCorrel && this.bPreviewMode == false) {
+			try {
+				fileOut.flush();
+				fileOut.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private boolean tagLine(Raster ra1, Raster ra2){		
@@ -562,8 +593,16 @@ public class SysterDec extends Syster {
 			}
 						
 		   this.offset = offset_opt;
-		   this.increment = incr_opt;		   
+		   this.increment = incr_opt;
 		   
+		   if(!this.bPreviewMode) {
+			   this.vOffset.add(this.offset);
+			   this.vIncrement.add(this.increment);
+			   
+			   if(this.vOffset.size() == 2 && this.vIncrement.size() == 2) {
+				   feedFileData();
+			   }
+		   }		   
 		}
 		
 		// Calculates the distance between 2 image rows
@@ -585,7 +624,56 @@ public class SysterDec extends Syster {
 		}
 		return res;
 	}
+	
+	//update the encoding parameter file
+	private void feedFileData(){
+		
+		String offset1 = "skip";
+		String offset2 = "skip";
+		String increment1 = "skip";
+		String increment2 = "skip";
+		
+		if (vOffset.get(0) != -1) {
+			offset1 = String.valueOf(vOffset.get(0));
+		}
+		if (vOffset.get(1) != -1) {
+			offset2 = String.valueOf(vOffset.get(1));
+		}
+		if (vIncrement.get(0) != -1) {
+			increment1 = String.valueOf(vIncrement.get(0));
+		}
+		if (vIncrement.get(1) != -1) {
+			increment2 = String.valueOf(vIncrement.get(1));
+		}
+		
+		
+		try {
+			fileOut.write("frame " + ( this.numFrames - 2 + this.numSkip)  + ";" + this.getTypeTable() + ";" + offset1 + ";" 
+					+ increment1 + ";" + offset2
+					+ ";" + increment2 + "\r\n");
+			
+			vOffset.remove(0);
+			vOffset.remove(0);
+			vIncrement.remove(0);
+			vIncrement.remove(0);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
+	
+	private void feedFileDataDummy(){
+		try {
+			fileOut.write("frame " + ( this.numSkip)  + ";" + "skip" + ";" + "skip" + ";" 
+					+ "skip" + ";" + "skip"
+					+ ";" + "skip" + "\r\n");				
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
 		
 		@Override
 		void skipFrame() {
@@ -595,6 +683,11 @@ public class SysterDec extends Syster {
 			if(fileInBuff != null)					
 					{
 				this.readFileDataDummy();
+			}
+			
+			if(this.wantCorrel && this.bPreviewMode == false) {				
+				numSkip++;	
+				this.feedFileDataDummy();			
 			}
 		}
 
