@@ -25,6 +25,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -68,19 +69,21 @@ public class SysterDec extends Syster {
 		this.bPreviewMode = JobConfig.isWantPlay();
 		if (this.wantCorrel && this.bPreviewMode == false) {
 			try {
-				if (!bPreviewMode) {
-					String path = JobConfig.getGui().getTxtInputFile().getText();
-					path = path.substring(0,path.lastIndexOf("."));														
-					
-					fileOut = new FileWriter(path + ".enc");
-				}
+				String fileName = JobConfig.getOutput_file();
+				
+				if (JobConfig.isHorodatage()) {
+					File file = new File(fileName);
+					fileName = JobConfig.getDateTime() + "_" + file.getName();
+					fileName = file.getParent() + File.separator + fileName;
+				}			
+				
+				fileOut = new FileWriter(fileName + ".enc");
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		//end encoding parameter file
-		
 		
 		if (wantCorrel == true) {
 			matdist = new long[287][287];
