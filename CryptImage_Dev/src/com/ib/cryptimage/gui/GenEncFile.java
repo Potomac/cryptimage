@@ -355,7 +355,7 @@ public class GenEncFile extends JDialog {
 		double val;
 		int valVideocrypt;
 		min = 1;
-		max = 127;	
+		max = 255;	
 		
 		Random rand;
 		
@@ -370,7 +370,7 @@ public class GenEncFile extends JDialog {
 				offset1 = rand.nextInt(max - min + 1) + min;
 
 				min = 1;
-				max = 127;
+				max = 255;
 
 				val = rand.nextInt(max - min + 1) + min;
 				if ((val / 2) - (int) (val / 2) == 0) {
@@ -388,7 +388,7 @@ public class GenEncFile extends JDialog {
 					offset2 = rand.nextInt(max - min + 1) + min;
 
 					min = 1;
-					max = 127;
+					max = 255;
 
 					val = rand.nextInt(max - min + 1) + min;
 					if ((val / 2) - (int) (val / 2) == 0) {

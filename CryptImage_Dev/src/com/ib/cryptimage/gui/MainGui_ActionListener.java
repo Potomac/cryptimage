@@ -1622,9 +1622,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if(Integer.parseInt(typeTable) >0 && Integer.parseInt(typeTable) <3){
 				if(Integer.parseInt(offsetBin1) >= 0 && Integer.parseInt(offsetBin1) < 256){
 					if(Integer.parseInt(offsetBin2) >= 0 && Integer.parseInt(offsetBin2) < 256){
-						if(Integer.parseInt(incrementBin1) > 0 && Integer.parseInt(incrementBin1) < 128){
+						if(Integer.parseInt(incrementBin1) > 0 && Integer.parseInt(incrementBin1) < 256){
 							if(isOdd(Integer.parseInt(incrementBin1))){
-								if(Integer.parseInt(incrementBin2) > 0 && Integer.parseInt(incrementBin2) < 128){
+								if(Integer.parseInt(incrementBin2) > 0 && Integer.parseInt(incrementBin2) < 256){
 									if(isOdd(Integer.parseInt(incrementBin2))){
 										return true;
 									}

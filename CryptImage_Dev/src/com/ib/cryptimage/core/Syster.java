@@ -101,7 +101,7 @@ public abstract class Syster extends Device {
 		this.offset = rand.nextInt(max - min + 1) + min;
 
 		min = 1;
-		max = 127;
+		max = 255;
 		double val;
 		val = rand.nextInt(max - min + 1) + min;
 		if ((val / 2) - (int) (val / 2) == 0) {

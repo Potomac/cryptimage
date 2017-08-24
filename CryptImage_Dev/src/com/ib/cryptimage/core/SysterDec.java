@@ -487,9 +487,9 @@ public class SysterDec extends Syster {
 			if(Integer.parseInt(typeTable, 2) >0 && Integer.parseInt(typeTable, 2) <3){
 				if(Integer.parseInt(offsetBin1, 2) >= 0 && Integer.parseInt(offsetBin1, 2) < 256){
 					if(Integer.parseInt(offsetBin2, 2) >= 0 && Integer.parseInt(offsetBin2, 2) < 256){
-						if(Integer.parseInt(incrementBin1, 2) > 0 && Integer.parseInt(incrementBin1, 2) < 128){
+						if(Integer.parseInt(incrementBin1, 2) > 0 && Integer.parseInt(incrementBin1, 2) < 256){
 							if(isOdd(Integer.parseInt(incrementBin1, 2))){
-								if(Integer.parseInt(incrementBin2, 2) > 0 && Integer.parseInt(incrementBin2, 2) < 128){
+								if(Integer.parseInt(incrementBin2, 2) > 0 && Integer.parseInt(incrementBin2, 2) < 256){
 									if(isOdd(Integer.parseInt(incrementBin2, 2))){										
 										return true;
 									}
