@@ -38,6 +38,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 
 /**
@@ -51,7 +54,7 @@ public class DiscretDecCorrel extends Discret {
 	 * in 3 dimension array who represents
 	 * the 6 TV frames,
 	 */
-	private int[][]  delayArrayFull = new int[8188][286];
+	private int[][]  delayArrayFull = new int[12282][286]; //8188
 	
 	/**
 	 * array for storing the delay in pixels
@@ -83,18 +86,35 @@ public class DiscretDecCorrel extends Discret {
 	
 	private boolean enable = false;
 	
+	int[] relation = new int[12282];
+	
+	Vector<Integer> keyVec = new Vector<Integer>();
+	Map<Integer, Integer> dicKey = new HashMap<Integer,  Integer>();
+	
+	String keyfull = "";
 
 	public DiscretDecCorrel()  {
 		imgFinal = new BufferedImage(768, 576, BufferedImage.TYPE_3BYTE_BGR);		
 		initDecaPixels(JobConfig.getPerc1(),JobConfig.getPerc2());
 		loadFullArray();
+		
+		for (int i = 0; i < 2047; i++) {
+			for (int j = 0; j < 6; j++) {
+				for (int k = 0; k < 286; k++) {					
+					relation[i + 2047 * j] = i;
+				}
+			}
+		}
+		
+
 	}
 	
 	private void loadFullArray(){		
 		//get the zip file content
 		byte[] buffer = new byte[1024];
     	try {
-    		InputStream is = this.getClass().getResourceAsStream("/ressources/delarray.zip");
+    		//InputStream is = this.getClass().getResourceAsStream("/ressources/delarray.zip");
+    		InputStream is = this.getClass().getResourceAsStream("/ressources/delarray_special.zip");
 			ZipInputStream zis = 
 				new ZipInputStream(is);
 		   	
@@ -148,7 +168,7 @@ public class DiscretDecCorrel extends Discret {
 		
 		ObjectInputStream inputStream = null;
         try{
-            inputStream = new ObjectInputStream(new FileInputStream((System.getProperty("java.io.tmpdir")+ File.separator +"delarray.bin")));
+            inputStream = new ObjectInputStream(new FileInputStream((System.getProperty("java.io.tmpdir")+ File.separator +"delarray_special.bin")));
         }catch(IOException e){
             System.out.println("There was a problem opening the file: " + e);
             System.exit(0);
@@ -161,7 +181,7 @@ public class DiscretDecCorrel extends Discret {
             System.out.println("There was an issue reading from the file: " + e);
             System.exit(0);
         }
-        Path path = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"), "delarray.bin");
+        Path path = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"), "delarray_special.bin");
         
         try {
 			Files.delete(path);
@@ -250,6 +270,7 @@ public class DiscretDecCorrel extends Discret {
 	}
 
 	private void computeSolution(BufferedImage image) {
+		
 		long val;
 		
 		int[] tab ;
@@ -267,7 +288,7 @@ public class DiscretDecCorrel extends Discret {
 			incr_opt = incr;
 		}		
 		
-			for (incr = 1; incr < 8188; incr++) {
+			for (incr = 1; incr < 12282; incr++) {
 				val = correl(incr, tab);
 				if (val < distance_mini) {
 					distance_mini = val;	
@@ -275,7 +296,34 @@ public class DiscretDecCorrel extends Discret {
 				}
 			}
 		
-		 this.seqSol = incr_opt;		
+		 this.seqSol = incr_opt;
+		 if (incr_opt != -1) {
+			 
+			 keyfull = keyfull + " " + (relation[incr_opt] + 1);
+			 
+			 //System.out.println(relation[incr_opt]);
+			 if(!keyVec.contains(relation[incr_opt] + 1)) {
+				 keyVec.add(relation[incr_opt] + 1);
+				 dicKey.put(relation[incr_opt] + 1, 1);
+			 }
+			 else {
+				 dicKey.put(relation[incr_opt] + 1, dicKey.get(relation[incr_opt] + 1) + 1);
+			 }
+			 for (int i = 0; i < keyVec.size(); i++) {
+				 if(dicKey.get(keyVec.get(i)) > 0) {
+				System.out.print( keyVec.get(i) + "(" + dicKey.get(keyVec.get(i)) +"); ");
+			}			
+			 }
+			 System.out.println("");
+			 
+			 for (int i = 0; i < keyVec.size(); i++) {
+				 System.out.print( keyVec.get(i) + ";");
+			}
+			 System.out.println("");
+			 System.out.println(keyfull);
+		 }
+		 
+
 	}
 	
 	// Calculates the distance between 2 image rows

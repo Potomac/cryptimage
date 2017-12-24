@@ -330,6 +330,7 @@ public class CryptPhoto {
 		BufferedImage imgRes = device.transform(img);
 		this.key11bits = device.getKey11bits();
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
+		
 	}
 	
 	
