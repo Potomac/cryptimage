@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.Random;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -48,6 +49,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.MaskFormatter;
 
@@ -75,7 +77,11 @@ public class GenEncFile extends JDialog {
 	private JRadioButton rdiSyster;
 	private JRadioButton rdiVideocrypt;
 	private JCheckBox chkOffsetIncrement;
-	private JCheckBox chkRestrictRange;
+	private JComboBox<String> comboRangeStart;
+	private JComboBox<String> comboRangeEnd;
+	private JPanel panCutPoint;
+	private JLabel lblRangeStart;
+	private JLabel lblRangeEnd;
 
 
 	/**
@@ -128,14 +134,44 @@ public class GenEncFile extends JDialog {
 		JPanel panOffsetIncrement = new JPanel();
 		panOffsetIncrement.add(chkOffsetIncrement);
 		
-		chkRestrictRange = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
-		chkRestrictRange.setSelected(true);
-		chkRestrictRange.setEnabled(false);
+//		chkRestrictRange = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
+//		chkRestrictRange.setSelected(true);
+//		chkRestrictRange.setEnabled(false);
+//		
+//		
+//		JPanel panRestrictRange = new JPanel();
+//		panRestrictRange.add(chkRestrictRange);
+		
+		panCutPoint = new JPanel();
+		TitledBorder titlePanCutPoint = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				JobConfig.getRes().getString("panVideocrypt.cutpoints"));
+		panCutPoint.setBorder(titlePanCutPoint);
 		
 		
-		JPanel panRestrictRange = new JPanel();
-		panRestrictRange.add(chkRestrictRange);
+		comboRangeStart = new JComboBox<>();
+		for (int i = 1; i <= 128; i++) {
+			comboRangeStart.addItem(String.valueOf(i));
+		}		
+		comboRangeStart.setSelectedIndex(39);
+		comboRangeEnd = new JComboBox<>();
+		for (int i = 129; i <= 255; i++) {
+			comboRangeEnd.addItem(String.valueOf(i));
+		}
+		comboRangeEnd.setSelectedIndex(86);
+		lblRangeStart = new JLabel(JobConfig.getRes().getString("panVideocrypt.rangeStart"));
+		lblRangeEnd = new JLabel(JobConfig.getRes().getString("panVideocrypt.rangeEnd"));
 				
+		panCutPoint.add(lblRangeStart);
+		panCutPoint.add(comboRangeStart);
+		panCutPoint.add(lblRangeEnd);
+		panCutPoint.add(comboRangeEnd);
+		
+		panCutPoint.setEnabled(false);
+		lblRangeStart.setEnabled(false);
+		comboRangeStart.setEnabled(false);
+		lblRangeEnd.setEnabled(false);
+		comboRangeEnd.setEnabled(false);
+		
 		labTable = new JLabel(JobConfig.getRes().getString("genEncFile.labTable"));
 		
 		String[] tab = {JobConfig.getRes().getString("genEncFile.tab1"), JobConfig.getRes().getString("genEncFile.tab2")};
@@ -155,8 +191,7 @@ public class GenEncFile extends JDialog {
 			txtLines.setHorizontalAlignment(JTextField.RIGHT);
 		
 			
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
+		} catch (ParseException e1) {			
 			e1.printStackTrace();
 		}
 		
@@ -188,8 +223,7 @@ public class GenEncFile extends JDialog {
 								JobConfig.getRes().getString("genEncFile.successTitle"),
 								JOptionPane.INFORMATION_MESSAGE);
 					}
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+				} catch (IOException e1) {					
 					e1.printStackTrace();
 					JOptionPane
 					.showMessageDialog(
@@ -225,7 +259,7 @@ public class GenEncFile extends JDialog {
 		
 		panGlobal.add(panRdi);
 		panGlobal.add(panOffsetIncrement);
-		panGlobal.add(panRestrictRange);
+		panGlobal.add(panCutPoint);
 		panGlobal.add(panTable);
 		panGlobal.add(panLines);
 		panGlobal.add(panFile);
@@ -253,14 +287,22 @@ public class GenEncFile extends JDialog {
 			combTable.setEnabled(true);
 			labTable.setEnabled(true);
 			chkOffsetIncrement.setEnabled(true);
-			chkRestrictRange.setEnabled(false);
+			panCutPoint.setEnabled(false);
+			lblRangeStart.setEnabled(false);
+			comboRangeStart.setEnabled(false);
+			lblRangeEnd.setEnabled(false);
+			comboRangeEnd.setEnabled(false);
 			txtFile.setText("");
 		}
 		else{
 			combTable.setEnabled(false);
 			labTable.setEnabled(false);
 			chkOffsetIncrement.setEnabled(false);
-			chkRestrictRange.setEnabled(true);
+			panCutPoint.setEnabled(true);
+			lblRangeStart.setEnabled(true);
+			comboRangeStart.setEnabled(true);
+			lblRangeEnd.setEnabled(true);
+			comboRangeEnd.setEnabled(true);
 			txtFile.setText("");
 		}		
 	}
@@ -310,17 +352,7 @@ public class GenEncFile extends JDialog {
 
 	}
 	
-	private boolean genFile() throws IOException{
-		
-		int valRange;
-		
-		if(chkRestrictRange.isSelected()){
-			valRange = 1;
-		}
-		else{
-			valRange = 2;
-		}
-		
+	private boolean genFile() throws IOException{		
 		if( this.txtLines.getText().trim().equals("") 
 				|| Integer.valueOf(this.txtLines.getText().toString().trim()) < 1 ){
 			JOptionPane
@@ -412,7 +444,7 @@ public class GenEncFile extends JDialog {
 
 				valVideocrypt = (int) (rand.nextInt(max - min + 1) + min);
 
-				fileOut.write(valRange + ";" + valVideocrypt + "\r\n");
+				fileOut.write(valVideocrypt + ";" + comboRangeStart.getSelectedItem() + ";" + comboRangeEnd.getSelectedItem() + "\r\n");
 			}
 
 		}

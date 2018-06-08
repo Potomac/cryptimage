@@ -93,8 +93,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.4.5";
-	private static String releaseDate = "2017-08-23";
+	private static String VERSION = "1.4.12 beta";
+	private static String releaseDate = "2018-06-03";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -106,12 +106,13 @@ public final class JobConfig {
 	private static boolean wantVideocryptEncRandom = false;
 	private static int nbSkippedFrames = 0;
 	private static boolean offsetIncrementChange = false;
-	private static boolean restrictRangeCuttingPoints = true;
 	private static boolean logVideocrypt = false;
 	private static boolean wantVideocryptTags = false;
 	private static boolean nullDelay = false;
 	private static boolean panAndScan = false;
 
+	private static int whiteValue = 80;
+	
 	
 	public static String getDateTime(){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
@@ -984,14 +985,6 @@ public final class JobConfig {
 		JobConfig.offsetIncrementChange = offsetIncrementChange;
 	}
 
-	public static boolean isRestrictRangeCuttingPoints() {
-		return restrictRangeCuttingPoints;
-	}
-
-	public static void setRestrictRangeCuttingPoints(boolean restrictRangeCuttingPoints) {
-		JobConfig.restrictRangeCuttingPoints = restrictRangeCuttingPoints;
-	}
-
 	public static boolean isLogVideocrypt() {
 		return logVideocrypt;
 	}
@@ -1022,6 +1015,14 @@ public final class JobConfig {
 
 	public static void setPanAndScan(boolean panAndScan) {
 		JobConfig.panAndScan = panAndScan;
+	}
+
+	public static int getWhiteValue() {
+		return whiteValue;
+	}
+
+	public static void setWhiteValue(int whiteValue) {
+		JobConfig.whiteValue = whiteValue;
 	}
 	
 }

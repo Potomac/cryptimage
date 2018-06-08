@@ -58,7 +58,7 @@ public abstract class Videocrypt extends Device {
 	protected int seed;
 	protected int rangeStart;
 	protected int rangeEnd;
-	protected int typeRange;
+	//protected int typeRange;
 	protected int numFrame;
 	protected int frameLine;
 	private boolean bPreviewMode;
@@ -196,29 +196,25 @@ public abstract class Videocrypt extends Device {
 			
 			para = line.split(";");
 			
-			//check range value
-			if(Integer.valueOf(para[0]) !=1 && Integer.valueOf(para[0]) !=2){
-				return false;
-			}	
-			
 			//check random value
-			if(Integer.valueOf(para[1]) < 1 || Integer.valueOf(para[1]) > 16777216){
+			if(Integer.valueOf(para[0]) < 1 || Integer.valueOf(para[0]) > 16777216){
 				return false;
 			}		
 			
+			//check cut points value
+			if(Integer.valueOf(para[1]) < 1 || Integer.valueOf(para[1]) > 255){
+				return false;
+			}	
+			if(Integer.valueOf(para[2]) < 1 || Integer.valueOf(para[2]) > 255){
+				return false;
+			}	
+					
+			this.rangeStart = Integer.valueOf(para[1]);
+			this.rangeEnd = Integer.valueOf(para[2]);
+			
 			this.skip = false;
 			
-			if(Integer.valueOf(para[0]) == 1 ){
-				this.rangeStart = 20;
-				this.rangeEnd = 236;
-				this.typeRange = 1;
-			} else{
-				this.rangeStart = 1;
-				this.rangeEnd = 255;
-				this.typeRange = 2;
-			}
-			
-			this.seed = Integer.valueOf(para[1]);
+			this.seed = Integer.valueOf(para[0]);
 			generateValues(this.seed);			
 			return true;
 						

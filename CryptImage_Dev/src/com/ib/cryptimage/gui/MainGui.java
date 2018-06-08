@@ -274,10 +274,20 @@ public class MainGui {
 	private JTabbedPane tabbedPane;
 	
 	private JCheckBox chkChangeOffsetIncrement;
-	private JCheckBox chkRestrictRange;
 	private JCheckBox chkLogVideocrypt;
 	private JCheckBox chkVideocryptTags;
 	private JRadioButton rdiVideocryptTagsDecoding;
+	
+	private JLabel lblWhiteValue;
+	private JSlider sldWhiteValue;
+	private JSpinner slpWhiteValue;
+	
+	private TitledBorder titlePanCutPoint;
+	private JLabel lblRangeStart;
+	private JLabel lblRangeEnd;	
+	private JComboBox<String> comboRangeStart;
+	private JComboBox<String> comboRangeEnd;
+	
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -308,10 +318,10 @@ public class MainGui {
 		frame.setLayout(new GridLayout(1,1));
 		panGlobal = new JPanel();
 		
-		frame.setSize(810,700);
+		frame.setSize(810,750);
 		frame.setLocationRelativeTo(null);
 		frame.setAutoRequestFocus(true);
-		frame.setMinimumSize(new Dimension(810, 700));
+		frame.setMinimumSize(new Dimension(810, 750));
 		frame.setResizable(true);		
 		frame.setIconImage(new ImageIcon(this.getClass().getResource("/icons/logo_jframe.png")).getImage());
 		
@@ -687,7 +697,7 @@ public class MainGui {
 		rdiVideocryptDecodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterDecodingFile"));
 		rdiVideocryptCodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingFile"));
 	
-		chkRestrictRange.setText(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
+		//chkRestrictRange.setText(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
 		chkLogVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.chkLogVideocrypt"));
 		
 		tabbedPane.setTitleAt(0, JobConfig.getRes().getString("tabbedPane.Device"));
@@ -698,6 +708,14 @@ public class MainGui {
 		rdiVideocryptTagsDecoding.setText(JobConfig.getRes().getString("panVideocrypt.rdiTagsDecoding"));
 		
 		chkPanAndScan.setText(JobConfig.getRes().getString("panVideo.panAndScan"));
+		
+		lblWhiteValue.setText(JobConfig.getRes().getString("panDiscret11.lblWhiteValue"));
+		
+		//cutpoints
+		titlePanCutPoint.setTitle(JobConfig.getRes().getString("panVideocrypt.cutpoints"));
+		lblRangeStart.setText(JobConfig.getRes().getString("panVideocrypt.rangeStart"));
+		lblRangeEnd.setText(JobConfig.getRes().getString("panVideocrypt.rangeEnd"));		
+		
 	}
 	
 	private void createMenu(){				
@@ -1225,9 +1243,33 @@ public class MainGui {
 		btnVideocryptEnc.setIcon(new ImageIcon(this.getClass().getResource("/icons/filenew.png")));
 		btnVideocryptEnc.addActionListener(controler);
 		
-		chkRestrictRange = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
-		chkRestrictRange.addActionListener(controler);
-		chkRestrictRange.setSelected(true);
+//		chkRestrictRange = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkRestrictRange"));
+//		chkRestrictRange.addActionListener(controler);
+//		chkRestrictRange.setSelected(true);
+		
+		JPanel panCutPoint = new JPanel();
+		titlePanCutPoint = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				JobConfig.getRes().getString("panVideocrypt.cutpoints"));
+		panCutPoint.setBorder(titlePanCutPoint);
+		
+		
+		comboRangeStart = new JComboBox<>();
+		for (int i = 1; i <= 128; i++) {
+			comboRangeStart.addItem(String.valueOf(i));
+		}		
+		comboRangeStart.setSelectedIndex(39);
+		comboRangeEnd = new JComboBox<>();
+		for (int i = 129; i <= 255; i++) {
+			comboRangeEnd.addItem(String.valueOf(i));
+		}
+		comboRangeEnd.setSelectedIndex(86);
+		lblRangeStart = new JLabel(JobConfig.getRes().getString("panVideocrypt.rangeStart"));
+		lblRangeEnd = new JLabel(JobConfig.getRes().getString("panVideocrypt.rangeEnd"));
+		
+		panCutPoint.add(lblRangeStart);
+		panCutPoint.add(comboRangeStart);
+		panCutPoint.add(lblRangeEnd);
+		panCutPoint.add(comboRangeEnd);
 		
 		chkLogVideocrypt = new JCheckBox(JobConfig.getRes().getString("panVideocrypt.chkLogVideocrypt"));
 		chkLogVideocrypt.addActionListener(controler);
@@ -1274,12 +1316,12 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panVideocryptCodingGen,
 				gblCodingGen,
-				chkRestrictRange,
+				panCutPoint,
 				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
 				0, 2,
 				1,1,
 				1,33,
-				1, 1,1,1);
+				1, 1,1,1);	
 		this.placerComposants(panVideocryptCodingGen,
 				gblCodingGen,
 				chkVideocryptTags,
@@ -2155,6 +2197,67 @@ public class MainGui {
 				20,25,
 				1, 1,1,1);
 		
+		lblWhiteValue = new JLabel(JobConfig.getRes().getString("panDiscret11.lblWhiteValue"));
+		sldWhiteValue = new JSlider(JSlider.HORIZONTAL,0,255,80);
+		slpWhiteValue = new JSpinner();		
+		slpWhiteValue.addChangeListener(controler);
+		
+		JSpinner.NumberEditor spinnerEditorWhiteValue = new JSpinner.NumberEditor(slpWhiteValue);
+		slpWhiteValue.setEditor(spinnerEditorWhiteValue);
+
+		spinnerEditorWhiteValue.getModel().setMinimum(0);
+		spinnerEditorWhiteValue.getModel().setMaximum(255);
+		spinnerEditorWhiteValue.getModel().setStepSize(1);
+		spinnerEditorWhiteValue.getModel().setValue(80);
+		
+		JFormattedTextField tfWhiteValue = ((JSpinner.DefaultEditor) spinnerEditorWhiteValue).getTextField();
+		tfWhiteValue.setColumns(3);
+		tfWhiteValue.setEditable(false);
+		
+		sldWhiteValue.addChangeListener(controler);
+		sldWhiteValue.setValue(80);
+		sldWhiteValue.setMajorTickSpacing(50);
+		sldWhiteValue.setMinorTickSpacing(10);
+		Hashtable<Integer, JLabel> labelTableWhiteValue = new Hashtable<Integer, JLabel>();
+		labelTableWhiteValue.put( new Integer( 0 ), new JLabel("0"));
+		labelTableWhiteValue.put( new Integer( 40 ), new JLabel("40"));	
+		labelTableWhiteValue.put( new Integer( 80 ), new JLabel("80"));	
+		labelTableWhiteValue.put( new Integer( 255 ), new JLabel("255"));
+		sldWhiteValue.setLabelTable(labelTableWhiteValue);
+		sldWhiteValue.setPaintLabels(true);		
+		sldWhiteValue.setPaintTicks(true);
+		
+		//sldWhiteValue.setMinimum(1);
+		
+		JPanel panWhiteValue = new JPanel();
+		GridBagLayout gblWhiteValue = new GridBagLayout();
+		
+		this.placerComposants(panWhiteValue,
+				gblWhiteValue,
+				lblWhiteValue,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				10,25,
+				1, 1,1,1);
+		this.placerComposants(panWhiteValue,
+				gblWhiteValue,
+				sldWhiteValue,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 0,
+				1,1,
+				70,25,
+				1, 1,1,1);
+		this.placerComposants(panWhiteValue,
+				gblWhiteValue,
+				slpWhiteValue,
+				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
+				2, 0,
+				1,1,
+				20,25,
+				1, 1,1,1);
+		
+		
 		chkNoBlackBar = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar"));
 		chkNoBlackBar.addActionListener(controler);
 		chkNoBlackBar.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar.tooltip"));
@@ -2285,20 +2388,33 @@ public class MainGui {
 				10,25,
 				1, 1,1,1);
 		
+		
+		//white value
+		this.placerComposants(panOptionsDiscret11,
+				gbl,
+				panWhiteValue,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 6,
+				6,1,
+				100,25,
+				1, 1,1,1);		
+		
 		//frame start
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				panFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 6,
+				0, 7,
 				6,1,
 				100,25,
-				1, 1,1,1);
+				1, 1,1,1);		
+		
+		//keyboard
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
 				panKeyboardCode,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				0, 7,
+				0, 8,
 				6,1,
 				100,25,
 				1, 1,1,1);
@@ -3327,10 +3443,6 @@ public class MainGui {
 		this.chkChangeOffsetIncrement = chkChangeOffsetIncrement;
 	}
 
-	public JCheckBox getChkRestrictRange() {
-		return chkRestrictRange;
-	}
-
 	public JCheckBox getChkLogVideocrypt() {
 		return chkLogVideocrypt;
 	}
@@ -3350,6 +3462,22 @@ public class MainGui {
 	public JCheckBox getChkPanAndScan() {
 		return chkPanAndScan;
 	}
-	
 
+	public JSlider getSldWhiteValue() {
+		return sldWhiteValue;
+	}
+
+	public JSpinner getSlpWhiteValue() {
+		return slpWhiteValue;
+	}
+
+	public JComboBox<String> getComboRangeStart() {
+		return comboRangeStart;
+	}
+
+	public JComboBox<String> getComboRangeEnd() {
+		return comboRangeEnd;
+	}
+
+	
 }

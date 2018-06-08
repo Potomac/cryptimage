@@ -65,16 +65,18 @@ public class VideocryptEnc extends Videocrypt {
 				e.printStackTrace();
 			}
 		}else{
-			if(JobConfig.isRestrictRangeCuttingPoints()){
-				this.rangeStart = 20;
-				this.rangeEnd = 236;
-				this.typeRange = 1;
-			}
-			else{
-				this.rangeStart = 1;
-				this.rangeEnd = 255;
-				this.typeRange = 2;
-			}
+			this.rangeStart = Integer.valueOf(JobConfig.getGui().getComboRangeStart().getSelectedItem().toString());
+			this.rangeEnd = Integer.valueOf(JobConfig.getGui().getComboRangeEnd().getSelectedItem().toString());
+//			if(JobConfig.isRestrictRangeCuttingPoints()){
+//				this.rangeStart = 20;
+//				this.rangeEnd = 236;
+//				this.typeRange = 1;
+//			}
+//			else{
+//				this.rangeStart = 1;
+//				this.rangeEnd = 255;
+//				this.typeRange = 2;
+//			}
 		}		
 	}
 
@@ -124,7 +126,7 @@ public class VideocryptEnc extends Videocrypt {
 		//encodage pal
 		if(JobConfig.getColorMode() == 1){			
 			palEngine.setImg(newImage);
-			newImage = palEngine.average();
+			newImage = palEngine.average(valTab);
 		}
 		//encodage secam
 		if(JobConfig.getColorMode() == 2){			
@@ -153,7 +155,7 @@ public class VideocryptEnc extends Videocrypt {
 	
 	private void feedFileData(){
 		try {
-			fileOut.write(this.typeRange + ";" + this.seed + "\r\n");		
+			fileOut.write(this.seed + ";" + this.rangeStart + ";" + this.rangeEnd + "\r\n");		
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -171,29 +173,48 @@ public class VideocryptEnc extends Videocrypt {
 	}
 	
 	private void tagLine(){
-		String binTypeRange = String.format
-				("%2s", Integer.toBinaryString(typeRange)).replace(" ", "0");
+		String binRangeStart = String.format
+				("%8s", Integer.toBinaryString(this.rangeStart)).replace(" ", "0");
+		String binRangeEnd = String.format
+				("%8s", Integer.toBinaryString(this.rangeEnd)).replace(" ", "0");
 		String binSeed = String.format
 				("%24s", Integer.toBinaryString(seed)).replace(" ", "0");
-		
-		
+				
 		int[] black = {0,0,0};
 		int[] white = {255,255,255};
 		int incre = 0;
 		int nbPixels = 8;
 		
-		//tag type range
-		for (int i = 0; i < binTypeRange.length(); i++) {
-			if(binTypeRange.charAt(i) == '0'){
+		//tag seed		
+		for (int i = 0; i < binSeed.length(); i++) {
+			if(binSeed.charAt(i) == '0'){
 				for (int j = 0; j < nbPixels; j++) {
-				raster2.setPixel( incre, 0, black);
+					raster2.setPixel( incre, 575, black);
+					incre++;
+				}				
+			}
+			else{
+				for (int j = 0; j < nbPixels; j++) {
+					raster2.setPixel( incre, 575, white);
+					incre++;
+				}	
+			}				
+		}
+		
+		incre = 0;
+		
+		//tag range start
+		for (int i = 0; i < binRangeStart.length(); i++) {
+			if(binRangeStart.charAt(i) == '0'){
+				for (int j = 0; j < nbPixels; j++) {
+				raster2.setPixel( incre  + 24 * nbPixels, 575, black);
 				incre++;
 				}
 
 			}
 			else{
 				for (int j = 0; j < nbPixels; j++) {
-				raster2.setPixel(incre, 0, white);
+				raster2.setPixel(incre  + 24 * nbPixels, 575, white);
 				incre++;
 				}
 			}		
@@ -201,17 +222,17 @@ public class VideocryptEnc extends Videocrypt {
 		
 		incre = 0;
 		
-		//tag seed		
-		for (int i = 0; i < binSeed.length(); i++) {
-			if(binSeed.charAt(i) == '0'){
+		//tag range end		
+		for (int i = 0; i < binRangeEnd.length(); i++) {
+			if(binRangeEnd.charAt(i) == '0'){
 				for (int j = 0; j < nbPixels; j++) {
-					raster2.setPixel( incre + 2*nbPixels, 0, black);
+					raster2.setPixel( incre + 24 * nbPixels + 8 * nbPixels, 575, black);
 					incre++;
 				}				
 			}
 			else{
 				for (int j = 0; j < nbPixels; j++) {
-					raster2.setPixel( incre + 2*nbPixels, 0, white);
+					raster2.setPixel( incre +24 * nbPixels + 8 * nbPixels, 575, white);
 					incre++;
 				}	
 			}				

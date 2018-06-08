@@ -337,8 +337,18 @@ public class SysterEnc extends Syster {
 		String incrementBin = String.format
 				("%8s", Integer.toBinaryString(this.increment)).replace(" ", "0");
 		
-		int[] black = {0,0,0};
-		int[] white = {255,255,255};
+		int[] black, white = new int[3];
+		
+		if(JobConfig.getColorMode() == 1){
+			black = new int[] {0,128,128};
+			white = new int[] {255,128,128};
+		}
+		else {
+			black = new int[] {0,0,0};
+			white = new int[] {255,255,255};
+		}
+			
+
 		int incre = 0;
 		int nbPixels = 8;
 		

@@ -285,7 +285,8 @@ public class SysterDec extends Syster {
 		if (this.offset == -1 && this.increment == -1) {
 			this.completFrame = this.imageSource;
 			this.ready = true;
-			this.enable = false;
+			//this.enable = false;
+			this.enable = true; //decrypt sound even it's not clear image
 			this.skip = true;
 			return false;
 		}

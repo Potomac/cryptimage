@@ -366,7 +366,8 @@ public class DiscretDecCorrel extends Discret {
 	private void decryptImgOdd() {
 		// clear image
 		if ( seqSol == -1) {
-			this.enable = false;
+			//this.enable = false;
+			this.enable = true; //decrypt sound even it's not clear image
 			WritableRaster raster2;
 			raster2 = imgFinal.getRaster();
 			raster = imageOdd.getRaster();
@@ -407,7 +408,8 @@ public class DiscretDecCorrel extends Discret {
 	private void decryptImgEven() {
 		// clear image
 		if (seqSol == -1) {
-			this.enable = false;
+			//this.enable = false;
+			this.enable = true; //decrypt sound even it's not clear image
 			WritableRaster raster2;
 			raster2 = imgFinal.getRaster();
 			raster = imageEven.getRaster();

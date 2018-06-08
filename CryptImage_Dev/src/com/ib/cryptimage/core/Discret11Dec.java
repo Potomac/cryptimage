@@ -134,8 +134,6 @@ public class Discret11Dec extends Discret {
 	private String motif310 = "";
 	private Queue<String> queueLines310 = new LinkedList<String>();
 	
-	private long currentnumFrame = 0;
-	
 	
 	/**
 	 * create a new Discret11Dec object	
@@ -448,19 +446,16 @@ public class Discret11Dec extends Discret {
 			int tot = 0;
 			String testMotif = "100";
 			//check majoritaire
-			for (int i = 0; i < queueLines310.size(); i++) {
-				System.out.println(queueLines310.toArray()[i]);
+			for (int i = 0; i < queueLines310.size(); i++) {			
 				if (queueLines310.toArray()[i].equals(testMotif)) {
 					tot++;
 				}
 			}
 			
 			if(tot>=3) {
-				System.out.println("vote ok " + tot);
 				return true;
 			}
 			else {
-				System.out.println("vote pas ok " + tot);
 				return false;
 			}
 		}
@@ -469,9 +464,8 @@ public class Discret11Dec extends Discret {
 	
 	
 	private void showMotifSynchro310() {
-		System.out.println("current motif " + motif310);
 		if (queueLines310.size() > 0) {
-			System.out.println("<310---------trame--" +  currentnumFrame + "-----------------");
+			System.out.println("<310--------------------------");
 			for (int i = 0; i < queueLines310.size(); i++) {
 				System.out.print(queueLines310.toArray()[i] + " ");
 			}
@@ -489,40 +483,16 @@ public class Discret11Dec extends Discret {
 		}
 		
 		updateMotifSynchro310(val310);
-		showMotifSynchro310();
-		showMotif622();
+		//showMotifSynchro310();
+		//showMotif622();
 
 
 		if ( val310 == 1 && indexPos == 0 ) { //if (is310WhiteLine(buff) && indexPos == 0) {
 			//System.out.println(indexPos + " ligne 310 blanche pos 1 ");
 			//updateMotifSynchro310(val310);
 			this.synchro = true;
-			//showMotifSynchro310();
-			
+			//showMotifSynchro310();			
 		}
-		else if ( val310 == 0 && indexPos == 0) { //if (is310WhiteLine(buff) && indexPos == 0) {
-			System.out.println(indexPos + " ligne 310 noire pos 1 ");
-			//updateMotifSynchro310(val310);
-			//this.synchro = isMotifSynchro310();
-			//showMotifSynchro310();
-		}
-		else {
-			//updateMotifSynchro310(val310);
-		}
-	
-		
-		if (is310BlackLine(buff) == false && indexPos == 1) { //if (is310BlackLine(buff) == false && indexPos == 1) {
-			//System.out.println(indexPos + " ligne 310 blanche pos 2 " + this.totalFrameCount);
-			//this.synchro = false; //desactivé
-			//razMotif();
-		}
-		if (is310BlackLine(buff) == false && indexPos == 2) { //if (is310BlackLine(buff) == false && indexPos == 2) {
-			//System.out.println(indexPos + " ligne 310 blanche pos 3 " + this.totalFrameCount);
-			//this.synchro = false; //désactivé
-			//razMotif();
-		}
-
-
 		
 		if ( indexPos < 3 && synchro == true) {
 			if (is622WhiteLine(buff) ) {
@@ -545,7 +515,6 @@ public class Discret11Dec extends Discret {
 					razMotif(); //desactivé
 				}
 				else {
-					System.out.println("raz motif2");
 					cptArray = 0;	//desactive
 					this.seqFrame = 0; //desactive
 					this.start = true; //desactive
@@ -562,7 +531,6 @@ public class Discret11Dec extends Discret {
 
 
 		if (motif.length() == 3 ) {			
-			//System.out.println("motif: " + motif);
 			this.queueLines.add(motif);
 			if (queueLines.size() == 8) {
 				//showMotif622();
@@ -575,8 +543,7 @@ public class Discret11Dec extends Discret {
 		
 	}
 	
-	private void razMotif(){
-		System.out.println("raz motif");
+	private void razMotif(){	
 		//this.synchro = true;
 		//this.enable = false; //desactive
 		cptArray = 0;	//desactive
@@ -592,7 +559,7 @@ public class Discret11Dec extends Discret {
 	}
 	
 	private void showMotif622() {
-		System.out.println("<622-----trame--" + currentnumFrame + "----------");
+		System.out.println("<622---------------");
 		for (int i = 0; i < queueLines.size(); i++) {
 			System.out.print(queueLines.toArray()[i] + " ");
 		}	
@@ -721,7 +688,6 @@ public class Discret11Dec extends Discret {
 			this.enable = false;			
 			break;
 		default:
-			System.out.println("default " + total);
 //			this.currentframePos = 0;
 //			this.saveIndex11bitsKey = this.index11bitsKey;
 //			this.index11bitsKey = this.saveIndex11bitsKey;
@@ -748,8 +714,7 @@ public class Discret11Dec extends Discret {
 	 * @return the transformed image
 	 */
 	public BufferedImage transform(BufferedImage image) {
-		//totalFrameCount++;	
-		currentnumFrame++;
+		//totalFrameCount++;			
 		
 		// we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
@@ -791,7 +756,6 @@ public class Discret11Dec extends Discret {
 				break;
 
 			default:
-				System.out.println("break transform");
 				break;
 			}
 
@@ -997,7 +961,7 @@ public class Discret11Dec extends Discret {
 //					 pix.getPixel(i, 574,new int[3])[2])/3;
 		}
 		
-		if ((total / sWidth) >= 40) { //200 //80
+		if ((total / sWidth) >= JobConfig.getWhiteValue()) { //200  40 //80
 			return true;
 		} else {
 			return false;
@@ -1016,7 +980,7 @@ public class Discret11Dec extends Discret {
 //					 pix.getPixel(i, 574, new int[this.sWidth * 3])[2];
 		}	
 
-		if ((total / sWidth) < 40) { //30 //80
+		if ((total / sWidth) < JobConfig.getWhiteValue()) { //30 40 //80
 			return true;
 		} else {
 			return false;
@@ -1036,7 +1000,7 @@ public class Discret11Dec extends Discret {
 //					 pix.getPixel(i, 573, new int[this.sWidth * 3])[2];
 		}		
 
-		if ((total / sWidth) >= 40) { //200 //80 //30
+		if ((total / sWidth) >= JobConfig.getWhiteValue()) { //200  40 //80 //30
 			return true;
 		} else {
 			return false;
@@ -1055,7 +1019,7 @@ public class Discret11Dec extends Discret {
 //					 pix.getPixel(i, 573, new int[this.sWidth * 3])[2];
 		}	
 
-		if ((total / sWidth) < 40 ) { //30 //80
+		if ((total / sWidth) < JobConfig.getWhiteValue() ) { //30 40 //80
 			return true;
 		} else {
 			return false;

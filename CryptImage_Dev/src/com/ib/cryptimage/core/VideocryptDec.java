@@ -95,7 +95,7 @@ public class VideocryptDec extends Videocrypt {
 		// encodage pal
 		if (JobConfig.getColorMode() == 1) {
 			palEngine.setImg(newImage);
-			newImage = palEngine.average();
+			newImage = palEngine.average(valTab);
 		}
 		
 		this.enable = true;
@@ -189,7 +189,8 @@ public class VideocryptDec extends Videocrypt {
 	}
 	
 	private boolean tagLine(){		
-		String binTypeRange = "";
+		String binRangeStart = "";
+		String binRangeEnd = "";		
 		String binSeed = "";
 		
 		int nbPixels = 8;
@@ -202,31 +203,10 @@ public class VideocryptDec extends Videocrypt {
 		double somme = 0;
 		int incre = 0;
 		
-		// tag type range
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < nbPixels; j++) {
-				somme += (raster.getPixel(incre, 0, tab)[0] + raster.getPixel(incre, 0, tab)[1] + raster.getPixel(incre, 0, tab)[2]) / 3d;
-			incre++;
-			}
-			somme = somme/nbPixels;
-			if (somme >= blackMin && somme < blackMax) {
-				binTypeRange = binTypeRange + "0";
-				somme = 0;
-			} else {
-				if (somme > whiteMin && somme <= whiteMax) {
-					binTypeRange = binTypeRange + "1";
-					somme = 0;
-				}
-			}			
-		}
-		
-		somme = 0;
-		incre = 0;
-		
 		//tag seed		
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < nbPixels; j++) {
-			somme += ( raster.getPixel(incre + 2*nbPixels, 0,tab)[0] + raster.getPixel(incre + 2*nbPixels, 0,tab)[1] +raster.getPixel(incre + 2*nbPixels, 0,tab)[2] )/3d;
+			somme += ( raster.getPixel(incre, 575,tab)[0] + raster.getPixel(incre, 575,tab)[1] +raster.getPixel(incre, 575,tab)[2] )/3d;
 			incre++;
 			}
 			somme = somme/nbPixels;
@@ -242,8 +222,54 @@ public class VideocryptDec extends Videocrypt {
 			}				
 		}
 		
+		
+		somme = 0;
+		incre = 0;
+		
+		// tag range start
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < nbPixels; j++) {
+				somme += (raster.getPixel(incre  + 24 * nbPixels, 575, tab)[0] + raster.getPixel(incre  + 24 *nbPixels, 575, tab)[1] + raster.getPixel(incre  + 24 * nbPixels, 575, tab)[2]) / 3d;
+			incre++;
+			}
+			somme = somme/nbPixels;
+			if (somme >= blackMin && somme < blackMax) {
+				binRangeStart = binRangeStart + "0";
+				somme = 0;
+			} else {
+				if (somme > whiteMin && somme <= whiteMax) {
+					binRangeStart = binRangeStart + "1";
+					somme = 0;
+				}
+			}			
+		}
+		
+		somme = 0;
+		incre = 0;
+		
+		// tag range end
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < nbPixels; j++) {
+				somme += (raster.getPixel(incre  + 32 * nbPixels, 575, tab)[0] + raster.getPixel(incre  + 32 *nbPixels, 575, tab)[1] + raster.getPixel(incre  + 32 * nbPixels, 575, tab)[2]) / 3d;
+			incre++;
+			}
+			somme = somme/nbPixels;
+			if (somme >= blackMin && somme < blackMax) {
+				binRangeEnd = binRangeEnd + "0";
+				somme = 0;
+			} else {
+				if (somme > whiteMin && somme <= whiteMax) {
+					binRangeEnd = binRangeEnd + "1";
+					somme = 0;
+				}
+			}			
+		}
+
+		
+
+		
 		//check values
-		if (!checkValuesTags(binTypeRange, binSeed)){
+		if (!checkValuesTags(binRangeStart, binRangeEnd, binSeed)){
 			this.skip = true;
 			if (!JobConfig.getGui().getChkPlayer().isSelected() && JobConfig.isLogVideocrypt()) {
 				feedLog(numFrame, -1);
@@ -251,19 +277,9 @@ public class VideocryptDec extends Videocrypt {
 			return false;
 		}				
 			
-			this.typeRange = Integer.parseInt(binTypeRange, 2);
+			this.rangeStart = Integer.parseInt(binRangeStart,2);
+			this.rangeEnd = Integer.parseInt(binRangeEnd,2);
 			this.seed = Integer.parseInt(binSeed, 2);
-			
-			
-			if(this.typeRange == 1 ){
-				this.rangeStart = 20;
-				this.rangeEnd = 236;
-				this.typeRange = 1;
-			} else{
-				this.rangeStart = 1;
-				this.rangeEnd = 255;
-				this.typeRange = 2;
-			}		
 			
 			generateValues(this.seed);						
 			
@@ -271,16 +287,18 @@ public class VideocryptDec extends Videocrypt {
 			return true;		
 	}
 	
-	private boolean checkValuesTags(String binTypeRange, String binSeed) {
-
+	private boolean checkValuesTags(String rangeStart, String rangeEnd, String binSeed) {	
 		try {
-			if (Integer.parseInt(binTypeRange, 2) == 1 || Integer.parseInt(binTypeRange, 2) == 2) {
-				if (Integer.parseInt(binSeed, 2) >= 1 && Integer.parseInt(binSeed, 2) <= 16777216) {
-					return true;
+			if (Integer.parseInt(rangeStart, 2) >= 1 && Integer.parseInt(rangeStart, 2) <= 128) {
+				if (Integer.parseInt(rangeEnd, 2) >= 129 && Integer.parseInt(rangeEnd, 2) <= 255) {
+					if (Integer.parseInt(binSeed, 2) >= 1 && Integer.parseInt(binSeed, 2) <= 16777216) {
+						return true;
+					}
 				}
 			}
 
 		} catch (Exception e) {
+			System.out.println("faux");
 			return false;
 		}
 		return false;

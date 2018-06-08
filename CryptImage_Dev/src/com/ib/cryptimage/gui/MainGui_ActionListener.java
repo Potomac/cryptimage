@@ -150,15 +150,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JobConfig.setLogVideocrypt(false);
 			}
 		}
-		
-		if (src.equals(this.mainGui.getChkRestrictRange())) {
-			if (this.mainGui.getChkRestrictRange().isSelected()) {
-				JobConfig.setRestrictRangeCuttingPoints(true);
-			} 
-			else{
-				JobConfig.setRestrictRangeCuttingPoints(false);
-			}
-		}
+
 		
 		if (src.equals(this.mainGui.getChkChangeOffsetIncrement())) {
 			if (this.mainGui.getChkChangeOffsetIncrement().isSelected()) {
@@ -499,7 +491,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 	}
 
-	private void manageSliders(JSlider src) {		
+	private void manageSliders(JSlider src) {
+		
+		if(src.equals(this.mainGui.getSldWhiteValue())) {
+			mainGui.getSlpWhiteValue().setValue(mainGui.getSldWhiteValue().getValue());
+			JobConfig.setWhiteValue((int) src.getValue());
+		}
+		
 		if(src.equals(this.mainGui.getSlid16bitsWord())){	
 			mainGui.getTxt16bitsWord().setText(String.format("%05d",
 					mainGui.getSlid16bitsWord().getValue()));
@@ -554,6 +552,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private void manageSpinners(JSpinner src){
+		
+		if(src.equals(this.mainGui.getSlpWhiteValue())) {
+			mainGui.getSldWhiteValue().setValue((int) src.getValue());
+			JobConfig.setWhiteValue((int) src.getValue());
+		}
+		
 		if(src.equals(this.mainGui.getJsp16bitKeyword())){
 			mainGui.getSlid16bitsWord().setValue(
 					(int) src.getValue());			
@@ -613,15 +617,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if(src.isSelected()){				
 				this.mainGui.getTxtVideocryptEnc().setEnabled(false);
 				this.mainGui.getBtnVideocryptEnc().setEnabled(false);
-				this.mainGui.getChkRestrictRange().setEnabled(true);
 			}
 		}
 		
 		if(src.equals(this.mainGui.getRdiVideocryptCodingFile())){
 			if(src.isSelected()){				
 				this.mainGui.getTxtVideocryptEnc().setEnabled(true);
-				this.mainGui.getBtnVideocryptEnc().setEnabled(true);
-				this.mainGui.getChkRestrictRange().setEnabled(false);
+				this.mainGui.getBtnVideocryptEnc().setEnabled(true);				
 			}
 		}	
 		
@@ -1359,17 +1361,25 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				compt++;				
 				if (!line.equals("skip")) {
 					para = line.split(";");
-					//check type range cutting points
-					val = Integer.valueOf(para[0]);					
-					if ( val !=1 && val != 2){						
+					//check random value
+					val = Integer.valueOf(para[0]);						
+					if ( val > 16777216 || val < 1){						
 						JOptionPane.showMessageDialog(mainGui.getFrame(),
 								JobConfig.getRes().getString("mainGui.validityError.title"),
 								JobConfig.getRes().getString("mainGui.validityError.title"), JOptionPane.ERROR_MESSAGE);
 						return false; 
 					}
-					//check random value
-					val = Integer.valueOf(para[1]);
-					if (val > 16777216 || val < 1) {
+					//check range start
+					val = Integer.valueOf(para[1]);					
+					if (val < 1 || val > 128) {
+						JOptionPane.showMessageDialog(mainGui.getFrame(),
+								JobConfig.getRes().getString("mainGui.validityError.title"),
+								JobConfig.getRes().getString("mainGui.validityError.title"), JOptionPane.ERROR_MESSAGE);
+						return false;
+					}
+					//check range end
+					val = Integer.valueOf(para[2]);					
+					if (val < 129 || val > 255) {
 						JOptionPane.showMessageDialog(mainGui.getFrame(),
 								JobConfig.getRes().getString("mainGui.validityError.title"),
 								JobConfig.getRes().getString("mainGui.validityError.title"), JOptionPane.ERROR_MESSAGE);
@@ -2307,7 +2317,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if(e.getSource().equals(mainGui.getJsp16bitKeyword()) 
 				|| e.getSource().equals(mainGui.getJspFrameStart())
 				|| e.getSource().equals(mainGui.getJspFrameStartSyster())
-				|| e.getSource().equals(mainGui.getJspFrameStartVideocrypt())){
+				|| e.getSource().equals(mainGui.getJspFrameStartVideocrypt())
+				|| e.getSource().equals(mainGui.getSlpWhiteValue())){
 			JSpinner spi = (JSpinner)e.getSource();
 			manageSpinners(spi);
 		} 		
