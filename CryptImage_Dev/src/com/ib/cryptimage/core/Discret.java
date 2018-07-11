@@ -46,14 +46,7 @@ public abstract class Discret extends Device {
 	public Discret() {
 		int typeGrid = 0;
 		int freq = 0;
-		if(JobConfig.getGui().getCmbPalFreq().getSelectedIndex() == 0) {
-			typeGrid = 0;
-			freq = 14750000;
-		}
-		else {
-			typeGrid = 1;
-			freq = 17750000;
-		}
+		freq = (int)JobConfig.getGui().getCmbPalFreq().getSelectedItem();
 		
 		palEncoder = new PalEncoder(false, typeGrid);
 		palDecoder = new PalDecoder(freq);

@@ -1160,9 +1160,11 @@ public class MainGui {
 		
 		JLabel lblPalFreq = new JLabel("Sampling rate frequency");
 		cmbPalFreq = new JComboBox<>();
-		cmbPalFreq.addItem(14750000);
-		cmbPalFreq.addItem(17750000);
-		cmbPalFreq.setSelectedIndex(1);
+		cmbPalFreq.addItem(13500000);
+		cmbPalFreq.addItem(14000000);
+		cmbPalFreq.addItem(14750000);		
+		cmbPalFreq.addItem(17734375);
+		cmbPalFreq.setSelectedIndex(3);
 		
 //		panPalFreq.add(lblPalFreq);
 //		panPalFreq.add(cmbPalFreq);
@@ -2635,7 +2637,7 @@ public class MainGui {
 		
 		rdi720 = new JRadioButton("720x576");
 		rdi768 = new JRadioButton("768x576");
-		rdi944 = new JRadioButton("944x626");
+		rdi944 = new JRadioButton("1136x626");
 		rdi768.setSelected(true);
 		ButtonGroup btngrp = new ButtonGroup();
 		btngrp.add(rdi720);

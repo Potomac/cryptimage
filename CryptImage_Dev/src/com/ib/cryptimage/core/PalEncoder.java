@@ -21,6 +21,8 @@
 
 package com.ib.cryptimage.core;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 /**
  * @author Mannix54
  *
@@ -51,8 +53,7 @@ public class PalEncoder {
 	int currentFrame = 0;
 	
 	String grid = "/ressources/subcarrier_2.png";
-	String burst1;
-	String burst2;
+	String burst;
 	
 	int typeGrid;
 
@@ -61,77 +62,34 @@ public class PalEncoder {
 		yuvCalc = new YuvCalc();
 		this.split = splitFrames;	
 		
-		this.typeGrid = typeGrid;
-
-		if (typeGrid == 1) {
-			grid = "/ressources/subcarrier_2.png";
-		}
-		else {
-			grid = "/ressources/PAL_subcarrier_ori.png";
-		}
-	
-
+		this.typeGrid = 2;
 	}
 	
 	private void initFrame() {
 		
 		currentFrame = JobConfig.getCurrentPalFrame();
 		
-		if(typeGrid == 1) {
-			switch (currentFrame) {
-			case 1:
-				grid = "/ressources/subcarrier_phase_1.bmp";
-				burst1 = "/ressources/burst_top_phase_1.bmp";
-				burst2 = "/ressources/burst_bot_phase_1.bmp";
-				break;
-			case 2:
-				grid = "/ressources/subcarrier_phase_2.bmp";
-				burst1 = "/ressources/burst_top_phase_2.bmp";
-				burst2 = "/ressources/burst_bot_phase_2.bmp";
-				break;
-			case 3:
-				grid = "/ressources/subcarrier_phase_3.bmp";
-				burst1 = "/ressources/burst_top_phase_3.bmp";
-				burst2 = "/ressources/burst_bot_phase_3.bmp";
-				break;
-			case 4:
-				grid = "/ressources/subcarrier_phase_4.bmp";
-				burst1 = "/ressources/burst_top_phase_4.bmp";
-				burst2 = "/ressources/burst_bot_phase_4.bmp";
-				break;
-			default:
-				System.out.println("error pal frame number");
-				break;
-			}
+		switch (currentFrame) {
+		case 1:
+			grid = "/ressources/grid_17.73_phase_1.bmp";
+			burst = "/ressources/burst_17.73_phase_1.bmp";				
+			break;
+		case 2:
+			grid = "/ressources/grid_17.73_phase_2.bmp";
+			burst = "/ressources/burst_17.73_phase_2.bmp";	
+			break;
+		case 3:
+			grid = "/ressources/grid_17.73_phase_3.bmp";
+			burst = "/ressources/burst_17.73_phase_3.bmp";	
+			break;
+		case 4:
+			grid = "/ressources/grid_17.73_phase_4.bmp";
+			burst = "/ressources/burst_17.73_phase_4.bmp";	
+			break;
+		default:
+			System.out.println("error pal frame number");
+			break;
 		}
-		else if(typeGrid == 0) {
-			switch (currentFrame) {
-			case 1:
-				grid = "/ressources/grid_14.75_phase_1_new.bmp";
-				burst1 = "/ressources/burst_14.75_phase_1_top.bmp";
-				burst2 = "/ressources/burst_14.75_phase_1_bot.bmp";
-				break;
-			case 2:
-				grid = "/ressources/grid_14.75_phase_2_new.bmp";
-				burst1 = "/ressources/burst_14.75_phase_2_top.bmp";
-				burst2 = "/ressources/burst_14.75_phase_2_bot.bmp";
-				break;
-			case 3:
-				grid = "/ressources/grid_14.75_phase_3_new.bmp";
-				burst1 = "/ressources/burst_14.75_phase_3_top.bmp";
-				burst2 = "/ressources/burst_14.75_phase_3_bot.bmp";
-				break;
-			case 4:
-				grid = "/ressources/grid_14.75_phase_4_new.bmp";
-				burst1 = "/ressources/burst_14.75_phase_4_top.bmp";
-				burst2 = "/ressources/burst_14.75_phase_4_bot.bmp";
-				break;
-			default:
-				System.out.println("error pal frame number");
-				break;
-			}
-		}
-		
 
 		
 	}
@@ -142,6 +100,7 @@ public class PalEncoder {
 	
 
 	public void setImage(BufferedImage image) {
+		image = getScaledImage(image, 922, 576);
 		this.imgInput = image;
 		imgInput = convertToType(imgInput, BufferedImage.TYPE_3BYTE_BGR);
 		convertToYUV();	
@@ -152,9 +111,10 @@ public class PalEncoder {
 	
 	private void convertToYUV(){
 		WritableRaster rasterYuv = imgInput.getRaster();
+		int width = imgInput.getWidth();
 		
 		for (int y = 0; y < 576; y++) {
-			for (int x = 0; x < 768 ; x++) {				
+			for (int x = 0; x < width ; x++) {				
 				rasterYuv.setPixel(x, y,
 						yuvCalc.convertRGBtoYUV(rasterYuv.getPixel(x, y,pixelTab)));
 			}
@@ -309,7 +269,7 @@ public class PalEncoder {
 				i++;
 			}
 
-			rasterOutput.setPixels(0, row, 768, 1, rgbim3);
+			rasterOutput.setPixels(0, row, width, 1, rgbim3);
 		}
 
 		//convertToRGB();
@@ -325,7 +285,7 @@ public class PalEncoder {
 		//RescaleOp rescaleOp = new RescaleOp(1.3f, 1.3f,null);
 		//rescaleOp.filter(imgOutput, imgOutput);  // Source and destination are the same.
 
-		return imgOutput;
+		return getScaledImage(imgOutput, 768,576);
 	}
 	
 	
@@ -386,9 +346,10 @@ public class PalEncoder {
     }
 	
 	
-	private void convertToRGB(){		
+	private void convertToRGB(){
+		int width = imgInput.getWidth();
 		for (int y = 0; y < 576; y++) {
-			for (int x = 0; x < 768; x++) {
+			for (int x = 0; x < width; x++) {
 				rasterOutput.setPixel(x, y, yuvCalc.convertYUVtoRGB(rasterOutput.getPixel(x, y,
 						pixelTab)));
 			}			
@@ -397,8 +358,9 @@ public class PalEncoder {
 	
 	private void convertToRGB2(){	
 		WritableRaster rasterYuv = imgInput.getRaster();
+		int width = imgInput.getWidth();
 		for (int y = 0; y < 576; y++) {
-			for (int x = 0; x < 768; x++) {
+			for (int x = 0; x < width; x++) {
 				rasterYuv.setPixel(x, y, yuvCalc.convertYUVtoRGB(rasterYuv.getPixel(x, y,
 						pixelTab)));
 			}			
@@ -431,50 +393,91 @@ public class PalEncoder {
 	}
 	
 	
-	public BufferedImage splitFrames(BufferedImage fullFrame) throws IOException {
-		BufferedImage buff = new  BufferedImage(944, 625, BufferedImage.TYPE_3BYTE_BGR);
-		
-		fullFrame = convertToType(fullFrame, BufferedImage.TYPE_3BYTE_BGR);
-		
-		WritableRaster raster = buff.getRaster();
-		
-		BufferedImage burst_top = ImageIO.read(getClass().getResource(burst1));// ImageIO.read(getClass().getResource("/ressources/burst_1_fix_c2.png"));
-		BufferedImage burst_bot = ImageIO.read(getClass().getResource(burst2)); //ImageIO.read(getClass().getResource("/ressources/burst_2_fix_c2.png"));
-				
-		Raster rasterBurst1 = burst_top.getRaster();
-		Raster rasterBurst2 = burst_bot.getRaster();
-		
-		Raster rasterfullFrame = fullFrame.getRaster();
-		
-		raster.setPixels(76, 21, 36, 288,
-				rasterBurst1.getPixels(0, 0, 36, 288, new int[36 * 288 * 3]));
-		
-		raster.setPixels(76, 332, 36, 288,
-				rasterBurst2.getPixels(0, 0, 36, 288, new int[36 * 288 * 3]));
-		
-		//buff = convertToType(buff, BufferedImage.TYPE_BYTE_GRAY);
-		
-		int j = 0;
-		
-		for (int i = 0; i < 576;  i++) {			
-			//System.out.println(i);
-			raster.setPixels(156, j + 21, 768, 1,
-					rasterfullFrame.getPixels(0, i, 768, 1, new int[768 *3]));						
-			i++;
-			j++;			
-		}
-		
-		j=0;
-		for (int i = 1; i < 576;  i++) {			
-			//System.out.println(i);
-			raster.setPixels(156, j + 332, 768, 1,
-					rasterfullFrame.getPixels(0, i , 768, 1, new int[768 *3]));						
-			i++;
-			j++;			
-		}
-		
-		return convertToType(buff, BufferedImage.TYPE_BYTE_GRAY);
-	}
+	/**
+	 * Scale an image to a new size
+	 * @param src the image source
+	 * @param w the new width
+	 * @param h the new height
+	 * @return the resized image
+	 */
+	private BufferedImage getScaledImage(BufferedImage src, int w, int h){
+	    int finalw = w;
+	    int finalh = h;
+	    double factor = 1.00d;
+	    double shiftw = 1d;	 
+	    
+//	    if(src.getWidth()==720 && src.getHeight()==576 ){
+//	    	shiftw = (double)src.getWidth()/(double)w; // case of if width = 720 and height = 576
+//	    }
+//	    
+//	    if(src.getWidth() > src.getHeight()){
+//	        factor = ((double)src.getHeight()/(double)src.getWidth());
+//	        finalh = (int)(finalw * factor * shiftw);                
+//	    }else{
+//	        factor = ((double)src.getWidth()/(double)src.getHeight());
+//	        finalw = (int)(finalh * factor  );
+//	    }   
+
+	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TRANSLUCENT);
+	    Graphics2D g2 = resizedImg.createGraphics();
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.drawImage(src, 0, 0, finalw, finalh, null);
+	    g2.dispose();
+	    
+	    //step 2 create a bufferedimage with exact size
+	    
+	    BufferedImage target = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+	    
+	    Graphics g3 = target.getGraphics();	    
+	    g3.drawImage(resizedImg, 0, (target.getHeight() - resizedImg.getHeight())/2, null);
+		    
+	    return target;
+	}	
+	
+//	public BufferedImage splitFrames(BufferedImage fullFrame) throws IOException {
+//		BufferedImage buff = new  BufferedImage(944, 625, BufferedImage.TYPE_3BYTE_BGR);
+//		
+//		fullFrame = convertToType(fullFrame, BufferedImage.TYPE_3BYTE_BGR);
+//		
+//		WritableRaster raster = buff.getRaster();
+//		
+//		BufferedImage burst_top = ImageIO.read(getClass().getResource(burst1));// ImageIO.read(getClass().getResource("/ressources/burst_1_fix_c2.png"));
+//		BufferedImage burst_bot = ImageIO.read(getClass().getResource(burst2)); //ImageIO.read(getClass().getResource("/ressources/burst_2_fix_c2.png"));
+//				
+//		Raster rasterBurst1 = burst_top.getRaster();
+//		Raster rasterBurst2 = burst_bot.getRaster();
+//		
+//		Raster rasterfullFrame = fullFrame.getRaster();
+//		
+//		raster.setPixels(76, 21, 36, 288,
+//				rasterBurst1.getPixels(0, 0, 36, 288, new int[36 * 288 * 3]));
+//		
+//		raster.setPixels(76, 332, 36, 288,
+//				rasterBurst2.getPixels(0, 0, 36, 288, new int[36 * 288 * 3]));
+//		
+//		//buff = convertToType(buff, BufferedImage.TYPE_BYTE_GRAY);
+//		
+//		int j = 0;
+//		
+//		for (int i = 0; i < 576;  i++) {			
+//			//System.out.println(i);
+//			raster.setPixels(156, j + 21, 768, 1,
+//					rasterfullFrame.getPixels(0, i, 768, 1, new int[768 *3]));						
+//			i++;
+//			j++;			
+//		}
+//		
+//		j=0;
+//		for (int i = 1; i < 576;  i++) {			
+//			//System.out.println(i);
+//			raster.setPixels(156, j + 332, 768, 1,
+//					rasterfullFrame.getPixels(0, i , 768, 1, new int[768 *3]));						
+//			i++;
+//			j++;			
+//		}
+//		
+//		return convertToType(buff, BufferedImage.TYPE_BYTE_GRAY);
+//	}
 	
 }
 	

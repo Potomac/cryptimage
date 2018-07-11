@@ -395,14 +395,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			switch (this.mainGui.getCombSystemCrypt().getSelectedIndex()) {
 			case 0:
 			JobConfig.setSystemCrypt(0);
-			this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+			this.mainGui.getCmbPalFreq().setSelectedIndex(3);
 			this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Discret11");
 			this.mainGui.getChkStrictMode().setEnabled(true);
 			//rdiVideoSelected();
 				break;				
 			case 1:
 				JobConfig.setSystemCrypt(1);
-				this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+				this.mainGui.getCmbPalFreq().setSelectedIndex(3);
 				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Syster");
 				if(!this.mainGui.getChkStrictMode().isSelected()){
 					setMultiCodeComboBox();
@@ -432,7 +432,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				break;
 			case 2:
 				JobConfig.setSystemCrypt(2);
-				this.mainGui.getCmbPalFreq().setSelectedIndex(0);
+				this.mainGui.getCmbPalFreq().setSelectedIndex(1);
 				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Videocrypt");
 				if(!this.mainGui.getChkStrictMode().isSelected()){
 					setMultiCodeComboBox();
@@ -462,7 +462,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				break;	
 			case 3:
 				JobConfig.setSystemCrypt(3);
-				this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+				this.mainGui.getCmbPalFreq().setSelectedIndex(3);
 				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Transcode");
 				if(!this.mainGui.getChkStrictMode().isSelected()){
 					setMultiCodeComboBox();
@@ -2272,9 +2272,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		                frames_nb = calc * frameRate;		 
 		                
 		                //System.out.println(stream.getStreamCoder().getWidth() + " " + stream.getStreamCoder().getHeight());
-		                if(stream.getStreamCoder().getWidth() == 944 && stream.getStreamCoder().getHeight() == 626) {
+		                if(stream.getStreamCoder().getWidth() == 1136 && stream.getStreamCoder().getHeight() == 626) {
 			                int dialogResult = JOptionPane.showConfirmDialog (null, JobConfig.getRes().getString("manageFileOpen.is944"),
-			                		"944x626 resolution",JOptionPane.YES_NO_OPTION);
+			                		"1136x626 resolution",JOptionPane.YES_NO_OPTION);
 			                if(dialogResult == JOptionPane.YES_OPTION){
 			                  JobConfig.setHasToBeUnsplit(true);			                  
 			                }

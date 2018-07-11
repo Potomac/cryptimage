@@ -56,14 +56,7 @@ public class Transcode extends Device {
 	public Transcode() {
 		int typeGrid = 0;
 		int freq = 0;
-		if(JobConfig.getGui().getCmbPalFreq().getSelectedIndex() == 0) {
-			typeGrid = 0;
-			freq = 14750000;
-		}
-		else {
-			typeGrid = 1;
-			freq = 17750000;
-		}
+		freq = (int)JobConfig.getGui().getCmbPalFreq().getSelectedItem();
 		
 		
 		shift = new Shift();		

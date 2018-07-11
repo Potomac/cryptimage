@@ -286,7 +286,7 @@ public class CryptVideo {
 
 		
 		if(JobConfig.getGui().getRdi944().isSelected() && this.strictMode) {
-			this.width = 944;
+			this.width = 1136;
 			this.height = 626;
 			is944 = true;
 		}		
@@ -464,7 +464,7 @@ public class CryptVideo {
 //				//buff = splitFrames.unsplitFrames(buff);
 //			}
 			
-			if(is944 && buff.getWidth() != 944 && buff.getWidth() != 626 && this.strictMode) {
+			if(is944 && buff.getWidth() != 1136 && buff.getWidth() != 626 && this.strictMode) {
 				if(buff.getWidth() != 768 || buff.getHeight() != 576) {				
 					buff = getScaledImage(buff, 768, 576);
 				}
@@ -500,7 +500,7 @@ public class CryptVideo {
 //				//buff = splitFrames.unsplitFrames(buff);
 //			}
 			
-			if(is944 && buff.getWidth() != 944 && buff.getWidth() != 626 && this.strictMode) {
+			if(is944 && buff.getWidth() != 1136 && buff.getWidth() != 626 && this.strictMode) {
 				if(buff.getWidth() != 768 || buff.getHeight() != 576) {				
 					buff = getScaledImage(buff, 768, 576);
 				}
