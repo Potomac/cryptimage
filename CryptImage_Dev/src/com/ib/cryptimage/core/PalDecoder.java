@@ -770,9 +770,11 @@ public class PalDecoder {
 //	        finalw = (int)(finalh * factor  );
 //	    }   
 
-	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TRANSLUCENT);
+	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TYPE_3BYTE_BGR);
 	    Graphics2D g2 = resizedImg.createGraphics();
-	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.setRenderingHint(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_QUALITY);
+	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 	    g2.drawImage(src, 0, 0, finalw, finalh, null);
 	    g2.dispose();
 	    
