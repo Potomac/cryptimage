@@ -88,8 +88,15 @@ public abstract class Videocrypt extends Device {
 	public Videocrypt(boolean wantCrypt) {
 		int typeGrid = 0;
 		int freq = 0;
-		freq = (int)JobConfig.getGui().getCmbPalFreq().getSelectedItem();
-			
+		if(JobConfig.getGui().getCmbPalFreq().getSelectedIndex() == 0) {
+			typeGrid = 0;
+			freq = 14750000;
+		}
+		else {
+			typeGrid = 1;
+			freq = 17750000;
+		}
+		
 		
 		shift = new Shift();		
 		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());

@@ -100,9 +100,9 @@ public class CryptPhoto {
 			return false;
 		}
 		
-        if(img.getWidth() == 1136 && img.getHeight() == 626) {
+        if(img.getWidth() == 944 && img.getHeight() == 626) {
             int dialogResult = JOptionPane.showConfirmDialog (null, JobConfig.getRes().getString("manageFileOpen.is944"),
-            		"1136x626 resolution",JOptionPane.YES_NO_OPTION);
+            		"944x626 resolution",JOptionPane.YES_NO_OPTION);
             if(dialogResult == JOptionPane.YES_OPTION){
               JobConfig.setHasToBeUnsplit(true);
               img = splitFrames.unsplitFrames(img);
