@@ -74,7 +74,16 @@ public abstract class Syster extends Device {
 	protected boolean enable;
 	protected PalEngine palEngine;
 	protected SecamEngine secamEngine;
+	protected PalEncoder palEncoder;
+	protected PalDecoder palDecoder;
+	protected SplitFrames splitFrames;
 	protected boolean skip;
+	
+	protected int shiftX;
+	protected int shiftY;
+	
+	protected Shift shift;
+	
 
 	/**
 	 * 
@@ -82,8 +91,30 @@ public abstract class Syster extends Device {
 	 * @param wantCrypt set true if we want a crypt operation	
 	 */
 	public Syster(int typeTable, boolean wantCrypt) {
+		int typeGrid = 0;
+		int freq = 0;
+		if(JobConfig.getGui().getCmbPalFreq().getSelectedIndex() == 0) {
+			typeGrid = 0;
+			freq = 14750000;
+		}
+		else {
+			typeGrid = 1;
+			freq = 17750000;
+		}
+		
+		
+		shift = new Shift();		
+		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
+		shiftY = Integer.valueOf(JobConfig.getGui().getjShiftY().getValue().toString());
+		
 		palEngine = new PalEngine();
 		secamEngine = new SecamEngine();
+		palEncoder = new PalEncoder(false, typeGrid);
+		palDecoder = new PalDecoder(freq);
+		JobConfig.setCurrentPalFrame(0);
+		JobConfig.setPalDecoder(palDecoder);
+		JobConfig.setPalEncoder(palEncoder);
+				
 		this.typeTable = typeTable;		
 		this.wantCrypt = wantCrypt;		
 		this.vecFrame = new Vector<BufferedImage>();
@@ -356,11 +387,33 @@ public abstract class Syster extends Device {
 			if ( JobConfig.getColorMode() == 1) {
 				palEngine.setImg(completFrame);				
 				return palEngine.decode(this.skip);
-			} else {
+			}
+			
+			//decode pal image composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
+				palDecoder.setImage(completFrame);
+				return palDecoder.decode();
+			}			
+			else {
 				return completFrame;
 			}
 		}
 		else {
+			JobConfig.setCurrentPalFrame(JobConfig.getCurrentPalFrame() - 1);
+			//JobConfig.incrementPalFrame();
+			
+//			if(!JobConfig.isWantPlay() && !JobConfig.isWantDec()) {			
+//				try {
+//					fileOut.write("frame " + ( this.numSkip)  + ";" + "skip" + ";" + "skip" + ";" 
+//							+ "skip" + ";" + "skip"
+//							+ ";" + "skip" + "\r\n");				
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//			return new BufferedImage(768, 576, BufferedImage.TYPE_3BYTE_BGR);
+			
 			return null;
 		}
 	}

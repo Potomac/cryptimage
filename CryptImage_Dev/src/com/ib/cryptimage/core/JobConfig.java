@@ -93,8 +93,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.4.12 beta";
-	private static String releaseDate = "2018-06-03";
+	private static String VERSION = "1.4.17 beta";
+	private static String releaseDate = "2018-07-10";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -112,7 +112,22 @@ public final class JobConfig {
 	private static boolean panAndScan = false;
 
 	private static int whiteValue = 80;
+	private static boolean hasToBeUnsplit = false;
 	
+	private static PalEncoder palEncoder;
+	private static PalDecoder palDecoder;
+	
+	private static int currentPalFrame = 0;
+	
+	public static void incrementPalFrame() {
+		//currentPalFrame = 1;
+		JobConfig.currentPalFrame++;
+		if(JobConfig.currentPalFrame > 4) {
+			JobConfig.currentPalFrame = 1;
+		}
+
+		//System.out.println(JobConfig.getCurrentPalFrame());
+	}
 	
 	public static String getDateTime(){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
@@ -449,7 +464,7 @@ public final class JobConfig {
 		// system crypt
 		try {
 			if (Integer.valueOf(options[15]) != 0 && Integer.valueOf(options[15]) != 1
-					 && Integer.valueOf(options[15]) != 2) {
+					 && Integer.valueOf(options[15]) != 2 && Integer.valueOf(options[15]) != 3 ) {
 				options[15] = "0";
 			}
 		} catch (Exception e) {
@@ -1023,6 +1038,38 @@ public final class JobConfig {
 
 	public static void setWhiteValue(int whiteValue) {
 		JobConfig.whiteValue = whiteValue;
+	}
+
+	public static boolean isHasToBeUnsplit() {
+		return JobConfig.hasToBeUnsplit;
+	}
+
+	public static void setHasToBeUnsplit(boolean hasToBeUnsplit) {
+		JobConfig.hasToBeUnsplit = hasToBeUnsplit;
+	}
+
+	public static PalEncoder getPalEncoder() {
+		return palEncoder;
+	}
+
+	public static void setPalEncoder(PalEncoder palEncoder) {
+		JobConfig.palEncoder = palEncoder;
+	}
+
+	public static PalDecoder getPalDecoder() {
+		return palDecoder;
+	}
+
+	public static void setPalDecoder(PalDecoder palDecoder) {
+		JobConfig.palDecoder = palDecoder;
+	}
+
+	public static int getCurrentPalFrame() {
+		return currentPalFrame;
+	}
+
+	public static void setCurrentPalFrame(int currentPalFrame) {
+		JobConfig.currentPalFrame = currentPalFrame;
 	}
 	
 }

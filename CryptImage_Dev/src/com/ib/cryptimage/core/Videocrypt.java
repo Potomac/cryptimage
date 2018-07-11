@@ -44,6 +44,10 @@ public abstract class Videocrypt extends Device {
 	protected boolean enable;
 	protected PalEngine palEngine;
 	protected SecamEngine secamEngine;
+	protected PalEncoder palEncoder;
+	protected PalDecoder palDecoder;
+	protected SplitFrames splitFrames;
+	
 	protected boolean skip;
 	protected final int sWidth = 768;
 	protected boolean wantCrypt;
@@ -70,11 +74,35 @@ public abstract class Videocrypt extends Device {
 	private String colorMode = "";
 	private String modeMachine = "";
 	
+	protected int shiftX;
+	protected int shiftY;
+	
+	protected Shift shift;
+	
+	protected boolean strictMode = false;
+	
 
 	/**
 	 * 
 	 */
 	public Videocrypt(boolean wantCrypt) {
+		int typeGrid = 0;
+		int freq = 0;
+		if(JobConfig.getGui().getCmbPalFreq().getSelectedIndex() == 0) {
+			typeGrid = 0;
+			freq = 14750000;
+		}
+		else {
+			typeGrid = 1;
+			freq = 17750000;
+		}
+		
+		
+		shift = new Shift();		
+		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
+		shiftY = Integer.valueOf(JobConfig.getGui().getjShiftY().getValue().toString());
+		
+		strictMode = JobConfig.getGui().getChkVideocryptStrictMode().isSelected();
 		
 		if (!JobConfig.isModePhoto()) {
 			numFrame = Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString())-1;			
@@ -84,6 +112,15 @@ public abstract class Videocrypt extends Device {
 		secamEngine = new SecamEngine();		
 		this.wantCrypt = wantCrypt;	
 		bPreviewMode = JobConfig.getGui().getChkPlayer().isSelected();
+		
+		palEngine = new PalEngine();
+		secamEngine = new SecamEngine();
+		palEncoder = new PalEncoder(false, typeGrid);
+		palDecoder = new PalDecoder(freq);
+		JobConfig.setCurrentPalFrame(0);
+		JobConfig.setPalDecoder(palDecoder);
+		JobConfig.setPalEncoder(palEncoder);
+		
 		
 		try {
 			if (!bPreviewMode && JobConfig.isLogVideocrypt()) {				
@@ -95,6 +132,15 @@ public abstract class Videocrypt extends Device {
 				}
 				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
 					colorMode = "secam";
+				}
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 3) {
+					colorMode = "pal_composite_encode_and_decode";
+				}
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 4) {
+					colorMode = "pal_composite_encode_only";
+				}
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 5) {
+					colorMode = "pal_composite_decode_only";
 				}
 				
 				if (JobConfig.isWantDec()) {

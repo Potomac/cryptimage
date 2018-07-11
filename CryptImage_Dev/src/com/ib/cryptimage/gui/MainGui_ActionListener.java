@@ -231,6 +231,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
+				mainGui.getRdi944().setEnabled(true);
 			} else {
 				if(this.mainGui.getRdiVideo().isSelected()){					
 					this.mainGui.getRdiDiscretCorrel().setEnabled(false);
@@ -246,6 +247,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getLbl11bitsInfo().setEnabled(true);		
 				mainGui.getRdi720().setEnabled(false);
 				mainGui.getRdi768().setEnabled(false);
+				mainGui.getRdi944().setEnabled(false);
 			}
 		} else if (src.equals(this.mainGui.getChkDelay())) {
 			if (src.isSelected()) {
@@ -348,13 +350,22 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 		if(src.equals(this.mainGui.getCbYUV())){
 			if(this.mainGui.getCbYUV().getSelectedIndex() == 0){
-				JobConfig.setTypeYUV(0);
+				JobConfig.setTypeYUV(0);				
 			}
 			if(this.mainGui.getCbYUV().getSelectedIndex() == 1){
-				JobConfig.setTypeYUV(1);
+				JobConfig.setTypeYUV(1);				
 			}
 			if(this.mainGui.getCbYUV().getSelectedIndex() == 2){
-				JobConfig.setTypeYUV(2);
+				JobConfig.setTypeYUV(2);				
+			}
+			if(this.mainGui.getCbYUV().getSelectedIndex() == 3){
+				JobConfig.setTypeYUV(3);				
+			}
+			if(this.mainGui.getCbYUV().getSelectedIndex() == 4){
+				JobConfig.setTypeYUV(4);				
+			}
+			if(this.mainGui.getCbYUV().getSelectedIndex() == 5){
+				JobConfig.setTypeYUV(5);				
 			}
 		}
 		
@@ -362,25 +373,36 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JobConfig.setColorMode(this.mainGui.getCbColorMode().getSelectedIndex());
 			if(this.mainGui.getCbColorMode().getSelectedIndex()==0){
 				this.mainGui.getCbAveragePal().setEnabled(false);
+				JobConfig.getGui().getCardPal().show(JobConfig.getGui().getPanOptionsPalComposite(), "dummy");
 			}
 			if(this.mainGui.getCbColorMode().getSelectedIndex()==1){
 				this.mainGui.getCbAveragePal().setEnabled(true);
+				JobConfig.getGui().getCardPal().show(JobConfig.getGui().getPanOptionsPalComposite(), "dummy");
 			}
 			if(this.mainGui.getCbColorMode().getSelectedIndex()==2){
-				this.mainGui.getCbAveragePal().setEnabled(false);
+				JobConfig.getGui().getCardPal().show(JobConfig.getGui().getPanOptionsPalComposite(), "dummy");
 			}
+			if(this.mainGui.getCbColorMode().getSelectedIndex()>=2){
+				this.mainGui.getCbAveragePal().setEnabled(false);				
+			}
+			if(this.mainGui.getCbColorMode().getSelectedIndex()>=3){
+				JobConfig.getGui().getCardPal().show(JobConfig.getGui().getPanOptionsPalComposite(), "sampling_rate");
+			}			
+			
 		}		
 		
 		if(src.equals(this.mainGui.getCombSystemCrypt())){
 			switch (this.mainGui.getCombSystemCrypt().getSelectedIndex()) {
 			case 0:
 			JobConfig.setSystemCrypt(0);
+			this.mainGui.getCmbPalFreq().setSelectedIndex(1);
 			this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Discret11");
 			this.mainGui.getChkStrictMode().setEnabled(true);
 			//rdiVideoSelected();
 				break;				
 			case 1:
 				JobConfig.setSystemCrypt(1);
+				this.mainGui.getCmbPalFreq().setSelectedIndex(1);
 				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Syster");
 				if(!this.mainGui.getChkStrictMode().isSelected()){
 					setMultiCodeComboBox();
@@ -404,11 +426,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
+				mainGui.getRdi944().setEnabled(true);
 				//setMultiCodeComboBox();
 				this.mainGui.getChkStrictMode().setEnabled(false);
 				break;
 			case 2:
 				JobConfig.setSystemCrypt(2);
+				this.mainGui.getCmbPalFreq().setSelectedIndex(0);
 				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Videocrypt");
 				if(!this.mainGui.getChkStrictMode().isSelected()){
 					setMultiCodeComboBox();
@@ -432,9 +456,40 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
+				mainGui.getRdi944().setEnabled(true);
 				//setMultiCodeComboBox();
 				this.mainGui.getChkStrictMode().setEnabled(false);			
-				break;		
+				break;	
+			case 3:
+				JobConfig.setSystemCrypt(3);
+				this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Transcode");
+				if(!this.mainGui.getChkStrictMode().isSelected()){
+					setMultiCodeComboBox();
+				}
+				this.mainGui.getChkStrictMode().setSelected(true);
+				if(this.mainGui.getRdiVideo().isSelected()){
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+					this.mainGui.getSlid16bitsWord().setEnabled(true);
+					this.mainGui.getJsp16bitKeyword().setEnabled(true);
+					enableComboAudience();
+				}
+				if(this.mainGui.getRdiPhoto().isSelected()){
+					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+					this.mainGui.getRdiDiscretCoding().setSelected(true);
+					this.mainGui.getSlid16bitsWord().setEnabled(true);
+					this.mainGui.getJsp16bitKeyword().setEnabled(true);
+					enableComboAudience();
+				}
+				mainGui.getRdi720().setEnabled(true);
+				mainGui.getRdi768().setEnabled(true);
+				mainGui.getRdi944().setEnabled(true);
+				//setMultiCodeComboBox();
+				this.mainGui.getChkStrictMode().setEnabled(false);
+				break;
 			default:
 				break;
 			}
@@ -492,6 +547,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageSliders(JSlider src) {
+		
+		
+		if(src.equals(this.mainGui.getSlidBrightness())) {
+			mainGui.getJtxtValBrightness().setText(String.valueOf(mainGui.getSlidBrightness().getValue()));
+		}
+		
+		if(src.equals(this.mainGui.getSlidColor())) {
+			mainGui.getJtxtValColor().setText(String.valueOf(mainGui.getSlidColor().getValue()));
+		}
 		
 		if(src.equals(this.mainGui.getSldWhiteValue())) {
 			mainGui.getSlpWhiteValue().setValue(mainGui.getSldWhiteValue().getValue());
@@ -680,7 +744,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
 				}
 				mainGui.getRdi720().setEnabled(true);
-				mainGui.getRdi768().setEnabled(true);	
+				mainGui.getRdi768().setEnabled(true);
+				mainGui.getRdi944().setEnabled(true);
 				//setMultiCodeComboBox();
 				this.mainGui.getChkStrictMode().setEnabled(false);				
 			}	
@@ -810,6 +875,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				//mainGui.getCombAudience().setEnabled(true);
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
+				mainGui.getRdi944().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
 				//mainGui.getChkSound().setEnabled(true);
 				mainGui.getChkDisableSound().setEnabled(true);
@@ -826,6 +892,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkStrictMode().setSelected(true);
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
+				mainGui.getRdi944().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
 				mainGui.getChkHorodatage().setEnabled(true);
 				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
@@ -1711,12 +1778,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			} else {
 
 				if (mainGui.getRdiVideo().isSelected()) {
+					JobConfig.setHasToBeUnsplit(false);
 					setVideosInfos(file.getAbsolutePath());
 					if(mainGui.getTxtOutputFile().getText().equals("")){
 						mainGui.getTxtOutputFile().setText(file.getParent());
 					}					
 					mainGui.getBtnOutputFile().setEnabled(true);
 				} else {
+					JobConfig.setHasToBeUnsplit(false);
 					mainGui.getTxtInputFile().setText(file.getAbsolutePath());
 					if(mainGui.getTxtOutputFile().getText().equals("")){
 						mainGui.getTxtOutputFile().setText(file.getParent());
@@ -2009,7 +2078,16 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if (mainGui.getRdi768().isSelected()) {
 				JobConfig.setsWidth(768);
 			}
+			if (mainGui.getRdi944().isSelected()) {
+				JobConfig.setsWidth(768);
+			}
 
+			if(JobConfig.getSystemCrypt() == 3) {//transcode
+				JobConfig.setWantDec(false);
+				JobConfig.setStrictMode(true);
+			}
+			
+			
 			JobConfig.setSerial(mainGui.getTxtSerial().getText());
 			JobConfig.setCode(mainGui.getTxtCode().getText());
 
@@ -2191,8 +2269,27 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		                alt_nbframes = ((stream.getStreamCoder().getStream().getContainer().getDuration())/1000d/1000d) * frameRate ;
 		                //width = stream.getStreamCoder().getWidth();
 		                calc = (duration* timeBase);
-		                frames_nb = calc * frameRate;		              
+		                frames_nb = calc * frameRate;		 
+		                
+		                //System.out.println(stream.getStreamCoder().getWidth() + " " + stream.getStreamCoder().getHeight());
+		                if(stream.getStreamCoder().getWidth() == 944 && stream.getStreamCoder().getHeight() == 626) {
+			                int dialogResult = JOptionPane.showConfirmDialog (null, JobConfig.getRes().getString("manageFileOpen.is944"),
+			                		"944x626 resolution",JOptionPane.YES_NO_OPTION);
+			                if(dialogResult == JOptionPane.YES_OPTION){
+			                  JobConfig.setHasToBeUnsplit(true);			                  
+			                }
+			                else {
+			                	JobConfig.setHasToBeUnsplit(false);
+			                }
+		                }
+		                
+		                	
+
+		                
 		                break;
+		                
+		              
+		                
 		            }
 		        }
 		    }

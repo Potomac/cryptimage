@@ -83,11 +83,18 @@ public class VideocryptEnc extends Videocrypt {
 	@Override
 	BufferedImage transform(BufferedImage image) {
 		numFrame++;
+		JobConfig.incrementPalFrame();
+		
 		this.enable = true;
 				
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
+		}
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {
+			image = shift.transform(image, shiftX, shiftY);
 		}
 		
 		raster = image.getRaster();
@@ -117,7 +124,20 @@ public class VideocryptEnc extends Videocrypt {
 			generateValues(valVideocrypt);
 		}
 		
+		//encode image to pal composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+			palEncoder.setImage(image);
+			image = palEncoder.encode(false);
+			raster = image.getRaster();
+		}
+		
 		cutAndRotate();
+		
+		//decode pal image composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
+			palDecoder.setImage(newImage);
+			newImage = palDecoder.decode();
+		}	
 		
 		if(!this.bPreviewMode){
 			this.feedFileData();
@@ -126,7 +146,7 @@ public class VideocryptEnc extends Videocrypt {
 		//encodage pal
 		if(JobConfig.getColorMode() == 1){			
 			palEngine.setImg(newImage);
-			newImage = palEngine.average(valTab);
+			newImage = palEngine.average(valTab, strictMode);
 		}
 		//encodage secam
 		if(JobConfig.getColorMode() == 2){			
@@ -143,14 +163,39 @@ public class VideocryptEnc extends Videocrypt {
 	}
 	
 	private void cutAndRotate(){
-		for (int i = 0; i < 576; i++) {			
-			raster2.setPixels(0, i, this.sWidth - valTab[i], 1, 
-					raster.getPixels(valTab[i], i, this.sWidth - valTab[i],
-							1,new int[(this.sWidth - valTab[i])*3]));
-			raster2.setPixels(this.sWidth - valTab[i], i, valTab[i], 1, 
-					raster.getPixels(0, i, valTab[i], 1,
-							new int[valTab[i]*3]));			
+		
+		if(this.strictMode == false) {
+			for (int i = 0; i < 576; i++) {			
+				raster2.setPixels(0, i, this.sWidth - valTab[i], 1, 
+						raster.getPixels(valTab[i], i, this.sWidth - valTab[i],
+								1,new int[(this.sWidth - valTab[i])*3]));
+				raster2.setPixels(this.sWidth - valTab[i], i, valTab[i], 1, 
+						raster.getPixels(0, i, valTab[i], 1,
+								new int[valTab[i]*3]));			
+			}
 		}
+		else {
+			for (int i = 0; i < 576; i++) {
+				
+				raster2.setPixels(0 , i, 12, 1, 
+						raster.getPixels(0, i, 12, 1,
+								new int[(12)*3]));
+				
+				raster2.setPixels(0 + 12, i, this.sWidth - valTab[i] - 12, 1, 
+						raster.getPixels(valTab[i], i, this.sWidth - valTab[i] - 12,
+								1,new int[(this.sWidth - valTab[i] - 12)*3]));
+				raster2.setPixels(this.sWidth - valTab[i], i, valTab[i] -12, 1, 
+						raster.getPixels(0 + 12, i, valTab[i] -12, 1,
+								new int[(valTab[i]-12)*3]));
+				
+				raster2.setPixels(this.sWidth - 12 , i, 12, 1, 
+						raster.getPixels(valTab[i], i, 12, 1,
+								new int[(12)*3]));
+				
+				
+			}
+		}
+
 	}
 	
 	private void feedFileData(){

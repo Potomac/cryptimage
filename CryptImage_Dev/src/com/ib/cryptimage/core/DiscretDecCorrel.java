@@ -94,6 +94,11 @@ public class DiscretDecCorrel extends Discret {
 	String keyfull = "";
 
 	public DiscretDecCorrel()  {
+		super();
+		shift = new Shift();		
+		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
+		shiftY = Integer.valueOf(JobConfig.getGui().getjShiftY().getValue().toString());
+		
 		imgFinal = new BufferedImage(768, 576, BufferedImage.TYPE_3BYTE_BGR);		
 		initDecaPixels(JobConfig.getPerc1(),JobConfig.getPerc2());
 		loadFullArray();
@@ -352,14 +357,23 @@ public class DiscretDecCorrel extends Discret {
 		if (img.getWidth() != this.sWidth || img.getHeight() != 576) {
 			img = this.getScaledImage(img, this.sWidth, 576);
 		}
-				
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {			
+			img = shift.transform(img, shiftX, shiftY);
+		}
+		
+		JobConfig.incrementPalFrame();
+		
+		img = encodePal(img);
+		
 		raster = img.getRaster();
 		createImageOddEven();
 		computeSolution(imageOdd);
 		decryptImgOdd();
 		computeSolution(imageEven);
 		decryptImgEven();
-		return this.imgFinal;
+		return decodePal(this.imgFinal);
 	}
 	
 		

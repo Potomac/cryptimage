@@ -91,9 +91,16 @@ public class SysterEnc extends Syster {
 	 */
 	public BufferedImage transform(BufferedImage image) {
 		numFrames++;		
+		JobConfig.incrementPalFrame();
+		
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
+		}
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {
+			image = shift.transform(image, shiftX, shiftY);
 		}
 				
 		if(JobConfig.getColorMode() == 1){			
@@ -104,6 +111,12 @@ public class SysterEnc extends Syster {
 		if(JobConfig.getColorMode() == 2){			
 			secamEngine.setImg(image);
 			image = secamEngine.encode();			
+		}
+		
+		//encode image to pal composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+			palEncoder.setImage(image);
+			image = palEncoder.encode(false);
 		}
 		
 		if (JobConfig.isWantSysterEncRandom() == false) {
@@ -140,11 +153,16 @@ public class SysterEnc extends Syster {
 	public BufferedImage transformPhoto(BufferedImage image, int offset1, 
 			int increment1, int offset2, int increment2) {
 		numFrames++;		
+		JobConfig.incrementPalFrame();
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
 		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {
+			image = shift.transform(image, shiftX, shiftY);
+		}
 			
 		this.offset = offset1;
 		this.increment = increment1;		
@@ -160,6 +178,12 @@ public class SysterEnc extends Syster {
 		if(JobConfig.getColorMode() == 2){			
 			secamEngine.setImg(image);
 			image = secamEngine.encode();			
+		}
+		
+		//encode image to pal composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+			palEncoder.setImage(image);
+			image = palEncoder.encode(false);
 		}
 			
 		this.cryptOddFrame(image);
@@ -183,11 +207,17 @@ public class SysterEnc extends Syster {
 	 */
 	public BufferedImage transformPhoto(BufferedImage image, boolean readFile) {
 		numFrames++;		
+		JobConfig.incrementPalFrame();
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
 				
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {
+			image = shift.transform(image, shiftX, shiftY);
+		}
+		
 		if(JobConfig.getColorMode() == 1){
 			palEngine.setImg(image);
 			image = palEngine.encode();
@@ -196,6 +226,12 @@ public class SysterEnc extends Syster {
 		if (JobConfig.getColorMode() == 2) {
 			secamEngine.setImg(image);
 			image = secamEngine.encode();
+		}
+		
+		//encode image to pal composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+			palEncoder.setImage(image);
+			image = palEncoder.encode(false);
 		}
 		
 		if (readFile == true) {

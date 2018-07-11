@@ -120,8 +120,8 @@ public class PalEngine {
 	}
 	
 	
-	public BufferedImage average(int[] valTab){		
-		palInversePhaseVideocrypt(valTab);
+	public BufferedImage average(int[] valTab, boolean strictMode){		
+		palInversePhaseVideocrypt(valTab, strictMode);
 		
 		if (JobConfig.isAveragingPal() == true) {
 			convertToYUV();
@@ -534,13 +534,18 @@ public class PalEngine {
 	}
 	
 	
-	private void palInversePhaseVideocrypt(int[] valTab){		
+	private void palInversePhaseVideocrypt(int[] valTab, boolean strictMode){		
 		int pos = 0;
 		int angle = 0;
 		
 		int sign = 1;
 		int signDec = 1;
 		int delta = 0;
+		
+		int deltaX = 0;
+		if(strictMode) {
+			deltaX = 12;
+		}
 						
 		if(JobConfig.isWantDec()) {
 			sign = -1;
@@ -589,20 +594,20 @@ public class PalEngine {
 				}				
 			}
 			
-			for (int x = 0; x < 768; x++) {				
+			for (int x = deltaX; x < 768; x++) {				
 				pixelTab = raster.getPixel(x, y, pixelTab);			
 				pixelTab = yuvCalc.getRotateRGB(pixelTab, angle);		
 				raster.setPixel(x, y, pixelTab);
 			}
 			
 			
-			for (int x = 0; x < 768; x++) {				
+			for (int x = deltaX; x < 768; x++) {				
 				pixelTab = raster.getPixel(x, y, pixelTab);			
 				pixelTab = yuvCalc.getRotateRGB(pixelTab, chroma_shift);		
 				raster.setPixel(x, y, pixelTab);
 			}
 			
-			for (int x = 0; x < delta + valTab[y] * signDec; x++) {				
+			for (int x = deltaX; x < delta + valTab[y] * signDec; x++) {				
 				pixelTab = raster.getPixel(x, y, pixelTab);			
 				pixelTab = yuvCalc.getRotateRGB(pixelTab, 180);		
 				raster.setPixel(x, y, pixelTab);
@@ -654,20 +659,20 @@ public class PalEngine {
 				}				
 			}			
 			
-			for (int x = 0; x < 768; x++) {				
+			for (int x = deltaX; x < 768; x++) {				
 				pixelTab = raster.getPixel(x, y, pixelTab);			
 				pixelTab = yuvCalc.getRotateRGB(pixelTab, angle);		
 				raster.setPixel(x, y, pixelTab);
 			}
 			
-			for (int x = 0; x < 768; x++) {				
+			for (int x = deltaX; x < 768; x++) {				
 				pixelTab = raster.getPixel(x, y, pixelTab);			
 				pixelTab = yuvCalc.getRotateRGB(pixelTab, chroma_shift);		
 				raster.setPixel(x, y, pixelTab);
 			}
 			
 			
-			for (int x = 0; x < delta + valTab[y] * signDec; x++) {				
+			for (int x = deltaX; x < delta + valTab[y] * signDec; x++) {				
 				pixelTab = raster.getPixel(x, y, pixelTab);					
 				pixelTab = yuvCalc.getRotateRGB(pixelTab, 180);		
 				raster.setPixel(x, y, pixelTab);	

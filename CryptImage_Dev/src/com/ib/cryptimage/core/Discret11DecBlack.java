@@ -27,6 +27,7 @@ package com.ib.cryptimage.core;
  *
  */
 public class Discret11DecBlack extends Discret11Dec {
+	
 	int[] tabPixels;
 	int[] rgbPixel = new int[3];	
 	

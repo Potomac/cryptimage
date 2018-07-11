@@ -122,10 +122,18 @@ public class SysterDec extends Syster {
 	@Override
 	public BufferedImage transform(BufferedImage image) {
 		numFrames++;
+		JobConfig.incrementPalFrame();
+		
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {
+			image = shift.transform(image, shiftX, shiftY);
+		}
+		
 		this.imageSource = deepCopy(image);		
 		
 		// encodage pal
@@ -134,11 +142,17 @@ public class SysterDec extends Syster {
 			image = palEngine.encode();
 		}
 		
+		//encode image to pal composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+			palEncoder.setImage(image);
+			image = palEncoder.encode(false);
+		}
+		
 		if(numFrames > 1){
 		deCryptOddFrame(image);
 		}		
 		deCryptEvenFrame(image);
-						
+		
 		return this.getCompletFrame();
 		
 	}

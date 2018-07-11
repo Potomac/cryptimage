@@ -28,11 +28,56 @@ import java.awt.image.BufferedImage;
  * @author Mannix54
  *
  */
-abstract class Discret extends Device {
+public abstract class Discret extends Device {
 
 	abstract BufferedImage transform(BufferedImage img);
 	abstract boolean isEnable();
 	abstract int getAudienceLevel();
 	abstract int getKey11bits();
+	
+	protected int shiftX;
+	protected int shiftY;
+	
+	protected Shift shift;
+	
+	protected PalEncoder palEncoder;
+	protected PalDecoder palDecoder;
+	
+	public Discret() {
+		int typeGrid = 0;
+		int freq = 0;
+		if(JobConfig.getGui().getCmbPalFreq().getSelectedIndex() == 0) {
+			typeGrid = 0;
+			freq = 14750000;
+		}
+		else {
+			typeGrid = 1;
+			freq = 17750000;
+		}
+		
+		palEncoder = new PalEncoder(false, typeGrid);
+		palDecoder = new PalDecoder(freq);
+		JobConfig.setCurrentPalFrame(0);
+		JobConfig.setPalDecoder(palDecoder);
+		JobConfig.setPalEncoder(palEncoder);
+	}
+	
+	public BufferedImage decodePal(BufferedImage img) {
+		//decode pal image composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
+			palDecoder.setImage(img);
+			return palDecoder.decode();
+		}
+		else return img;
+	}
+	
+	public BufferedImage encodePal(BufferedImage img) {
+		//decode pal image composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+			palEncoder.setImage(img);
+			return palEncoder.encode(false);
+		}
+		else return img;
+	}
 	
 }

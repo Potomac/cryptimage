@@ -141,6 +141,11 @@ public class Discret11Dec extends Discret {
 	 *  the Discret11Dec object	
 	 */
 	public Discret11Dec(int key16bits){
+		super();
+		shift = new Shift();		
+		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
+		shiftY = Integer.valueOf(JobConfig.getGui().getjShiftY().getValue().toString());
+		
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);	
 		
@@ -165,6 +170,11 @@ public class Discret11Dec extends Discret {
 	 * @param perc2 the percentage level for delay 2
 	 */
 	public Discret11Dec(int key16bits, double perc1, double perc2){
+		super();
+		shift = new Shift();		
+		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
+		shiftY = Integer.valueOf(JobConfig.getGui().getjShiftY().getValue().toString());
+		
 		this.key16bits = key16bits;
 		this.initKey11BitsTab(key16bits);	
 		
@@ -715,13 +725,20 @@ public class Discret11Dec extends Discret {
 	 */
 	public BufferedImage transform(BufferedImage image) {
 		//totalFrameCount++;			
+		JobConfig.incrementPalFrame();
 		
 		// we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {
+			image = shift.transform(image, shiftX, shiftY);
+		}
 			
+		
 		if(this.getAudienceLevel() > 0) {
 			//this.enable = true;
 		}
@@ -729,6 +746,7 @@ public class Discret11Dec extends Discret {
 			//System.out.println("clair");
 		}
 		
+		image = encodePal(image);
 
 		if (this.enable) {	
 			//System.out.println("enable " + seqFrame);
@@ -808,7 +826,7 @@ public class Discret11Dec extends Discret {
 				}				
 			}
 			
-			return image;
+			return decodePal(image);
 		} else {		
 			//System.out.println("pas enable " + seqFrame);
 			this.checkMotif(image);
@@ -829,9 +847,11 @@ public class Discret11Dec extends Discret {
 				}				
 			}
 			
-			return image;
+			return decodePal(image);
 		}
 	}
+
+	
 
 	
 	/**

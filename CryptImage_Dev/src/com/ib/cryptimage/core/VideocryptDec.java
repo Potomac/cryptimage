@@ -63,9 +63,16 @@ public class VideocryptDec extends Videocrypt {
 	@Override
 	BufferedImage transform(BufferedImage image) {		
 		numFrame++;
+		JobConfig.incrementPalFrame();
+		
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
+		}
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {
+			image = shift.transform(image, shiftX, shiftY);
 		}
 		
 		raster = image.getRaster();
@@ -86,32 +93,78 @@ public class VideocryptDec extends Videocrypt {
 				}
 			}
 			
+			//encode image to pal composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+				palEncoder.setImage(image);
+				image = palEncoder.encode(false);
+				raster = image.getRaster();
+			}
+			
 			cutAndRotate();
 		
 		} else {
+			//encode image to pal composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+				palEncoder.setImage(image);
+				image = palEncoder.encode(false);
+				raster = image.getRaster();
+			}
+			
 			searchCorrel();
 		}		
 		
 		// encodage pal
 		if (JobConfig.getColorMode() == 1) {
 			palEngine.setImg(newImage);
-			newImage = palEngine.average(valTab);
+			newImage = palEngine.average(valTab, strictMode);
 		}
+		
+		//decode pal image composite
+		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
+			palDecoder.setImage(newImage);
+			newImage = palDecoder.decode();
+		}	
+		
 		
 		this.enable = true;
 			
 		return newImage;
 	}
 	
-	private void cutAndRotate(){		
-		for (int i = 0; i < 576; i++) {			
-			raster2.setPixels(0, i, valTab[i], 1, 
-					raster.getPixels(this.sWidth - valTab[i], i, valTab[i], 1,
-							new int[valTab[i]*3]));
-			raster2.setPixels(valTab[i], i, this.sWidth - valTab[i], 1, 
-					raster.getPixels(0, i, this.sWidth - valTab[i], 1,
-							new int[(this.sWidth - valTab[i])*3]));			
+	private void cutAndRotate(){
+		
+		if(strictMode == false) {
+			for (int i = 0; i < 576; i++) {			
+				raster2.setPixels(0, i, valTab[i], 1, 
+						raster.getPixels(this.sWidth - valTab[i], i, valTab[i], 1,
+								new int[valTab[i]*3]));
+				raster2.setPixels(valTab[i], i, this.sWidth - valTab[i], 1, 
+						raster.getPixels(0, i, this.sWidth - valTab[i], 1,
+								new int[(this.sWidth - valTab[i])*3]));			
+			}
 		}
+		else {
+			for (int i = 0; i < 576; i++) {		
+				
+				raster2.setPixels(0 , i, 12, 1, 
+						raster.getPixels(0, i, 12, 1,
+								new int[(12)*3]));
+				
+				raster2.setPixels(0 +12, i, valTab[i] -12, 1, 
+						raster.getPixels(this.sWidth - valTab[i], i, valTab[i] -12 , 1,
+								new int[(valTab[i] -12) * 3]));
+				raster2.setPixels(valTab[i], i, this.sWidth - valTab[i] -12, 1, 
+						raster.getPixels(0 +12, i, this.sWidth - valTab[i] -12, 1,
+								new int[(this.sWidth - valTab[i] -12)*3]));
+				
+				raster2.setPixels(this.sWidth - 12 , i, 12, 1, 
+						raster.getPixels(this.sWidth - 12, i, 12, 1,
+								new int[(12)*3]));
+				
+			}
+		}
+		
+
 	}
 	
 	private void searchCorrel() {

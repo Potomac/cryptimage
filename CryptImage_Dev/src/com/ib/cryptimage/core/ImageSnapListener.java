@@ -146,7 +146,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
    }
 
 	public void dumpFrameToBufferedImage(BufferedImage image) {		
-		if(JobConfig.isPanAndScan() && !JobConfig.isWantDec()){
+		if(JobConfig.isPanAndScan() && !JobConfig.isWantDec() && !JobConfig.isHasToBeUnsplit()){
 			image = doPanAndScan(image);
 		}
 		
@@ -189,6 +189,8 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	   int verti_cropBorders = 0;
 	   BufferedImage imgCropped;
 	   
+	   //JobConfig.setHasToBeUnsplit(false);
+	   
 	   if((float) ori_img.getWidth()/ (float)ori_img.getHeight() > 4f/3f){
 		   optimal_height = ori_img.getHeight();
 		   optimal_width = (int) ((4f/3f) * (float) ori_img.getHeight());
@@ -210,6 +212,8 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	   BufferedImage copyOfImage = new BufferedImage(imgCropped.getWidth(), imgCropped.getHeight(), imgCropped.getType());
 	   Graphics g = copyOfImage.createGraphics();
 	   g.drawImage(imgCropped, 0, 0, null);
+	   
+	   
 	   
 	   return copyOfImage;	   
    }

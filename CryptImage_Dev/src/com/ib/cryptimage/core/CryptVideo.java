@@ -74,11 +74,23 @@ public class CryptVideo {
 	
 	private double framerate;///
 	
+	SplitFrames splitFrames;
+	private boolean is944 = false;
+	
 	
 	
 	public CryptVideo() {	
+//		if(JobConfig.getGui().getCombSystemCrypt().getSelectedIndex() == 2) {
+//			splitFrames = new SplitFrames(14750000);
+//		}
+//		else {
+//			splitFrames = new SplitFrames(17750000);
+//		}
+		splitFrames = new SplitFrames((int)JobConfig.getGui().getCmbPalFreq().getSelectedItem());
 		
-		if (JobConfig.getSystemCrypt() == 1 || JobConfig.getSystemCrypt() == 2 ) {
+		
+		
+		if (JobConfig.getSystemCrypt() == 1 || JobConfig.getSystemCrypt() == 2 || JobConfig.getSystemCrypt() == 3 ) {
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
 				this.colorMode = "rgb";
 			}
@@ -87,6 +99,15 @@ public class CryptVideo {
 			}
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
 				this.colorMode = "secam";
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 3) {
+				this.colorMode = "pal_composite_encode_and_decode";
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 4) {
+				this.colorMode = "pal_composite_encode_only";
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 5) {
+				this.colorMode = "pal_composite_decode_only";
 			}
 		}
 
@@ -244,7 +265,11 @@ public class CryptVideo {
 						JobConfig.getFileDataEncSyster(),
 						JobConfig.getGui().getChkPlayer().isSelected());
 			}
-		} else{ //videocrypt
+		}
+		else if(JobConfig.getSystemCrypt() == 3) { //transcode
+			device = new Transcode();			
+		}		
+		else{ //videocrypt
 			if(this.isDecoding){
 				device = new VideocryptDec(
 						JobConfig.getFileDataDecVideocrypt(),
@@ -259,7 +284,17 @@ public class CryptVideo {
 		}
 		//////
 
+		
+		if(JobConfig.getGui().getRdi944().isSelected() && this.strictMode) {
+			this.width = 944;
+			this.height = 626;
+			is944 = true;
+		}		
+	
+		
 		if (JobConfig.isWantPlay() != true) {
+
+			
 			if (this.isDecoding) {
 				try {
 					vid = new VideoRecorder(outputFilename + "_dec" + "."
@@ -289,7 +324,13 @@ public class CryptVideo {
 								+ "syster" +  "_" + this.colorMode + "."
 								+ JobConfig.getExtension(), width, height,
 								frameRate, JobConfig.getAudioRate());
-					} else{//videocrypt
+					} else if(JobConfig.getSystemCrypt() == 3) {//transcode
+						vid = new VideoRecorder(outputFilename + info
+								+ "transcode" +  "_" + this.colorMode + "."
+								+ JobConfig.getExtension(), width, height,
+								frameRate, JobConfig.getAudioRate());
+					}					
+					else{//videocrypt
 						vid = new VideoRecorder(outputFilename + info
 								+ "videocrypt" +  "_" + this.colorMode + "."
 								+ JobConfig.getExtension(), width, height,
@@ -324,23 +365,35 @@ public class CryptVideo {
 		else{
 		BufferedImage bi = save;
 		
-		if(this.strictMode){
+		if(this.strictMode  && !is944 ){
 			save = getScaledImage(save, this.width, 576);
-			if( vidPlayer.isInverse() == false){			
+			if( vidPlayer.isInverse() == false){
+				if(JobConfig.isHasToBeUnsplit()) {
+					buff = splitFrames.unsplitFrames(buff);
+				}
 				bi = this.device.transform(buff);
 			}			
 		}
 		else
-		{	if( vidPlayer.isInverse() == false){					
+		{	if( vidPlayer.isInverse() == false){
+			if(JobConfig.isHasToBeUnsplit() && this.strictMode) {
+				buff = splitFrames.unsplitFrames(buff);
+			}
 				bi = this.device.transform(buff);
 			}
 		}
 			
 		if( vidPlayer.isInverse() == true){	
+//			if(is944) {
+//				save = splitFrames.splitFrames(false, save);
+//			}
 			vidPlayer.addImage(save);
 		}
 		else{
 				if (bi != null) {
+					if(is944 && this.strictMode) {
+						bi = splitFrames.splitFrames(false, bi);
+					}
 					vidPlayer.addImage(bi);
 				}
 		}
@@ -366,14 +419,20 @@ public class CryptVideo {
 			updateProgress();			
 		}
 		else{
-		BufferedImage bi;		
+		BufferedImage bi;
+		if(JobConfig.isHasToBeUnsplit() && this.strictMode) {
+			buff = splitFrames.unsplitFrames(buff);
+		}
 		bi = this.device.transform(buff);
 		
 		if(vidPlayer.isInverse() == true){
 			vidPlayer.addImage(save);
 		}
 		else{
-				if (bi != null) {
+				if (bi != null) {					
+					if(is944) {
+						bi = splitFrames.splitFrames(false, bi);
+					}
 					vidPlayer.addImage(bi);
 				}
 		}
@@ -395,40 +454,76 @@ public class CryptVideo {
 		}
 	}
 	
-	public void addFrameEnc(BufferedImage buff, int pos, double timingFrame){			
+	public void addFrameEnc(BufferedImage buff, int pos, double timingFrame){				
 		frameCount++;
 		if (frameCount < this.positionSynchro) {
-			if (this.strictMode) {
+			if (this.strictMode && !is944) {
 				buff = getScaledImage(buff, 768, 576);
-			}			
+			}
+//			if(JobConfig.isHasToBeUnsplit() && !JobConfig.getGui().getRdi944().isSelected()) {
+//				//buff = splitFrames.unsplitFrames(buff);
+//			}
+			
+			if(is944 && buff.getWidth() != 944 && buff.getWidth() != 626 && this.strictMode) {
+				if(buff.getWidth() != 768 || buff.getHeight() != 576) {				
+					buff = getScaledImage(buff, 768, 576);
+				}
+				buff = splitFrames.splitFrames(false, buff);
+			}
 			vid.addFrame(buff, (long)(this.timeBase * timingFrame));
 			device.skipFrame();
 			updateProgress();			
 		} else {			
 			BufferedImage bi;	
+			if(JobConfig.isHasToBeUnsplit() && this.strictMode) {
+				buff = splitFrames.unsplitFrames(buff);
+			}
 			bi = this.device.transform(buff);
 			JobConfig.setReadyTransform(device.isEnable());	
 			if (bi != null) {
+				if(is944 && this.strictMode) {
+					bi = splitFrames.splitFrames(false, bi);
+				}	
 				vid.addFrame(bi, (long)(this.timeBase * timingFrame));
 			}			
 			updateProgress();
 		}
 	}
 	
-	public void addFrameDec(BufferedImage buff, int pos, double timingFrame){		
+	public void addFrameDec(BufferedImage buff, int pos, double timingFrame){			
 		frameCount++;
 		if (frameCount < this.positionSynchro) {
-			if (this.strictMode) {
+			if (this.strictMode && !is944) {				
 				buff = getScaledImage(buff, 768, 576);
-			}			
+			}
+//			if(JobConfig.isHasToBeUnsplit() && !JobConfig.getGui().getRdi944().isSelected() ) {
+//				//buff = splitFrames.unsplitFrames(buff);
+//			}
+			
+			if(is944 && buff.getWidth() != 944 && buff.getWidth() != 626 && this.strictMode) {
+				if(buff.getWidth() != 768 || buff.getHeight() != 576) {				
+					buff = getScaledImage(buff, 768, 576);
+				}
+				
+				System.out.println("split");
+				buff = splitFrames.splitFrames(false, buff);
+			}
+			
 			vid.addFrame(buff, (long)(this.timeBase * timingFrame));
 			device.skipFrame();
 			updateProgress();			
 		} else {			
 			BufferedImage bi;
+			if(JobConfig.isHasToBeUnsplit() && this.strictMode) {
+				buff = splitFrames.unsplitFrames(buff);
+				//System.out.println(buff.getWidth() + " " + buff.getHeight());
+			}
 			bi = this.device.transform(buff);
 			JobConfig.setReadyTransform(device.isEnable());	
 			if (bi != null) {
+				if(is944) {
+					bi = splitFrames.splitFrames(false, bi);
+				}				
 				vid.addFrame(bi, (long)(this.timeBase * timingFrame));
 			}
 			updateProgress();
@@ -469,6 +564,13 @@ public class CryptVideo {
 						+ "\n\r"
 						+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
 						"videocrypt" + "_" + this.colorMode + "." + JobConfig.getExtension());
+			}else if(JobConfig.getSystemCrypt() == 3){
+				
+				JobConfig.getGui().getTextInfos()
+				.setText(JobConfig.getGui().getTextInfos().getText() 
+						+ "\n\r"
+						+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
+						"transcode" + "_" + this.colorMode + "." + JobConfig.getExtension());
 			}
 		}		
 	}

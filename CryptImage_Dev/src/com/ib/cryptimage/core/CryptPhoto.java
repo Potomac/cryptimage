@@ -41,10 +41,13 @@ public class CryptPhoto {
 	private int offset;
 	private int increment;
 	private String colorMode;
+	private boolean is944 = false;
+	private SplitFrames splitFrames;
+	private boolean isGrey = false;
 	
-	public CryptPhoto(){
+	public CryptPhoto(){		
 		if (JobConfig.getSystemCrypt() == 1
-				|| JobConfig.getSystemCrypt() == 2) {
+				|| JobConfig.getSystemCrypt() == 2 || JobConfig.getSystemCrypt() == 3) {
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
 				this.colorMode = "rgb";
 			}
@@ -54,8 +57,32 @@ public class CryptPhoto {
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
 				this.colorMode = "secam";
 			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 3) {
+				this.colorMode = "pal_composite_encode_and_decode";
+				
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 4) {
+				this.colorMode = "pal_composite_encode_only";
+				isGrey = true;
+			}
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 5) {
+				this.colorMode = "pal_composite_decode_only";			
+			}
 		}
 		
+//		if(JobConfig.getGui().getCombSystemCrypt().getSelectedIndex() == 2) {
+//			splitFrames = new SplitFrames(14750000);
+//		}
+//		else {
+//			splitFrames = new SplitFrames(17750000);
+//		}
+		
+		splitFrames = new SplitFrames((int)JobConfig.getGui().getCmbPalFreq().getSelectedItem());
+		
+		if(JobConfig.getGui().getRdi944().isSelected()) {
+			is944 = true;
+		}
+				
 	}
 	
 	public boolean run(){
@@ -72,6 +99,19 @@ public class CryptPhoto {
 					JOptionPane.ERROR_MESSAGE);		
 			return false;
 		}
+		
+        if(img.getWidth() == 944 && img.getHeight() == 626) {
+            int dialogResult = JOptionPane.showConfirmDialog (null, JobConfig.getRes().getString("manageFileOpen.is944"),
+            		"944x626 resolution",JOptionPane.YES_NO_OPTION);
+            if(dialogResult == JOptionPane.YES_OPTION){
+              JobConfig.setHasToBeUnsplit(true);
+              img = splitFrames.unsplitFrames(img);
+            }
+            else {
+            	JobConfig.setHasToBeUnsplit(false);
+            }
+        }
+		
 		
 		//pan and scan
 		if (JobConfig.isPanAndScan() && !JobConfig.isWantDec()){
@@ -138,9 +178,29 @@ public class CryptPhoto {
 				&& JobConfig.getSystemCrypt() == 2){
 			encPhotoVideocrypt(img);
 		}
+
+		
+		if(JobConfig.getSystemCrypt() == 3) {
+			transcode(img);
+		}
 		
 		return true;
 	}
+	
+	
+	private void transcode(BufferedImage img) {
+		Device device;
+		device = new Transcode();
+		BufferedImage imgRes = device.transform(img);
+		
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
+		
+		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
+		
+	}
+	
 	
 	private void decPhotoVideocryptCorrel(BufferedImage img) {
 		Device device;
@@ -151,6 +211,10 @@ public class CryptPhoto {
 		BufferedImage imgRes = device.transform(img);		
 		
 		device.closeFileData();
+		
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
 		
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
 		
@@ -165,6 +229,10 @@ public class CryptPhoto {
 		BufferedImage imgRes = device.transform(img);		
 		
 		device.closeFileData();
+		
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
 		
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
 		
@@ -192,6 +260,10 @@ public class CryptPhoto {
 		imgRes = videoCryptEnc.transform(img);
 		
 		videoCryptEnc.closeFileData();
+		
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
 		
 		saveCryptImage(imgRes);
 		
@@ -251,7 +323,11 @@ public class CryptPhoto {
 			imgRes = systerEnc.transformPhoto(img, offset1,increment1, offset2, increment2);
 			systerEnc.closeFileData();
 		}
-				
+		
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
+		
 		saveCryptImage(imgRes);
 		
 	}
@@ -269,6 +345,10 @@ public class CryptPhoto {
 		
 		device.closeFileData();
 		
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
+		
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);	
 	}
 	
@@ -284,6 +364,10 @@ public class CryptPhoto {
 		}		
 		
 		device.closeFileData();
+		
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
 		
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);	
 	}
@@ -316,7 +400,12 @@ public class CryptPhoto {
 		BufferedImage imgRes = device.transform(img);
 		for (int i = 0; i < 26; i++) {
 			imgRes = device.transform(img);
-		}		
+		}
+		
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
+		
 		saveCryptImage(imgRes);		
 	}
 	
@@ -329,6 +418,10 @@ public class CryptPhoto {
 		device = new DiscretDecCorrel();
 		BufferedImage imgRes = device.transform(img);
 		this.key11bits = device.getKey11bits();
+		if(is944) {
+			imgRes = splitFrames.splitFrames(isGrey, imgRes);
+		}
+		
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
 		
 	}
@@ -350,6 +443,7 @@ public class CryptPhoto {
 		}		
 		this.key11bits = device.getKey11bits();
 		BufferedImage imgRes = device.transform(img);
+				
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);		
 	}
 	
@@ -523,7 +617,10 @@ public class CryptPhoto {
 		else {
 			try {
 				String sys;
-				if(JobConfig.getSystemCrypt() == 1 ){
+				if(JobConfig.getSystemCrypt() == 3 ) {
+					sys = "transcode";
+				}
+				else if(JobConfig.getSystemCrypt() == 1 ){
 					sys = "syster";
 				}
 				else{

@@ -25,6 +25,7 @@ package com.ib.cryptimage.gui;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -32,6 +33,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -170,11 +172,17 @@ public class MainGui {
 	private JSlider slidBitrate;
 	private JRadioButton rdi720;
 	private JRadioButton rdi768;
+	private JRadioButton rdi944;
 	private JCheckBox chkHorodatage;
 	private JLabel labAudioCodec;
 	private JComboBox<String> combAudioCodec;
 	private JComboBox<String> combAudioRate;
 	private JCheckBox chkPanAndScan;
+	private JLabel labShiftX;
+	private JLabel labShiftY;
+	private JSpinner jShiftX;
+	private JSpinner jShiftY;
+	
 	
 	private JPanel panProgress;
 	private JProgressBar progress;
@@ -199,7 +207,7 @@ public class MainGui {
 	
 	private JPanel panSystemCrypt;
 	private CardLayout card;
-	private CardLayout cardEncDecSyster;
+	private CardLayout cardEncDecSyster;	
 	private JTextField txtSysterEnc;
 	private JTextField txtSysterDec;
 	private JPanel panSysterMode;
@@ -287,7 +295,18 @@ public class MainGui {
 	private JLabel lblRangeEnd;	
 	private JComboBox<String> comboRangeStart;
 	private JComboBox<String> comboRangeEnd;
+	private JCheckBox chkVideocryptStrictMode;
 	
+	private CardLayout cardPal;
+	private JPanel panOptionsPalComposite;
+	private JComboBox<Integer> cmbPalFreq;
+	private JPanel panOptionsTranscode;
+	private TitledBorder titlePanTranscode;
+	private JLabel lblTranscodeDesc;
+	private JSlider slidBrightness;
+	private JSlider slidColor;
+	private JTextField jtxtValBrightness;
+	private JTextField jtxtValColor;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -335,6 +354,7 @@ public class MainGui {
 		createPanVideo();
 		createPanLog();
 		createPanVideocrypt();
+		createPanTranscode();
 				
 		panSystemCrypt = new JPanel();
 		card = new CardLayout();
@@ -342,6 +362,7 @@ public class MainGui {
 		panSystemCrypt.add(panOptionsDiscret11, "Discret11");
 		panSystemCrypt.add(panOptionsSyster, "Syster");
 		panSystemCrypt.add(panVideocryptOptions, "Videocrypt");
+		panSystemCrypt.add(panOptionsTranscode, "Transcode");
 		
 		tabbedPane = new JTabbedPane();
 		tabbedPane.add(JobConfig.getRes().getString("tabbedPane.Device"), panSystemCrypt);
@@ -662,7 +683,10 @@ public class MainGui {
 		int indexColor = cbColorMode.getSelectedIndex();
 		String[] tabColor = {JobConfig.getRes().getString("cbColorMode.rgb"),
 				JobConfig.getRes().getString("cbColorMode.pal"),
-				JobConfig.getRes().getString("cbColorMode.secam")};
+				JobConfig.getRes().getString("cbColorMode.secam"),
+				JobConfig.getRes().getString("cbColorMode.pal.composite.full"),
+				JobConfig.getRes().getString("cbColorMode.pal.composite.encode"),
+				JobConfig.getRes().getString("cbColorMode.pal.composite.decode")};
 		DefaultComboBoxModel<String> modelColor = new DefaultComboBoxModel<String>( tabColor );
 		cbColorMode.setModel(modelColor);
 		cbColorMode.setSelectedIndex(indexColor);		
@@ -714,7 +738,17 @@ public class MainGui {
 		//cutpoints
 		titlePanCutPoint.setTitle(JobConfig.getRes().getString("panVideocrypt.cutpoints"));
 		lblRangeStart.setText(JobConfig.getRes().getString("panVideocrypt.rangeStart"));
-		lblRangeEnd.setText(JobConfig.getRes().getString("panVideocrypt.rangeEnd"));		
+		lblRangeEnd.setText(JobConfig.getRes().getString("panVideocrypt.rangeEnd"));	
+		
+		//shift X and Y
+		labShiftX.setText(JobConfig.getRes().getString("panVideo.labShiftX"));
+		labShiftY.setText(JobConfig.getRes().getString("panVideo.labShiftY"));
+		
+		//videocrypt strict mode
+		chkVideocryptStrictMode.setText(JobConfig.getRes().getString("panVideocrypt.strictMode"));
+		
+		//transcode
+		lblTranscodeDesc.setText(JobConfig.getRes().getString("panTranscode.desc"));
 		
 	}
 	
@@ -827,7 +861,7 @@ public class MainGui {
 		chkStrictMode.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.respectNorme"));
 		
 		lblSystemCrypt = new JLabel(JobConfig.getRes().getString("panMode.lblSystem"));
-		String [] tab = {"Discret11", "Nagravision syster", "Videocrypt"};
+		String [] tab = {"Discret11", "Nagravision syster", "Videocrypt", "Transcode"};
 		combSystemCrypt = new JComboBox<>(tab);
 		combSystemCrypt.addActionListener(controler);
 		
@@ -1095,7 +1129,10 @@ public class MainGui {
 		
 		String[] tab = {JobConfig.getRes().getString("cbColorMode.rgb"),
 				JobConfig.getRes().getString("cbColorMode.pal"),
-				JobConfig.getRes().getString("cbColorMode.secam")};
+				JobConfig.getRes().getString("cbColorMode.secam"),
+				JobConfig.getRes().getString("cbColorMode.pal.composite.full"),
+				JobConfig.getRes().getString("cbColorMode.pal.composite.encode"),
+				JobConfig.getRes().getString("cbColorMode.pal.composite.decode")};
 		cbColorMode = new JComboBox<String>(tab);
 		cbColorMode.addActionListener(controler);
 		
@@ -1110,6 +1147,144 @@ public class MainGui {
 		String[] tabYUV = {"bt.601", "bt.709", JobConfig.getRes().getString("cbYUV.special")};
 		cbYUV = new JComboBox<String>(tabYUV);
 		cbYUV.addActionListener(controler);
+		
+		cardPal = new CardLayout();
+		panOptionsPalComposite = new JPanel();
+		panOptionsPalComposite.setLayout(cardPal);
+		
+		JPanel panPalFreq = new JPanel();
+		
+		TitledBorder titlePalComposite = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Pal composite");
+		panPalFreq.setBorder(titlePalComposite);
+		
+		JLabel lblPalFreq = new JLabel("Sampling rate frequency");
+		cmbPalFreq = new JComboBox<>();
+		cmbPalFreq.addItem(14750000);
+		cmbPalFreq.addItem(17750000);
+		cmbPalFreq.setSelectedIndex(1);
+		
+//		panPalFreq.add(lblPalFreq);
+//		panPalFreq.add(cmbPalFreq);
+		
+		JPanel panPalDummy = new JPanel();
+		
+		panOptionsPalComposite.add(panPalFreq, "sampling_rate");
+		panOptionsPalComposite.add(panPalDummy, "dummy");
+		cardPal.show(panOptionsPalComposite, "dummy");
+		
+		GridBagLayout gblPal = new GridBagLayout();
+		
+		slidBrightness = new JSlider(JSlider.HORIZONTAL,0,150,80);
+		JLabel lblBrightness = new JLabel("brightness");
+		//panPalFreq.add(lblBrightness);
+		//panPalFreq.add(slidBrightness);
+		
+		JLabel lblColor = new JLabel("Color saturation");
+		slidColor = new JSlider(JSlider.HORIZONTAL,0,150,64);
+		
+		slidBrightness.addChangeListener(controler);
+		slidColor.addChangeListener(controler);
+		
+		
+		
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+		labelTable.put( new Integer( 0 ), new JLabel("0"));
+		labelTable.put( new Integer( 80 ), new JLabel("80"));
+		labelTable.put( new Integer( 150 ), new JLabel("150"));
+		
+		Hashtable<Integer, JLabel> labelTable2 = new Hashtable<Integer, JLabel>();
+		labelTable2.put( new Integer( 0 ), new JLabel("0"));
+		labelTable2.put( new Integer( 64 ), new JLabel("64"));
+		labelTable2.put( new Integer( 150 ), new JLabel("150"));
+
+		slidBrightness.setLabelTable(labelTable);
+		slidColor.setLabelTable(labelTable2);
+		
+		slidBrightness.setMajorTickSpacing(10);
+		slidBrightness.setMinorTickSpacing(5);
+		slidBrightness.setPaintLabels(true);
+		slidBrightness.setPaintTicks(true);	
+		slidColor.setMajorTickSpacing(10);
+		slidColor.setMinorTickSpacing(5);
+		slidColor.setPaintLabels(true);
+		slidColor.setPaintTicks(true);
+		
+		jtxtValBrightness = new JTextField(3);
+		jtxtValColor = new JTextField(3);
+		jtxtValBrightness.setEditable(false);
+		jtxtValColor.setEditable(false);
+		
+		slidBrightness.setValue(80);
+		slidColor.setValue(64);
+		
+		jtxtValBrightness.setText("80");
+		jtxtValColor.setText("64");
+		
+		this.placerComposants(panPalFreq,
+				gblPal,
+				lblPalFreq,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				cmbPalFreq,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 0,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				lblBrightness,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 1,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				slidBrightness,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 1,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				jtxtValBrightness,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 1,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				lblColor,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 2,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				slidColor,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 2,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				jtxtValColor,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 2,
+				1,1,
+				0,20,
+				1, 1,1,1);
 		
 	
 		GridBagLayout gblColorMode = new GridBagLayout();
@@ -1154,8 +1329,14 @@ public class MainGui {
 				1,1,
 				33,20,
 				1, 1,1,1);
-		
-		
+		this.placerComposants(panColorMode,
+				gblColorMode,
+				panOptionsPalComposite,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 1,
+				5,1,
+				33,20,
+				1, 1,1,1);		
 		
 		
 	}
@@ -1172,6 +1353,9 @@ public class MainGui {
 		
 		rdiVideocryptDecoding = new JRadioButton(JobConfig.getRes().getString("panVideocrypt.rdiVideocryptDecoding"));
 		rdiVideocryptDecoding.addActionListener(controler);		
+				
+		chkVideocryptStrictMode = new JCheckBox("panVideocrypt.strictMode");
+		chkVideocryptStrictMode.setSelected(false);
 		
 		rdiVideocryptCodingAuto = new JRadioButton(JobConfig.getRes().getString("panSyster.rdiSysterCodingRandom"));
 		rdiVideocryptCodingAuto.addActionListener(controler);
@@ -1207,6 +1391,7 @@ public class MainGui {
 		JPanel panRdi = new JPanel();
 		panRdi.add(rdiVideocryptCoding);
 		panRdi.add(rdiVideocryptDecoding);
+		panRdi.add(chkVideocryptStrictMode);
 		
 		
 		JPanel panVideocryptCodingGen = new JPanel();
@@ -1498,6 +1683,21 @@ public class MainGui {
 		rdiVideocryptCodingAuto.setSelected(true);
 		txtVideocryptEnc.setEnabled(false);
 		btnVideocryptEnc.setEnabled(false);	
+		
+	}
+	
+	
+	private void createPanTranscode(){
+		panOptionsTranscode = new JPanel();
+		
+		titlePanTranscode = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				"Transcode");
+		panOptionsTranscode.setBorder(titlePanTranscode);		
+		
+		lblTranscodeDesc = new JLabel(JobConfig.getRes().getString("panTranscode.desc"));
+		//panOptionsTranscode.setLayout(new BorderLayout());
+		panOptionsTranscode.add(lblTranscodeDesc, BorderLayout.CENTER);
+		
 		
 	}
 	
@@ -2435,10 +2635,18 @@ public class MainGui {
 		
 		rdi720 = new JRadioButton("720x576");
 		rdi768 = new JRadioButton("768x576");
+		rdi944 = new JRadioButton("944x626");
 		rdi768.setSelected(true);
 		ButtonGroup btngrp = new ButtonGroup();
 		btngrp.add(rdi720);
 		btngrp.add(rdi768);
+		btngrp.add(rdi944);
+	
+		JPanel panRdiVideo = new JPanel();
+		panRdiVideo.add(rdi720);
+		panRdiVideo.add(rdi768);
+		panRdiVideo.add(rdi944);
+		
 		
 		labAudioCodec = new JLabel(JobConfig.getRes().getString("panVideo.labAudioCodec"));
 		String[] tabAudio = {"mp3 96 kbs","mp3 128 kbs","mp3 160 kbs",
@@ -2450,6 +2658,11 @@ public class MainGui {
 		String[] tabAudioRate = {"44100 Hz", "48000 Hz"};
 		combAudioRate = new JComboBox<String>(tabAudioRate);
 		combAudioRate.addActionListener(controler);
+		
+		JPanel panAudioOptions = new JPanel();
+		panAudioOptions.add(labAudioCodec);
+		panAudioOptions.add(combAudioCodec);
+		panAudioOptions.add(combAudioRate);
 		
 		chkPlayer = new JCheckBox(JobConfig.getRes().getString("panVideo.chkPlayer"));
 		chkPlayer.addActionListener(controler);
@@ -2502,6 +2715,45 @@ public class MainGui {
 		jcbExtension = new JComboBox<String>(tabExtension);
 		jcbExtension.setSelectedIndex(0);
 		jcbExtension.addActionListener(controler);
+		
+		labShiftX = new JLabel(JobConfig.getRes().getString("panVideo.labShiftX"));
+		labShiftY = new JLabel(JobConfig.getRes().getString("panVideo.labShiftY"));
+		
+	
+		jShiftX = new JSpinner();
+		jShiftY = new JSpinner();
+		JSpinner.NumberEditor spinnerEditorX = new JSpinner.NumberEditor(jShiftX);
+		JSpinner.NumberEditor spinnerEditorY = new JSpinner.NumberEditor(jShiftY);
+		
+		jShiftX.setEditor(spinnerEditorX);
+		jShiftY.setEditor(spinnerEditorY);
+		
+		
+		spinnerEditorX.getModel().setMinimum(-768);
+		spinnerEditorX.getModel().setMaximum(768);
+		spinnerEditorX.getModel().setStepSize(1);
+		spinnerEditorX.getModel().setValue(0);	
+		
+		spinnerEditorY.getModel().setMinimum(-576);
+		spinnerEditorY.getModel().setMaximum(576);
+		spinnerEditorY.getModel().setStepSize(1);
+		spinnerEditorY.getModel().setValue(0);	
+		
+		JComponent editorX = jShiftX.getEditor();
+		JFormattedTextField tfX = ((JSpinner.DefaultEditor) editorX).getTextField();
+		tfX.setColumns(3);
+		tfX.setEditable(false);
+		
+		JComponent editorY = jShiftY.getEditor();
+		JFormattedTextField tfY = ((JSpinner.DefaultEditor) editorY).getTextField();
+		tfY.setColumns(3);
+		tfY.setEditable(false);
+		
+		JPanel panVideoShift = new JPanel();
+		panVideoShift.add(labShiftX);
+		panVideoShift.add(jShiftX);		
+		panVideoShift.add(labShiftY);
+		panVideoShift.add(jShiftY);
 		
 		//init codec video panel
 		JPanel panVideoCodec = new JPanel();
@@ -2597,24 +2849,25 @@ public class MainGui {
 		
 		this.placerComposants(panVideoOptions,
 				gbl,
-				rdi720,
+				panRdiVideo,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 0,
 				1,1,
 				25,50,
-				1, 1,1,1);
+				1, 1,1,1);	
+		
 		this.placerComposants(panVideoOptions,
 				gbl,
-				rdi768,
+				panAudioOptions,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				1, 0,
 				1,1,
 				25,50,
 				1, 1,1,1);
-		
+	
 		this.placerComposants(panVideoOptions,
 				gbl,
-				labAudioCodec,
+				chkPlayer,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				2, 0,
 				1,1,
@@ -2622,42 +2875,27 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
 				gbl,
-				combAudioCodec,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				chkHorodatage,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				3, 0,
 				1,1,
 				25,50,
-				1, 1,1,1);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				combAudioRate,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				4, 0,
-				1,1,
-				25,50,
 				1, 1,1,1);		
-		this.placerComposants(panVideoOptions,
-				gbl,
-				chkPlayer,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
-				5, 0,
-				1,1,
-				25,50,
-				1, 1,1,1);
-		this.placerComposants(panVideoOptions,
-				gbl,
-				chkHorodatage,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				6, 0,
-				1,1,
-				25,50,
-				1, 1,1,1);
+		
 		this.placerComposants(panVideoOptions,
 				gbl,
 				chkPanAndScan,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 1,
-				7,1,
+				1,1,
+				25,50,
+				1, 1,1,1);
+		this.placerComposants(panVideoOptions,
+				gbl,
+				panVideoShift,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				1, 1,
+				8,1,
 				25,50,
 				1, 1,1,1);
 		
@@ -2667,7 +2905,7 @@ public class MainGui {
 				panVideoCodec,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 2,
-				7,1,
+				8,1,
 				100,50,
 				1, 1,1,1);
 		
@@ -2677,7 +2915,7 @@ public class MainGui {
 				panExtensionVideo,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 3,
-				7,1,
+				9,1,
 				100,50,
 				1, 1,1,1);
 		
@@ -3477,6 +3715,54 @@ public class MainGui {
 
 	public JComboBox<String> getComboRangeEnd() {
 		return comboRangeEnd;
+	}
+
+	public JSpinner getjShiftX() {
+		return jShiftX;
+	}
+
+	public JSpinner getjShiftY() {
+		return jShiftY;
+	}
+
+	public JCheckBox getChkVideocryptStrictMode() {
+		return chkVideocryptStrictMode;
+	}
+
+	public JRadioButton getRdi944() {
+		return rdi944;
+	}
+
+	public CardLayout getCardPal() {
+		return cardPal;
+	}
+
+	public JPanel getPanOptionsTranscode() {
+		return panOptionsTranscode;
+	}
+
+	public JPanel getPanOptionsPalComposite() {
+		return panOptionsPalComposite;
+	}
+
+	public JComboBox getCmbPalFreq() {
+		return cmbPalFreq;
+	}
+
+	public JSlider getSlidBrightness() {
+		return slidBrightness;
+	}
+
+	public JSlider getSlidColor() {
+		return slidColor;
+	}
+
+	public JTextField getJtxtValBrightness() {
+		return jtxtValBrightness;
+	}
+
+	public JTextField getJtxtValColor() {
+		return jtxtValColor;
 	}
 
 	

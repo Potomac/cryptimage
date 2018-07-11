@@ -133,6 +133,11 @@ public class Discret11Enc extends Discret {
 	 *  the Discret11Enc object	
 	 */
 	public Discret11Enc(int key16bits, String audienceList, int cycle){
+		super();
+		shift = new Shift();		
+		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
+		shiftY = Integer.valueOf(JobConfig.getGui().getjShiftY().getValue().toString());
+		
 		initAudienceList(audienceList);
 		this.cycle = cycle;
 		this.key16bits = key16bits;
@@ -158,6 +163,11 @@ public class Discret11Enc extends Discret {
 	 * @param perc2 the percentage level for delay 2
 	 */
 	public Discret11Enc(int key16bits, String audienceList, int cycle, double perc1, double perc2){
+		super();
+		shift = new Shift();		
+		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
+		shiftY = Integer.valueOf(JobConfig.getGui().getjShiftY().getValue().toString());
+		
 		initAudienceList(audienceList);
 		this.cycle = cycle;
 		this.key16bits = key16bits;
@@ -429,13 +439,21 @@ public class Discret11Enc extends Discret {
 	 */
 	public BufferedImage transform(BufferedImage image) {
 		//totalFrameCount++;		
+		JobConfig.incrementPalFrame();
 		
 		// we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {
+			image = shift.transform(image, shiftX, shiftY);
+		}
 
+		image = encodePal(image);
+		
 		//checkMotif(image);		
 		
 			//System.out.println("transform : " + totalFrameCount);
@@ -512,7 +530,7 @@ public class Discret11Enc extends Discret {
 
 			}
 
-			return image;		
+			return decodePal(image);		
 	}
 	
 	/**
