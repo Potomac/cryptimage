@@ -648,13 +648,13 @@ public class PalDecoder {
 				break;
 			}
 		} else if (digRate == 14750000) {
-			switch (currentFrame) {
+			switch (currentFrame) {			
 			case 1:
 				grid = "/ressources/grid_14.75_phase_1_new.bmp";
 				burst1 = "/ressources/burst_14.75_phase_1_top.bmp";
 				burst2 = "/ressources/burst_14.75_phase_1_bot.bmp";
 				break;
-			case 2:
+			case 2:				
 				grid = "/ressources/grid_14.75_phase_2_new.bmp";
 				burst1 = "/ressources/burst_14.75_phase_2_top.bmp";
 				burst2 = "/ressources/burst_14.75_phase_2_bot.bmp";

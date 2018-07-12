@@ -79,8 +79,8 @@ public class PalEncoder {
 		
 		if(typeGrid == 1) {
 			switch (currentFrame) {
-			case 1:
-				grid = "/ressources/subcarrier_phase_1.bmp";
+			case 1:				
+				grid = "/ressources/subcarrier_phase_1.bmp";				
 				burst1 = "/ressources/burst_top_phase_1.bmp";
 				burst2 = "/ressources/burst_bot_phase_1.bmp";
 				break;
@@ -107,7 +107,7 @@ public class PalEncoder {
 		else if(typeGrid == 0) {
 			switch (currentFrame) {
 			case 1:
-				grid = "/ressources/grid_14.75_phase_1_new.bmp";
+				grid = "/ressources/grid_14.75_phase_1_new.bmp";			
 				burst1 = "/ressources/burst_14.75_phase_1_top.bmp";
 				burst2 = "/ressources/burst_14.75_phase_1_bot.bmp";
 				break;
@@ -219,7 +219,7 @@ public class PalEncoder {
 	
 	
 	public BufferedImage encode(boolean filtering) {	
-		initFrame();
+		initFrame();		
 		
 		try {			
 			imgGrid = ImageIO.read(getClass().getResource(grid));
@@ -263,8 +263,8 @@ public class PalEncoder {
 				b2 = rgbim2[i + 2]; // u
 
 				r3 = (int) (r1);
-				g3 = (int)  (Math.abs((b2 - g1)));
-				b3 = (int)  (Math.abs((r2 - b1)));
+				g3 =   (Math.abs(b2 - g1) + (255 - Math.abs(255 - b2 - g1)))/2; //(int)  (Math.abs((b2 - g1)));
+				b3 = (Math.abs(r2 - b1) + (255 - Math.abs(255 - r2 - b1)))/2; //(int)  (Math.abs((r2 - b1)));
 						
 				rgbim3[i] =  (int) ((r3 +  g3 +  b3)/3) ;//(r3 + g3 + b3) /3 ;
 				//rgbim3[i] =  (int) (1f * r1 + 1f * ( g3 + b3))/2;			
