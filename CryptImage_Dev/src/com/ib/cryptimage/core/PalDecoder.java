@@ -33,6 +33,10 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class PalDecoder {
+	
+	 
+	double gamma_new = 1 / 0.72d;	 
+	int[] gamma_LUT = gamma_LUT(gamma_new);
 
 	WritableRaster image;
 	WritableRaster pColImage;
@@ -319,9 +323,7 @@ public class PalDecoder {
 	
 	
 	public BufferedImage decode(){
-		
-		long timeStart = System.currentTimeMillis();
-
+	
 		//System.out.println("colourising");
 
 		for (int l = 3; l < H - 3; l++) {
@@ -457,7 +459,7 @@ public class PalDecoder {
 			blacklevel /= (Bkend - Bkstart) * 5;
 
 			int normalise = refAmpl * refAmpl / 2;
-
+		
 			// Generate the luminance (Y), by filtering out Fsc
 			for (int i = Ystart; i < w; i++) {
 				int tmp = buffer[i] - (py[i] * sine[i] + qy[i] * cosine[i]) / normalise - blacklevel;
@@ -496,6 +498,14 @@ public class PalDecoder {
 				
 				int pp = i * 3;
 				int delta = l * sizePixelsWidth;
+				
+//				//gamma correction	
+				if(JobConfig.getGui().getChkGammaCorrection().isSelected()) {
+		            R = gamma_LUT[R];
+		            G = gamma_LUT[G];
+		            B = gamma_LUT[B];
+				}
+
 				
 				ptr[delta + pp]=(int)R;
 				ptr[delta + pp + 1]=(int)G;
@@ -553,9 +563,7 @@ public class PalDecoder {
 		
 		BufferedImage fullFrame = new BufferedImage(768, 576, BufferedImage.TYPE_3BYTE_BGR);
 		WritableRaster rasterFullFrame = fullFrame.getRaster();
-		
-		timeStart = System.currentTimeMillis();
-		
+				
 		int j = 0;
 		
 		for (int i = 0; i < 576;  i++) {			
@@ -730,6 +738,17 @@ public class PalDecoder {
 		System.out.println("colourising");
 
 
+	}	
+	
+	// Create the gamma correction lookup table
+	private static int[] gamma_LUT(double gamma_new) {
+	    int[] gamma_LUT = new int[256];
+	 
+	    for(int i=0; i<gamma_LUT.length; i++) {
+	        gamma_LUT[i] = (int) (255 * (Math.pow((double) i / (double) 255, gamma_new)));
+	    }
+	 
+	    return gamma_LUT;
 	}	
 	
 }

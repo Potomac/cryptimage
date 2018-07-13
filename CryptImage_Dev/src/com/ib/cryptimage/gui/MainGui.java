@@ -307,6 +307,7 @@ public class MainGui {
 	private JSlider slidColor;
 	private JTextField jtxtValBrightness;
 	private JTextField jtxtValColor;
+	private JCheckBox chkGammaCorrection;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -1221,6 +1222,9 @@ public class MainGui {
 		jtxtValBrightness.setText("80");
 		jtxtValColor.setText("64");
 		
+		chkGammaCorrection = new JCheckBox("Gamma correction");
+		chkGammaCorrection.setSelected(true);
+		
 		this.placerComposants(panPalFreq,
 				gblPal,
 				lblPalFreq,
@@ -1282,6 +1286,14 @@ public class MainGui {
 				jtxtValColor,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				2, 2,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				chkGammaCorrection,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 3,
 				1,1,
 				0,20,
 				1, 1,1,1);
@@ -3763,6 +3775,10 @@ public class MainGui {
 
 	public JTextField getJtxtValColor() {
 		return jtxtValColor;
+	}
+
+	public JCheckBox getChkGammaCorrection() {
+		return chkGammaCorrection;
 	}
 
 	

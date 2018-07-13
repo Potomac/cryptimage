@@ -247,6 +247,7 @@ public class PalEncoder {
 		int[] rgbim2 = new int[width * 3];
 		int[] rgbim3 = new int[width * 3];
 		int r1, g1, b1, r2, b2, r3, g3, b3;
+		int sum;
 
 		//int[] moy = new int[3];
 		
@@ -255,6 +256,15 @@ public class PalEncoder {
 			rgbim2 = scanLineGrid(row);
 
 			for (int i = 0; i < width * 3; i++) {
+				
+				//scale y to 64-211
+				//rgbim1[i] = (int)(rgbim1[i] * 147f/255f) + 64;
+//				rgbim1[i] = (int)(rgbim1[i] * 219f/255f) + 16;
+//				rgbim1[i +1] = (int)(rgbim1[i + 1] * 219f/255f) + 16;
+//				rgbim1[i +2] = (int)(rgbim1[i + 2] * 219f/255f) + 16;
+			
+				
+				
 				r1 = rgbim1[i]; // y
 				g1 = rgbim1[i + 1]; // u
 				b1 = rgbim1[i + 2]; // v
@@ -265,46 +275,20 @@ public class PalEncoder {
 				r3 = (int) (r1);
 				g3 =   (Math.abs(b2 - g1) + (255 - Math.abs(255 - b2 - g1)))/2; //(int)  (Math.abs((b2 - g1)));
 				b3 = (Math.abs(r2 - b1) + (255 - Math.abs(255 - r2 - b1)))/2; //(int)  (Math.abs((r2 - b1)));
-						
-				rgbim3[i] =  (int) ((r3 +  g3 +  b3)/3) ;//(r3 + g3 + b3) /3 ;
-				//rgbim3[i] =  (int) (1f * r1 + 1f * ( g3 + b3))/2;			
 				
-				rgbim3[i + 1] = rgbim3[i];//128;// (int) ((r3 +  g3 +  b3)/3) ;//rgbim3[i];
-				rgbim3[i + 2] = rgbim3[i];//128;//(int) ((r3 +  g3 +  b3)/3) ;//rgbim3[i];
+				//scale u and v				
+				//System.out.println(g3 + " " + b3);
+				//g3 = (int)(g3 * 128f/255f) + 128 ;
+				//b3 = (int)(b3 * 128f/255f) + 128 ;
 				
-				rgbim3[i] = r3; //(int) ((r3  +  g3 +  b3)/3);
-				rgbim3[i +1] = (int) ((r3  +  g3 +  b3)/3);//(int) ((r3 +  g3 +  b3)/3);
-				rgbim3[i +2] = (int) ((r3 +  g3 +  b3)/3);//(int) ((r3 +  g3 +  b3)/3);
 				
-//				rgbim3[i] = r3;
-//				rgbim3[i +1] = g3;
-//				rgbim3[i +2] = b3;
-//				 
-//				int[] test = new int[3];
-//				test[0] = r1;
-//				test[1] = g3;
-//				test[2] = b3;
-//				
-//				test = yuvCalc.convertYUVtoRGB(test);
-//				
-//				moy = new int[3];
-//				int res = (int) ((test[0] + test[1] + test[2])/3f);
-//				System.out.println(res + " " + (test[0] + test[1] + test[2])/3f);
-//				moy[0] = res;
-//				moy[1] = res;
-//				moy[2] = res;
-//				
-//				
-//				System.out.println(res);
-//				
-//				rgbim3[i] = moy[0];
-//				rgbim3[i +1] = moy[1];
-//				rgbim3[i +2] = moy[2];
-//				
-//				if(r1 == 163)
-//				//System.out.println(r2 + ";" + b2 + " " + g3 + " " + b3 + " " + g1 + " " + b1);
-//				System.out.println(g3 + " " + b3 + " --- " + b2 + " " + r2 + " |||| " + g1 + " " + b1 );
-//				
+				
+				sum = (int) ((r3 + g3 + b3)/3f);
+				
+				rgbim3[i] =  r3; //(int) ((r3 +  g3 +  b3)/3) ;//(r3 + g3 + b3) /3 ;			
+				rgbim3[i +1] = sum;// (int) ((r3  +  g3 +  b3)/3);//(int) ((r3 +  g3 +  b3)/3);
+				rgbim3[i +2] = sum;//(int) ((r3 +  g3 +  b3)/3);//(int) ((r3 +  g3 +  b3)/3);				
+		
 				i++;
 				i++;
 			}
