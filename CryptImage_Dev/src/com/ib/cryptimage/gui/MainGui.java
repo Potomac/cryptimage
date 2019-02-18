@@ -107,6 +107,7 @@ public class MainGui {
 	private JRadioButton rdiDiscretCoding;
 	private JRadioButton rdiDiscretDecoding;
 	private JRadioButton rdiDiscretCorrel;
+	private JRadioButton rdiDiscret68705;
 	private JRadioButton rdiSysterCodingGen;
 	private JRadioButton rdiSysterDecodingGen;
 	private JRadioButton rdiSysterDecodingCorrel;
@@ -308,6 +309,10 @@ public class MainGui {
 	private JTextField jtxtValBrightness;
 	private JTextField jtxtValColor;
 	private JCheckBox chkGammaCorrection;
+	private JCheckBox chkWorkaroundSysterCapture;
+	private JComboBox<Integer> cmbPalFrameStart;
+	private JCheckBox palAverageDecode;
+	private JCheckBox chkSysterReverse;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -600,6 +605,7 @@ public class MainGui {
 		rdiDiscretCoding.setText(JobConfig.getRes().getString("panDiscret11.coding"));
 		rdiDiscretDecoding.setText(JobConfig.getRes().getString("panDiscret11.decoding"));
 		rdiDiscretCorrel.setText(JobConfig.getRes().getString("panDiscret11.decodingCorrel"));
+		rdiDiscret68705.setText(JobConfig.getRes().getString("panDiscret11.decoding68705"));
 		lab16bitsWord.setText(JobConfig.getRes().getString("panDiscret11.lab16bits"));
 		
 		labAudience.setText(JobConfig.getRes().getString("panDiscret11.labAudience"));
@@ -1225,6 +1231,26 @@ public class MainGui {
 		chkGammaCorrection = new JCheckBox("Gamma correction");
 		chkGammaCorrection.setSelected(true);
 		
+		cmbPalFrameStart = new JComboBox<Integer>();
+		cmbPalFrameStart.addActionListener(controler);
+		cmbPalFrameStart.addItem(1);
+		cmbPalFrameStart.addItem(2);
+		cmbPalFrameStart.addItem(3);
+		cmbPalFrameStart.addItem(4);
+		cmbPalFrameStart.setSelectedIndex(0);
+		
+		palAverageDecode = new JCheckBox();
+		palAverageDecode.setText("Average lines");
+		palAverageDecode.setSelected(true);
+		
+		JLabel lblPalFrameStart = new JLabel("Pal frame start for decoding");
+		
+		chkWorkaroundSysterCapture = new JCheckBox("Workaround decoding syster color capture");
+		chkWorkaroundSysterCapture.setSelected(false);
+		//chkWorkaroundSysterCapture.addActionListener(controler);
+		
+
+		
 		this.placerComposants(panPalFreq,
 				gblPal,
 				lblPalFreq,
@@ -1294,9 +1320,34 @@ public class MainGui {
 				chkGammaCorrection,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 3,
+				2,1,
+				0,20,
+				1, 1,1,1);	
+		this.placerComposants(panPalFreq,
+				gblPal,
+				palAverageDecode,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 4,
 				1,1,
 				0,20,
 				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				lblPalFrameStart,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 5,
+				1,1,
+				0,20,
+				1, 1,1,1);
+		this.placerComposants(panPalFreq,
+				gblPal,
+				cmbPalFrameStart,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 5,
+				1,1,
+				0,20,
+				1, 1,1,1);
+
 		
 	
 		GridBagLayout gblColorMode = new GridBagLayout();
@@ -1889,6 +1940,12 @@ public class MainGui {
 		
 		GridBagLayout gblRdiDecoding = new GridBagLayout();
 		
+		chkSysterReverse = new JCheckBox("Reverse decoding");
+		chkSysterReverse.addActionListener(controler);
+		chkSysterReverse.setSelected(false);
+		chkSysterReverse.setEnabled(false);
+		
+		
 		this.placerComposants(subRdiDecoding,
 				gblRdiDecoding,
 				rdiSysterDecodingFile,
@@ -1932,9 +1989,17 @@ public class MainGui {
 		this.placerComposants(subRdiDecoding,
 				gblRdiDecoding,
 				comboTableSysterDec,
-				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				1, 2,
-				2,1,
+				1,1,
+				80,33,
+				1, 1,1,1);
+		this.placerComposants(subRdiDecoding,
+				gblRdiDecoding,
+				chkSysterReverse,
+				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
+				2, 2,
+				1,1,
 				80,33,
 				1, 1,1,1);
 				
@@ -2093,16 +2158,25 @@ public class MainGui {
 		rdiDiscretCoding = new JRadioButton(JobConfig.getRes().getString("panDiscret11.coding"));
 		rdiDiscretCoding.setSelected(true);
 		rdiDiscretDecoding = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decoding"));
-		rdiDiscretCorrel = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decodingCorrel"));
+		rdiDiscretCorrel = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decodingCorrel"));		
+		rdiDiscret68705 = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decoding68705"));
 		
 		rdiDiscretCoding.addActionListener(controler);
 		rdiDiscretDecoding.addActionListener(controler);
 		rdiDiscretCorrel.addActionListener(controler);
+		rdiDiscret68705.addActionListener(controler);
 		
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(rdiDiscretCoding);
 		btnGroup.add(rdiDiscretDecoding);
 		btnGroup.add(rdiDiscretCorrel);
+		btnGroup.add(rdiDiscret68705);
+		
+		JPanel panRdiDiscret = new JPanel();
+		panRdiDiscret.add(rdiDiscretCoding);
+		panRdiDiscret.add(rdiDiscretDecoding);
+		panRdiDiscret.add(rdiDiscretCorrel);
+		panRdiDiscret.add(rdiDiscret68705);
 		
 		//init 16 bits word slider
 		JPanel pan16bits = new JPanel();
@@ -2488,28 +2562,44 @@ public class MainGui {
 		//selection mode
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				rdiDiscretCoding,
+				panRdiDiscret,
 				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
 				0, 0,
-				1,1,
+				6,1,
 				33,25,
 				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				rdiDiscretDecoding,
-				GridBagConstraints.WEST, GridBagConstraints.WEST,
-				1, 0,
-				1,1,
-				33,25,
-				1, 1,1,1);
-		this.placerComposants(panOptionsDiscret11,
-				gbl,
-				rdiDiscretCorrel,
-				GridBagConstraints.WEST, GridBagConstraints.WEST,
-				2, 0,
-				2,1,
-				33,25,
-				1, 1,1,1);
+//		this.placerComposants(panOptionsDiscret11,
+//				gbl,
+//				rdiDiscretCoding,
+//				GridBagConstraints.LINE_START, GridBagConstraints.WEST,
+//				0, 0,
+//				1,1,
+//				33,25,
+//				1, 1,1,1);
+//		this.placerComposants(panOptionsDiscret11,
+//				gbl,
+//				rdiDiscretDecoding,
+//				GridBagConstraints.WEST, GridBagConstraints.WEST,
+//				1, 0,
+//				1,1,
+//				33,25,
+//				1, 1,1,1);
+//		this.placerComposants(panOptionsDiscret11,
+//				gbl,
+//				rdiDiscretCorrel,
+//				GridBagConstraints.WEST, GridBagConstraints.WEST,
+//				2, 0,
+//				1,1,
+//				33,25,
+//				1, 1,1,1);
+//		this.placerComposants(panOptionsDiscret11,
+//				gbl,
+//				rdiDiscret68705,
+//				GridBagConstraints.WEST, GridBagConstraints.WEST,
+//				3, 0,
+//				3,1,
+//				33,25,
+//				1, 1,1,1);
 		
 		//selection 16 bits keyword
 		this.placerComposants(panOptionsDiscret11,
@@ -3779,6 +3869,30 @@ public class MainGui {
 
 	public JCheckBox getChkGammaCorrection() {
 		return chkGammaCorrection;
+	}
+
+	public JCheckBox getChkWorkaroundSysterCapture() {
+		return chkWorkaroundSysterCapture;
+	}
+
+	public JComboBox<Integer> getCmbPalFrameStart() {
+		return cmbPalFrameStart;
+	}
+
+	public JCheckBox getPalAverageDecode() {
+		return palAverageDecode;
+	}
+
+	public JRadioButton getRdiDiscret68705() {
+		return rdiDiscret68705;
+	}
+
+	public JCheckBox getChkSysterReverse() {
+		return chkSysterReverse;
+	}
+
+	public void setChkSysterReverse(JCheckBox chkSysterReverse) {
+		this.chkSysterReverse = chkSysterReverse;
 	}
 
 	

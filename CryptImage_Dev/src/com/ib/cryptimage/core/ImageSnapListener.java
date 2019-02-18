@@ -139,8 +139,15 @@ public class ImageSnapListener extends MediaListenerAdapter {
 			 ){		
 		cryptVid.closeVideo();
 		cryptVid.saveDatFileVideo();
-		cryptVid.getDevice().closeFileData();		
+		cryptVid.getDevice().closeFileData();
+		if(JobConfig.isSearchCode68705()) {
+			cryptVid.displayKey();
+		}
+		
 	} else if(count == cryptVid.getVideoLengthFrames()){
+		if(JobConfig.isSearchCode68705()) {
+			cryptVid.displayKey();
+		}
 		JobConfig.setStop(true);
 		}
    }

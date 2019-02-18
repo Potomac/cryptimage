@@ -316,16 +316,16 @@ public class DiscretDecCorrel extends Discret {
 			 }
 			 for (int i = 0; i < keyVec.size(); i++) {
 				 if(dicKey.get(keyVec.get(i)) > 0) {
-				System.out.print( keyVec.get(i) + "(" + dicKey.get(keyVec.get(i)) +"); ");
+				//System.out.print( keyVec.get(i) + "(" + dicKey.get(keyVec.get(i)) +"); ");
 			}			
 			 }
-			 System.out.println("");
+			 //System.out.println("");
 			 
 			 for (int i = 0; i < keyVec.size(); i++) {
-				 System.out.print( keyVec.get(i) + ";");
+				 //System.out.print( keyVec.get(i) + ";");
 			}
-			 System.out.println("");
-			 System.out.println(keyfull);
+			 //System.out.println("");
+			 //System.out.println(keyfull);
 		 }
 		 
 
@@ -597,6 +597,12 @@ public class DiscretDecCorrel extends Discret {
 	void closeFileData() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	int getKey() {
+		// TODO Auto-generated method stub
+		return 0;
 	}	
 
 }

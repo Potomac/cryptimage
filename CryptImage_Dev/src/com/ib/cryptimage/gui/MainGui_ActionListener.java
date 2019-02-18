@@ -219,9 +219,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
 					this.mainGui.getRdiDiscretCoding().setSelected(true);
 					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscret68705().setEnabled(false);
 				}
 				if(this.mainGui.getRdiVideo().isSelected()){			
 					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscret68705().setEnabled(true);
 				}			
 				setMultiCodeComboBox();
 				this.mainGui.getLbl11bitsInfo().setEnabled(true);
@@ -235,11 +237,13 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			} else {
 				if(this.mainGui.getRdiVideo().isSelected()){					
 					this.mainGui.getRdiDiscretCorrel().setEnabled(false);
+					this.mainGui.getRdiDiscret68705().setEnabled(false);
 					this.mainGui.getRdiDiscretCoding().setSelected(true);
 				}
 				if(this.mainGui.getRdiPhoto().isSelected()){					
 					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
 					this.mainGui.getRdiDiscretCorrel().setEnabled(false);
+					this.mainGui.getRdiDiscret68705().setEnabled(false);
 					this.mainGui.getRdiDiscretCoding().setSelected(true);
 				}
 				setNoMultiCodeComboBox();				
@@ -347,6 +351,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageComboBoxes(JComboBox<?> src) {
+		
+		if(src.equals(this.mainGui.getCmbPalFrameStart())){			
+			JobConfig.setCurrentPalFrameDec((int)this.mainGui.getCmbPalFrameStart().getSelectedItem() - 1);
+		}
 		
 		if(src.equals(this.mainGui.getCbYUV())){
 			if(this.mainGui.getCbYUV().getSelectedIndex() == 0){
@@ -713,6 +721,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getTxtSysterDec().setEnabled(true);
 				this.mainGui.getBtnFileSysterDec().setEnabled(true);
 				this.mainGui.getComboTableSysterDec().setEnabled(false);
+				this.mainGui.getChkSysterReverse().setSelected(false);
+				this.mainGui.getChkSysterReverse().setEnabled(false);
 			}
 		}
 		if(src.equals(this.mainGui.getRdiSysterDeCodingTags())){
@@ -720,6 +730,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getTxtSysterDec().setEnabled(false);
 				this.mainGui.getBtnFileSysterDec().setEnabled(false);
 				this.mainGui.getComboTableSysterDec().setEnabled(false);
+				this.mainGui.getChkSysterReverse().setSelected(false);
+				this.mainGui.getChkSysterReverse().setEnabled(false);
 			}
 		}
 		if(src.equals(this.mainGui.getRdiSysterDecodingCorrel())){
@@ -727,6 +739,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getTxtSysterDec().setEnabled(false);
 				this.mainGui.getBtnFileSysterDec().setEnabled(false);
 				this.mainGui.getComboTableSysterDec().setEnabled(true);
+				this.mainGui.getChkSysterReverse().setSelected(false);
+				this.mainGui.getChkSysterReverse().setEnabled(true);
 			}
 		}
 		
@@ -757,6 +771,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getJsp16bitKeyword().setEnabled(true);
 			}
 		}
+		if(src.equals(this.mainGui.getRdiDiscret68705())){
+			this.mainGui.getChkStrictMode().setEnabled(true);
+			disableComboAudience();	
+			if(src.isSelected()){
+				this.mainGui.getSlid16bitsWord().setEnabled(true);
+				this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			}
+		}
 		
 		if(src.equals(this.mainGui.getRdiDiscretCoding())){
 			this.mainGui.getChkStrictMode().setEnabled(true);
@@ -779,8 +801,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}			
 		}		
 		
-		if(src.equals(mainGui.getRdiPhoto())){
+		if(src.equals(mainGui.getRdiPhoto())){			
 			if(src.isSelected()){
+				this.mainGui.getRdiDiscret68705().setEnabled(false);
 				//**setNoMultiCodeComboBox();
 				if(this.mainGui.getChkStrictMode().isSelected()){
 					this.mainGui.getRdiDiscretDecoding().setEnabled(false);	
@@ -788,12 +811,14 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					this.mainGui.getSlid16bitsWord().setEnabled(true);
 					this.mainGui.getJsp16bitKeyword().setEnabled(true);
 					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+					this.mainGui.getRdiDiscret68705().setEnabled(false);
 					if (mainGui.getCombSystemCrypt().getSelectedIndex() == 0) {
 						this.mainGui.getChkStrictMode().setEnabled(true);
 					}
 				}
 				else{
-					this.mainGui.getRdiDiscretDecoding().setEnabled(true);								
+					this.mainGui.getRdiDiscretDecoding().setEnabled(true);	
+					//this.mainGui.getRdiDiscret68705().setEnabled(true);
 				}
 				if (!this.mainGui.getRdiDiscretDecoding().isSelected()
 						&& !this.mainGui.getRdiDiscretCorrel().isSelected()) {
@@ -824,11 +849,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		} else if(src.equals(mainGui.getRdiVideo())){
 			
 			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscret68705().setEnabled(true);
+			
 			if(!this.mainGui.getChkStrictMode().isSelected()){
 				setMultiCodeComboBox();
+				//this.mainGui.getRdiDiscret68705().setEnabled(false);
 			}
 			else{
 				this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+				this.mainGui.getRdiDiscret68705().setEnabled(true);
 				this.mainGui.getRdiDiscretCoding().setSelected(true);
 				this.mainGui.getSlid16bitsWord().setEnabled(true);
 				this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -1750,7 +1779,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		if (mainGui.getRdiVideo().isSelected()) {
 			extension = new String[] { "avi", "mp4", "mpeg", "mkv", "mpeg2",
-					"mpg","ts", "m2t", "wmv" };
+					"mpg","ts", "m2t", "wmv", "mov" };
 			filter = new FileNameExtensionFilter(JobConfig.getRes().getString("manageFileOpen.filenameExtensionFiltersVideo"), extension);
 		} else {
 			extension = new String[] { "jpeg", "jpg", "bmp", "gif", "png",
@@ -1805,7 +1834,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 
 	private void manageEnter() {
-				
+		JobConfig.setSearchCode68705(false);
 		if (mainGui.getCombAudience().getSelectedIndex() == 7
 				&& mainGui.getTxtMultiCode().getText().replaceAll("#", "")
 						.replaceAll(" ", "").equals("")
@@ -1899,7 +1928,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					&& JobConfig.getSystemCrypt() == 0){
 				JobConfig.setWantDecCorrel(true);
 				JobConfig.setWantDec(true);
-			}
+			}			
 			else {
 				JobConfig.setWantDecCorrel(false);
 			}
@@ -1931,6 +1960,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if(mainGui.getRdiDiscretCoding().isSelected() 
 					&& JobConfig.getSystemCrypt() == 0){
 				JobConfig.setWantDec(false);
+			}
+			//syster dec with 68705 search mode
+			if(mainGui.getRdiDiscret68705().isSelected()
+					&& JobConfig.getSystemCrypt() == 0){
+				JobConfig.setWantDec(true);
+				JobConfig.setSearchCode68705(true);
+			}
+			else {
+				JobConfig.setSearchCode68705(false);
 			}
 			
 			//syster dec enc
@@ -2122,18 +2160,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			} else {
 				this.thread = new Thread(new Runnable() {
 					@Override
-					public void run() {
-						FramesPlayer frmVideo = new FramesPlayer();
-						frmVideo.readFrame();
-						mainGui.getBtnEnter().setEnabled(true);
-						mainGui.getBtnCancel().setEnabled(false);
-						mainGui.getBtnExit().setEnabled(true);
-						mainGui.getBtnInputFile().setEnabled(true);
-						mainGui.getBtnOutputFile().setEnabled(true);
-						mainGui.getFrame()
-								.setCursor(
-										Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					}
+					public void run() {	
+							FramesPlayer frmVideo = new FramesPlayer();
+							frmVideo.readFrame();
+							mainGui.getBtnEnter().setEnabled(true);
+							mainGui.getBtnCancel().setEnabled(false);
+							mainGui.getBtnExit().setEnabled(true);
+							mainGui.getBtnInputFile().setEnabled(true);
+							mainGui.getBtnOutputFile().setEnabled(true);
+							mainGui.getFrame()
+									.setCursor(
+											Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						}					
 				});
 
 				thread.setPriority(5);

@@ -47,6 +47,7 @@ public final class JobConfig {
 	private static boolean strictMode = false;
 	private static int positionSynchro = 1;
 	private static boolean wantDec = false;
+	private static boolean searchCode68705 = false;
 	private static boolean wantPlay = false;	
 	private static boolean modePhoto = false;
 	private static int audienceLevel = 0;
@@ -93,8 +94,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.4.20 beta";
-	private static String releaseDate = "2018-07-13";
+	private static String VERSION = "1.5.3 beta";
+	private static String releaseDate = "2019-02-17";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -118,6 +119,7 @@ public final class JobConfig {
 	private static PalDecoder palDecoder;
 	
 	private static int currentPalFrame = 0;
+	private static int currentPalFrameDec = 0;
 	
 	public static void incrementPalFrame() {
 		//currentPalFrame = 1;
@@ -128,6 +130,17 @@ public final class JobConfig {
 
 		//System.out.println(JobConfig.getCurrentPalFrame());
 	}
+	
+	public static void incrementPalFrameDec() {
+		//currentPalFrame = 1;
+		JobConfig.currentPalFrameDec++;
+		if(JobConfig.currentPalFrameDec > 4) {
+			JobConfig.currentPalFrameDec = 1;
+		}
+
+		//System.out.println(JobConfig.getCurrentPalFrame());
+	}
+	
 	
 	public static String getDateTime(){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
@@ -1071,5 +1084,22 @@ public final class JobConfig {
 	public static void setCurrentPalFrame(int currentPalFrame) {
 		JobConfig.currentPalFrame = currentPalFrame;
 	}
+
+	public static int getCurrentPalFrameDec() {
+		return currentPalFrameDec;
+	}
+
+	public static void setCurrentPalFrameDec(int currentPalFrameDec) {
+		JobConfig.currentPalFrameDec = currentPalFrameDec;
+	}
+
+	public static boolean isSearchCode68705() {
+		return searchCode68705;
+	}
+
+	public static void setSearchCode68705(boolean searchCode68705) {
+		JobConfig.searchCode68705 = searchCode68705;
+	}
+
 	
 }

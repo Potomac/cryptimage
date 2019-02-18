@@ -55,9 +55,10 @@ public abstract class Discret extends Device {
 			freq = 17750000;
 		}
 		
-		palEncoder = new PalEncoder(false, typeGrid);
-		palDecoder = new PalDecoder(freq);
+		JobConfig.setCurrentPalFrameDec(JobConfig.getGui().getCmbPalFrameStart().getSelectedIndex());
 		JobConfig.setCurrentPalFrame(0);
+		palEncoder = new PalEncoder(false, typeGrid);
+		palDecoder = new PalDecoder(freq);		
 		JobConfig.setPalDecoder(palDecoder);
 		JobConfig.setPalEncoder(palEncoder);
 	}

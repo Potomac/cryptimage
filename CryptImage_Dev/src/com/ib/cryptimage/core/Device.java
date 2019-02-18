@@ -35,5 +35,6 @@ public abstract class Device {
 	abstract int getKey11bits();
 	abstract void closeFileData();
 	abstract void skipFrame();
+	abstract int getKey();
 
 }

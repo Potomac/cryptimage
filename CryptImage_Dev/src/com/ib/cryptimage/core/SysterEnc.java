@@ -92,6 +92,7 @@ public class SysterEnc extends Syster {
 	public BufferedImage transform(BufferedImage image) {
 		numFrames++;		
 		JobConfig.incrementPalFrame();
+		JobConfig.incrementPalFrameDec();
 		
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
@@ -501,6 +502,12 @@ public class SysterEnc extends Syster {
 
 	@Override
 	int getKey11bits() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	int getKey() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

@@ -109,9 +109,10 @@ public abstract class Syster extends Device {
 		
 		palEngine = new PalEngine();
 		secamEngine = new SecamEngine();
-		palEncoder = new PalEncoder(false, typeGrid);
-		palDecoder = new PalDecoder(freq);
+		JobConfig.setCurrentPalFrameDec(JobConfig.getGui().getCmbPalFrameStart().getSelectedIndex());
 		JobConfig.setCurrentPalFrame(0);
+		palEncoder = new PalEncoder(false, typeGrid);
+		palDecoder = new PalDecoder(freq);		
 		JobConfig.setPalDecoder(palDecoder);
 		JobConfig.setPalEncoder(palEncoder);
 				
@@ -394,13 +395,14 @@ public abstract class Syster extends Device {
 				palDecoder.setImage(completFrame);
 				return palDecoder.decode();
 			}			
-			else {
+			else {				
 				return completFrame;
 			}
 		}
-		else {
+		else {			
 			JobConfig.setCurrentPalFrame(JobConfig.getCurrentPalFrame() - 1);
-			//JobConfig.incrementPalFrame();
+			JobConfig.setCurrentPalFrameDec(JobConfig.getCurrentPalFrameDec() - 1);
+			//JobConfig.incrementPalFrameDec();
 			
 //			if(!JobConfig.isWantPlay() && !JobConfig.isWantDec()) {			
 //				try {

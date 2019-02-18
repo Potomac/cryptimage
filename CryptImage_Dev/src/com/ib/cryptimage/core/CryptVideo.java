@@ -210,12 +210,17 @@ public class CryptVideo {
 		if (JobConfig.getSystemCrypt() == 0) {
 			if (this.strictMode) {
 				if (this.isDecoding) {
-					if (JobConfig.isWantDecCorrel()) {
-						device = new DiscretDecCorrel();
-					} else if (JobConfig.isNoBlackBar()) {
-						device = new Discret11DecBlack(JobConfig.getWord16bits(), this.perc1, this.perc2);
-					} else {
-						device = new Discret11Dec(JobConfig.getWord16bits(), this.perc1, this.perc2);
+					if(JobConfig.isSearchCode68705()) {
+						device = new Discret11DecFindKey(JobConfig.getWord16bits(), this.perc1, this.perc2);
+					}
+					else {
+						if (JobConfig.isWantDecCorrel()) {
+							device = new DiscretDecCorrel();
+						} else if (JobConfig.isNoBlackBar()) {
+							device = new Discret11DecBlack(JobConfig.getWord16bits(), this.perc1, this.perc2);
+						} else {
+							device = new Discret11Dec(JobConfig.getWord16bits(), this.perc1, this.perc2);
+						}
 					}
 				} else {
 					if (JobConfig.isNoBlackBar()) {
@@ -255,9 +260,17 @@ public class CryptVideo {
 		}
 		else if (JobConfig.getSystemCrypt() == 1) { //syster mode
 			if(this.isDecoding){
-				device = new SysterDec(JobConfig.getTableSyster(),
-						JobConfig.getFileDataDecSyster(),
-						JobConfig.isWantDecCorrel());
+				if(JobConfig.getGui().getChkSysterReverse().isSelected()) {
+					device = new SysterDecReverse(JobConfig.getTableSyster(),
+							JobConfig.getFileDataDecSyster(),
+							JobConfig.isWantDecCorrel());
+				}
+				else {
+					device = new SysterDec(JobConfig.getTableSyster(),
+							JobConfig.getFileDataDecSyster(),
+							JobConfig.isWantDecCorrel());
+				}
+	
 			}
 			else {
 				device = new SysterEnc(JobConfig.getTableSyster(),
@@ -295,7 +308,7 @@ public class CryptVideo {
 		if (JobConfig.isWantPlay() != true) {
 
 			
-			if (this.isDecoding) {
+			if (this.isDecoding && !JobConfig.isSearchCode68705()) {
 				try {
 					vid = new VideoRecorder(outputFilename + "_dec" + "."
 							+ JobConfig.getExtension(), width, height,
@@ -311,9 +324,9 @@ public class CryptVideo {
 					e.printStackTrace();
 					System.exit(1);
 				}
-			} else { //encoding
+			} else if(!this.isDecoding) { //encoding
 				try {
-					if(JobConfig.getSystemCrypt() == 0){
+					if(JobConfig.getSystemCrypt() == 0 && !JobConfig.isSearchCode68705()){
 					vid = new VideoRecorder(outputFilename + info + keyWord
 							+ this.fileAudienceLevel + fileKeyboardCode + "."
 							+ JobConfig.getExtension(), width, height,
@@ -449,7 +462,9 @@ public class CryptVideo {
 		if (!JobConfig.isWantPlay() 
 				&& JobConfig.isDisableSound() == false
 				&& JobConfig.isVideoHasAudioTrack()) {
-			vid.addAudioFrame(sample);
+			if(!JobConfig.isSearchCode68705()) {
+				vid.addAudioFrame(sample);
+			}			
 		} else if (JobConfig.isWantPlay() ){				
 		}
 	}
@@ -469,8 +484,8 @@ public class CryptVideo {
 					buff = getScaledImage(buff, 768, 576);
 				}
 				buff = splitFrames.splitFrames(false, buff);
-			}
-			vid.addFrame(buff, (long)(this.timeBase * timingFrame));
+			}	
+			vid.addFrame(buff, (long)(this.timeBase * timingFrame));			
 			device.skipFrame();
 			updateProgress();			
 		} else {			
@@ -484,7 +499,8 @@ public class CryptVideo {
 				if(is944 && this.strictMode) {
 					bi = splitFrames.splitFrames(false, bi);
 				}	
-				vid.addFrame(bi, (long)(this.timeBase * timingFrame));
+				
+				vid.addFrame(bi, (long)(this.timeBase * timingFrame));				
 			}			
 			updateProgress();
 		}
@@ -509,7 +525,9 @@ public class CryptVideo {
 				buff = splitFrames.splitFrames(false, buff);
 			}
 			
-			vid.addFrame(buff, (long)(this.timeBase * timingFrame));
+			if(!JobConfig.isSearchCode68705()) {
+				vid.addFrame(buff, (long)(this.timeBase * timingFrame));
+			}
 			device.skipFrame();
 			updateProgress();			
 		} else {			
@@ -524,23 +542,32 @@ public class CryptVideo {
 				if(is944) {
 					bi = splitFrames.splitFrames(false, bi);
 				}				
-				vid.addFrame(bi, (long)(this.timeBase * timingFrame));
+				if(!JobConfig.isSearchCode68705()) {
+					vid.addFrame(bi, (long)(this.timeBase * timingFrame));
+				}
 			}
 			updateProgress();
 		}
 	}
 	
+	public void displayKey() {
+		if(JobConfig.isSearchCode68705()) {
+			device.getKey();
+		}
+	}
+	
 	public void closeVideo(){
-		vid.closeVideo();
-		if(isDecoding){			
+		if(!JobConfig.isSearchCode68705()) {
+			vid.closeVideo();
+		}
+		if(isDecoding && !JobConfig.isSearchCode68705()){			
 			JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ JobConfig.getRes().getString("cryptVideo.progress.fin.decodage") + this.outputFilename +"_dec" +
 						 "." + JobConfig.getExtension());			
 		}
-		else
-		{			
+		else if(!isDecoding){			
 			if(JobConfig.getSystemCrypt() == 0){
 			JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
@@ -576,7 +603,7 @@ public class CryptVideo {
 	}
 	
 	public void saveDatFileVideo(){	
-		if (JobConfig.getSystemCrypt() == 0) {
+		if (JobConfig.getSystemCrypt() == 0  && !JobConfig.isSearchCode68705()) {
 			if (isDecoding != true) {
 
 				String word = String.format("%16s", Integer.toBinaryString(this.keyWord)).replace(" ", "0");
@@ -657,7 +684,12 @@ public class CryptVideo {
 		
 		String messFrames;
 		if(isDecoding){
-			messFrames = JobConfig.getRes().getString("cryptVideo.progress.frames.decode");
+			if(JobConfig.getSystemCrypt() == 0 && JobConfig.isSearchCode68705()) {
+				messFrames = JobConfig.getRes().getString("cryptVideo.progress.searchMode68705");
+			}
+			else {
+				messFrames = JobConfig.getRes().getString("cryptVideo.progress.frames.decode");
+			}			
 		}
 		else {
 			messFrames = JobConfig.getRes().getString("cryptVideo.progress.frames.code");

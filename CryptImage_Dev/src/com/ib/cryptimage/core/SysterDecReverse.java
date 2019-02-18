@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 23 nov. 2015 Author Mannix54
+ * 14 fév. 2019 Author Mannix54
  */
 
 
@@ -36,7 +36,7 @@ import java.util.Vector;
  * @author Mannix54
  *
  */
-public class SysterDec extends Syster {	
+public class SysterDecReverse extends Syster {	
 	
 	long[][] matdist;
 	boolean wantCorrel = false;
@@ -50,7 +50,7 @@ public class SysterDec extends Syster {
 	private Vector<Integer> vOffset = new Vector<Integer>();
 	private Vector<Integer> vIncrement = new Vector<Integer>();
 	
-	public SysterDec(int typeTable, String nameDataFile,
+	public SysterDecReverse(int typeTable, String nameDataFile,
 			boolean wantCorrel) {
 		super(typeTable, false);
 		this.wantCorrel = wantCorrel;
@@ -118,6 +118,22 @@ public class SysterDec extends Syster {
 			order[255 + i] = buffer[i];
 		
 	}
+	
+	public void decryptReverse(){
+		int i,j;
+		
+		for (i = 0; i < 287; i++)
+			order[i] = -1; // Initialisation
+
+		for (i = 0; i < 287; i++)
+		{
+			j = permut[i];
+			while (order[j] != -1)
+				j = order[j]+32;
+			order[j] = i;
+		}
+	}
+	
 
 	@Override
 	public BufferedImage transform(BufferedImage image) {
@@ -149,16 +165,30 @@ public class SysterDec extends Syster {
 			image = palEncoder.encode(false);
 		}
 		
-		if(numFrames > 1){
+		
 		deCryptOddFrame(image);
-		}		
+				
 		deCryptEvenFrame(image);
+		
+//		   if(!this.bPreviewMode) {
+//
+//			   this.vOffset.add(this.offset);
+//			   this.vIncrement.add(this.increment);
+//			   System.out.println(this.vOffset.size() + " " + this.vIncrement.size());
+//			   System.out.println(this.offset + " " + this.increment );
+//			   
+//			   if(this.vOffset.size() > 2 && this.vIncrement.size() > 2) {
+//				   System.out.println("écriture" + this.offset + " " + this.increment );
+//				   feedFileData();
+//			   }
+//		   }		
 		
 		return this.getCompletFrame();
 		
 	}
 	
 	private void deCryptOddFrame(BufferedImage image){
+		//WritableRaster raster;
 		//WritableRaster raster;
 		raster2 = image.getRaster(); //deepCopy(image).getRaster();
 		newImage = new BufferedImage(this.sWidth, 288, BufferedImage.TYPE_3BYTE_BGR);
@@ -173,7 +203,22 @@ public class SysterDec extends Syster {
 		
 		raster.setPixels(0, 287, sWidth, 1, raster2.getPixels(0, 574, sWidth,1,new int[sWidth * 3]));
 		
-		manageVectorFrame(newImage);		
+		manageVectorFrame(newImage);
+		
+//		raster2 = image.getRaster(); //deepCopy(image).getRaster();
+//		newImage = new BufferedImage(this.sWidth, 288, BufferedImage.TYPE_3BYTE_BGR);
+//		raster = newImage.getRaster();
+//		
+//				
+//		for (int i = 0; i < order.length; i++) {
+//			raster.setPixels(0, i, this.sWidth, 1, raster2
+//					.getPixels(0, (order[i])*2 , this.sWidth, 1,
+//							new int[sWidth * 3]));			
+//		}
+//		raster.setPixels(0, 287, sWidth, 1, raster2.getPixels(0, 574, sWidth,1,new int[sWidth * 3]));
+//		
+//		manageVectorFrame(newImage);			
+		
 	}
 	
 	private void deCryptEvenFrame(BufferedImage image){
@@ -198,39 +243,15 @@ public class SysterDec extends Syster {
 		if(vecFrame.size()==3){
 			createDecryptableFrame();
 		}
+		if(numFrames > 1){
+			//vOffset.addElement(this.getOffset());
+			//vIncrement.addElement(this.getIncrement());
+		}
 		vecFrame.addElement(image);
 	}
 	
 	private boolean createDecryptableFrame(){
-		//WritableRaster raster;		
-	
-		// frame 1
-		// push 256-287 lines to the top 1-32
-		raster = vecFrame.get(0).getRaster();
-
-		raster.setPixels(0, 0, this.sWidth, 32, raster.getPixels(0, 255, sWidth, 32, new int[sWidth * 3 * 32]));
-
-		// push 1-255 lines from frame 2 to frame 1 33-287		
-		raster.setPixels(0, 32, this.sWidth, 255, vecFrame.get(1).getRaster().getPixels(0, 0, sWidth, 255, new int[sWidth * 3 * 255]));
-		
-		//push line 288 from frame 2 to line 288 frame 1
-		raster.setPixels(0, 287, this.sWidth, 1, vecFrame.get(1).getRaster().getPixels(0, 287, sWidth, 1, new int[sWidth * 3]));
-		
-		
-		// frame 2
-		// push 256-287 lines to the top 1-32
-		raster = vecFrame.get(1).getRaster();
-
-		raster.setPixels(0, 0, this.sWidth, 32, raster.getPixels(0, 255, sWidth, 32, new int[sWidth * 3 * 32]));
-		
-		// push 1-255 lines from frame 3 to frame 2 33-287
-		raster.setPixels(0, 32, this.sWidth, 255, vecFrame.get(2).getRaster().getPixels(0, 0, sWidth, 255, new int[sWidth * 3 * 255]));
-		
-		//push line 288 from frame 3 to line 288 frame 2
-		raster.setPixels(0, 287, this.sWidth, 1, vecFrame.get(2).getRaster().getPixels(0, 287, sWidth, 1, new int[sWidth * 3]));
-				
-		
-		
+			
 		if (!this.wantCorrel) {
 			if (JobConfig.isWantSysterTags()) {
 				if(!tagLine(vecFrame.get(0).getRaster(), vecFrame.get(1).getRaster())){
@@ -268,7 +289,8 @@ public class SysterDec extends Syster {
 		}
 		
 		if (this.offset != -1 && this.increment != -1) {
-			this.deCrypt();
+			this.initPermut();
+			this.decryptReverse();
 
 			for (int i = 0; i < order.length; i++) {
 				raster.setPixels(0, i, this.sWidth, 1,
@@ -287,7 +309,8 @@ public class SysterDec extends Syster {
 		}
 		
 		if (this.offset != -1 && this.increment != -1) {
-			this.deCrypt();
+			this.initPermut();
+			this.decryptReverse();
 
 			for (int i = 0; i < order.length; i++) {
 				raster.setPixels(0, i, this.sWidth, 1,
@@ -312,35 +335,51 @@ public class SysterDec extends Syster {
 	}
 	
 	private void newDecryptFullFrame(){
-		// create new decrypt frame from decrypted frame 1 and 2
+		
+		// frame 1
+		// push 32-287 lines to the top
+		raster = vecFrame.get(0).getRaster();
+		raster.setPixels(0, 0, this.sWidth, 255, raster.getPixels(0, 32, sWidth, 255, new int[sWidth * 3 * 255]));
+
+		// push 1-32 lines from frame 2 to frame 1 256-287
+		raster.setPixels(0, 255, this.sWidth, 32, vecFrame.get(1).getRaster().getPixels(0, 0, sWidth, 32, new int[sWidth * 3 * 32]));
+				
+		//frame 2
+		//push 32-287 lines to the top
+		raster = vecFrame.get(1).getRaster();
+		raster.setPixels(0, 0, this.sWidth, 255, raster.getPixels(0, 32, sWidth, 255, new int[sWidth * 3 * 255]));
+		
+		
+		// push 1-32 lines from frame 3 to frame 2 256-287			
+		raster.setPixels(0, 255, this.sWidth, 32, vecFrame.get(2).getRaster().getPixels(0, 0, sWidth, 32, new int[sWidth * 3 * 32]));
+		
+		//create new crypted frame from frame 1 and 2
 		frame = new BufferedImage(this.sWidth, 576, BufferedImage.TYPE_3BYTE_BGR);
 		raster = frame.getRaster();
-
+		
 		int line = 0;
 		for (int i = 0; i < 288; i++) {
 			raster.setPixels(0, line, this.sWidth, 1,
-					vecFrame.get(0)
-					.getRaster().getPixels(0, i, this.sWidth, 1, new int[sWidth * 3]));
+					vecFrame.get(0).getRaster()
+					.getPixels(0, i, this.sWidth, 1, new int[sWidth * 3]));
 			line++;
 			line++;
 		}
-
+		
 		line = 1;
 		for (int i = 0; i < 288; i++) {
 			raster.setPixels(0, line, this.sWidth, 1,
-					vecFrame.get(1)
-					.getRaster().getPixels(0, i, this.sWidth, 1, new int[sWidth * 3]));
+					vecFrame.get(1).getRaster()
+					.getPixels(0, i, this.sWidth, 1, new int[sWidth * 3]));
 			line++;
 			line++;
 		}
 		
 		// remove frame 1 and 2 from vecFrame
 		vecFrame.remove(0);
-		vecFrame.remove(0);	
-		
+		vecFrame.remove(0);
 		this.completFrame = frame;
-		this.enable = true;
-		this.ready = true;	
+		this.ready = true;			
 	}
 	
 	@Override
@@ -557,7 +596,13 @@ public class SysterDec extends Syster {
 
 		   this.offset = offset;
 		   this.increment = increment;
-		   deCrypt();   // Build the permutation sequence
+		   
+		   
+		   //deCrypt();   // Build the permutation sequence
+		   initPermut();
+		   decryptReverse();
+		   
+		   
 		   for (i=50; i<236 ; i+=3) // 0 286 100 200 50 250 50-236 +3
 			{
 		   	val = matdist[order[i]] [order[i+1]]; // Distance between successive rows
@@ -614,14 +659,26 @@ public class SysterDec extends Syster {
 		   this.offset = offset_opt;
 		   this.increment = incr_opt;
 		   
-		   if(!this.bPreviewMode) {
-			   this.vOffset.add(this.offset);
-			   this.vIncrement.add(this.increment);
-			   
-			   if(this.vOffset.size() == 2 && this.vIncrement.size() == 2) {
+		 		   
+//		   if(this.offset != -1 && this.increment != -1) {
+//			   this.vOffset.add(this.offset);
+//			   this.vIncrement.add(this.increment);	
+//		   }
+		   
+		   this.vOffset.add(this.offset);
+		   this.vIncrement.add(this.increment);	
+
+		   
+		   if(this.vOffset.size() > 1 && this.vIncrement.size() > 1) {			  
+			   if(!this.bPreviewMode) {
 				   feedFileData();
 			   }
-		   }		   
+			   else {
+				   vOffset.clear();
+				   vIncrement.clear();
+			   }
+		   }	   
+		   
 		}
 		
 		// Calculates the distance between 2 image rows
@@ -666,15 +723,13 @@ public class SysterDec extends Syster {
 		}
 		
 		
-		try {
-			fileOut.write("frame " + ( this.numFrames - 2 + this.numSkip)  + ";" + this.getTypeTable() + ";" + offset1 + ";" 
-					+ increment1 + ";" + offset2
-					+ ";" + increment2 + "\r\n");
+		try {									
+				fileOut.write("frame " + ( this.numFrames - 1 + this.numSkip)  + ";" + this.getTypeTable() + ";" + offset1 + ";" 
+						+ increment1 + ";" + offset2
+						+ ";" + increment2 + "\r\n");			
 			
-			vOffset.remove(0);
-			vOffset.remove(0);
-			vIncrement.remove(0);
-			vIncrement.remove(0);
+			   vOffset.clear();
+			   vIncrement.clear();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

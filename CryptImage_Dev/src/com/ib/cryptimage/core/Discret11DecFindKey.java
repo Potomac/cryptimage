@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 30 déc. 2014 Author Mannix54
+ * 13 fév 2019 Author Mannix54
  * http://ibsoftware.free.fr/cryptimage.php
  */
 
@@ -29,18 +29,18 @@ import java.awt.image.BufferedImage;
 //import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 /**
  * @author Mannix54
  *
  */
-public class Discret11Dec extends Discret {
+public class Discret11DecFindKey extends Discret {
 	/**
 	 * store the 16 bits key word
 	 */
@@ -134,13 +134,17 @@ public class Discret11Dec extends Discret {
 	private String motif310 = "";
 	private Queue<String> queueLines310 = new LinkedList<String>();
 	
+	private Discret11ComputePixels d11Pixels;
+	
+	private int totalFrameCount = 10;
+	
 	
 	/**
 	 * create a new Discret11Dec object	
 	 * @param key16bit the 16 bits key word to initialize
 	 *  the Discret11Dec object	
 	 */
-	public Discret11Dec(int key16bits){
+	public Discret11DecFindKey(int key16bits){
 		super();
 		shift = new Shift();		
 		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
@@ -158,7 +162,8 @@ public class Discret11Dec extends Discret {
 		initDelayArray();
 		
 		initTabsColor();
-		//this.key11bits = key11BitsTab[0];
+		
+		d11Pixels = new Discret11ComputePixels(0);
 	}	
 
 	
@@ -169,7 +174,7 @@ public class Discret11Dec extends Discret {
 	 * @param perc1 the percentage level for delay 1
 	 * @param perc2 the percentage level for delay 2
 	 */
-	public Discret11Dec(int key16bits, double perc1, double perc2){
+	public Discret11DecFindKey(int key16bits, double perc1, double perc2){
 		super();
 		shift = new Shift();		
 		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
@@ -188,14 +193,10 @@ public class Discret11Dec extends Discret {
 		
 		initTabsColor();
 		
-		//this.key11bits = key11BitsTab[0];
+		d11Pixels = new Discret11ComputePixels(0);			
 	}	
 	
-//	private void initRaster(){		
-//		BufferedImage bi = new BufferedImage(this.sWidth,576,
-//				BufferedImage.TYPE_3BYTE_BGR);		
-//		raster1 = bi.getRaster();						
-//	}
+
 
 	private void initTabsColor(){
 		tabWhite = new int[768 * 3];
@@ -274,24 +275,7 @@ public class Discret11Dec extends Discret {
 			}
 		}
 	}
-	
-//	/**
-//	 * initialize the delay table, 
-//	 * we choose the right truth table to be compatible with
-//	 * the current operational mode of the Discret11 object
-//	 * truthTable[z][b0][b10]
-//	 */
-//	private void _initTruthTable() {
-//		truthTable[0][0][0] = 2;
-//		truthTable[0][0][1] = 1;
-//		truthTable[0][1][0] = 0;
-//		truthTable[0][1][1] = 0;
-//		truthTable[1][0][0] = 0;
-//		truthTable[1][0][1] = 2;
-//		truthTable[1][1][0] = 2;
-//		truthTable[1][1][1] = 1;
-//	}
-	
+		
 	/**
 	 * initialize the delay table, 
 	 * we choose the right truth table to be compatible with
@@ -358,19 +342,7 @@ public class Discret11Dec extends Discret {
 				}
 			}
 		}
-//		//serialize delarray
-//		File fichier =  new File("delarray.ser") ;
-//		try {
-//			ObjectOutputStream oos =  new ObjectOutputStream(new FileOutputStream(fichier)) ;
-//			oos.writeObject(delayArray) ;
-//			oos.close();
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 	}
 	
 	/**
@@ -473,18 +445,6 @@ public class Discret11Dec extends Discret {
 	}
 	
 	
-	private void showMotifSynchro310() {
-		if (queueLines310.size() > 0) {
-			System.out.println("<310--------------------------");
-			for (int i = 0; i < queueLines310.size(); i++) {
-				System.out.print(queueLines310.toArray()[i] + " ");
-			}
-			System.out.println("");
-			System.out.println("-------------------310>");
-		}
-	}
-	
-	
 	protected void checkMotif(BufferedImage buff) {	
 		
 		int val310 = 0;
@@ -493,15 +453,9 @@ public class Discret11Dec extends Discret {
 		}
 		
 		updateMotifSynchro310(val310);
-		//showMotifSynchro310();
-		//showMotif622();
 
-
-		if ( val310 == 1 && indexPos == 0 ) { //if (is310WhiteLine(buff) && indexPos == 0) {
-			//System.out.println(indexPos + " ligne 310 blanche pos 1 ");
-			//updateMotifSynchro310(val310);
-			this.synchro = true;
-			//showMotifSynchro310();			
+		if ( val310 == 1 && indexPos == 0 ) {
+			this.synchro = true;		
 		}
 		
 		if ( indexPos < 3 && synchro == true) {
@@ -533,17 +487,13 @@ public class Discret11Dec extends Discret {
 					motif = "";
 					this.queueLines.clear(); //desactive
 					motif310 = "";
-					//this.queueLines310.clear();
-					//this.synchro = true;
 				}
 			}
 		}
 
-
 		if (motif.length() == 3 ) {			
 			this.queueLines.add(motif);
 			if (queueLines.size() == 8) {
-				//showMotif622();
 				checkAudience();				
 			}
 			motif = "";
@@ -554,8 +504,6 @@ public class Discret11Dec extends Discret {
 	}
 	
 	private void razMotif(){	
-		//this.synchro = true;
-		//this.enable = false; //desactive
 		cptArray = 0;	//desactive
 		this.seqFrame = 0; //desactive
 		this.start = true; //desactive
@@ -564,25 +512,12 @@ public class Discret11Dec extends Discret {
 		motif = "";
 		this.queueLines.clear(); //desactive
 		motif310 = "";
-		//this.queueLines310.clear();
-		//this.saveIndex11bitsKey = this.index11bitsKey;
 	}
-	
-	private void showMotif622() {
-		System.out.println("<622---------------");
-		for (int i = 0; i < queueLines.size(); i++) {
-			System.out.print(queueLines.toArray()[i] + " ");
-		}	
-		System.out.println("");
-		System.out.println("-------------------622>");
-	}
-	
+		
 	private void checkAudience() {				
 		
 		int total = 0;
 		
-		//String motif = "";
-
 		for (int i = 0; i < queueLines.size(); i++) {
 			
 			motif += queueLines.toArray()[i] + ",";
@@ -595,9 +530,7 @@ public class Discret11Dec extends Discret {
 		}
 		else
 			total = -1;
-		
-		//this.queueLines.clear();
-		
+				
 		switch (total) {
 		case 1:			
 			this.currentframePos = 0;
@@ -623,9 +556,7 @@ public class Discret11Dec extends Discret {
 			this.audienceLevel = 2;
 			this.index11bitsKey = 1;
 			cptArray = 0;			
-			this.enable = true;
-			//this.seqFrame = 0;
-			//this.currentframePos = 0;			
+			this.enable = true;		
 			break;
 		case 11:			
 			if(!enable){
@@ -698,21 +629,10 @@ public class Discret11Dec extends Discret {
 			this.enable = false;			
 			break;
 		default:
-//			this.currentframePos = 0;
-//			this.saveIndex11bitsKey = this.index11bitsKey;
-//			this.index11bitsKey = this.saveIndex11bitsKey;
-			//this.synchro = true;
-			//this.enable = true;
-//			this.start = true;
-//			this.currentframePos = 0;
-//			this.seqFrame = 0;
-//			cptArray = 0;
-//			cptPoly = 0;
 			break;
 		}
 
 		this.queueLines.remove();
-
 	}
 	
 	
@@ -723,8 +643,8 @@ public class Discret11Dec extends Discret {
 	 * @param image the image to be transformed
 	 * @return the transformed image
 	 */
-	public BufferedImage transform(BufferedImage image) {
-		//totalFrameCount++;			
+	public BufferedImage transform(BufferedImage image) {	
+		this.totalFrameCount++;
 		JobConfig.incrementPalFrame();
 		JobConfig.incrementPalFrameDec();
 		
@@ -752,8 +672,8 @@ public class Discret11Dec extends Discret {
 		if (this.enable) {	
 			//System.out.println("enable " + seqFrame);
 
-			int z = 0;
-
+			int z = 0;			
+			
 			switch (this.seqFrame) {
 			case 0:
 				z = 0;
@@ -770,7 +690,7 @@ public class Discret11Dec extends Discret {
 			case 4:
 				z = 1;
 				break;
-			case 5:
+			case 5:				
 				z = 1;
 				break;
 
@@ -778,6 +698,14 @@ public class Discret11Dec extends Discret {
 				break;
 			}
 
+			
+			if(!is310WhiteLine(image) && this.seqFrame == 3) {				
+				d11Pixels.setImg(image, this.audienceLevel);			
+//				if(this.totalFrameCount >= JobConfig.getVideo_frame()) {					
+//					this.get16bitKey();
+//				}
+			}
+			
 			if (this.currentframePos == 0) {
 				if (this.start == false) {					
 					int saveKey = this.index11bitsKey;
@@ -786,6 +714,7 @@ public class Discret11Dec extends Discret {
 					cptArray = 0;					
 					this.index11bitsKey = saveKey;
 				}
+				
 				// we compute only the even part of
 												// the image
 				image = modifyEvenFrame(image, z);
@@ -795,6 +724,7 @@ public class Discret11Dec extends Discret {
 			} else { // we compute both the odd and even parts of the image (
 						// impaire, paire )
 				image = modifyOddFrame(image, z);
+				
 				this.seqFrame++;
 
 				if (this.seqFrame == 6) {
@@ -802,6 +732,8 @@ public class Discret11Dec extends Discret {
 				}
 
 				image = modifyEvenFrame(image, z);
+								
+				
 				this.seqFrame++;
 
 				this.currentframePos++;
@@ -852,7 +784,18 @@ public class Discret11Dec extends Discret {
 		}
 	}
 
-	
+	public void get16bitKey() {		
+		    if(d11Pixels.getAudienceVec().size() != 0) {
+				String audiencesLst = d11Pixels.displayAudiences();
+				audiencesLst += "\n\n- 16 bit key : " + d11Pixels.get16bitKey() + "\n\n";
+				
+				JOptionPane.showMessageDialog(JobConfig.getGui().getFrame(), audiencesLst);
+		    }
+		    else {
+		    	JOptionPane.showMessageDialog(JobConfig.getGui().getFrame(), "No key found.");
+		    }
+		
+	}
 
 	
 	/**
@@ -864,26 +807,24 @@ public class Discret11Dec extends Discret {
 	private BufferedImage modifyEvenFrame(BufferedImage image, int z){		
 		
 		raster = image.getRaster();		
-		
-		//int temp2 = 0;
-		
-		for (int y = 1; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
-			}
-			
-			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
-				// digital image ) or if next line is 623 ( 576 in digital image )
-				raster.setPixels(0 , y, this.sWidth
-						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
-						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] , 1,
-						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray]) * 3]));
-				//draw black line at end of delay
-				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
-				cptArray++;
-			}
-			y++; // add one to y in order to have only even lines frame
-		}		
+				
+//		for (int y = 1; y < 576; y++) {
+//			if(cptArray == 286){
+//				this.cptArray = 0;
+//			}
+//			
+//			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
+//				// digital image ) or if next line is 623 ( 576 in digital image )
+//				raster.setPixels(0 , y, this.sWidth
+//						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
+//						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] , 1,
+//						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray]) * 3]));
+//				//draw black line at end of delay
+//				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
+//				cptArray++;
+//			}
+//			y++; // add one to y in order to have only even lines frame
+//		}		
 		return image;		
 	}
 
@@ -897,29 +838,24 @@ public class Discret11Dec extends Discret {
 	private BufferedImage modifyOddFrame(BufferedImage image, int z){	
 		
 		raster = image.getRaster();	
-
-		//int temp2 = 0;	
-
 	
-		for (int y = 2; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
-			}
-								
-			//temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
-
-			if (y != 574) { // we don't increment if it's line 310 ( 575 in
-				// digital image )
-				raster.setPixels(0 , y, this.sWidth
-						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
-						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray], 1,
-						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] ) * 3]));
-				//draw black line at end of delay
-				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
-				cptArray++;
-			}
-			y++; // add one to y in order to have only odd lines frame
-		}
+//		for (int y = 2; y < 576; y++) {
+//			if(cptArray == 286){
+//				this.cptArray = 0;
+//			}
+//		
+//			if (y != 574) { // we don't increment if it's line 310 ( 575 in
+//				// digital image )
+//				raster.setPixels(0 , y, this.sWidth
+//						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
+//						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray], 1,
+//						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] ) * 3]));
+//				//draw black line at end of delay
+//				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
+//				cptArray++;
+//			}
+//			y++; // add one to y in order to have only odd lines frame
+//		}
 		return image;			
 	}
 
@@ -933,27 +869,24 @@ public class Discret11Dec extends Discret {
 	private BufferedImage modifyOddFrame2(BufferedImage image, int z){
 		
 		raster = image.getRaster();	
-
-		//int temp2 = 0;	
-
 	
-		for (int y = 2; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
-			}			
-					
-			if (y != 574) { // we don't increment if it's line 310 ( 575 in
-				// digital image )
-				raster.setPixels(0 , y, this.sWidth
-						- delayArray[index11bitsKey][5][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][5][cptArray],
-						y, this.sWidth - delayArray[index11bitsKey][5][cptArray], 1,
-						new int[(this.sWidth - delayArray[index11bitsKey][5][cptArray] ) * 3]));
-				//draw black line at end of delay
-				drawLine(delayArray[index11bitsKey][5][cptArray], y);
-				cptArray++;
-			}
-			y++; // add one to y in order to have only odd lines frame
-		}
+//		for (int y = 2; y < 576; y++) {
+//			if(cptArray == 286){
+//				this.cptArray = 0;
+//			}			
+//					
+//			if (y != 574) { // we don't increment if it's line 310 ( 575 in
+//				// digital image )
+//				raster.setPixels(0 , y, this.sWidth
+//						- delayArray[index11bitsKey][5][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][5][cptArray],
+//						y, this.sWidth - delayArray[index11bitsKey][5][cptArray], 1,
+//						new int[(this.sWidth - delayArray[index11bitsKey][5][cptArray] ) * 3]));
+//				//draw black line at end of delay
+//				drawLine(delayArray[index11bitsKey][5][cptArray], y);
+//				cptArray++;
+//			}
+//			y++; // add one to y in order to have only odd lines frame
+//		}
 		return image;			
 	}
 
@@ -1239,6 +1172,7 @@ public class Discret11Dec extends Discret {
 	@Override
 	int getKey() {
 		// TODO Auto-generated method stub
+		get16bitKey();
 		return 0;
 	}		
 

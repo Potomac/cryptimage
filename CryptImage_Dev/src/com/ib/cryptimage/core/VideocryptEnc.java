@@ -84,6 +84,7 @@ public class VideocryptEnc extends Videocrypt {
 	BufferedImage transform(BufferedImage image) {
 		numFrame++;
 		JobConfig.incrementPalFrame();
+		JobConfig.incrementPalFrameDec();
 		
 		this.enable = true;
 				
@@ -326,6 +327,12 @@ public class VideocryptEnc extends Videocrypt {
 			this.feedFileDataDummy();
 		}		
 		
+	}
+
+	@Override
+	int getKey() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

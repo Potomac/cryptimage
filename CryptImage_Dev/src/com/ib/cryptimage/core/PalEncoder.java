@@ -76,32 +76,62 @@ public class PalEncoder {
 	private void initFrame() {
 		
 		currentFrame = JobConfig.getCurrentPalFrame();
+		//System.out.println("enc " + JobConfig.getCurrentPalFrame());
 		
 		if(typeGrid == 1) {
-			switch (currentFrame) {
-			case 1:				
-				grid = "/ressources/subcarrier_phase_1.bmp";				
-				burst1 = "/ressources/burst_top_phase_1.bmp";
-				burst2 = "/ressources/burst_bot_phase_1.bmp";
-				break;
-			case 2:
-				grid = "/ressources/subcarrier_phase_2.bmp";
-				burst1 = "/ressources/burst_top_phase_2.bmp";
-				burst2 = "/ressources/burst_bot_phase_2.bmp";
-				break;
-			case 3:
-				grid = "/ressources/subcarrier_phase_3.bmp";
-				burst1 = "/ressources/burst_top_phase_3.bmp";
-				burst2 = "/ressources/burst_bot_phase_3.bmp";
-				break;
-			case 4:
-				grid = "/ressources/subcarrier_phase_4.bmp";
-				burst1 = "/ressources/burst_top_phase_4.bmp";
-				burst2 = "/ressources/burst_bot_phase_4.bmp";
-				break;
-			default:
-				System.out.println("error pal frame number");
-				break;
+			if(JobConfig.getGui().getChkWorkaroundSysterCapture().isSelected()) {
+				switch (currentFrame) {
+				case 1:				
+					grid = "/ressources/subcarrier_phase_1.bmp";				
+					burst1 = "/ressources/burst_top_phase_4.bmp";
+					burst2 = "/ressources/burst_bot_phase_4.bmp";
+					break;
+				case 2:
+					grid = "/ressources/subcarrier_phase_2.bmp";
+					burst1 = "/ressources/burst_top_phase_1.bmp";
+					burst2 = "/ressources/burst_bot_phase_1.bmp";
+					break;
+				case 3:
+					grid = "/ressources/subcarrier_phase_3.bmp";
+					burst1 = "/ressources/burst_top_phase_2.bmp";
+					burst2 = "/ressources/burst_bot_phase_2.bmp";
+					break;
+				case 4:
+					grid = "/ressources/subcarrier_phase_4.bmp";
+					burst1 = "/ressources/burst_top_phase_3.bmp";
+					burst2 = "/ressources/burst_bot_phase_3.bmp";
+					break;
+				default:
+					System.out.println("error pal frame number");
+					break;
+				}
+			}
+			else {
+				switch (currentFrame) {
+				case 1:
+					grid = "/ressources/subcarrier_phase_1.bmp";
+					burst1 = "/ressources/burst_top_phase_1.bmp";
+					burst2 = "/ressources/burst_bot_phase_1.bmp";
+					break;
+				case 2:
+					grid = "/ressources/subcarrier_phase_2.bmp";
+					burst1 = "/ressources/burst_top_phase_2.bmp";
+					burst2 = "/ressources/burst_bot_phase_2.bmp";
+					break;
+				case 3:
+					grid = "/ressources/subcarrier_phase_3.bmp";
+					burst1 = "/ressources/burst_top_phase_3.bmp";
+					burst2 = "/ressources/burst_bot_phase_3.bmp";
+					break;
+				case 4:
+					grid = "/ressources/subcarrier_phase_4.bmp";
+					burst1 = "/ressources/burst_top_phase_4.bmp";
+					burst2 = "/ressources/burst_bot_phase_4.bmp";
+					break;
+				default:
+					System.out.println("error pal frame number");
+					break;
+				}
 			}
 		}
 		else if(typeGrid == 0) {

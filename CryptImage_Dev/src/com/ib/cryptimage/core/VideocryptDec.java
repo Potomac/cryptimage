@@ -64,6 +64,7 @@ public class VideocryptDec extends Videocrypt {
 	BufferedImage transform(BufferedImage image) {		
 		numFrame++;
 		JobConfig.incrementPalFrame();
+		JobConfig.incrementPalFrameDec();
 		
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
@@ -396,6 +397,12 @@ public class VideocryptDec extends Videocrypt {
 			this.readFileDataDummy();
 		}
 
+	}
+
+	@Override
+	int getKey() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

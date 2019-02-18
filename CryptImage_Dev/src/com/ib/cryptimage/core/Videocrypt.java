@@ -115,9 +115,10 @@ public abstract class Videocrypt extends Device {
 		
 		palEngine = new PalEngine();
 		secamEngine = new SecamEngine();
-		palEncoder = new PalEncoder(false, typeGrid);
-		palDecoder = new PalDecoder(freq);
+		JobConfig.setCurrentPalFrameDec(JobConfig.getGui().getCmbPalFrameStart().getSelectedIndex());
 		JobConfig.setCurrentPalFrame(0);
+		palEncoder = new PalEncoder(false, typeGrid);
+		palDecoder = new PalDecoder(freq);		
 		JobConfig.setPalDecoder(palDecoder);
 		JobConfig.setPalEncoder(palEncoder);
 		

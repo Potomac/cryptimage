@@ -46,46 +46,70 @@ public class SplitFrames {
 		this.digRate = digRate;
 	}
 
-	private void initBurst(int currentFrame){	
-		if(digRate == 17750000) {
-			switch (currentFrame) {
-			case 1:			
-				burst1 = "/ressources/burst_top_phase_1.bmp";
-				burst2 = "/ressources/burst_bot_phase_1.bmp";
-				break;
-			case 2:		
-				burst1 = "/ressources/burst_top_phase_2.bmp";
-				burst2 = "/ressources/burst_bot_phase_2.bmp";
-				break;
-			case 3:	
-				burst1 = "/ressources/burst_top_phase_3.bmp";
-				burst2 = "/ressources/burst_bot_phase_3.bmp";
-				break;
-			case 4:	
-				burst1 = "/ressources/burst_top_phase_4.bmp";
-				burst2 = "/ressources/burst_bot_phase_4.bmp";
-				break;
-			default:			
-				burst1 = "/ressources/burst_top_phase_1.bmp";
-				burst2 = "/ressources/burst_bot_phase_1.bmp";
-				break;
+	private void initBurst(int currentFrame) {
+		if (digRate == 17750000) {
+			if (JobConfig.getGui().getChkWorkaroundSysterCapture().isSelected()) {
+				switch (currentFrame) {
+				case 1:
+					burst1 = "/ressources/burst_top_phase_4.bmp";
+					burst2 = "/ressources/burst_bot_phase_4.bmp";
+					break;
+				case 2:
+					burst1 = "/ressources/burst_top_phase_1.bmp";
+					burst2 = "/ressources/burst_bot_phase_1.bmp";
+					break;
+				case 3:
+					burst1 = "/ressources/burst_top_phase_2.bmp";
+					burst2 = "/ressources/burst_bot_phase_2.bmp";
+					break;
+				case 4:
+					burst1 = "/ressources/burst_top_phase_3.bmp";
+					burst2 = "/ressources/burst_bot_phase_3.bmp";
+					break;
+				default:
+					burst1 = "/ressources/burst_top_phase_4.bmp";
+					burst2 = "/ressources/burst_bot_phase_4.bmp";
+					break;
+				}
+			} else {
+				switch (currentFrame) {
+				case 1:
+					burst1 = "/ressources/burst_top_phase_1.bmp";
+					burst2 = "/ressources/burst_bot_phase_1.bmp";
+					break;
+				case 2:
+					burst1 = "/ressources/burst_top_phase_2.bmp";
+					burst2 = "/ressources/burst_bot_phase_2.bmp";
+					break;
+				case 3:
+					burst1 = "/ressources/burst_top_phase_3.bmp";
+					burst2 = "/ressources/burst_bot_phase_3.bmp";
+					break;
+				case 4:
+					burst1 = "/ressources/burst_top_phase_4.bmp";
+					burst2 = "/ressources/burst_bot_phase_4.bmp";
+					break;
+				default:
+					burst1 = "/ressources/burst_top_phase_1.bmp";
+					burst2 = "/ressources/burst_bot_phase_1.bmp";
+					break;
+				}
 			}
-		}
-		else if (digRate == 14750000) {
+		} else if (digRate == 14750000) {
 			switch (currentFrame) {
-			case 1:				
+			case 1:
 				burst1 = "/ressources/burst_14.75_phase_1_top.bmp";
 				burst2 = "/ressources/burst_14.75_phase_1_bot.bmp";
 				break;
-			case 2:				
+			case 2:
 				burst1 = "/ressources/burst_14.75_phase_2_top.bmp";
 				burst2 = "/ressources/burst_14.75_phase_2_bot.bmp";
 				break;
-			case 3:			
+			case 3:
 				burst1 = "/ressources/burst_14.75_phase_3_top.bmp";
 				burst2 = "/ressources/burst_14.75_phase_3_bot.bmp";
 				break;
-			case 4:			
+			case 4:
 				burst1 = "/ressources/burst_14.75_phase_4_top.bmp";
 				burst2 = "/ressources/burst_14.75_phase_4_bot.bmp";
 				break;
@@ -98,7 +122,6 @@ public class SplitFrames {
 		}
 
 	}
-	
 	
 	public BufferedImage splitFrames(boolean grey, BufferedImage img) {
 		initBurst(JobConfig.getCurrentPalFrame());

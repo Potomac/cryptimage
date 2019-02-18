@@ -69,12 +69,12 @@ public class Transcode extends Device {
 		shift = new Shift();		
 		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
 		shiftY = Integer.valueOf(JobConfig.getGui().getjShiftY().getValue().toString());
-		
+		JobConfig.setCurrentPalFrameDec(JobConfig.getGui().getCmbPalFrameStart().getSelectedIndex());
+		JobConfig.setCurrentPalFrame(0);
 		palEngine = new PalEngine();
 		secamEngine = new SecamEngine();
 		palEncoder = new PalEncoder(false, typeGrid);
-		palDecoder = new PalDecoder(freq);
-		JobConfig.setCurrentPalFrame(0);
+		palDecoder = new PalDecoder(freq);		
 		JobConfig.setPalDecoder(palDecoder);
 		JobConfig.setPalEncoder(palEncoder);
 	}
@@ -82,6 +82,7 @@ public class Transcode extends Device {
 	@Override
 	BufferedImage transform(BufferedImage image) {
 		JobConfig.incrementPalFrame();
+		JobConfig.incrementPalFrameDec();
 		
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
@@ -243,6 +244,12 @@ public class Transcode extends Device {
 		boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
 		WritableRaster raster = bi.copyData(null);
 		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+	}
+
+	@Override
+	int getKey() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

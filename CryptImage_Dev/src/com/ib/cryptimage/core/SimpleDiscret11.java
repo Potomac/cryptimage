@@ -551,5 +551,11 @@ public class SimpleDiscret11 extends Discret {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	int getKey() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

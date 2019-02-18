@@ -440,6 +440,7 @@ public class Discret11Enc extends Discret {
 	public BufferedImage transform(BufferedImage image) {
 		//totalFrameCount++;		
 		JobConfig.incrementPalFrame();
+		JobConfig.incrementPalFrameDec();
 		
 		// we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
@@ -928,6 +929,13 @@ public class Discret11Enc extends Discret {
 	void skipFrame() {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	int getKey() {
+		// TODO Auto-generated method stub
+		return 0;
 	}		
 
 }
