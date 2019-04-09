@@ -15,3 +15,8 @@ Besides the ability to reproduce in a digital way these three encryption systems
 
 Official web site :
 http://cryptimage.vot.pl
+
+Dependencies needed to compile the source code : 
+
+- slf4j : https://www.slf4j.org/
+- xuggle-xuggler 5.4 : https://mvnrepository.com/artifact/xuggle/xuggle-xuggler/5.4
