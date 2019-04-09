@@ -18,5 +18,5 @@ http://cryptimage.vot.pl
 
 Dependencies needed to compile the source code : 
 
-- slf4j : https://www.slf4j.org/
+- slf4j : https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.7 https://mvnrepository.com/artifact/org.slf4j/slf4j-simple/1.7.7
 - xuggle-xuggler 5.4 : https://mvnrepository.com/artifact/xuggle/xuggle-xuggler/5.4
