@@ -76,6 +76,13 @@ public class FramesPlayer {
 				JobConfig.getGui().getBtnEnter().setEnabled(true);
 				JobConfig.getGui().getBtnCancel().setEnabled(false);
 				JobConfig.getGui().getBtnExit().setEnabled(true);
+				if(JobConfig.isSearchCode68705()) {
+					imgListen.getCryptVid().displayKey();
+				}
+				
+			}
+			else if(JobConfig.isStop() && JobConfig.isSearchCode68705()) {
+				imgListen.getCryptVid().displayKey();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
