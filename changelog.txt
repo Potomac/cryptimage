@@ -1,0 +1,84 @@
+v1.5.3 beta 2019-02-17
+1) discret 11
+- white threshold setting : sets the detection threshold for lines 310 and 622
+- auto repaint of lines 310 and 622 (by checking "null delays" and "decrypt" options)
+- automatic 16 bit key search option
+
+2) color rendering
+- new pal options : pal composite, can create true pal composite encoding/decoding images
+
+3) transcode option
+for converting videos without unscrambling/descrambling it,
+useful for testing pal composite options
+
+4) display
+a new 944x626 display resolution output in "audio/video" tab
+
+5) geometry
+add shift X/Y options in "audio/video" tab
+
+v1.4.5 2017-08-23
+- bugfix in syster : 
+the increment value was by error restricted to a scale 1-127,
+now the increment can have a value between 1 and 255 ( odd value )
+
+v1.4.4 2017-08-22
+-syster : the encoding parameter file will be also created automatically
+with the feature "decrypt by line correlation"
+
+v1.4.3 2017-06-28
+- new feature : pan and scan mode
+- better pal and secam emulation color
+- improvements in discret11 for decryption :
+small black sideband to the right of the image,
+a little faster decoding with the line correlation mode
+
+v1.3.0 2017-05-01
+- new feature for discret11 : "null delay" checkbox
+
+v1.2.2 2016-08-18
+- new feature for videocrypt : a tag for line 1 ( a digital tatoo )
+it will allow an automatic decryption
+- bug fixes : language translations, csv file for videocrypt, better photo mode for syster
+
+v1.2.1 2016-08-11
+- minor bug fix for the management of the csv file for videocrypt
+
+v1.2.0 2016-08-11
+- new feature : videocrypt
+- new feature : pal and secam color management for syster and videocrypt
+- new feature in syster : checkbox for setting a different offset/increment for the second half-frame
+
+v1.0.0 2016-07-17
+- multi-language support for the GUI ( 6 languages )
+
+v0.0.14 2015-12-15
+- syster : the default setting will chose the same offset/increment for first and second half-frame
+
+v0.0.13 2015-12-11
+- bug fix for managing audio track in mkv file
+
+v0.0.11 2015-11-27
+- new feature : nagravision syster
+- new feature for discret11 : automatic decryption by line correlation
+- new audio features : wav codec, the choice of the bitrate for mp3 codec, the choice of the audio sampling frequency
+- photo mode in discret11 : it can work with the checkbox "meet the standard"
+- new feature for the GUI : bar menu
+- new video feature : add FFV1 video codec
+
+v0.0.8 2015-01-10
+- new feature for discret11 : multicode mode
+- new audio feature : stereo sound
+- improvements in discret11 for decryption ( no need to specify the audience level )
+- minor bugfix in the GUI
+
+v0.0.7 2014-12-26
+- new feature for discret11 : 16 bit word, no need to specify the 11 bit word
+- new feature for discret11 : sound management
+- new feature for discret11 : keyboard code
+- new feature : timestamp checkbox
+- new video codec : huffyuv
+- automatic backup of the settings to a configuration file located in the user directory
+
+v0.0.2 2014-09-28
+- alpha version, no sound management, no GUI, works only in command line
