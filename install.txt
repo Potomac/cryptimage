@@ -1,0 +1,27 @@
+Compilation and installation of cryptimage
+
+1. With Maven
+This is the easy way, download and install maven :
+https://maven.apache.org/
+
+open a console and go to the directory where the file "pom.xml" is present (root of the cryptimage git project),
+type this command :
+mvn clean compile assembly:single
+
+you will get a runnable jar file in a sub-directory "target" : cryptimage-X.Y.Z-SNAPSHOT_universal-jar-with-dependencies.jar
+
+to run the program type in a console : 
+java -jar cryptimage-X.Y.Z-SNAPSHOT_universal-jar-with-dependencies.jar
+
+
+2. With a java IDE like eclipse
+Download and install eclipse (for java project) :
+https://www.eclipse.org/
+
+create a java project with eclipse and import the src directory of the cryptimage source code,
+then add the needed dependencies (slf4j and xuggle-xuggler 5.4), a zip file containing the jar dependencies files are
+provided in the official site of cryptimage (http://cryptimage.vot.pl) and in the github (https://github.com/Potomac/cryptimage),
+
+and in eclipse create a runnable jar, the main class is "com.ib.cryptimage.core.Application" :
+https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftasks-37.htm
+
