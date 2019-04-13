@@ -63,7 +63,7 @@ public class ShowLicense{
 		textArea.setEditable(false);
 		jScrollPane1 = new JScrollPane(textArea);
 		
-		InputStream in = getClass().getResourceAsStream("license.txt");
+		InputStream in = getClass().getResourceAsStream("/ressources/license.txt");
 		try {
 			textArea.read(new InputStreamReader(in), null);
 		} catch (IOException e) {
