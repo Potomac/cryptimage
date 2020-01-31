@@ -1,3 +1,11 @@
+v1.5.4 beta 2020-01-30
+1) discret11
+- automatic 16 bit key search option : when clicking
+on "cancel" button the result of search is now displayed
+
+2) java
+- add compatibility with java 13 runtime for jar version of cryptimage
+
 v1.5.3 beta 2019-02-17
 1) discret 11
 - white threshold setting : sets the detection threshold for lines 310 and 622
