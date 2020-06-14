@@ -182,6 +182,11 @@ public class CryptVideo {
 			}
 		}
 		
+		if (JobConfig.isStretch() && JobConfig.getSystemCrypt() == 0 && !JobConfig.isStrictMode() && !JobConfig.isWantDec()){
+			this.width = 768;
+			this.height = 576;
+		}
+		
 		
 		double frameRate = reader.getContainer().getStream(0).getStreamCoder()
 				.getFrameRate().getValue();

@@ -94,8 +94,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.5.4 beta";
-	private static String releaseDate = "2019-04-09";
+	private static String VERSION = "1.6.0";
+	private static String releaseDate = "2020-06-14";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -111,6 +111,7 @@ public final class JobConfig {
 	private static boolean wantVideocryptTags = false;
 	private static boolean nullDelay = false;
 	private static boolean panAndScan = false;
+	private static boolean stretch = false;
 
 	private static int whiteValue = 80;
 	private static boolean hasToBeUnsplit = false;
@@ -1101,5 +1102,11 @@ public final class JobConfig {
 		JobConfig.searchCode68705 = searchCode68705;
 	}
 
-	
+	public static boolean isStretch() {
+		return stretch;
+	}
+
+	public static void setStretch(boolean stretch) {
+		JobConfig.stretch = stretch;
+	}	
 }

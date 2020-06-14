@@ -22,6 +22,7 @@
 
 package com.ib.cryptimage.core;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import javax.swing.JOptionPane;
 
@@ -157,6 +158,10 @@ public class ImageSnapListener extends MediaListenerAdapter {
 			image = doPanAndScan(image);
 		}
 		
+		if(JobConfig.isStretch() && !JobConfig.isWantDec() && !JobConfig.isHasToBeUnsplit()){
+			image = doStretch(image);
+		}
+		
 
 		if (JobConfig.isWantPlay()) {
 			posFrame++;
@@ -223,6 +228,23 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	   
 	   
 	   return copyOfImage;	   
+   }
+   
+/**
+ * Stretch image pixels horizontally and vertically to 4/3 ratio
+ * @param ori_img bufferedimage to stretch
+ * @return stretch bufferedimage
+ */
+   private BufferedImage doStretch(BufferedImage ori_img){	   
+	   return resize(ori_img, 768, 576, ori_img.getType());	   
+   }
+   
+   private BufferedImage resize(BufferedImage img, int width, int height, int typeBufferedImage) {
+       Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+       BufferedImage resized = new BufferedImage(width, height, typeBufferedImage);
+       Graphics g = resized.createGraphics();
+       g.drawImage(tmp, 0, 0, null);
+       return resized;
    }
 	
    public BufferedImage getImg() {

@@ -33,7 +33,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -178,7 +177,6 @@ public class MainGui {
 	private JLabel labAudioCodec;
 	private JComboBox<String> combAudioCodec;
 	private JComboBox<String> combAudioRate;
-	private JCheckBox chkPanAndScan;
 	private JLabel labShiftX;
 	private JLabel labShiftY;
 	private JSpinner jShiftX;
@@ -246,6 +244,7 @@ public class MainGui {
 	private TitledBorder titlePanSysterCodingGen;
 	private TitledBorder titlePanSysterDecodingGen;
 	private TitledBorder titleColorMode;
+	private TitledBorder titlePanRdiPixelsRatio;
 	
 	private JComboBox<String> cbColorMode;
 	private JLabel lblColorMode;
@@ -262,11 +261,13 @@ public class MainGui {
 	private CardLayout cardEncDecVideocrypt;
 	private JPanel panVideocryptOptions;
 	private JTextField txtVideocryptDec;
-	private JButton btnVideocryptDec;	
-	
+	private JButton btnVideocryptDec;
+	private JRadioButton rdiLetterbox;
+	private JRadioButton rdiPanScan;
+	private JRadioButton rdiStretch;
+
 	private JTextField txtVideocryptEnc;
-	private JButton btnVideocryptEnc;
-	
+	private JButton btnVideocryptEnc;	
 	
 	private JCheckBox chkSoundVideocrypt;	
 	private JCheckBox chkDisableSoundVideocrypt;
@@ -738,8 +739,6 @@ public class MainGui {
 		chkVideocryptTags.setText(JobConfig.getRes().getString("panVideocrypt.chkTags"));
 		rdiVideocryptTagsDecoding.setText(JobConfig.getRes().getString("panVideocrypt.rdiTagsDecoding"));
 		
-		chkPanAndScan.setText(JobConfig.getRes().getString("panVideo.panAndScan"));
-		
 		lblWhiteValue.setText(JobConfig.getRes().getString("panDiscret11.lblWhiteValue"));
 		
 		//cutpoints
@@ -756,6 +755,12 @@ public class MainGui {
 		
 		//transcode
 		lblTranscodeDesc.setText(JobConfig.getRes().getString("panTranscode.desc"));
+		
+		//4/3 options
+		titlePanRdiPixelsRatio.setTitle(JobConfig.getRes().getString("panPixelsRatio.title"));
+		rdiLetterbox.setText(JobConfig.getRes().getString("pixelsRatio.letterbox"));
+		rdiPanScan.setText(JobConfig.getRes().getString("pixelsRatio.panScan"));
+		rdiStretch.setText(JobConfig.getRes().getString("pixelsRatio.stretch"));
 		
 	}
 	
@@ -2747,8 +2752,7 @@ public class MainGui {
 		JPanel panRdiVideo = new JPanel();
 		panRdiVideo.add(rdi720);
 		panRdiVideo.add(rdi768);
-		panRdiVideo.add(rdi944);
-		
+		panRdiVideo.add(rdi944);		
 		
 		labAudioCodec = new JLabel(JobConfig.getRes().getString("panVideo.labAudioCodec"));
 		String[] tabAudio = {"mp3 96 kbs","mp3 128 kbs","mp3 160 kbs",
@@ -2774,8 +2778,27 @@ public class MainGui {
 		chkHorodatage.setToolTipText(JobConfig.getRes().getString("panVideo.chkHorodatage.tooltip"));
 		chkHorodatage.addActionListener(controler);
 		
-		chkPanAndScan = new JCheckBox(JobConfig.getRes().getString("panVideo.panAndScan"));
-		chkPanAndScan.addActionListener(controler);
+		//4/3 options
+		titlePanRdiPixelsRatio = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+				JobConfig.getRes().getString("panPixelsRatio.title"));
+		JPanel panRdiPixelsRatio = new JPanel();
+		panRdiPixelsRatio.setBorder(titlePanRdiPixelsRatio);
+		rdiLetterbox = new JRadioButton(JobConfig.getRes().getString("pixelsRatio.letterbox"));
+		rdiLetterbox.addActionListener(controler);
+		rdiPanScan = new JRadioButton(JobConfig.getRes().getString("pixelsRatio.panScan"));
+		rdiPanScan.addActionListener(controler);
+		rdiStretch = new JRadioButton(JobConfig.getRes().getString("pixelsRatio.stretch"));
+		rdiStretch.addActionListener(controler);
+		
+		rdiLetterbox.setSelected(true);
+		ButtonGroup btngrpRatio = new ButtonGroup();
+		btngrpRatio.add(rdiLetterbox);
+		btngrpRatio.add(rdiPanScan);
+		btngrpRatio.add(rdiStretch);
+		
+		panRdiPixelsRatio.add(rdiLetterbox);
+		panRdiPixelsRatio.add(rdiPanScan);
+		panRdiPixelsRatio.add(rdiStretch);
 		
 		
 		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2", "FFV1"};
@@ -2986,10 +3009,10 @@ public class MainGui {
 		
 		this.placerComposants(panVideoOptions,
 				gbl,
-				chkPanAndScan,
+				panRdiPixelsRatio,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 1,
-				1,1,
+				3,1,
 				25,50,
 				1, 1,1,1);
 		this.placerComposants(panVideoOptions,
@@ -2997,7 +3020,7 @@ public class MainGui {
 				panVideoShift,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				1, 1,
-				8,1,
+				6,1,
 				25,50,
 				1, 1,1,1);
 		
@@ -3799,10 +3822,6 @@ public class MainGui {
 		return chkNullDelay;
 	}
 
-	public JCheckBox getChkPanAndScan() {
-		return chkPanAndScan;
-	}
-
 	public JSlider getSldWhiteValue() {
 		return sldWhiteValue;
 	}
@@ -3894,6 +3913,17 @@ public class MainGui {
 	public void setChkSysterReverse(JCheckBox chkSysterReverse) {
 		this.chkSysterReverse = chkSysterReverse;
 	}
+	
+	public JRadioButton getRdiLetterbox() {
+		return rdiLetterbox;
+	}
 
+	public JRadioButton getRdiPanScan() {
+		return rdiPanScan;
+	}
+	
+	public JRadioButton getRdiStretch() {
+		return rdiStretch;
+	}
 	
 }

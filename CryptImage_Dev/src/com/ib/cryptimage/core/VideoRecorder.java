@@ -129,7 +129,7 @@ public class VideoRecorder {
 				break;
 			case 7:
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 2,AUDIORATE);
-				break;			
+				break;	
 			default:
 				break;
 			}		

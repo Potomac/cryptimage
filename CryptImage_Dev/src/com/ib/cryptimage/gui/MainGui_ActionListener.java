@@ -131,17 +131,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 	}
 
-	private void manageCheckBoxes(JCheckBox src) {
-		
-		if(src.equals(this.mainGui.getChkPanAndScan())){
-			if (this.mainGui.getChkPanAndScan().isSelected()){
-				JobConfig.setPanAndScan(true);
-			}
-			else{
-				JobConfig.setPanAndScan(false);
-			}			
-		}
-		
+	private void manageCheckBoxes(JCheckBox src) {		
 		if (src.equals(this.mainGui.getChkLogVideocrypt())) {
 			if (this.mainGui.getChkLogVideocrypt().isSelected()) {
 				JobConfig.setLogVideocrypt(true);
@@ -318,7 +308,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkSound().setEnabled(false);
 				mainGui.getCombAudioCodec().setEnabled(false);
 				mainGui.getCombAudioRate().setEnabled(false);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 ){
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
 					mainGui.getJcbExtension().setSelectedIndex(2);
 					mainGui.getJcbExtension().setEnabled(true);
 				}
@@ -328,7 +318,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkSound().setEnabled(true);
 				mainGui.getCombAudioCodec().setEnabled(true);
 				mainGui.getCombAudioRate().setEnabled(true);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 ){
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
 					mainGui.getJcbExtension().setSelectedIndex(2);
 					mainGui.getJcbExtension().setEnabled(false);
 				}
@@ -647,6 +637,19 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 	private void manageRadioButton(JRadioButton src) {
 		
+		// 4/3 options
+		if(src.equals(this.mainGui.getRdiLetterbox())){
+			JobConfig.setPanAndScan(false);
+			JobConfig.setStretch(false);
+		}
+		if(src.equals(this.mainGui.getRdiPanScan())){
+			JobConfig.setPanAndScan(true);
+			JobConfig.setStretch(false);
+		}
+		if(src.equals(this.mainGui.getRdiStretch())){
+			JobConfig.setPanAndScan(false);
+			JobConfig.setStretch(true);
+		}
 		
 		if(src.equals(this.mainGui.getRdiVideocryptCoding())){
 			if(src.isSelected()){
@@ -884,7 +887,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					mainGui.getCombAudioRate().setEnabled(true);
 					mainGui.getChkSound().setEnabled(true);						
 				}
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 && 
+				if(mainGui.getCombAudioCodec().getSelectedIndex() == 6 && 
 						!mainGui.getChkDisableSound().isSelected()){
 					mainGui.getJcbExtension().setEnabled(false);
 				}
