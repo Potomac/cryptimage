@@ -1,3 +1,6 @@
+v1.6.1 2021-06-29
+- fix crash in photo mode when using syster and pal composite mode
+
 v1.6.0 2020-06-14
 - add stretch mode for 4/3 ratio
 - update PDF documentations
