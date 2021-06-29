@@ -657,7 +657,10 @@ public class PalDecoder {
 					burst2 = "/ressources/burst_bot_phase_3.bmp";
 					break;
 				default:
-					System.out.println("error pal frame number");
+					grid = "/ressources/subcarrier_phase_1.bmp";
+					burst1 = "/ressources/burst_top_phase_4.bmp";
+					burst2 = "/ressources/burst_bot_phase_4.bmp";
+					System.out.println("default pal frame number");
 					break;
 				}
 			} else {
@@ -683,7 +686,10 @@ public class PalDecoder {
 					burst2 = "/ressources/burst_bot_phase_4.bmp";
 					break;
 				default:
-					System.out.println("error pal frame number");
+					grid = "/ressources/subcarrier_phase_1.bmp";
+					burst1 = "/ressources/burst_top_phase_1.bmp";
+					burst2 = "/ressources/burst_bot_phase_1.bmp";
+					System.out.println("default pal frame number");
 					break;
 				}
 			}
@@ -710,7 +716,10 @@ public class PalDecoder {
 				burst2 = "/ressources/burst_14.75_phase_4_bot.bmp";
 				break;
 			default:
-				System.out.println("error pal frame number");
+				grid = "/ressources/grid_14.75_phase_1_new.bmp";
+				burst1 = "/ressources/burst_14.75_phase_1_top.bmp";
+				burst2 = "/ressources/burst_14.75_phase_1_bot.bmp";
+				System.out.println("default pal frame number");
 				break;
 			}
 		}

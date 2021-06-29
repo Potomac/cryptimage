@@ -59,15 +59,14 @@ public class CryptPhoto {
 				this.colorMode = "secam";
 			}
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 3) {
-				this.colorMode = "pal_composite_encode_and_decode";
-				
+				this.colorMode = "pal_composite_encode_and_decode";				
 			}
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 4) {
 				this.colorMode = "pal_composite_encode_only";
 				isGrey = true;
 			}
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 5) {
-				this.colorMode = "pal_composite_decode_only";			
+				this.colorMode = "pal_composite_decode_only";
 			}
 		}
 		
