@@ -50,14 +50,14 @@ public class Discret11EncNoBlack extends Discret11Enc {
 					new int[3]);
 		}
 		
-		tabPixels = new int[delay*3];
+		tabPixels = new int[25 *3];
 		for (int i = 0; i < tabPixels.length; i=i+3) {
-			tabPixels[i] = rgbPixel[0];
-			tabPixels[i+1] = rgbPixel[1];
-			tabPixels[i+2] = rgbPixel[2];
+			tabPixels[i] = 0;
+			tabPixels[i+1] = 0;
+			tabPixels[i+2] = 0;
 		}
 		
-		raster.setPixels(0, y, delay, 1, 
+		raster.setPixels(0, y, 25, 1, 
 				tabPixels);			
 	}
 
