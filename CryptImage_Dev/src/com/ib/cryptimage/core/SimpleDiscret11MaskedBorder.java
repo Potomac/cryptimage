@@ -26,39 +26,27 @@ package com.ib.cryptimage.core;
  * @author Mannix54
  *
  */
-public class SimpleDiscret11NoBlack extends SimpleDiscret11 {
+public class SimpleDiscret11MaskedBorder extends SimpleDiscret11 {
 	
 	int[] tabPixels;
 	int[] rgbPixel = new int[3];
 
-	public SimpleDiscret11NoBlack(int key16bits, int audienceLevel, int mode, int height, int width, double perc1,
+	public SimpleDiscret11MaskedBorder(int key16bits, int audienceLevel, int mode, int height, int width, double perc1,
 			double perc2) {
 		super(key16bits, audienceLevel, mode, height, width, perc1, perc2);		
 	}
 
-	public SimpleDiscret11NoBlack(int key16bits, int audienceLevel, int mode, int height, int width) {
+	public SimpleDiscret11MaskedBorder(int key16bits, int audienceLevel, int mode, int height, int width) {
 		super(key16bits, audienceLevel, mode, height, width);		
 	}
 
 	protected void drawLine(int y){
-		//draw color line at start of delay
-		try {
-			rgbPixel = raster.getPixel(delayArray[this.seqFullFrame][y]*3, y, 
-					new int[3]);
-		} catch (Exception e) {
-			rgbPixel = raster.getPixel(delayArray[this.seqFullFrame][y], y, 
-					new int[3]);
-		}
-					
-		tabPixels = new int[delayArray[this.seqFullFrame][y]*3];
-		for (int i = 0; i < tabPixels.length; i=i+3) {
-			tabPixels[i] = rgbPixel[0];
-			tabPixels[i+1] = rgbPixel[1];
-			tabPixels[i+2] = rgbPixel[2];
-		}
+		//draw black line at start of delay
 		
-		raster.setPixels(0, y,delayArray[this.seqFullFrame][y], 1, 
-				tabPixels);			
+		int lineSizePixels = JobConfig.getDelay2() * 3;
+		int[] tabPixels = new int[lineSizePixels];					
+		
+		raster.setPixels(0, y, JobConfig.getDelay2(), 1, tabPixels);			
 	}
 	
 	

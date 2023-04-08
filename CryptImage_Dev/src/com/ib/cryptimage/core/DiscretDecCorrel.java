@@ -549,7 +549,7 @@ public class DiscretDecCorrel extends Discret {
 	
 	private int[] getEndPixels(int delay, int y){
 		
-		if(!JobConfig.isNoBlackBar()){
+		if(!JobConfig.isMaskedEdge()){
 			return new int[delay * 3];
 		}
 		

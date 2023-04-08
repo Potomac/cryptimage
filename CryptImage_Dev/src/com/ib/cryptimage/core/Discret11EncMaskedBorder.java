@@ -25,40 +25,22 @@ package com.ib.cryptimage.core;
  * @author Mannix54
  *
  */
-public class Discret11EncNoBlack extends Discret11Enc {
-	
-	private int[] tabPixels;
-	private int[] rgbPixel = new int[3];
-	
-	
+public class Discret11EncMaskedBorder extends Discret11Enc {	
 
-	public Discret11EncNoBlack(int key16bits, String audienceList, int cycle) {
+	public Discret11EncMaskedBorder(int key16bits, String audienceList, int cycle) {
 		super(key16bits, audienceList, cycle);		
 	}
 	
-	public Discret11EncNoBlack(int key16bits, String audienceList, int cycle, double perc1, double perc2) {
+	public Discret11EncMaskedBorder(int key16bits, String audienceList, int cycle, double perc1, double perc2) {
 		super(key16bits, audienceList, cycle, perc1, perc2);		
 	}
 	
 	protected void drawLine(int delay, int y){
-		//draw color line at start of delay
-		try {
-			rgbPixel = raster.getPixel(delay*3, y, 
-					new int[3]);
-		} catch (Exception e) {
-			rgbPixel = raster.getPixel(delay, y, 
-					new int[3]);
-		}
-		
-		tabPixels = new int[25 *3];
-		for (int i = 0; i < tabPixels.length; i=i+3) {
-			tabPixels[i] = 0;
-			tabPixels[i+1] = 0;
-			tabPixels[i+2] = 0;
-		}
-		
-		raster.setPixels(0, y, 25, 1, 
-				tabPixels);			
+		//draw black line at start of delay
+		int lineSizePixels = JobConfig.getDelay2() * 3;;
+		int[] tabPixels = new int[lineSizePixels];		
+
+		raster.setPixels(0, y, JobConfig.getDelay2(), 1, tabPixels);			
 	}
 
 }

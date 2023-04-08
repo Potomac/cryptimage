@@ -391,8 +391,8 @@ public class CryptPhoto {
 			cycle = 1;
 		}
 						
-		if(JobConfig.isNoBlackBar()){
-			device = new Discret11EncNoBlack(JobConfig.getWord16bits(), 
+		if(JobConfig.isMaskedEdge()){
+			device = new Discret11EncMaskedBorder(JobConfig.getWord16bits(), 
 					codePattern, cycle,
 					JobConfig.getPerc1(), JobConfig.getPerc2());
 		}
@@ -434,18 +434,12 @@ public class CryptPhoto {
 	
 	public  void decPhotoSimpleDiscret(BufferedImage img){		
 		Device device;
-		if(JobConfig.isNoBlackBar()){
-			device = new SimpleDiscret11Black(JobConfig.getWord16bits(),
-					JobConfig.getAudienceLevel(),
-					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth(),
-					JobConfig.getPerc1(), JobConfig.getPerc2());
-		}
-		else {
-			device = new SimpleDiscret11(JobConfig.getWord16bits(),
-					JobConfig.getAudienceLevel(),
-					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth(),
-					JobConfig.getPerc1(), JobConfig.getPerc2());
-		}		
+	
+		device = new SimpleDiscret11(JobConfig.getWord16bits(),
+				JobConfig.getAudienceLevel(),
+				SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth(),
+				JobConfig.getPerc1(), JobConfig.getPerc2());
+		
 		this.key11bits = device.getKey11bits();
 		BufferedImage imgRes = device.transform(img);
 				
@@ -454,8 +448,8 @@ public class CryptPhoto {
 	
 	public  void encPhotoSimpleDiscret(BufferedImage img){		
 		Device device;
-		if(JobConfig.isNoBlackBar()){
-			device = new SimpleDiscret11NoBlack(JobConfig.getWord16bits(),
+		if(JobConfig.isMaskedEdge()){
+			device = new SimpleDiscret11MaskedBorder(JobConfig.getWord16bits(),
 					JobConfig.getAudienceLevel(),
 					SimpleDiscret11.MODE_ENC, img.getHeight(), img.getWidth(),
 					JobConfig.getPerc1(), JobConfig.getPerc2());

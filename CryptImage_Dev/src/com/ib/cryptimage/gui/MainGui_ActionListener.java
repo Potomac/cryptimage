@@ -182,9 +182,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}
 		}
 		
-		if(src.equals(this.mainGui.getChkNoBlackBar())){
-			JobConfig.setNoBlackBar(
-					this.mainGui.getChkNoBlackBar().isSelected());
+		if(src.equals(this.mainGui.getChkMaskedBar())){
+			JobConfig.setMaskedEdge(
+					this.mainGui.getChkMaskedBar().isSelected());
 		}
 		
 		if(src.equals(this.mainGui.getChkNullDelay())){

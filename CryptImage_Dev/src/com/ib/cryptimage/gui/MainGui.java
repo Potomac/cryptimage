@@ -162,7 +162,7 @@ public class MainGui {
 	private JSpinner jspCycle;
 	private JLabel lblMultiAudience;
 	private JLabel lblCycle;
-	private JCheckBox chkNoBlackBar;
+	private JCheckBox chkMaskedBorder;
 
 	private JPanel panVideoOptions;
 	private JLabel labCodec;
@@ -627,8 +627,8 @@ public class MainGui {
 		labDelay2.setText(JobConfig.getRes().getString("panDiscret11.labDelay2"));
 		labFrameStart.setText(JobConfig.getRes().getString("panDiscret11.labFrameStart"));
 		slideFrameStart.setToolTipText(JobConfig.getRes().getString("panDiscret11.slideFrameStart.tooltip"));
-		chkNoBlackBar.setText(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar"));
-		chkNoBlackBar.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar.tooltip"));
+		chkMaskedBorder.setText(JobConfig.getRes().getString("panDiscret11.chkMaskedBar"));
+		chkMaskedBorder.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkMaskedBar.tooltip"));
 		chkSound.setText(JobConfig.getRes().getString("panDiscret11.chkSound"));
 		chkSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkSound.tooltip"));
 		chkDisableSound.setText(JobConfig.getRes().getString("panDiscret11.chkDisableSound"));
@@ -2549,9 +2549,9 @@ public class MainGui {
 				1, 1,1,1);
 		
 		
-		chkNoBlackBar = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar"));
-		chkNoBlackBar.addActionListener(controler);
-		chkNoBlackBar.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkNoBlackBar.tooltip"));
+		chkMaskedBorder = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkMaskedBar"));
+		chkMaskedBorder.addActionListener(controler);
+		chkMaskedBorder.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkMaskedBar.tooltip"));
 		chkSound = new JCheckBox(JobConfig.getRes().getString("panDiscret11.chkSound"));
 		chkSound.setSelected(true);
 		chkSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkSound.tooltip"));
@@ -2669,7 +2669,7 @@ public class MainGui {
 		// enable/disable noBlackBar
 		this.placerComposants(panOptionsDiscret11,
 				gbl,
-				chkNoBlackBar,
+				chkMaskedBorder,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				3, 5,
 				1,1,
@@ -3434,8 +3434,8 @@ public class MainGui {
 		return labAudience;
 	}
 	
-	public JCheckBox getChkNoBlackBar() {
-		return chkNoBlackBar;
+	public JCheckBox getChkMaskedBar() {
+		return chkMaskedBorder;
 	}
 
 	public JLabel getAudioCodec() {

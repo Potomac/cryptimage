@@ -73,7 +73,7 @@ public final class JobConfig {
 	private static int cycle;
 	private static int resolution;
 	private static boolean[] autorisations;
-	private static boolean noBlackBar = false;
+	private static boolean isMaskedEdge = false;
 	private static int delay1;
 	private static int delay2;
 	private static int audioCodec = 3;
@@ -790,12 +790,12 @@ public final class JobConfig {
 		JobConfig.autorisations = autorisations;
 	}	
 	
-	public static boolean isNoBlackBar() {
-		return noBlackBar;
+	public static boolean isMaskedEdge() {
+		return isMaskedEdge;
 	}
 
-	public static void setNoBlackBar(boolean noBlackBar) {
-		JobConfig.noBlackBar = noBlackBar;
+	public static void setMaskedEdge(boolean maskedEdge) {
+		JobConfig.isMaskedEdge = maskedEdge;
 	}
 
 	public static int getDelay1() {

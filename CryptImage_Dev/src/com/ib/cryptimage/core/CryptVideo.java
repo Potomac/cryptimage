@@ -221,15 +221,14 @@ public class CryptVideo {
 					else {
 						if (JobConfig.isWantDecCorrel()) {
 							device = new DiscretDecCorrel();
-						} else if (JobConfig.isNoBlackBar()) {
-							device = new Discret11DecBlack(JobConfig.getWord16bits(), this.perc1, this.perc2);
-						} else {
+						}
+						else {
 							device = new Discret11Dec(JobConfig.getWord16bits(), this.perc1, this.perc2);
 						}
 					}
 				} else {
-					if (JobConfig.isNoBlackBar()) {
-						device = new Discret11EncNoBlack(JobConfig.getWord16bits(), this.codePattern, this.cycle,
+					if (JobConfig.isMaskedEdge()) {
+						device = new Discret11EncMaskedBorder(JobConfig.getWord16bits(), this.codePattern, this.cycle,
 								this.perc1, this.perc2);
 					} else {
 						device = new Discret11Enc(JobConfig.getWord16bits(), this.codePattern, this.cycle, this.perc1,
@@ -239,27 +238,19 @@ public class CryptVideo {
 
 			} else { // non strict mode
 				if (this.isDecoding) { // decoding in non strict mode
-					if (JobConfig.isNoBlackBar()) {
-						device = new SimpleDiscret11Black(this.keyWord, Integer.valueOf(this.audienceLevel), mode,
-								this.height, this.width, this.perc1,
-								this.perc2);
-					} else {
-						device = new SimpleDiscret11(this.keyWord, Integer.valueOf(this.audienceLevel), mode,
-								this.height, this.width,this.perc1,
-								this.perc2);
-					}
+					device = new SimpleDiscret11(this.keyWord, Integer.valueOf(this.audienceLevel), mode,
+							this.height, this.width,this.perc1,
+							this.perc2);
 				} else { // encoding in non strict mode
-					////
-					if (JobConfig.isNoBlackBar()) {
-						device = new SimpleDiscret11NoBlack(this.keyWord, Integer.valueOf(this.audienceLevel), mode,
+					if (JobConfig.isMaskedEdge()) {
+						device = new SimpleDiscret11MaskedBorder(this.keyWord, Integer.valueOf(this.audienceLevel), mode,
 								this.height, this.width, this.perc1,
 								this.perc2);
 					} else {
 						device = new SimpleDiscret11(this.keyWord, Integer.valueOf(this.audienceLevel), mode,
 								this.height, this.width, this.perc1,
 								this.perc2);
-					}
-					////
+					}					
 				}
 			}
 		}
