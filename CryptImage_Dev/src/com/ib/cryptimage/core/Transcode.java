@@ -89,6 +89,8 @@ public class Transcode extends Device {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
 		
+		JobConfig.setInputImage(image);
+		
 		//check shift X and Y
 		if(shiftX != 0 || shiftY !=0) {
 			image = shift.transform(image, shiftX, shiftY);

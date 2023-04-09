@@ -159,9 +159,8 @@ public class VideoRecorder {
 	}
 	
 	public void addFrame(BufferedImage buff, long timeMilliseconds){		
-		if(this.is720){
-			buff = getScaledImage(buff, 720, 576);
-			JobConfig.set720InputImage();			
+		if(this.is720 && !JobConfig.isWantJoinInputOutputFrames()){
+			buff = getScaledImage(buff, 720, 576);		
 		}
 		
 		if(JobConfig.isWantJoinInputOutputFrames()) {

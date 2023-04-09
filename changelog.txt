@@ -1,3 +1,7 @@
+v1.6.3 2023-04-09
+- new checkbox on audio/video panel :"Join" for displaying side by side input and output frames
+- discret11 : "masked edge" checkbox displays now a black bar
+
 v1.6.1 2021-06-29
 - fix crash in photo mode when using syster and pal composite mode
 
