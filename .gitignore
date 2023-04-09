@@ -2,6 +2,3 @@ target/
 CryptImage_Dev/.classpath
 CryptImage_Dev/.project
 CryptImage_Dev/.settings/
-CryptImage_Dev/delarray.ser
-CryptImage_Dev/src/com/ib/cryptimage/core/TestFindKey.java
-old_cryptImage/

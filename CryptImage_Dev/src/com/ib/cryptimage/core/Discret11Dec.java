@@ -36,6 +36,8 @@ import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.sun.org.apache.xerces.internal.dom.DeepNodeListImpl;
+
 /**
  * @author Mannix54
  *
@@ -723,7 +725,7 @@ public class Discret11Dec extends Discret {
 	 * @param image the image to be transformed
 	 * @return the transformed image
 	 */
-	public BufferedImage transform(BufferedImage image) {
+	public BufferedImage transform(BufferedImage image) {	
 		//totalFrameCount++;			
 		JobConfig.incrementPalFrame();
 		JobConfig.incrementPalFrameDec();
@@ -733,19 +735,14 @@ public class Discret11Dec extends Discret {
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
+					
+		JobConfig.setInputImage(image);		
 		
 		//check shift X and Y
 		if(shiftX != 0 || shiftY !=0) {
 			image = shift.transform(image, shiftX, shiftY);
 		}
 			
-		
-		if(this.getAudienceLevel() > 0) {
-			//this.enable = true;
-		}
-		else {
-			//System.out.println("clair");
-		}
 		
 		image = encodePal(image);
 

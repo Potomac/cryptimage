@@ -314,6 +314,7 @@ public class MainGui {
 	private JComboBox<Integer> cmbPalFrameStart;
 	private JCheckBox palAverageDecode;
 	private JCheckBox chkSysterReverse;
+	private JCheckBox chkJoinInputOutput;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -651,6 +652,8 @@ public class MainGui {
 		labBitrate.setText(JobConfig.getRes().getString("panVideo.labBitrate"));
 		labNbFrames.setText(JobConfig.getRes().getString("panVideo.labNbFrames"));
 		lblExtension.setText(JobConfig.getRes().getString("panVideo.lblExtension"));
+		chkJoinInputOutput.setText(JobConfig.getRes().getString("panVideo.chkJoinInputOutputVideo"));
+		//chkJoinInputOutput.setText(JobConfig.getRes().getString("panVideo.chkJoinInputOutputVideo.tooltip"));
 		
 		//createPanSyster
 		titlePanSyster.setTitle(JobConfig.getRes().getString("panSyster.titlePanSyster"));
@@ -2874,11 +2877,20 @@ public class MainGui {
 		tfY.setColumns(3);
 		tfY.setEditable(false);
 		
+		// checkbox "join input/output image"
+		chkJoinInputOutput = new JCheckBox(JobConfig.getRes().getString("panVideo.chkJoinInputOutputVideo"));
+		//chkJoinInputOutput.setToolTipText(JobConfig.getRes().getString("panVideo.chkJoinInputOutputVideo.tooltip"));
+		chkJoinInputOutput.addActionListener(controler);
+		
 		JPanel panVideoShift = new JPanel();
 		panVideoShift.add(labShiftX);
 		panVideoShift.add(jShiftX);		
 		panVideoShift.add(labShiftY);
 		panVideoShift.add(jShiftY);
+		panVideoShift.add(chkJoinInputOutput);
+		
+		//JPanel panVideoJoin = new JPanel();
+		//panVideoJoin.add(chkJoinInputOutput);
 		
 		//init codec video panel
 		JPanel panVideoCodec = new JPanel();
@@ -3023,6 +3035,15 @@ public class MainGui {
 				6,1,
 				25,50,
 				1, 1,1,1);
+		
+//		this.placerComposants(panVideoOptions,
+//				gbl,
+//				panVideoJoin,
+//				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+//				3, 1,
+//				1,1,
+//				1,1,
+//				1, 1,1,1);
 		
 		//codec video
 		this.placerComposants(panVideoOptions,
@@ -3924,6 +3945,14 @@ public class MainGui {
 	
 	public JRadioButton getRdiStretch() {
 		return rdiStretch;
+	}
+
+	public JCheckBox getChkJoinInputOutput() {
+		return chkJoinInputOutput;
+	}
+
+	public void setChkJoinInputOutput(JCheckBox chkJoinInputOutput) {
+		this.chkJoinInputOutput = chkJoinInputOutput;
 	}
 	
 }

@@ -99,6 +99,8 @@ public class SysterEnc extends Syster {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
 		
+		JobConfig.setInputImage(image);
+		
 		//check shift X and Y
 		if(shiftX != 0 || shiftY !=0) {
 			image = shift.transform(image, shiftX, shiftY);
@@ -160,6 +162,8 @@ public class SysterEnc extends Syster {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
 		
+		JobConfig.setInputImage(image);
+		
 		//check shift X and Y
 		if(shiftX != 0 || shiftY !=0) {
 			image = shift.transform(image, shiftX, shiftY);
@@ -213,6 +217,8 @@ public class SysterEnc extends Syster {
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
+		
+		JobConfig.setInputImage(image);
 				
 		//check shift X and Y
 		if(shiftX != 0 || shiftY !=0) {

@@ -70,6 +70,11 @@ public class VideoRecorder {
 			width = 720;
 		}
 		
+		if(JobConfig.isWantJoinInputOutputFrames()) {
+			width = 1920;
+			height = 1080;
+		}
+		
 		writer = ToolFactory.makeWriter(outputFilename);		
 		IRational frame_rate = IRational.make(framerate);			
 		
@@ -155,9 +160,16 @@ public class VideoRecorder {
 	
 	public void addFrame(BufferedImage buff, long timeMilliseconds){		
 		if(this.is720){
-			buff = getScaledImage(buff, 720, 576);			
-		}		
-		 writer.encodeVideo(0, buff,(timeMilliseconds *1000l),TimeUnit.MICROSECONDS);
+			buff = getScaledImage(buff, 720, 576);
+			JobConfig.set720InputImage();			
+		}
+		
+		if(JobConfig.isWantJoinInputOutputFrames()) {
+			writer.encodeVideo(0, Utils.joinImages(JobConfig.getInputImage(), buff) ,(timeMilliseconds *1000l),TimeUnit.MICROSECONDS);
+		}
+		else {
+			writer.encodeVideo(0, buff ,(timeMilliseconds *1000l),TimeUnit.MICROSECONDS);
+		}		 
 	}
 	
 	

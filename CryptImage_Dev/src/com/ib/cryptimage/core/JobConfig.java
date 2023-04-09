@@ -21,6 +21,7 @@
 
 package com.ib.cryptimage.core;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,6 +40,8 @@ import com.ib.cryptimage.gui.MainGui;
 
 public final class JobConfig {
 
+	private static BufferedImage inputImage;
+	private static boolean isWantJoinInputOutputFrames = false;
 	private static String input_file = "";
 	private static String report_file = "";
 	private static String output_file = "";		
@@ -523,6 +526,12 @@ public final class JobConfig {
 		}
 		
 		return userlanguage;
+	}
+	
+	public static void set720InputImage() {
+		if(isWantJoinInputOutputFrames) {
+			JobConfig.inputImage = Utils.getScaledImage(inputImage, 720, 576);			
+		}
 	}
 	
 
@@ -1108,5 +1117,23 @@ public final class JobConfig {
 
 	public static void setStretch(boolean stretch) {
 		JobConfig.stretch = stretch;
+	}
+
+	public static BufferedImage getInputImage() {
+		return inputImage;
+	}
+
+	public static void setInputImage(BufferedImage inputImage) {
+		if (isWantJoinInputOutputFrames) {
+			JobConfig.inputImage = Utils.deepCopy(inputImage);
+		}		
+	}
+
+	public static boolean isWantJoinInputOutputFrames() {
+		return isWantJoinInputOutputFrames;
+	}
+
+	public static void setWantJoinInputOutputFrames(boolean isWantJoinInputOutputFrames) {
+		JobConfig.isWantJoinInputOutputFrames = isWantJoinInputOutputFrames;
 	}	
 }

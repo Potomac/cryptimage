@@ -140,7 +140,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JobConfig.setLogVideocrypt(false);
 			}
 		}
-
+		
+		if(src.equals(this.mainGui.getChkJoinInputOutput())){
+			if(this.mainGui.getChkJoinInputOutput().isSelected()) {
+				JobConfig.setWantJoinInputOutputFrames(true);
+			}
+			else {
+				JobConfig.setWantJoinInputOutputFrames(false);
+			}
+		}
 		
 		if (src.equals(this.mainGui.getChkChangeOffsetIncrement())) {
 			if (this.mainGui.getChkChangeOffsetIncrement().isSelected()) {

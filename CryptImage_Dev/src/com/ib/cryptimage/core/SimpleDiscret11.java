@@ -426,7 +426,9 @@ public class SimpleDiscret11 extends Discret {
 	public BufferedImage transform(BufferedImage image){
 				
 		//we check the type image and the size
-		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);		
+		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
+		
+		JobConfig.setInputImage(image);
 		
 		raster = image.getRaster();		
 			

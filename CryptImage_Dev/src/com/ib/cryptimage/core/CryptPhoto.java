@@ -465,7 +465,11 @@ public class CryptPhoto {
 		saveCryptImage(imgRes);		
 	}
 	
-	public  boolean saveCryptImage(BufferedImage bi) {
+	public  boolean saveCryptImage(BufferedImage bi) {		
+		if(JobConfig.isWantJoinInputOutputFrames()) {
+			bi = Utils.joinImages(JobConfig.getInputImage(), bi);
+		}		
+		
 		String output = JobConfig.getOutput_file();
 		if (JobConfig.isHorodatage()) {
 			File file = new File(JobConfig.getOutput_file());
@@ -582,6 +586,9 @@ public class CryptPhoto {
 	}
 	
 	public  boolean saveDecryptFile(BufferedImage bi,String output_file, int key11){
+		if(JobConfig.isWantJoinInputOutputFrames()) {
+			bi = Utils.joinImages(JobConfig.getInputImage(), bi);
+		}	
 		
 		String output = JobConfig.getOutput_file();
 		if (JobConfig.isHorodatage()) {

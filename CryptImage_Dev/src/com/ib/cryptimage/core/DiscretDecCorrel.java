@@ -358,6 +358,8 @@ public class DiscretDecCorrel extends Discret {
 			img = this.getScaledImage(img, this.sWidth, 576);
 		}
 		
+		JobConfig.setInputImage(img);	
+		
 		//check shift X and Y
 		if(shiftX != 0 || shiftY !=0) {			
 			img = shift.transform(img, shiftX, shiftY);

@@ -27,8 +27,7 @@ import java.awt.image.BufferedImage;
  * @author Mannix54
  *
  */
-public abstract class Device {
-	
+public abstract class Device {		
 	abstract BufferedImage transform(BufferedImage img);
 	abstract boolean isEnable();
 	abstract int getAudienceLevel();
