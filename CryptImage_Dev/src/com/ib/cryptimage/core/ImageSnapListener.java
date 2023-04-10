@@ -162,6 +162,11 @@ public class ImageSnapListener extends MediaListenerAdapter {
 			image = doStretch(image);
 		}
 		
+		// add input frame to JobConfig if device is not ready for transform
+		if(count < JobConfig.getPositionSynchro()) {
+			JobConfig.setInputImage(image);	
+		}
+			
 
 		if (JobConfig.isWantPlay()) {
 			posFrame++;
