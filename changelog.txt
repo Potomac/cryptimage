@@ -1,3 +1,6 @@
+v1.6.4 2023-04-10
+- Fix bug in "Join" feature when device is not active
+
 v1.6.3 2023-04-09
 - new checkbox on audio/video panel :"Join" for displaying side by side input and output frames
 - discret11 : "masked edge" checkbox displays now a black bar

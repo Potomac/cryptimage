@@ -6,7 +6,7 @@
 
   <groupId>com.ib.cryptimage</groupId>
   <artifactId>cryptimage</artifactId>
-  <version>1.6.3-SNAPSHOT</version>
+  <version>1.6.4-SNAPSHOT</version>
 
   <name>cryptimage</name>
   <!-- FIXME change it to the project's website -->
