@@ -414,7 +414,7 @@ public class DiscretDecCorrel extends Discret {
 								new int[(this.sWidth - decaPixels[delayArrayFull[seqSol][i]]) * 3]));
 				// draw black line at end of delay
 				raster2.setPixels(this.sWidth - decaPixels[delayArrayFull[seqSol][i]], ligne * 2, decaPixels[delayArrayFull[seqSol][i]], 1,
-						getEndPixels(decaPixels[delayArrayFull[seqSol][i]], i));
+						new int[decaPixels[delayArrayFull[seqSol][i]] * 3]);
 				ligne++;
 			}
 		}
@@ -458,7 +458,7 @@ public class DiscretDecCorrel extends Discret {
 								new int[(this.sWidth - decaPixels[delayArrayFull[seqSol][i]]) * 3]));
 				// draw black line at end of delay
 				raster2.setPixels(this.sWidth - decaPixels[delayArrayFull[seqSol][i]], ligne * 2 + 1, decaPixels[delayArrayFull[seqSol][i]], 1,
-						getEndPixels(decaPixels[delayArrayFull[seqSol][i]], i));
+						new int[decaPixels[delayArrayFull[seqSol][i]] * 3]);
 				ligne++;
 			}
 		}
@@ -548,34 +548,6 @@ public class DiscretDecCorrel extends Discret {
 		return image;
 	}
 	
-	
-	private int[] getEndPixels(int delay, int y){
-		
-		if(!JobConfig.isMaskedEdge()){
-			return new int[delay * 3];
-		}
-		
-		int[] tabPixels;
-		int[] rgbPixel = new int[3];
-		
-		try {	
-			rgbPixel = raster.getPixel(this.sWidth - 1 - delay, y, 
-					new int[3]);
-		} catch (Exception e) {
-			rgbPixel = raster.getPixel(this.sWidth - delay, y, 
-					new int[3]);
-		}
-					
-		tabPixels = new int[delay * 3];
-		for (int i = 0; i < tabPixels.length; i=i+3) {
-			tabPixels[i] = rgbPixel[0];
-			tabPixels[i+1] = rgbPixel[1];
-			tabPixels[i+2] = rgbPixel[2];
-		}
-		
-		return tabPixels;
-		
-	}
 
 	@Override
 	boolean isEnable() {
