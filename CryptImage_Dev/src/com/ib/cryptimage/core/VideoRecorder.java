@@ -52,6 +52,11 @@ public class VideoRecorder {
 			double framerate, int audioRateValue) {	
 				
 		this.AUDIORATE = audioRateValue;
+		
+		if(JobConfig.isHasMultiAudioChannels() || JobConfig.isHasProblematicCodec()) {
+			this.AUDIORATE = JobConfig.getAudioTrackInfos().getAudioRate();
+		}
+		
 		this.wantDec = JobConfig.isWantDec();
 		this.wantSoundCryptDecrypt = JobConfig.isWantSound();
 		this.disableSound = JobConfig.isDisableSound();
@@ -76,37 +81,43 @@ public class VideoRecorder {
 		}
 		
 		writer = ToolFactory.makeWriter(outputFilename);		
-		IRational frame_rate = IRational.make(framerate);			
+		IRational frame_rate = IRational.make(framerate);	
 		
-		switch (JobConfig.getVideoCodec()) {
-		case 1:
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
-			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
-			writer.getContainer().getStream(0).getStreamCoder().setProperty("preset", "medium");
-			break;
-		case 2:
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO,frame_rate, width, height);
-		break;
-		case 3:
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4,frame_rate, width, height);
-			break;
-		case 4:		
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFVHUFF,frame_rate, width, height);
-			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.RGB24);			
-			break;
-		case 5:
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
-			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);			
-			break;
-		case 6:
-			writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFV1,frame_rate, width, height);
-			writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);	
-			break;
-		default:
-			break;
-		}		
 				
-		if( this.disableSound != true && JobConfig.isVideoHasAudioTrack()){
+		if(JobConfig.getVideoTrackInfos() != null) {
+			switch (JobConfig.getVideoCodec()) {
+			case 1:
+				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
+				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
+				writer.getContainer().getStream(0).getStreamCoder().setProperty("preset", "medium");
+				break;
+			case 2:
+				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO,frame_rate, width, height);
+			break;
+			case 3:
+				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4,frame_rate, width, height);
+				break;
+			case 4:		
+				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFVHUFF,frame_rate, width, height);
+				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.RGB24);			
+				break;
+			case 5:
+				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
+				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);			
+				break;
+			case 6:
+				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFV1,frame_rate, width, height);
+				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);	
+				break;
+			default:
+				break;
+			}			
+		}
+		
+				
+		if( this.disableSound != true 
+				&& !JobConfig.isHasMultiAudioChannels() && !JobConfig.isHasProblematicCodec()
+				&& JobConfig.isVideoHasAudioTrack()){
 			switch (JobConfig.getAudioCodec()) {
 			case 1:
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
@@ -134,9 +145,26 @@ public class VideoRecorder {
 				break;
 			case 7:
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 2,AUDIORATE);
+				break;
+			case 8:
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_FLAC, 2,AUDIORATE);				
 				break;	
 			default:
 				break;
+			}		
+		}
+		
+		// case of multichannel audio track or E-AC3 codec in the input video
+		if( this.disableSound != true 
+				&& (JobConfig.isHasMultiAudioChannels() || JobConfig.isHasProblematicCodec())
+				&& JobConfig.isVideoHasAudioTrack()) {
+			if(JobConfig.getAudioCodec() == 7) { // wav
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 
+						  JobConfig.getAudioTrackInfos().getNumChannels() , JobConfig.getAudioTrackInfos().getAudioRate());			
+			}
+			else { // flac
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_FLAC, 
+						  JobConfig.getAudioTrackInfos().getNumChannels() , JobConfig.getAudioTrackInfos().getAudioRate());			
 			}		
 		}
 		
@@ -153,7 +181,7 @@ public class VideoRecorder {
 			writer.getContainer().getStream(1).getStreamCoder()
 					.open(null, null);
 		}
-		
+				
 		writer.getContainer().writeHeader();		
 		
 	}
@@ -173,10 +201,12 @@ public class VideoRecorder {
 	
 	
 	
-	public void addAudioFrame(IAudioSamples sample){	
-		
+	public void addAudioFrame(IAudioSamples sample){		
 		if (sample.isComplete()) {
-			if (this.wantSoundCryptDecrypt) {
+			if(this.wantSoundCryptDecrypt && JobConfig.isHasMultiAudioChannels()) {
+				transformMultiChannelsAudioFrame(sample, JobConfig.isReadyTransform());
+			}			
+			else if (this.wantSoundCryptDecrypt && !JobConfig.isHasMultiAudioChannels()) {
 				addAudioFrameTemp(sample, JobConfig.isReadyTransform());
 			} else {
 				//addAudioFrameTemp(sample, false);
@@ -186,6 +216,38 @@ public class VideoRecorder {
 			System.out.println("pas complet");
 		}
 	}
+	
+	private void transformMultiChannelsAudioFrame(IAudioSamples sample, boolean enable) {		
+		double[] tabL = new double[(int)sample.getNumSamples()];
+				
+		IAudioSamples smp = IAudioSamples.make(tabL.length, sample.getChannels());				
+		
+		double lastGoodValue = 0;
+		
+		for (int j = 0; j < sample.getChannels(); j++) {
+			for (int i = 0; i < sample.getNumSamples(); i++) {
+				if (sample.getSample(i, j, sample.getFormat()) != 0){				
+					tabL[i] = sample.getSample(i, j, sample.getFormat());	
+					lastGoodValue = tabL[i];
+				}
+				else {				
+					tabL[i] = lastGoodValue;
+				}				
+			}
+			
+			tabL = soundCryptL.transform(tabL, enable);				
+			
+			for (int i = 0; i < tabL.length; i++) {			
+				smp.setSample(i, j, sample.getFormat(), (int) tabL[i]);						
+			}			
+		}		
+		
+		smp.setComplete(true, tabL.length, AUDIORATE, sample.getChannels(), sample.getFormat(),
+				sample.getPts());
+		
+		writer.encodeAudio(1, smp);
+	}
+
 	
 	private void addAudioFrameTemp(IAudioSamples sample, boolean enable) {
 				

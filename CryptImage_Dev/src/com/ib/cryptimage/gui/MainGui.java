@@ -2759,7 +2759,7 @@ public class MainGui {
 		
 		labAudioCodec = new JLabel(JobConfig.getRes().getString("panVideo.labAudioCodec"));
 		String[] tabAudio = {"mp3 96 kbs","mp3 128 kbs","mp3 160 kbs",
-				"mp3 192 kbs","mp3 224 kbs","mp3 320 kbs","wav (mkv)"};
+				"mp3 192 kbs","mp3 224 kbs","mp3 320 kbs","wav (mkv)", "flac (mkv)"};
 		combAudioCodec = new JComboBox<String>(tabAudio);		
 		combAudioCodec.setSelectedIndex(3);
 		combAudioCodec.addActionListener(controler);

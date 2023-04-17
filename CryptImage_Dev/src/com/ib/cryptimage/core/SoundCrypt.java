@@ -70,13 +70,17 @@ public class SoundCrypt {
 	 * @param rate rate in hertz for the samples
 	 * @param dec true if decoding mode
 	 */
-	public SoundCrypt(int rate, boolean dec, int ampEnc, int ampDec){		
+	public SoundCrypt(int rate, boolean dec, double ampEnc, double ampDec){		
+		if(JobConfig.isHasMultiAudioChannels()) {
+			ampDec = 2; // avoid audio clic when multi audio channel track
+		}
+		
 		this.dec = dec;
 		if(this.dec == true){
-			m_nGain = ampDec; //3
+			m_nGain = ampDec;
 		}
 		else{
-			m_nGain = ampEnc; //1
+			m_nGain = ampEnc;
 		}
 		this.rate = rate;
 		
@@ -95,7 +99,7 @@ public class SoundCrypt {
 	
 	public double[] transform(double[] sound, boolean enable) {
 
-		if (this.dec) {
+		if (this.dec && !JobConfig.isHasMultiAudioChannels()) {
 			if (this.rate == 44100) {				
 				sound = lowPassChebyShevChorus44100_pre(sound);
 			} else {
@@ -111,7 +115,7 @@ public class SoundCrypt {
 		
 		sound = crypt(sound, enable);
 
-		if (this.dec) {
+		if (this.dec && !JobConfig.isHasMultiAudioChannels()) {
 			if (this.rate == 44100) {				
 				sound = lowPassChebyShevChorus44100_post(sound);
 			} else {

@@ -59,18 +59,34 @@ public class ImageSnapListener extends MediaListenerAdapter {
 		this.count = 0;
 		cryptVid = new CryptVideo();
 		posFrame = 0;
-		this.isDec = frmV.isbDec();	
+		this.isDec = frmV.isbDec();
+		
 	}
 	
 	public void onAudioSamples(IAudioSamplesEvent event) {
+		//System.out.println(event.getStreamIndex() + ", " + JobConfig.getDefaultIdAudioTrack());
 
-		if (JobConfig.isDisableSound() == false 
-				&& JobConfig.isVideoHasAudioTrack()) {
+		if (event.getStreamIndex() == JobConfig.getDefaultIdAudioTrack() && !JobConfig.isDisableSound() 
+				&& JobConfig.isVideoHasAudioTrack() && !JobConfig.isHasMultiAudioChannels()) {
 			if (event.getAudioSamples().isComplete()) {
 
 				IAudioSamples samples = event.getAudioSamples();
 
 				if (samples.getChannels() > 2) {
+					JobConfig.setDisableSound(true);
+					JobConfig.setWantSound(false);
+					
+					JobConfig.getGui().getChkSound().setSelected(false);
+					JobConfig.getGui().getChkSound().setEnabled(false);
+					JobConfig.getGui().getChkSoundSyster().setSelected(false);
+					JobConfig.getGui().getChkSoundSyster().setEnabled(false);
+					JobConfig.getGui().getChkSoundVideocrypt().setSelected(false);
+					JobConfig.getGui().getChkSoundVideocrypt().setEnabled(false);
+					
+					JobConfig.getGui().getChkDisableSound().setSelected(true);
+					JobConfig.getGui().getChkDisableSoundSyster().setSelected(true);
+					JobConfig.getGui().getChkDisableSoundVideocrypt().setSelected(true);					
+					
 					showWarningSound();
 				} else {
 
@@ -113,6 +129,15 @@ public class ImageSnapListener extends MediaListenerAdapter {
 				System.out.println("paquet non complet init");
 			}
 		}
+		
+		// case of multichannel audio
+		if (JobConfig.isHasMultiAudioChannels() && event.getStreamIndex() == JobConfig.getDefaultIdAudioTrack() && !JobConfig.isDisableSound() 
+				&& JobConfig.isVideoHasAudioTrack() ) {
+			if (event.getAudioSamples().isComplete()) {
+				cryptVid.addAudioFrame(event.getAudioSamples());				
+			}		
+		}
+		
 	}
 
 	private void showWarningSound(){
@@ -121,8 +146,7 @@ public class ImageSnapListener extends MediaListenerAdapter {
 				null,
 				JobConfig.getRes().getString("imageSnapListener.multicanalSound"),
 				JobConfig.getRes().getString("imageSnapListener.multicanalSound.title"),
-				JOptionPane.WARNING_MESSAGE);
-		JobConfig.setDisableSound(true);
+				JOptionPane.WARNING_MESSAGE);		
 	}
 
 	public void onReadPacket(IReadPacketEvent event){
@@ -131,25 +155,26 @@ public class ImageSnapListener extends MediaListenerAdapter {
 	
 
 	public void onVideoPicture(IVideoPictureEvent event)  {
-
-		dumpFrameToBufferedImage(event.getImage());
-		count = count + 1;		
-	 
-	if(count  == cryptVid.getVideoLengthFrames() 
-			&& JobConfig.isWantPlay() !=true
-			 ){		
-		cryptVid.closeVideo();
-		cryptVid.saveDatFileVideo();
-		cryptVid.getDevice().closeFileData();
-		if(JobConfig.isSearchCode68705()) {
-			cryptVid.displayKey();
-		}
-		
-	} else if(count == cryptVid.getVideoLengthFrames()){
-		if(JobConfig.isSearchCode68705()) {
-			cryptVid.displayKey();
-		}
-		JobConfig.setStop(true);
+		if(event.getStreamIndex() == JobConfig.getDefaultIdVideoTrack()) {
+			dumpFrameToBufferedImage(event.getImage());
+			count = count + 1;		
+			 
+			if(count  == cryptVid.getVideoLengthFrames() 
+					&& JobConfig.isWantPlay() !=true
+					 ){		
+				cryptVid.closeVideo();
+				cryptVid.saveDatFileVideo();
+				cryptVid.getDevice().closeFileData();
+				if(JobConfig.isSearchCode68705()) {
+					cryptVid.displayKey();
+				}
+				
+			} else if(count == cryptVid.getVideoLengthFrames()){
+				if(JobConfig.isSearchCode68705()) {
+					cryptVid.displayKey();
+				}
+				JobConfig.setStop(true);
+				}
 		}
    }
 

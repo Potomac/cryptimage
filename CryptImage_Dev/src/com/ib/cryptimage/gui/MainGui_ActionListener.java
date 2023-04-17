@@ -502,7 +502,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 		
 		if (src.equals(mainGui.getCombAudioCodec())) {
-			if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
+			if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 || mainGui.getCombAudioCodec().getSelectedIndex()== 7){
 //				if(mainGui.getJcbExtension().getSelectedIndex() != 2){
 //					alertWavCodec();
 //				}				
@@ -1790,7 +1790,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 		if (mainGui.getRdiVideo().isSelected()) {
 			extension = new String[] { "avi", "mp4", "mpeg", "mkv", "mpeg2",
-					"mpg","ts", "m2t", "wmv", "mov" };
+					"mpg","ts", "m2t", "wmv", "mov", "vob" };
 			filter = new FileNameExtensionFilter(JobConfig.getRes().getString("manageFileOpen.filenameExtensionFiltersVideo"), extension);
 		} else {
 			extension = new String[] { "jpeg", "jpg", "bmp", "gif", "png",
@@ -1824,6 +1824,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						mainGui.getTxtOutputFile().setText(file.getParent());
 					}					
 					mainGui.getBtnOutputFile().setEnabled(true);
+					
+//					if(JobConfig.isHasMultiAudioChannels()) {
+//						showWarningSound();
+//					}
+					
 				} else {
 					JobConfig.setHasToBeUnsplit(false);
 					mainGui.getTxtInputFile().setText(file.getAbsolutePath());
@@ -2077,8 +2082,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			JobConfig.setWantPlay(mainGui.getChkPlayer().isSelected());
 			JobConfig.setModePhoto(mainGui.getRdiPhoto().isSelected());
+			
 			JobConfig.setExtension(
-					mainGui.getJcbExtension().getSelectedItem().toString());
+					mainGui.getJcbExtension().getSelectedItem().toString());	
 			
 			if (JobConfig.getSystemCrypt() == 0) {
 				JobConfig.setWantSound(mainGui.getChkSound().isSelected());
@@ -2139,6 +2145,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			JobConfig.setSerial(mainGui.getTxtSerial().getText());
 			JobConfig.setCode(mainGui.getTxtCode().getText());
+			
+			//case of problematic codecs (E-AC3, MP2) and multiaudiochannel : set to mkv extension for outpufile
+			if((JobConfig.isHasProblematicCodec() || JobConfig.isHasMultiAudioChannels()) && !JobConfig.isDisableSound()) {
+				JobConfig.setExtension("mkv");
+			}
 
 			JobConfig.setStop(false);
 
@@ -2227,7 +2238,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		      // get the pre-configured decoder that can decode this stream;
 		      IStreamCoder coder = stream.getStreamCoder();
 
-		      if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO)
+		      if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO && stream.getIndex() == JobConfig.getDefaultIdVideoTrack())
 		      {
 		        videoStreamId = i;
 		        videoCoder = coder;
@@ -2275,16 +2286,59 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		    return count;
 	}
 	
+	private void showWarningSound(){
+		JOptionPane
+		.showMessageDialog(
+				null,
+				JobConfig.getRes().getString("imageSnapListener.multicanalSound"),
+				JobConfig.getRes().getString("imageSnapListener.multicanalSound.title"),
+				JOptionPane.WARNING_MESSAGE);		
+	}
+	
+	private void showWarningEAC3(){
+		JOptionPane
+		.showMessageDialog(
+				null,
+				JobConfig.getRes().getString("imageSnapListener.eac3"),
+				JobConfig.getRes().getString("imageSnapListener.eac3.title"),
+				JOptionPane.WARNING_MESSAGE);		
+	}
+	
 	
 	private void setVideosInfos(String path){		
-		StreamsFinder findAudio = new StreamsFinder(path);
-		JobConfig.setVideoHasAudioTrack(findAudio.isHasAudioTrack());
+		StreamsFinder streamInfos = new StreamsFinder(path);
+		streamInfos.analyzeStreams();
+		JobConfig.setVideoHasAudioTrack(streamInfos.isHasAudioTrack());
 		
+		JobConfig.setDefaultIdAudioTrack(streamInfos.getDefaultIdAudioTrack());
+		JobConfig.setDefaultIdVideoTrack(streamInfos.getDefaultIdVideoTrack());		
 		
+		if(streamInfos.getNumVideoStreams() > 1 || streamInfos.getNumAudioStreams() > 1) {
+			streamInfos.displayTracksSelector();
+		}
+		
+		if(JobConfig.getAudioTrackInfos().getNumChannels() > 2) {
+			JobConfig.setHasMultiAudioChannels(true);			
+			//showWarningSound();
+		}
+		else {
+			JobConfig.setHasMultiAudioChannels(false);
+		}
+		
+		if(JobConfig.getAudioTrackInfos().getCodecShortName().toLowerCase().equals("eac3") 
+				||  JobConfig.getAudioTrackInfos().getCodecID().toLowerCase().equals("CODEC_ID_EAC3".toLowerCase())
+				||  JobConfig.getAudioTrackInfos().getCodecID().toLowerCase().equals("CODEC_ID_MP2".toLowerCase())				
+				) {
+			JobConfig.setHasProblematicCodec(true);			
+		}
+		else {
+			JobConfig.setHasProblematicCodec(false);
+		}
 		
 		IMediaReader reader = ToolFactory.makeReader(path);
+		
 		reader.readPacket();
-			
+				
 		int videoStreamId = -1;
 		IContainer container = reader.getContainer();
 		double timeBase = 0;
@@ -2303,7 +2357,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		        for(int i = 0; i < container.getNumStreams(); i++) {
 		            stream = container.getStream(i);
 		            IStreamCoder coder = stream.getStreamCoder();
-		            if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
+		            if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO && stream.getIndex() == JobConfig.getDefaultIdVideoTrack()) {
 		                videoStreamId = i;
 		               
 		                timeBase = stream.getTimeBase().getDouble();
@@ -2331,14 +2385,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			                	JobConfig.setHasToBeUnsplit(false);
 			                }
 		                }
-		                
-		                	
-
-		                
 		                break;
-		                
-		              
-		                
 		            }
 		        }
 		    }
@@ -2357,25 +2404,26 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 //			alertFrameRate(frameRate);
 //		}
 		
-		if(path.substring(path.lastIndexOf(".") + 1, path.length()).equals("ts")
-				|| path.substring(path.lastIndexOf(".") + 1, path.length()).equals("m2t")){
-			alertTsM2t();
-		}
-		else {
-			this.mainGui.getChkDisableSound().setSelected(false);
-			this.mainGui.getChkSound().setSelected(true);
-			this.mainGui.getChkSound().setEnabled(true);
-			
-			this.mainGui.getChkDisableSoundSyster().setSelected(false);
-			this.mainGui.getChkSoundSyster().setSelected(true);
-			this.mainGui.getChkSoundSyster().setEnabled(true);
-			
-			this.mainGui.getChkDisableSoundVideocrypt().setSelected(false);
-			//this.mainGui.getChkSoundVideocrypt().setSelected(true);
-			this.mainGui.getChkSoundVideocrypt().setEnabled(true);
-		}
+//		if(path.substring(path.lastIndexOf(".") + 1, path.length()).equals("ts")
+//				|| path.substring(path.lastIndexOf(".") + 1, path.length()).equals("m2t")){
+//			alertTsM2t();
+//		}
+//		else {
+		this.mainGui.getChkDisableSound().setSelected(false);
+		this.mainGui.getChkSound().setSelected(true);
+		this.mainGui.getChkSound().setEnabled(true);
 		
-		JobConfig.setFrameRate(frameRate);
+		this.mainGui.getChkDisableSoundSyster().setSelected(false);
+		this.mainGui.getChkSoundSyster().setSelected(true);
+		this.mainGui.getChkSoundSyster().setEnabled(true);
+		
+		this.mainGui.getChkDisableSoundVideocrypt().setSelected(false);
+		// this.mainGui.getChkSoundVideocrypt().setSelected(true);
+		this.mainGui.getChkSoundVideocrypt().setEnabled(true);
+		
+		
+		JobConfig.setFrameRate(frameRate);	
+		
 		mainGui.getBtnEnter().setEnabled(true);
 		
 		//fix

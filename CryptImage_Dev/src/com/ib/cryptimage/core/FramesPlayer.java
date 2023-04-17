@@ -47,8 +47,7 @@ public class FramesPlayer {
 		mediaReader
 				.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 		
-		
-		
+				
 		this.imgListen = new ImageSnapListener(JobConfig.getVideo_frame(), this,
 				streamFinder.getStreamsVideo()[0], streamFinder.getStreamsAudio()[0]);		
 		mediaReader.addListener(imgListen);

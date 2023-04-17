@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
 import com.ib.cryptimage.gui.MainGui;
 
@@ -82,10 +83,10 @@ public final class JobConfig {
 	private static int audioCodec = 3;
 	
 	private static int audioRate = 0;
-	private static int ampEnc = 1;
-	private static int ampDec = 3;
+	private static double ampEnc = 1;
+	private static double ampDec = 3; //3;
 	private static int systemCrypt = 0;
-	
+		
 	private static int tableSyster = 2;
 	private static String fileDataEncSyster ="";
 	private static String fileDataDecSyster = "";
@@ -125,6 +126,84 @@ public final class JobConfig {
 	private static int currentPalFrame = 0;
 	private static int currentPalFrameDec = 0;
 	
+	private static boolean hasMultiAudioChannels = false;
+		
+	public static boolean isHasMultiAudioChannels() {
+		return hasMultiAudioChannels;
+	}
+
+	public static void setHasMultiAudioChannels(boolean hasMultiAudioChannels) {
+		JobConfig.hasMultiAudioChannels = hasMultiAudioChannels;
+	}
+	
+	private static int defaultIdAudioTrack = 0;
+	public static int getDefaultIdAudioTrack() {
+		return defaultIdAudioTrack;
+	}
+
+	public static void setDefaultIdAudioTrack(int defaultIdAudioTrack) {
+		JobConfig.defaultIdAudioTrack = defaultIdAudioTrack;
+	}
+
+	private static int defaultIdVideoTrack = 0;
+	
+	
+	public static int getDefaultIdVideoTrack() {
+		return defaultIdVideoTrack;
+	}
+
+	public static void setDefaultIdVideoTrack(int defaultIdVideoTrack) {
+		JobConfig.defaultIdVideoTrack = defaultIdVideoTrack;
+	}
+	
+	private static boolean hasProblematicCodec = false;
+
+	public static boolean isHasProblematicCodec() {
+		return hasProblematicCodec;
+	}
+
+	public static void setHasProblematicCodec(boolean hasProblematicCodec) {
+		JobConfig.hasProblematicCodec = hasProblematicCodec;
+	}
+	
+	private static Vector<StreamTrack> StreamTracksAudio;
+	public static Vector<StreamTrack> getStreamTracksAudio() {
+		return StreamTracksAudio;
+	}
+
+	public static void setStreamTracksAudio(Vector<StreamTrack> streamTracksAudio) {
+		StreamTracksAudio = streamTracksAudio;
+	}
+
+	private static Vector<StreamTrack> StreamTracksVideo;
+	
+	public static Vector<StreamTrack> getStreamTracksVideo() {
+		return StreamTracksVideo;
+	}
+
+	public static void setStreamTracksVideo(Vector<StreamTrack> streamTracksVideo) {
+		StreamTracksVideo = streamTracksVideo;
+	}
+
+	private static StreamTrack audioTrackInfos;
+	public static StreamTrack getAudioTrackInfos() {
+		return audioTrackInfos;
+	}
+
+	public static void setAudioTrackInfos(StreamTrack audioTrackInfos) {
+		JobConfig.audioTrackInfos = audioTrackInfos;
+	}
+
+	private static StreamTrack videoTrackInfos;
+
+	public static StreamTrack getVideoTrackInfos() {
+		return videoTrackInfos;
+	}
+
+	public static void setVideoTrackInfos(StreamTrack videoTrackInfos) {
+		JobConfig.videoTrackInfos = videoTrackInfos;
+	}
+
 	public static void incrementPalFrame() {
 		//currentPalFrame = 1;
 		JobConfig.currentPalFrame++;
@@ -463,7 +542,7 @@ public final class JobConfig {
 		//audio codec
 		try {
 			if(Integer.valueOf(options[13]) < 0 || 
-					Integer.valueOf(options[13]) > 6 ) {
+					Integer.valueOf(options[13]) > 7 ) {
 				options[13] = "3";
 			}
 		} catch (Exception e) {
@@ -839,7 +918,7 @@ public final class JobConfig {
 		JobConfig.audioRate = audioRate;
 	}
 
-	public static int getAmpEnc() {
+	public static double getAmpEnc() {
 		return ampEnc;
 	}
 
@@ -847,7 +926,7 @@ public final class JobConfig {
 		JobConfig.ampEnc = ampEnc;
 	}
 
-	public static int getAmpDec() {
+	public static double getAmpDec() {
 		return ampDec;
 	}
 
