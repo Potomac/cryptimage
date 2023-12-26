@@ -1,3 +1,11 @@
+v1.6.5 2023-12-26
+- Add multi-channel audio management : 
+Cryptimage can now manage and generate multi-audio channels 
+- Add multi video/audio tracks selection : when video file contains several 
+audio languages tracks and several video tracks then a window will 
+allow the user to select video and audio tracks.
+- Add FLAC audio codec in audio/video panel
+
 v1.6.4 2023-04-10
 - Fix bug in "Join" feature when device is not active
 
