@@ -2317,22 +2317,24 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			streamInfos.displayTracksSelector();
 		}
 		
-		if(JobConfig.getAudioTrackInfos().getNumChannels() > 2) {
-			JobConfig.setHasMultiAudioChannels(true);			
-			//showWarningSound();
-		}
-		else {
-			JobConfig.setHasMultiAudioChannels(false);
-		}
-		
-		if(JobConfig.getAudioTrackInfos().getCodecShortName().toLowerCase().equals("eac3") 
-				||  JobConfig.getAudioTrackInfos().getCodecID().toLowerCase().equals("CODEC_ID_EAC3".toLowerCase())
-				||  JobConfig.getAudioTrackInfos().getCodecID().toLowerCase().equals("CODEC_ID_MP2".toLowerCase())				
-				) {
-			JobConfig.setHasProblematicCodec(true);			
-		}
-		else {
-			JobConfig.setHasProblematicCodec(false);
+		if(JobConfig.isVideoHasAudioTrack()) {
+			if(JobConfig.getAudioTrackInfos().getNumChannels() > 2) {
+				JobConfig.setHasMultiAudioChannels(true);			
+				//showWarningSound();
+			}
+			else {
+				JobConfig.setHasMultiAudioChannels(false);
+			}
+			
+			if(JobConfig.getAudioTrackInfos().getCodecShortName().toLowerCase().equals("eac3") 
+					||  JobConfig.getAudioTrackInfos().getCodecID().toLowerCase().equals("CODEC_ID_EAC3".toLowerCase())
+					||  JobConfig.getAudioTrackInfos().getCodecID().toLowerCase().equals("CODEC_ID_MP2".toLowerCase())				
+					) {
+				JobConfig.setHasProblematicCodec(true);			
+			}
+			else {
+				JobConfig.setHasProblematicCodec(false);
+			}
 		}
 		
 		IMediaReader reader = ToolFactory.makeReader(path);
