@@ -436,4 +436,8 @@ public abstract class Syster extends Device {
 		return incrementEven;
 	}
 	
+	public String getDeviceName() {
+		return "Syster";
+	}
+	
 }

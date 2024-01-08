@@ -380,5 +380,9 @@ public abstract class Videocrypt extends Device {
 		}
 		return image;
 	}
+	
+	public String getDeviceName() {
+		return "Videocrypt";
+	}
 
 }

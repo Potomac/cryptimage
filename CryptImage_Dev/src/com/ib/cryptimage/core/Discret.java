@@ -81,4 +81,8 @@ public abstract class Discret extends Device {
 		else return img;
 	}
 	
+	public String getDeviceName() {
+		return "Discret11";
+	}
+	
 }

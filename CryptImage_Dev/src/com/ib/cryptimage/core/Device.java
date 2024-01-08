@@ -35,5 +35,6 @@ public abstract class Device {
 	abstract void closeFileData();
 	abstract void skipFrame();
 	abstract int getKey();
+	abstract String getDeviceName();
 
 }

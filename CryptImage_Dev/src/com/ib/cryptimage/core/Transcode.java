@@ -253,5 +253,9 @@ public class Transcode extends Device {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public String getDeviceName() {
+		return "Transcode";
+	}
 
 }
