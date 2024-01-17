@@ -74,6 +74,11 @@ import com.ib.cryptimage.core.FramesPlayer;
 import com.ib.cryptimage.core.JobConfig;
 import com.ib.cryptimage.core.KeyboardCode;
 import com.ib.cryptimage.core.StreamsFinder;
+import com.ib.cryptimage.core.types.AudioCodecType;
+import com.ib.cryptimage.core.types.ColorType;
+import com.ib.cryptimage.core.types.ExtensionType;
+import com.ib.cryptimage.core.types.SystemType;
+import com.ib.cryptimage.core.types.VideoCodecType;
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
@@ -273,8 +278,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				if(!mainGui.getChkDisableSound().isSelected()){
 				mainGui.getCombAudioCodec().setEnabled(true);
 				mainGui.getCombAudioRate().setEnabled(true);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
-					mainGui.getJcbExtension().setSelectedIndex(2);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== AudioCodecType.WAV){
+					mainGui.getJcbExtension().setSelectedIndex(ExtensionType.MKV);
 					mainGui.getJcbExtension().setEnabled(false);					
 				}
 				else{
@@ -316,8 +321,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkSound().setEnabled(false);
 				mainGui.getCombAudioCodec().setEnabled(false);
 				mainGui.getCombAudioRate().setEnabled(false);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
-					mainGui.getJcbExtension().setSelectedIndex(2);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== AudioCodecType.WAV){
+					mainGui.getJcbExtension().setSelectedIndex(ExtensionType.MKV);
 					mainGui.getJcbExtension().setEnabled(true);
 				}
 			}
@@ -326,8 +331,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getChkSound().setEnabled(true);
 				mainGui.getCombAudioCodec().setEnabled(true);
 				mainGui.getCombAudioRate().setEnabled(true);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
-					mainGui.getJcbExtension().setSelectedIndex(2);
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== AudioCodecType.WAV){
+					mainGui.getJcbExtension().setSelectedIndex(ExtensionType.MKV);
 					mainGui.getJcbExtension().setEnabled(false);
 				}
 				else {
@@ -377,136 +382,53 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 		if(src.equals(this.mainGui.getCbColorMode())){
 			JobConfig.setColorMode(this.mainGui.getCbColorMode().getSelectedIndex());
-			if(this.mainGui.getCbColorMode().getSelectedIndex()==0){
+			if(this.mainGui.getCbColorMode().getSelectedIndex()== ColorType.RGB){
 				this.mainGui.getCbAveragePal().setEnabled(false);
 				JobConfig.getGui().getCardPal().show(JobConfig.getGui().getPanOptionsPalComposite(), "dummy");
 			}
-			if(this.mainGui.getCbColorMode().getSelectedIndex()==1){
+			if(this.mainGui.getCbColorMode().getSelectedIndex()== ColorType.PAL){
 				this.mainGui.getCbAveragePal().setEnabled(true);
 				JobConfig.getGui().getCardPal().show(JobConfig.getGui().getPanOptionsPalComposite(), "dummy");
 			}
-			if(this.mainGui.getCbColorMode().getSelectedIndex()==2){
+			if(this.mainGui.getCbColorMode().getSelectedIndex()== ColorType.SECAM){
 				JobConfig.getGui().getCardPal().show(JobConfig.getGui().getPanOptionsPalComposite(), "dummy");
 			}
-			if(this.mainGui.getCbColorMode().getSelectedIndex()>=2){
+			if(this.mainGui.getCbColorMode().getSelectedIndex() == ColorType.SECAM
+					|| this.mainGui.getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_DEC
+					|| this.mainGui.getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC 
+					|| this.mainGui.getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC_DEC){
 				this.mainGui.getCbAveragePal().setEnabled(false);				
 			}
-			if(this.mainGui.getCbColorMode().getSelectedIndex()>=3){
+			if(this.mainGui.getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_DEC
+					|| this.mainGui.getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC 
+					|| this.mainGui.getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC_DEC){
 				JobConfig.getGui().getCardPal().show(JobConfig.getGui().getPanOptionsPalComposite(), "sampling_rate");
 			}			
 			
 		}		
-		
+
 		if(src.equals(this.mainGui.getCombSystemCrypt())){
-			switch (this.mainGui.getCombSystemCrypt().getSelectedIndex()) {
-			case 0:
-			JobConfig.setSystemCrypt(0);
-			this.mainGui.getCmbPalFreq().setSelectedIndex(1);
-			this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Discret11");
-			this.mainGui.getChkStrictMode().setEnabled(true);
-			//rdiVideoSelected();
-				break;				
-			case 1:
-				JobConfig.setSystemCrypt(1);
-				this.mainGui.getCmbPalFreq().setSelectedIndex(1);
-				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Syster");
-				if(!this.mainGui.getChkStrictMode().isSelected()){
-					setMultiCodeComboBox();
-				}
-				this.mainGui.getChkStrictMode().setSelected(true);
-				if(this.mainGui.getRdiVideo().isSelected()){
-					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
-					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
-					this.mainGui.getRdiDiscretCoding().setSelected(true);
-					this.mainGui.getSlid16bitsWord().setEnabled(true);
-					this.mainGui.getJsp16bitKeyword().setEnabled(true);
-					enableComboAudience();
-				}
-				if(this.mainGui.getRdiPhoto().isSelected()){
-					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
-					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
-					this.mainGui.getRdiDiscretCoding().setSelected(true);
-					this.mainGui.getSlid16bitsWord().setEnabled(true);
-					this.mainGui.getJsp16bitKeyword().setEnabled(true);
-					enableComboAudience();
-				}
-				mainGui.getRdi720().setEnabled(true);
-				mainGui.getRdi768().setEnabled(true);
-				mainGui.getRdi944().setEnabled(true);
-				//setMultiCodeComboBox();
-				this.mainGui.getChkStrictMode().setEnabled(false);
-				break;
-			case 2:
-				JobConfig.setSystemCrypt(2);
-				this.mainGui.getCmbPalFreq().setSelectedIndex(0);
-				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Videocrypt");
-				if(!this.mainGui.getChkStrictMode().isSelected()){
-					setMultiCodeComboBox();
-				}
-				this.mainGui.getChkStrictMode().setSelected(true);
-				if(this.mainGui.getRdiVideo().isSelected()){
-					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
-					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
-					this.mainGui.getRdiDiscretCoding().setSelected(true);
-					this.mainGui.getSlid16bitsWord().setEnabled(true);
-					this.mainGui.getJsp16bitKeyword().setEnabled(true);
-					enableComboAudience();
-				}
-				if(this.mainGui.getRdiPhoto().isSelected()){
-					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
-					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
-					this.mainGui.getRdiDiscretCoding().setSelected(true);
-					this.mainGui.getSlid16bitsWord().setEnabled(true);
-					this.mainGui.getJsp16bitKeyword().setEnabled(true);
-					enableComboAudience();
-				}
-				mainGui.getRdi720().setEnabled(true);
-				mainGui.getRdi768().setEnabled(true);
-				mainGui.getRdi944().setEnabled(true);
-				//setMultiCodeComboBox();
-				this.mainGui.getChkStrictMode().setEnabled(false);			
-				break;	
-			case 3:
-				JobConfig.setSystemCrypt(3);
-				this.mainGui.getCmbPalFreq().setSelectedIndex(1);
-				this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Transcode");
-				if(!this.mainGui.getChkStrictMode().isSelected()){
-					setMultiCodeComboBox();
-				}
-				this.mainGui.getChkStrictMode().setSelected(true);
-				if(this.mainGui.getRdiVideo().isSelected()){
-					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
-					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
-					this.mainGui.getRdiDiscretCoding().setSelected(true);
-					this.mainGui.getSlid16bitsWord().setEnabled(true);
-					this.mainGui.getJsp16bitKeyword().setEnabled(true);
-					enableComboAudience();
-				}
-				if(this.mainGui.getRdiPhoto().isSelected()){
-					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
-					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
-					this.mainGui.getRdiDiscretCoding().setSelected(true);
-					this.mainGui.getSlid16bitsWord().setEnabled(true);
-					this.mainGui.getJsp16bitKeyword().setEnabled(true);
-					enableComboAudience();
-				}
-				mainGui.getRdi720().setEnabled(true);
-				mainGui.getRdi768().setEnabled(true);
-				mainGui.getRdi944().setEnabled(true);
-				//setMultiCodeComboBox();
-				this.mainGui.getChkStrictMode().setEnabled(false);
-				break;
-			default:
-				break;
-			}
+            int combSystemIndex = this.mainGui.getCombSystemCrypt().getSelectedIndex();
+            
+            if(SystemType.DISCRET11 == combSystemIndex) {
+           	 setDiscret11(combSystemIndex);
+            }
+            else if(SystemType.SYSTER == combSystemIndex) {
+           	 setSyster(combSystemIndex);
+            }
+            else if(SystemType.VIDEOCRYPT == combSystemIndex) {
+           	 setVideocrypt(combSystemIndex);
+            }
+            else if(SystemType.TRANSCODE == combSystemIndex) {
+           	 setTranscode(combSystemIndex);
+            } 
 		}
 		
 		if (src.equals(mainGui.getCombAudioCodec())) {
-			if(mainGui.getCombAudioCodec().getSelectedIndex()== 6 || mainGui.getCombAudioCodec().getSelectedIndex()== 7){
-//				if(mainGui.getJcbExtension().getSelectedIndex() != 2){
-//					alertWavCodec();
-//				}				
-				mainGui.getJcbExtension().setSelectedIndex(2);
+			if(mainGui.getCombAudioCodec().getSelectedIndex()== AudioCodecType.WAV 
+					|| mainGui.getCombAudioCodec().getSelectedIndex()== AudioCodecType.FLAC){
+		
+				mainGui.getJcbExtension().setSelectedIndex(ExtensionType.MKV);
 				mainGui.getJcbExtension().setEnabled(false);
 			}
 			else {
@@ -518,20 +440,20 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 		
 		if (src.equals(mainGui.getJcbExtension())) {
-			if (src.getSelectedIndex() == 0
-					&& this.mainGui.getCombCodec().getSelectedIndex() == 3) {
-				this.mainGui.getCombCodec().setSelectedIndex(0);
+			if (src.getSelectedIndex() == ExtensionType.MP4
+					&& this.mainGui.getCombCodec().getSelectedIndex() == VideoCodecType.HUFFYUV) {
+				this.mainGui.getCombCodec().setSelectedIndex(VideoCodecType.H264);
 			}
-			if (src.getSelectedIndex() == 3 || src.getSelectedIndex() == 4) {
-				mainGui.getCombCodec().setSelectedIndex(1);
+			if (src.getSelectedIndex() == ExtensionType.MPEG || src.getSelectedIndex() == ExtensionType.TS) {
+				mainGui.getCombCodec().setSelectedIndex(VideoCodecType.MPEG2);
 				mainGui.getCombCodec().setEnabled(false);
 			} else {
 				mainGui.getCombCodec().setEnabled(true);
 			}
 		} else if (src.equals(mainGui.getCombCodec())) {
-			if (src.getSelectedIndex() == 3
-					&& this.mainGui.getJcbExtension().getSelectedIndex() == 0) {
-				this.mainGui.getJcbExtension().setSelectedIndex(1);
+			if (src.getSelectedIndex() == VideoCodecType.HUFFYUV
+					&& this.mainGui.getJcbExtension().getSelectedIndex() == ExtensionType.MP4) {
+				this.mainGui.getJcbExtension().setSelectedIndex(ExtensionType.AVI);
 			}
 		} else if(src.equals(mainGui.getCombAudience())){
 			if (mainGui.getCombAudience().getSelectedIndex() == 7){
@@ -552,6 +474,107 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		}
 	}
 
+	private void setDiscret11(int index) {
+		JobConfig.setSystemCrypt(index);
+		this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+		this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Discret11");
+		this.mainGui.getChkStrictMode().setEnabled(true);
+	}
+
+	private void setSyster(int index) {
+		JobConfig.setSystemCrypt(index);
+		this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+		this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Syster");
+		if (!this.mainGui.getChkStrictMode().isSelected()) {
+			setMultiCodeComboBox();
+		}
+		this.mainGui.getChkStrictMode().setSelected(true);
+		if (this.mainGui.getRdiVideo().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		if (this.mainGui.getRdiPhoto().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		mainGui.getRdi720().setEnabled(true);
+		mainGui.getRdi768().setEnabled(true);
+		mainGui.getRdi944().setEnabled(true);
+		// setMultiCodeComboBox();
+		this.mainGui.getChkStrictMode().setEnabled(false);
+	}
+
+	private void setVideocrypt(int index) {
+		JobConfig.setSystemCrypt(index);
+		this.mainGui.getCmbPalFreq().setSelectedIndex(0);
+		this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Videocrypt");
+		if (!this.mainGui.getChkStrictMode().isSelected()) {
+			setMultiCodeComboBox();
+		}
+		this.mainGui.getChkStrictMode().setSelected(true);
+		if (this.mainGui.getRdiVideo().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		if (this.mainGui.getRdiPhoto().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		mainGui.getRdi720().setEnabled(true);
+		mainGui.getRdi768().setEnabled(true);
+		mainGui.getRdi944().setEnabled(true);
+		// setMultiCodeComboBox();
+		this.mainGui.getChkStrictMode().setEnabled(false);
+
+	}
+
+	private void setTranscode(int index) {
+		JobConfig.setSystemCrypt(index);
+		this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+		this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Transcode");
+		if (!this.mainGui.getChkStrictMode().isSelected()) {
+			setMultiCodeComboBox();
+		}
+		this.mainGui.getChkStrictMode().setSelected(true);
+		if (this.mainGui.getRdiVideo().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		if (this.mainGui.getRdiPhoto().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		mainGui.getRdi720().setEnabled(true);
+		mainGui.getRdi768().setEnabled(true);
+		mainGui.getRdi944().setEnabled(true);
+		// setMultiCodeComboBox();
+		this.mainGui.getChkStrictMode().setEnabled(false);
+	}
+	
 	private void manageSliders(JSlider src) {
 		
 		
@@ -823,7 +846,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					this.mainGui.getJsp16bitKeyword().setEnabled(true);
 					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 					this.mainGui.getRdiDiscret68705().setEnabled(false);
-					if (mainGui.getCombSystemCrypt().getSelectedIndex() == 0) {
+					if (mainGui.getCombSystemCrypt().getSelectedIndex() == SystemType.DISCRET11) {
 						this.mainGui.getChkStrictMode().setEnabled(true);
 					}
 				}
@@ -872,7 +895,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getRdiDiscretCoding().setSelected(true);
 				this.mainGui.getSlid16bitsWord().setEnabled(true);
 				this.mainGui.getJsp16bitKeyword().setEnabled(true);
-				if (mainGui.getCombSystemCrypt().getSelectedIndex() == 0) {
+				if (mainGui.getCombSystemCrypt().getSelectedIndex() == SystemType.DISCRET11) {
 					this.mainGui.getChkStrictMode().setEnabled(true);
 				}
 				enableComboAudience();
@@ -895,7 +918,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					mainGui.getCombAudioRate().setEnabled(true);
 					mainGui.getChkSound().setEnabled(true);						
 				}
-				if(mainGui.getCombAudioCodec().getSelectedIndex() == 6 && 
+				if(mainGui.getCombAudioCodec().getSelectedIndex() == AudioCodecType.WAV && 
 						!mainGui.getChkDisableSound().isSelected()){
 					mainGui.getJcbExtension().setEnabled(false);
 				}
@@ -905,7 +928,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				//mainGui.getJcbExtension().setEnabled(true);
 				mainGui.getSlidFrames().setEnabled(true);
 				mainGui.getTxtNbFrames().setEnabled(true);
-				if(this.mainGui.getCombSystemCrypt().getSelectedIndex() !=2 && this.mainGui.getCombSystemCrypt().getSelectedIndex() !=1
+				if(this.mainGui.getCombSystemCrypt().getSelectedIndex() != SystemType.VIDEOCRYPT
+					 && this.mainGui.getCombSystemCrypt().getSelectedIndex() != SystemType.SYSTER
 					 && !this.mainGui.getRdiDiscretCorrel().isSelected()){
 					mainGui.getChkStrictMode().setEnabled(true);
 					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
@@ -926,7 +950,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getBtnEnter().setEnabled(false);
 				//mainGui.getBtnOutputFile().setEnabled(false);
 				mainGui.getSlidFrames().setEnabled(true);
-				if(this.mainGui.getCombSystemCrypt().getSelectedIndex() !=1){
+				if(this.mainGui.getCombSystemCrypt().getSelectedIndex() != SystemType.SYSTER){
 					mainGui.getChkStrictMode().setEnabled(true);
 				}
 				mainGui.getChkStrictMode().setSelected(true);
@@ -935,7 +959,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getRdi944().setEnabled(true);
 				mainGui.getChkPlayer().setEnabled(true);
 				mainGui.getChkHorodatage().setEnabled(true);
-				if(mainGui.getCombAudioCodec().getSelectedIndex()== 6){
+				if(mainGui.getCombAudioCodec().getSelectedIndex()== AudioCodecType.WAV){
 					mainGui.getJcbExtension().setEnabled(false);
 				}
 				else{
@@ -1854,7 +1878,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (mainGui.getCombAudience().getSelectedIndex() == 7
 				&& mainGui.getTxtMultiCode().getText().replaceAll("#", "")
 						.replaceAll(" ", "").equals("")
-						&& mainGui.getCombSystemCrypt().getSelectedIndex() == 0) {
+						&& mainGui.getCombSystemCrypt().getSelectedIndex() == SystemType.DISCRET11) {
 			JOptionPane
 					.showMessageDialog(
 							mainGui.getFrame(),
@@ -1862,7 +1886,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 							JobConfig.getRes().getString("manageEnter.errorMulticodeTitle"),
 							JOptionPane.WARNING_MESSAGE);
 		} 
-		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
+		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == SystemType.SYSTER
 				&& mainGui.getTxtSysterEnc().getText().equals("")
 				&& mainGui.getRdiSysterCodingGen().isSelected()
 				&& mainGui.getRdiSysterCodingFile().isSelected()){
@@ -1872,7 +1896,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JobConfig.getRes().getString("manageEnter.errorSysterFileEnc"),
 					JobConfig.getRes().getString("manageEnter.errorSysterFileEncTitle"),
 					JOptionPane.WARNING_MESSAGE);		
-		}else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 2
+		}else if(mainGui.getCombSystemCrypt().getSelectedIndex() == SystemType.VIDEOCRYPT
 				&& mainGui.getTxtVideocryptDec().getText().equals("")
 				&& mainGui.getRdiVideocryptDecodingFile().isSelected()
 				&& mainGui.getRdiVideocryptDecoding().isSelected()){		
@@ -1883,7 +1907,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JobConfig.getRes().getString("manageEnter.errorVideocryptTitle"),
 					JOptionPane.WARNING_MESSAGE);		
 		}
-		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 2
+		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == SystemType.VIDEOCRYPT
 				&& mainGui.getTxtVideocryptEnc().getText().equals("")
 				&& mainGui.getRdiVideocryptCodingFile().isSelected()
 				&& mainGui.getRdiVideocryptCoding().isSelected()){
@@ -1894,7 +1918,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					JobConfig.getRes().getString("manageEnter.errorVideocryptTitle"),
 					JOptionPane.WARNING_MESSAGE);		
 		}
-		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == 1
+		else if(mainGui.getCombSystemCrypt().getSelectedIndex() == SystemType.SYSTER
 				&& mainGui.getTxtSysterDec().getText().equals("")
 				&& mainGui.getRdiSysterDecodingGen().isSelected()
 				&& mainGui.getRdiSysterDeCodingFile().isSelected()){
@@ -1941,7 +1965,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			//discret correl
 			if(this.mainGui.getRdiDiscretCorrel().isSelected()
-					&& JobConfig.getSystemCrypt() == 0){
+					&& JobConfig.getSystemCrypt() == SystemType.DISCRET11){
 				JobConfig.setWantDecCorrel(true);
 				JobConfig.setWantDec(true);
 			}			
@@ -1957,29 +1981,29 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JobConfig.setStrictMode(
 					mainGui.getChkStrictMode().isSelected());
 			
-			if (JobConfig.getSystemCrypt() == 0) {
+			if (JobConfig.getSystemCrypt() == SystemType.DISCRET11) {
 				JobConfig.setPositionSynchro(
 						(int) mainGui.getJspFrameStart().getValue());
-			} else if(JobConfig.getSystemCrypt() == 1) {
+			} else if(JobConfig.getSystemCrypt() == SystemType.SYSTER) {
 				JobConfig.setPositionSynchro(
 						(int) mainGui.getJspFrameStartSyster().getValue());
-			}else if(JobConfig.getSystemCrypt() == 2) {
+			}else if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT) {
 				JobConfig.setPositionSynchro(
 						(int) mainGui.getJspFrameStartVideocrypt().getValue());
 			}
 			
 			//discret dec enc normal
 			if(mainGui.getRdiDiscretDecoding().isSelected()
-					&& JobConfig.getSystemCrypt() == 0){
+					&& JobConfig.getSystemCrypt() == SystemType.DISCRET11){
 				JobConfig.setWantDec(true);
 			}
 			if(mainGui.getRdiDiscretCoding().isSelected() 
-					&& JobConfig.getSystemCrypt() == 0){
+					&& JobConfig.getSystemCrypt() == SystemType.DISCRET11){
 				JobConfig.setWantDec(false);
 			}
 			//syster dec with 68705 search mode
 			if(mainGui.getRdiDiscret68705().isSelected()
-					&& JobConfig.getSystemCrypt() == 0){
+					&& JobConfig.getSystemCrypt() == SystemType.DISCRET11){
 				JobConfig.setWantDec(true);
 				JobConfig.setSearchCode68705(true);
 			}
@@ -1989,7 +2013,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			//syster dec enc
 			if(mainGui.getRdiSysterCodingGen().isSelected()
-					&& JobConfig.getSystemCrypt() == 1){
+					&& JobConfig.getSystemCrypt() == SystemType.SYSTER){
 				JobConfig.setWantDec(false);
 				if(mainGui.getRdiSysterCodingFile().isSelected()){
 					JobConfig.setFileDataEncSyster(
@@ -2012,7 +2036,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}
 			
 			if(mainGui.getRdiSysterDecodingGen().isSelected() 
-					&& JobConfig.getSystemCrypt() == 1){
+					&& JobConfig.getSystemCrypt() == SystemType.SYSTER){
 				JobConfig.setWantDec(true);
 				if(mainGui.getRdiSysterDecodingCorrel().isSelected()){
 					JobConfig.setWantDecCorrel(true);
@@ -2036,7 +2060,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			//videocrypt dec enc
 			if(mainGui.getRdiVideocryptCoding().isSelected()
-					&& JobConfig.getSystemCrypt() == 2){
+					&& JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT){
 				JobConfig.setWantDec(false);
 				if(mainGui.getRdiVideocryptCodingFile().isSelected()){
 					JobConfig.setFileDataEncVideocrypt(
@@ -2057,7 +2081,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}
 			
 			if(mainGui.getRdiVideocryptDecoding().isSelected() 
-					&& JobConfig.getSystemCrypt() == 2){
+					&& JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT){
 				JobConfig.setWantDec(true);
 				if(mainGui.getRdiVideocryptCorrel().isSelected()){
 					JobConfig.setWantDecCorrel(true);					
@@ -2086,16 +2110,16 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			JobConfig.setExtension(
 					mainGui.getJcbExtension().getSelectedItem().toString());	
 			
-			if (JobConfig.getSystemCrypt() == 0) {
+			if (JobConfig.getSystemCrypt() == SystemType.DISCRET11) {
 				JobConfig.setWantSound(mainGui.getChkSound().isSelected());
 				JobConfig.setDisableSound(
 					mainGui.getChkDisableSound().isSelected());
 			}
-			else if(JobConfig.getSystemCrypt() == 1) {
+			else if(JobConfig.getSystemCrypt() == SystemType.SYSTER) {
 				JobConfig.setWantSound(mainGui.getChkSoundSyster().isSelected());
 				JobConfig.setDisableSound(
 					mainGui.getChkDisableSoundSyster().isSelected());
-			}else if(JobConfig.getSystemCrypt() == 2) {
+			}else if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT) {
 				JobConfig.setWantSound(mainGui.getChkSoundVideocrypt().isSelected());
 				JobConfig.setDisableSound(
 					mainGui.getChkDisableSoundVideocrypt().isSelected());
@@ -2137,7 +2161,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JobConfig.setsWidth(768);
 			}
 
-			if(JobConfig.getSystemCrypt() == 3) {//transcode
+			if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE) {//transcode
 				JobConfig.setWantDec(false);
 				JobConfig.setStrictMode(true);
 			}
@@ -2209,6 +2233,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			  mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 	
+	@SuppressWarnings("deprecation")
 	private int getNumFrames(String path){
 			int count = 0;
 
@@ -2284,24 +2309,6 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		      container = null;
 		    }
 		    return count;
-	}
-	
-	private void showWarningSound(){
-		JOptionPane
-		.showMessageDialog(
-				null,
-				JobConfig.getRes().getString("imageSnapListener.multicanalSound"),
-				JobConfig.getRes().getString("imageSnapListener.multicanalSound.title"),
-				JOptionPane.WARNING_MESSAGE);		
-	}
-	
-	private void showWarningEAC3(){
-		JOptionPane
-		.showMessageDialog(
-				null,
-				JobConfig.getRes().getString("imageSnapListener.eac3"),
-				JobConfig.getRes().getString("imageSnapListener.eac3.title"),
-				JOptionPane.WARNING_MESSAGE);		
 	}
 	
 	
@@ -2489,23 +2496,6 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		mainGui.getProgress().setMaximum(nb_frames_def);
 		
 	}
-	
-	private void alertTsM2t() {		
-		mainGui.getTextInfos().setForeground(Color.red);
-		mainGui.getTextInfos().append(JobConfig.getRes().getString("mainGui.alertTsM2t"));
-		this.mainGui.getChkDisableSound().setSelected(true);
-		this.mainGui.getChkSound().setSelected(false);
-		this.mainGui.getChkSound().setEnabled(false);
-		
-		this.mainGui.getChkDisableSoundSyster().setSelected(true);
-		this.mainGui.getChkSoundSyster().setSelected(false);
-		this.mainGui.getChkSoundSyster().setEnabled(false);
-		
-		this.mainGui.getChkDisableSoundVideocrypt().setSelected(true);
-		this.mainGui.getChkSoundVideocrypt().setSelected(false);
-		this.mainGui.getChkSoundVideocrypt().setEnabled(false);
-	}
-
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {			

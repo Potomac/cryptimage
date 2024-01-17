@@ -33,15 +33,10 @@ import java.awt.image.WritableRaster;
  *
  */
 public class Transcode extends Device {
-	
-	
-	private boolean enable;
 	private PalEngine palEngine;
 	private SecamEngine secamEngine;
 	private PalEncoder palEncoder;
 	private PalDecoder palDecoder;
-	private SplitFrames splitFrames;
-	private boolean skip;
 	
 	protected int shiftX;
 	protected int shiftY;

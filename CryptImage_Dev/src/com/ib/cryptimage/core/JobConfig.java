@@ -37,6 +37,9 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import com.ib.cryptimage.core.types.AudioCodecType;
+import com.ib.cryptimage.core.types.SystemType;
+import com.ib.cryptimage.core.types.VideoCodecType;
 import com.ib.cryptimage.gui.MainGui;
 
 public final class JobConfig {
@@ -56,7 +59,7 @@ public final class JobConfig {
 	private static boolean modePhoto = false;
 	private static int audienceLevel = 0;
 	private static int videoBitrate = 2000;
-	private static int videoCodec = 3;
+	private static int videoCodec = VideoCodecType.H264 + 1;
 	private static double perc1 = 0.0167;
 	private static double perc2 = 0.0334;	
 	private static int sWidth = 768;
@@ -80,12 +83,13 @@ public final class JobConfig {
 	private static boolean isMaskedEdge = false;
 	private static int delay1;
 	private static int delay2;
-	private static int audioCodec = 3;
+	private static int audioCodec = AudioCodecType.MP3_192KBS + 1;
 	
 	private static int audioRate = 0;
 	private static double ampEnc = 1;
 	private static double ampDec = 3; //3;
-	private static int systemCrypt = 0;
+	// default system crypt
+	private static int systemCrypt = SystemType.DISCRET11;	
 		
 	private static int tableSyster = 2;
 	private static String fileDataEncSyster ="";
@@ -559,12 +563,12 @@ public final class JobConfig {
 		}
 		// system crypt
 		try {
-			if (Integer.valueOf(options[15]) != 0 && Integer.valueOf(options[15]) != 1
-					 && Integer.valueOf(options[15]) != 2 && Integer.valueOf(options[15]) != 3 ) {
-				options[15] = "0";
+			if (Integer.valueOf(options[15]) != SystemType.DISCRET11 && Integer.valueOf(options[15]) != SystemType.SYSTER
+					 && Integer.valueOf(options[15]) != SystemType.VIDEOCRYPT && Integer.valueOf(options[15]) != SystemType.TRANSCODE ) {
+				options[15] = String.valueOf(SystemType.DISCRET11);
 			}
 		} catch (Exception e) {
-			options[15] = "0";
+			options[15] = String.valueOf(SystemType.DISCRET11);
 		}
 		//version
 		try {

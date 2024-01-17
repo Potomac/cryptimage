@@ -28,15 +28,9 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 //import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.sun.org.apache.xerces.internal.dom.DeepNodeListImpl;
 
 /**
  * @author Mannix54
@@ -475,18 +469,6 @@ public class Discret11Dec extends Discret {
 	}
 	
 	
-	private void showMotifSynchro310() {
-		if (queueLines310.size() > 0) {
-			System.out.println("<310--------------------------");
-			for (int i = 0; i < queueLines310.size(); i++) {
-				System.out.print(queueLines310.toArray()[i] + " ");
-			}
-			System.out.println("");
-			System.out.println("-------------------310>");
-		}
-	}
-	
-	
 	protected void checkMotif(BufferedImage buff) {	
 		
 		int val310 = 0;
@@ -570,14 +552,6 @@ public class Discret11Dec extends Discret {
 		//this.saveIndex11bitsKey = this.index11bitsKey;
 	}
 	
-	private void showMotif622() {
-		System.out.println("<622---------------");
-		for (int i = 0; i < queueLines.size(); i++) {
-			System.out.print(queueLines.toArray()[i] + " ");
-		}	
-		System.out.println("");
-		System.out.println("-------------------622>");
-	}
 	
 	private void checkAudience() {				
 		

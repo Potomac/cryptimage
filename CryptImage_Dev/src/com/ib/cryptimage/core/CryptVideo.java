@@ -36,7 +36,8 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import com.ib.cryptimage.gui.VideoPlayer;
-import com.ib.cryptimage.core.Device;
+import com.ib.cryptimage.core.types.ColorType;
+import com.ib.cryptimage.core.types.SystemType;
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.IAudioSamples;
@@ -90,23 +91,24 @@ public class CryptVideo {
 		
 		
 		
-		if (JobConfig.getSystemCrypt() == 1 || JobConfig.getSystemCrypt() == 2 || JobConfig.getSystemCrypt() == 3 ) {
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
+		if (JobConfig.getSystemCrypt() == SystemType.SYSTER || JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT 
+				|| JobConfig.getSystemCrypt() == SystemType.TRANSCODE ) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.RGB) {
 				this.colorMode = "rgb";
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL) {
 				this.colorMode = "pal";
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.SECAM) {
 				this.colorMode = "secam";
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 3) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC_DEC) {
 				this.colorMode = "pal_composite_encode_and_decode";
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 4) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC) {
 				this.colorMode = "pal_composite_encode_only";
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 5) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_DEC) {
 				this.colorMode = "pal_composite_decode_only";
 			}
 		}
@@ -173,7 +175,7 @@ public class CryptVideo {
 		this.height = reader.getContainer().getStream(0).getStreamCoder()
 				.getHeight();
 		
-		if (JobConfig.isPanAndScan() && JobConfig.getSystemCrypt() == 0 && !JobConfig.isStrictMode()
+		if (JobConfig.isPanAndScan() && JobConfig.getSystemCrypt() == SystemType.DISCRET11 && !JobConfig.isStrictMode()
 				&& !JobConfig.isWantDec()) {
 			if ((float) this.width / (float) this.height > 4f / 3f) {
 				this.width = (int) ((4f / 3f) * (float) this.height);
@@ -182,7 +184,8 @@ public class CryptVideo {
 			}
 		}
 		
-		if (JobConfig.isStretch() && JobConfig.getSystemCrypt() == 0 && !JobConfig.isStrictMode() && !JobConfig.isWantDec()){
+		if (JobConfig.isStretch() && JobConfig.getSystemCrypt() == SystemType.DISCRET11 
+				&& !JobConfig.isStrictMode() && !JobConfig.isWantDec()){
 			this.width = 768;
 			this.height = 576;
 		}
@@ -212,7 +215,7 @@ public class CryptVideo {
 		}
 
 		
-		if (JobConfig.getSystemCrypt() == 0) {
+		if (JobConfig.getSystemCrypt() == SystemType.DISCRET11) {
 			if (this.strictMode) {
 				if (this.isDecoding) {
 					if(JobConfig.isSearchCode68705()) {
@@ -254,7 +257,7 @@ public class CryptVideo {
 				}
 			}
 		}
-		else if (JobConfig.getSystemCrypt() == 1) { //syster mode
+		else if (JobConfig.getSystemCrypt() == SystemType.SYSTER) { //syster mode
 			if(this.isDecoding){
 				if(JobConfig.getGui().getChkSysterReverse().isSelected()) {
 					device = new SysterDecReverse(JobConfig.getTableSyster(),
@@ -275,7 +278,7 @@ public class CryptVideo {
 						JobConfig.getGui().getChkPlayer().isSelected());
 			}
 		}
-		else if(JobConfig.getSystemCrypt() == 3) { //transcode
+		else if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE) { //transcode
 			device = new Transcode();			
 		}		
 		else{ //videocrypt
@@ -322,24 +325,24 @@ public class CryptVideo {
 				}
 			} else if(!this.isDecoding) { //encoding
 				try {
-					if(JobConfig.getSystemCrypt() == 0 && !JobConfig.isSearchCode68705()){
+					if(JobConfig.getSystemCrypt() == SystemType.DISCRET11 && !JobConfig.isSearchCode68705()){
 					vid = new VideoRecorder(outputFilename + info + keyWord
 							+ this.fileAudienceLevel + fileKeyboardCode + "."
 							+ JobConfig.getExtension(), width, height,
 							frameRate, JobConfig.getAudioRate());
 					}
-					else if(JobConfig.getSystemCrypt() == 1) { //syster
+					else if(JobConfig.getSystemCrypt() == SystemType.SYSTER) { //syster
 						vid = new VideoRecorder(outputFilename + info
 								+ "syster" +  "_" + this.colorMode + "."
 								+ JobConfig.getExtension(), width, height,
 								frameRate, JobConfig.getAudioRate());
-					} else if(JobConfig.getSystemCrypt() == 3) {//transcode
+					} else if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE) {//transcode
 						vid = new VideoRecorder(outputFilename + info
 								+ "transcode" +  "_" + this.colorMode + "."
 								+ JobConfig.getExtension(), width, height,
 								frameRate, JobConfig.getAudioRate());
 					}					
-					else{//videocrypt
+					else if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT) {//videocrypt
 						vid = new VideoRecorder(outputFilename + info
 								+ "videocrypt" +  "_" + this.colorMode + "."
 								+ JobConfig.getExtension(), width, height,
@@ -564,7 +567,7 @@ public class CryptVideo {
 						 "." + JobConfig.getExtension());			
 		}
 		else if(!isDecoding){			
-			if(JobConfig.getSystemCrypt() == 0){
+			if(JobConfig.getSystemCrypt() == SystemType.DISCRET11){
 			JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
@@ -573,21 +576,21 @@ public class CryptVideo {
 						this.fileAudienceLevel + fileKeyboardCode
 								+  "." + JobConfig.getExtension());
 			}
-			else if(JobConfig.getSystemCrypt() == 1){
+			else if(JobConfig.getSystemCrypt() == SystemType.SYSTER){
 				
 				JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
 						"syster" + "_" + this.colorMode + "." + JobConfig.getExtension());
-			}else if(JobConfig.getSystemCrypt() == 2){
+			}else if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT){
 				
 				JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
 						+ "\n\r"
 						+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
 						"videocrypt" + "_" + this.colorMode + "." + JobConfig.getExtension());
-			}else if(JobConfig.getSystemCrypt() == 3){
+			}else if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE){
 				
 				JobConfig.getGui().getTextInfos()
 				.setText(JobConfig.getGui().getTextInfos().getText() 
@@ -599,7 +602,7 @@ public class CryptVideo {
 	}
 	
 	public void saveDatFileVideo(){	
-		if (JobConfig.getSystemCrypt() == 0  && !JobConfig.isSearchCode68705()) {
+		if (JobConfig.getSystemCrypt() == SystemType.DISCRET11  && !JobConfig.isSearchCode68705()) {
 			if (isDecoding != true) {
 
 				String word = String.format("%16s", Integer.toBinaryString(this.keyWord)).replace(" ", "0");
@@ -672,7 +675,7 @@ public class CryptVideo {
 	 */
 	private void updateProgress() {	
 		String stats = "";
-		if (JobConfig.getSystemCrypt() == 0 && !JobConfig.isWantDecCorrel()) {
+		if (JobConfig.getSystemCrypt() == SystemType.DISCRET11 && !JobConfig.isWantDecCorrel()) {
 			if (this.strictMode) {
 				stats = JobConfig.getRes().getString("cryptVideo.progress.audience") + device.getAudienceLevel();
 			}
@@ -680,7 +683,7 @@ public class CryptVideo {
 		
 		String messFrames;
 		if(isDecoding){
-			if(JobConfig.getSystemCrypt() == 0 && JobConfig.isSearchCode68705()) {
+			if(JobConfig.getSystemCrypt() == SystemType.DISCRET11 && JobConfig.isSearchCode68705()) {
 				messFrames = JobConfig.getRes().getString("cryptVideo.progress.searchMode68705");
 			}
 			else {

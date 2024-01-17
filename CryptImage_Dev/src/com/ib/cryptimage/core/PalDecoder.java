@@ -586,13 +586,7 @@ public class PalDecoder {
 			i++;
 			j++;
 			
-		}
-		
-		Long timeEnd = System.currentTimeMillis();
-		//System.out.println("temps2 : " + (timeEnd - timeStart)/1000f);
-		
-//		File outputfileFullFrame = new File(imgDest + "_full.png");
-//		ImageIO.write(fullFrame, "png", outputfileFullFrame);
+		}	
 		
 		return fullFrame;
 

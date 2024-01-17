@@ -24,20 +24,11 @@ package com.ib.cryptimage.core;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
 
@@ -57,16 +48,13 @@ public class Discret11ComputePixels {
 	private WritableRaster rasterEven;	
 	private BufferedImage imageOdd;
 	private BufferedImage imageEven;
-	private long[][] matdist;
-	private int seqSol;
-	private BufferedImage imgFinal;
 	private int[] relation = new int[12282];
 	
 	private Vector<Integer> keyVec = new Vector<Integer>();
 	private Map<Integer, Integer> dicKey = new HashMap<Integer,  Integer>();
 	
 	private String keyfull = "";
-	private int sWidth = 768;
+
 	private int[][]  delayArrayFull = new int[12282][286]; //8188
 	private int[] decaPixels = new int[3];
 	
@@ -86,20 +74,14 @@ public class Discret11ComputePixels {
 	private int discretCycle = 0;
 	private int discretSeq = 0;
 	private int minRepetition = 20;
-	
-	private Discret11FindKey keyTemp;
-	
+
 	
 	/**
 	 * 
 	 */
 	public Discret11ComputePixels(int searchMode) {
 		this.searchMode = searchMode;
-		if(this.searchMode == 0) {
-			imgFinal = new BufferedImage(768, 576, BufferedImage.TYPE_3BYTE_BGR);		
-			initDecaPixels(JobConfig.getPerc1(),JobConfig.getPerc2());
-			loadFullArray();
-			
+		if(this.searchMode == 0) {			
 			for (int i = 0; i < 2047; i++) {
 				for (int j = 0; j < 6; j++) {
 					for (int k = 0; k < 286; k++) {					
@@ -246,21 +228,6 @@ public class Discret11ComputePixels {
 	}
 		
 	
-	private void getSamplesOdd() {
-		int i = 0;
-		int val = 0;
-		for (int y = 2; y < 46; y++) {			
-			val = img.getRGB(cord, y);
-			sample[i] = discriminate((((val >>16 ) & 0xFF) + ((val >>8 ) & 0xFF) + (val & 0xFF))/3);
-			
-			System.out.print(sample[i] + " ");
-			i++;
-			y++; // add one to y in order to have only odd lines frame
-		}
-		System.out.println();
-		
-	}
-	
 	private void getSamplesEven() {
 		int i = 0;
 		int val = 0;
@@ -334,7 +301,6 @@ public class Discret11ComputePixels {
 				}
 			}
 		
-		 this.seqSol = incr_opt;
 		 if (incr_opt != -1) {
 			 
 			 keyfull = keyfull + " " + (relation[incr_opt] + 1);
@@ -420,119 +386,6 @@ public class Discret11ComputePixels {
 	}
 	
 	
-	private Map<Integer, Integer> getdicKeyAudience(int aud) {
-		Map<Integer, Integer> obj = null;
-		
-		switch (aud) {
-		case 1:
-			obj = this.dicKey1;
-			break;
-		case 2:
-			obj =  this.dicKey2;
-			break;
-		case 3:
-			obj =  this.dicKey3;
-			break;
-		case 4:
-			obj =  this.dicKey4;
-			break;
-		case 5:
-			obj =  this.dicKey5;
-			break;
-		case 6:
-			obj =  this.dicKey6;
-			break;
-		case 7:
-			obj =  this.dicKey7;
-			break;
-
-		default:
-			obj =  this.dicKey7;
-			break;
-		}
-		
-		return obj;		
-	}
-	
-	
-	private void decryptImgOdd() {
-		// clear image
-		if ( seqSol == -1) {	
-			WritableRaster raster2;
-			raster2 = imgFinal.getRaster();
-			raster = imageOdd.getRaster();
-
-			int ligne = 0;
-
-			for (int i = 0; i < 286; i++) {
-				raster2.setPixels(0, ligne * 2,
-						768, 1,
-						raster.getPixels(0, i + 0, this.sWidth, 1,
-								new int[this.sWidth * 3]));				
-				ligne++;
-			}
-		}
-
-		else {			
-			WritableRaster raster2;
-			raster2 = imgFinal.getRaster();
-			raster = imageOdd.getRaster();
-
-			int ligne = 0;
-
-			for (int i = 0; i < 286; i++) {
-				raster2.setPixels(0, ligne * 2,
-						768 - decaPixels[delayArrayFull[seqSol][i]], 1,
-						raster.getPixels(decaPixels[delayArrayFull[seqSol][i]], i + 0, this.sWidth - decaPixels[delayArrayFull[seqSol][i]], 1,
-								new int[(this.sWidth - decaPixels[delayArrayFull[seqSol][i]]) * 3]));
-				// draw black line at end of delay
-				raster2.setPixels(this.sWidth - decaPixels[delayArrayFull[seqSol][i]], ligne * 2, decaPixels[delayArrayFull[seqSol][i]], 1,
-						getEndPixels(decaPixels[delayArrayFull[seqSol][i]], i));
-				ligne++;
-			}
-		}
-	}
-	
-	private void decryptImgEven() {
-		// clear image
-		if (seqSol == -1) {
-			WritableRaster raster2;
-			raster2 = imgFinal.getRaster();
-			raster = imageEven.getRaster();
-
-			int ligne = 0;
-
-			for (int i = 0; i < 286; i++) {
-				raster2.setPixels(0, ligne * 2 + 1,
-						768, 1,
-						raster.getPixels(0, i, this.sWidth, 1,
-								new int[(this.sWidth) * 3]));
-				// draw black line at start of delay
-				raster2.setPixels(0, ligne * 2 + 1, 0, 1,
-						new int[0 * 3]);
-				ligne++;
-			}			
-			
-		} else {			
-			WritableRaster raster2;
-			raster2 = imgFinal.getRaster();
-			raster = imageEven.getRaster();
-
-			int ligne = 0;
-
-			for (int i = 0; i < 286; i++) {
-				raster2.setPixels(0, ligne * 2 + 1,
-						768 - decaPixels[delayArrayFull[seqSol][i]], 1,
-						raster.getPixels(decaPixels[delayArrayFull[seqSol][i]], i, this.sWidth - decaPixels[delayArrayFull[seqSol][i]], 1,
-								new int[(this.sWidth - decaPixels[delayArrayFull[seqSol][i]]) * 3]));
-				// draw black line at end of delay
-				raster2.setPixels(this.sWidth - decaPixels[delayArrayFull[seqSol][i]], ligne * 2 + 1, decaPixels[delayArrayFull[seqSol][i]], 1,
-						getEndPixels(decaPixels[delayArrayFull[seqSol][i]], i));
-				ligne++;
-			}
-		}
-	}
-	
 	// Calculates the distance between 2 image rows
 	private long distanceClear (int[] tab)
 	{
@@ -586,138 +439,8 @@ public class Discret11ComputePixels {
 		return res;
 	}
 	
-	private int[] getEndPixels(int delay, int y){
-		
-		if(!JobConfig.isMaskedEdge()){
-			return new int[delay * 3];
-		}
-		
-		int[] tabPixels;
-		int[] rgbPixel = new int[3];
-		
-		try {	
-			rgbPixel = raster.getPixel(this.sWidth - 1 - delay, y, 
-					new int[3]);
-		} catch (Exception e) {
-			rgbPixel = raster.getPixel(this.sWidth - delay, y, 
-					new int[3]);
-		}
-					
-		tabPixels = new int[delay * 3];
-		for (int i = 0; i < tabPixels.length; i=i+3) {
-			tabPixels[i] = rgbPixel[0];
-			tabPixels[i+1] = rgbPixel[1];
-			tabPixels[i+2] = rgbPixel[2];
-		}
-		
-		return tabPixels;
-		
-	}
-	
-	/**
-	 * set the 3 shift pixels value for the decaPixels array
-	 * 
-	 * @param perc1 the percentage value of retard 1
-	 * @param perc2 the percentage value of retard 2
-	 */
-	private void initDecaPixels(double perc1, double perc2) {
-		decaPixels[0] = 0;
-		decaPixels[1] = (int) (Math.round(perc1 * this.sWidth)); // previous value : 0.018 0.0167 0.0167
-		decaPixels[2] = (int) (Math.round(perc2 * this.sWidth)); // previous value : 0.036 0.0347 0.0334
 
-		if (decaPixels[1] == 0) {
-			decaPixels[1] = 1;
-		}
-		if (decaPixels[2] == 0) {
-			decaPixels[2] = 2;
-		}
 
-		JobConfig.setDelay1(decaPixels[1]);
-		JobConfig.setDelay2(decaPixels[2]);
-
-	}
-	
-	private void loadFullArray(){		
-		//get the zip file content
-		byte[] buffer = new byte[1024];
-    	try {
-    		//InputStream is = this.getClass().getResourceAsStream("/ressources/delarray.zip");
-    		InputStream is = this.getClass().getResourceAsStream("/ressources/delarray_special.zip");
-			ZipInputStream zis = 
-				new ZipInputStream(is);
-		   	
-			//get the zipped file list entry
-	    	ZipEntry ze = null;
-			try {
-				ze = zis.getNextEntry();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    		
-	    	while(ze!=null){
-	    			
-	    	   String fileName = ze.getName();
-	           File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + fileName);
-	           	            	              
-	           FileOutputStream fos = new FileOutputStream(newFile);             
-
-	            int len;
-	            try {
-					while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	        		
-	            try {
-					fos.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}   
-	            try {
-					ze = zis.getNextEntry();
-					zis.closeEntry();
-			    	zis.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	    	}
-	   	    	    	
-    	} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-    				
-		
-		ObjectInputStream inputStream = null;
-        try{
-            inputStream = new ObjectInputStream(new FileInputStream((System.getProperty("java.io.tmpdir")+ File.separator +"delarray_special.bin")));
-        }catch(IOException e){
-            System.out.println("There was a problem opening the file: " + e);
-            System.exit(0);
-        }
-        
-        try{
-            delayArrayFull = (int [][])inputStream.readObject();       
-            inputStream.close();
-        }catch(Exception e){
-            System.out.println("There was an issue reading from the file: " + e);
-            System.exit(0);
-        }
-        Path path = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"), "delarray_special.bin");
-        
-        try {
-			Files.delete(path);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	public Vector<Integer> getAudienceVec() {
 		return audienceVec;

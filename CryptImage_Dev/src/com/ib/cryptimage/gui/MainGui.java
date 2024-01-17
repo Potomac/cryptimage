@@ -78,6 +78,11 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
 import com.ib.cryptimage.core.JobConfig;
+import com.ib.cryptimage.core.types.AudioCodecType;
+import com.ib.cryptimage.core.types.ColorType;
+import com.ib.cryptimage.core.types.ExtensionType;
+import com.ib.cryptimage.core.types.SystemType;
+import com.ib.cryptimage.core.types.VideoCodecType;
 
 
 /**
@@ -692,12 +697,7 @@ public class MainGui {
 		chkChangeOffsetIncrement.setText(JobConfig.getRes().getString("panSyster.chkOffsetIncrement"));
 		
 		int indexColor = cbColorMode.getSelectedIndex();
-		String[] tabColor = {JobConfig.getRes().getString("cbColorMode.rgb"),
-				JobConfig.getRes().getString("cbColorMode.pal"),
-				JobConfig.getRes().getString("cbColorMode.secam"),
-				JobConfig.getRes().getString("cbColorMode.pal.composite.full"),
-				JobConfig.getRes().getString("cbColorMode.pal.composite.encode"),
-				JobConfig.getRes().getString("cbColorMode.pal.composite.decode")};
+		String[] tabColor = ColorType.getColors();
 		DefaultComboBoxModel<String> modelColor = new DefaultComboBoxModel<String>( tabColor );
 		cbColorMode.setModel(modelColor);
 		cbColorMode.setSelectedIndex(indexColor);		
@@ -876,7 +876,7 @@ public class MainGui {
 		chkStrictMode.setToolTipText(JobConfig.getRes().getString("panMode.tooltip.respectNorme"));
 		
 		lblSystemCrypt = new JLabel(JobConfig.getRes().getString("panMode.lblSystem"));
-		String [] tab = {"Discret11", "Nagravision syster", "Videocrypt", "Transcode"};
+		String [] tab = SystemType.getSystems(); //{"Discret11", "Nagravision syster", "Videocrypt", "Transcode"};
 		combSystemCrypt = new JComboBox<>(tab);
 		combSystemCrypt.addActionListener(controler);
 		
@@ -1142,12 +1142,7 @@ public class MainGui {
 		panColorMode.setBorder(titleColorMode);
 		
 		
-		String[] tab = {JobConfig.getRes().getString("cbColorMode.rgb"),
-				JobConfig.getRes().getString("cbColorMode.pal"),
-				JobConfig.getRes().getString("cbColorMode.secam"),
-				JobConfig.getRes().getString("cbColorMode.pal.composite.full"),
-				JobConfig.getRes().getString("cbColorMode.pal.composite.encode"),
-				JobConfig.getRes().getString("cbColorMode.pal.composite.decode")};
+		String[] tab = ColorType.getColors();
 		cbColorMode = new JComboBox<String>(tab);
 		cbColorMode.addActionListener(controler);
 		
@@ -2758,8 +2753,7 @@ public class MainGui {
 		panRdiVideo.add(rdi944);		
 		
 		labAudioCodec = new JLabel(JobConfig.getRes().getString("panVideo.labAudioCodec"));
-		String[] tabAudio = {"mp3 96 kbs","mp3 128 kbs","mp3 160 kbs",
-				"mp3 192 kbs","mp3 224 kbs","mp3 320 kbs","wav (mkv)", "flac (mkv)"};
+		String[] tabAudio = AudioCodecType.getAudioCodecs();
 		combAudioCodec = new JComboBox<String>(tabAudio);		
 		combAudioCodec.setSelectedIndex(3);
 		combAudioCodec.addActionListener(controler);
@@ -2804,7 +2798,7 @@ public class MainGui {
 		panRdiPixelsRatio.add(rdiStretch);
 		
 		
-		String[] tab = {"h264","mpeg2","divx", "huffyuv", "h264 v2", "FFV1"};
+		String[] tab = VideoCodecType.getVideoCodecs();
 		combCodec = new JComboBox<String>(tab);	
 		combCodec.addActionListener(controler);				
 		labCodec = new JLabel(JobConfig.getRes().getString("panVideo.labCodec"));
@@ -2839,7 +2833,7 @@ public class MainGui {
 		
 		
 		lblExtension = new JLabel(JobConfig.getRes().getString("panVideo.lblExtension"));		
-		String[] tabExtension = {"mp4","avi","mkv", "mpeg", "ts"};
+		String[] tabExtension = ExtensionType.getExtensions();
 		jcbExtension = new JComboBox<String>(tabExtension);
 		jcbExtension.setSelectedIndex(0);
 		jcbExtension.addActionListener(controler);
@@ -3887,7 +3881,7 @@ public class MainGui {
 		return panOptionsPalComposite;
 	}
 
-	public JComboBox getCmbPalFreq() {
+	public JComboBox<Integer> getCmbPalFreq() {
 		return cmbPalFreq;
 	}
 

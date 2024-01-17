@@ -31,6 +31,8 @@ import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IRational;
+import com.ib.cryptimage.core.types.AudioCodecType;
+import com.ib.cryptimage.core.types.VideoCodecType;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 
@@ -85,72 +87,70 @@ public class VideoRecorder {
 		
 				
 		if(JobConfig.getVideoTrackInfos() != null) {
-			switch (JobConfig.getVideoCodec()) {
-			case 1:
+			int videoCodecIndex = JobConfig.getVideoCodec() - 1;
+			
+			if(videoCodecIndex == VideoCodecType.H264) {
 				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
 				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV420P);
 				writer.getContainer().getStream(0).getStreamCoder().setProperty("preset", "medium");
-				break;
-			case 2:
+			}
+			else if(videoCodecIndex == VideoCodecType.MPEG2) {
 				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO,frame_rate, width, height);
-			break;
-			case 3:
+			}
+			else if(videoCodecIndex == VideoCodecType.DIVX) {
 				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG4,frame_rate, width, height);
-				break;
-			case 4:		
+			}
+			else if(videoCodecIndex == VideoCodecType.HUFFYUV) {
 				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFVHUFF,frame_rate, width, height);
-				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.RGB24);			
-				break;
-			case 5:
+				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.RGB24);	
+			}
+			else if(videoCodecIndex == VideoCodecType.H264V2) {
 				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264,frame_rate, width, height);
-				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);			
-				break;
-			case 6:
+				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);		
+			}
+			else if(videoCodecIndex == VideoCodecType.FFV1) {
 				writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_FFV1,frame_rate, width, height);
-				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);	
-				break;
-			default:
-				break;
+				writer.getContainer().getStream(0).getStreamCoder().setPixelType(IPixelFormat.Type.YUV444P);
 			}			
+			
 		}
 		
 				
 		if( this.disableSound != true 
 				&& !JobConfig.isHasMultiAudioChannels() && !JobConfig.isHasProblematicCodec()
 				&& JobConfig.isVideoHasAudioTrack()){
-			switch (JobConfig.getAudioCodec()) {
-			case 1:
+			
+			int audioCodecIndex = JobConfig.getAudioCodec() - 1;
+			
+			if(audioCodecIndex == AudioCodecType.MP3_96KBS) {
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
-				writer.getContainer().getStream(1).getStreamCoder().setBitRate(96*1000);		
-				break;
-			case 2:
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(96*1000);	
+			}
+			else if(audioCodecIndex == AudioCodecType.MP3_128KBS) {
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
-				writer.getContainer().getStream(1).getStreamCoder().setBitRate(128*1000);		
-				break;
-			case 3:
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(128*1000);			
+			}
+			else if(audioCodecIndex == AudioCodecType.MP3_160KBS) {
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
-				writer.getContainer().getStream(1).getStreamCoder().setBitRate(160*1000);		
-				break;
-			case 4:
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(160*1000);			
+			}
+			else if(audioCodecIndex == AudioCodecType.MP3_192KBS) {
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
-				writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);		
-				break;
-			case 5:
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(192*1000);			
+			}
+			else if(audioCodecIndex == AudioCodecType.MP3_224KBS) {
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
-				writer.getContainer().getStream(1).getStreamCoder().setBitRate(224*1000);		
-				break;
-			case 6:
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(224*1000);			
+			}
+			else if(audioCodecIndex == AudioCodecType.MP3_320KBS) {
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_MP3, 2,AUDIORATE);	
-				writer.getContainer().getStream(1).getStreamCoder().setBitRate(320*1000);		
-				break;
-			case 7:
-				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 2,AUDIORATE);
-				break;
-			case 8:
-				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_FLAC, 2,AUDIORATE);				
-				break;	
-			default:
-				break;
+				writer.getContainer().getStream(1).getStreamCoder().setBitRate(320*1000);			
+			}
+			else if(audioCodecIndex == AudioCodecType.WAV) {
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 2,AUDIORATE);		
+			}
+			else if(audioCodecIndex == AudioCodecType.FLAC) {
+				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_FLAC, 2,AUDIORATE);		
 			}		
 		}
 		
@@ -158,7 +158,7 @@ public class VideoRecorder {
 		if( this.disableSound != true 
 				&& (JobConfig.isHasMultiAudioChannels() || JobConfig.isHasProblematicCodec())
 				&& JobConfig.isVideoHasAudioTrack()) {
-			if(JobConfig.getAudioCodec() == 7) { // wav
+			if(JobConfig.getAudioCodec() == (AudioCodecType.WAV + 1)) { // wav
 				writer.addAudioStream(1, 0, ICodec.ID.CODEC_ID_PCM_S16LE, 
 						  JobConfig.getAudioTrackInfos().getNumChannels() , JobConfig.getAudioTrackInfos().getAudioRate());			
 			}

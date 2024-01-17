@@ -32,6 +32,9 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import com.ib.cryptimage.core.types.ColorType;
+import com.ib.cryptimage.core.types.SystemType;
+
 /**
  * @author Mannix54
  *
@@ -47,25 +50,25 @@ public class CryptPhoto {
 	private boolean isGrey = false;
 	
 	public CryptPhoto(){		
-		if (JobConfig.getSystemCrypt() == 1
-				|| JobConfig.getSystemCrypt() == 2 || JobConfig.getSystemCrypt() == 3) {
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
+		if (JobConfig.getSystemCrypt() == SystemType.SYSTER
+				|| JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT || JobConfig.getSystemCrypt() == SystemType.TRANSCODE) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.RGB) {
 				this.colorMode = "rgb";
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL) {
 				this.colorMode = "pal";
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.SECAM) {
 				this.colorMode = "secam";
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 3) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC_DEC) {
 				this.colorMode = "pal_composite_encode_and_decode";				
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 4) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC) {
 				this.colorMode = "pal_composite_encode_only";
 				isGrey = true;
 			}
-			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 5) {
+			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_DEC) {
 				this.colorMode = "pal_composite_decode_only";
 			}
 		}
@@ -129,36 +132,36 @@ public class CryptPhoto {
 		img = imgNew;
 		
 		if(JobConfig.isModePhoto() && JobConfig.isWantDec()){
-			if(JobConfig.getSystemCrypt() == 0 && !JobConfig.isStrictMode())
+			if(JobConfig.getSystemCrypt() == SystemType.DISCRET11 && !JobConfig.isStrictMode())
 			{
 			decPhotoSimpleDiscret(img);
 			}
 			else {
-				if (JobConfig.getSystemCrypt() == 0 && JobConfig.isStrictMode()
+				if (JobConfig.getSystemCrypt() == SystemType.DISCRET11 && JobConfig.isStrictMode()
 						&& JobConfig.isWantDecCorrel()){
 					decPhotoDiscretCorrelStrict(img);
 				}
-				else if (JobConfig.getSystemCrypt() == 0 && JobConfig.isStrictMode()){
+				else if (JobConfig.getSystemCrypt() == SystemType.DISCRET11 && JobConfig.isStrictMode()){
 					decPhotoDiscretStrict(img);
 				}
 			}
 			
-			if(JobConfig.getSystemCrypt() == 1 && JobConfig.isStrictMode()
+			if(JobConfig.getSystemCrypt() == SystemType.SYSTER && JobConfig.isStrictMode()
 					&& !JobConfig.isWantDecCorrel())
 			{
 			decPhotoSyster(img);
-			} else if (JobConfig.getSystemCrypt() == 1 && JobConfig.isStrictMode()
+			} else if (JobConfig.getSystemCrypt() == SystemType.SYSTER && JobConfig.isStrictMode()
 					&& JobConfig.isWantDecCorrel())
 			{
 			decPhotoSysterCorrel(img);
 			}		
 			
 			//videocrypt
-			if(JobConfig.getSystemCrypt() == 2 && JobConfig.isStrictMode()
+			if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT && JobConfig.isStrictMode()
 					&& !JobConfig.isWantDecCorrel())
 			{
 			decPhotoVideocrypt(img);
-			} else if (JobConfig.getSystemCrypt() == 2 && JobConfig.isStrictMode()
+			} else if (JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT && JobConfig.isStrictMode()
 					&& JobConfig.isWantDecCorrel())
 			{
 			decPhotoVideocryptCorrel(img);
@@ -168,24 +171,24 @@ public class CryptPhoto {
 		}
 		
 		else if(JobConfig.isModePhoto() && JobConfig.isWantDec()!=true
-				&& JobConfig.getSystemCrypt() == 0
+				&& JobConfig.getSystemCrypt() == SystemType.DISCRET11
 				&& !JobConfig.isStrictMode()){
 			encPhotoSimpleDiscret(img);
 		}  else if(JobConfig.isModePhoto() && JobConfig.isWantDec() != true
-				&& JobConfig.getSystemCrypt() == 0
+				&& JobConfig.getSystemCrypt() == SystemType.DISCRET11
 				&& JobConfig.isStrictMode()){
 			encPhotoDiscretStrict(img);
 		}
 		else if(JobConfig.isModePhoto() && JobConfig.isWantDec() != true
-				&& JobConfig.getSystemCrypt() == 1){
+				&& JobConfig.getSystemCrypt() == SystemType.SYSTER){
 			encPhotoSyster(img);
 		}else if(JobConfig.isModePhoto() && !JobConfig.isWantDec()
-				&& JobConfig.getSystemCrypt() == 2){
+				&& JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT){
 			encPhotoVideocrypt(img);
 		}
 
 		
-		if(JobConfig.getSystemCrypt() == 3) {
+		if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE) {
 			transcode(img);
 		}
 		
@@ -479,7 +482,7 @@ public class CryptPhoto {
 		}
 		
 		try {
-			if (JobConfig.getSystemCrypt() == 0) {
+			if (JobConfig.getSystemCrypt() == SystemType.DISCRET11) {
 				// retrieve image
 				File outputfile = new File(
 						output + "_c" + 
@@ -502,7 +505,7 @@ public class CryptPhoto {
 		}
 		
 		
-		if (JobConfig.getSystemCrypt() == 2) { //videocrypt
+		if (JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT) { //videocrypt
 			// retrieve image
 			File outputfile = new File(
 					output + "_c" + 
@@ -526,7 +529,7 @@ public class CryptPhoto {
 		}
 		
 		
-		if (JobConfig.getSystemCrypt() == 1) { //syster
+		if (JobConfig.getSystemCrypt() == SystemType.SYSTER) { //syster
 			// retrieve image
 			File outputfile = new File(
 					output + "_c" + 
@@ -550,7 +553,7 @@ public class CryptPhoto {
 		}
 		
 		
-		if (JobConfig.getSystemCrypt() == 0) {
+		if (JobConfig.getSystemCrypt() == SystemType.DISCRET11) {
 			try {
 				File dataFile = new File(
 						output + "_c" + JobConfig.getWord16bits() + "-" + this.key11bits + ".txt");
@@ -598,7 +601,7 @@ public class CryptPhoto {
 			output = file.getParent() + File.separator + fileName;		
 		}
 		
-		if (JobConfig.getSystemCrypt() == 0) {
+		if (JobConfig.getSystemCrypt() == SystemType.DISCRET11) {
 			try {
 				// retrieve image
 				File outputfile = new File(output + "_d" + 
@@ -623,14 +626,17 @@ public class CryptPhoto {
 		else {
 			try {
 				String sys;
-				if(JobConfig.getSystemCrypt() == 3 ) {
+				if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE ) {
 					sys = "transcode";
 				}
-				else if(JobConfig.getSystemCrypt() == 1 ){
+				else if(JobConfig.getSystemCrypt() == SystemType.SYSTER ){
 					sys = "syster";
 				}
-				else{
+				else if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT ){
 					sys = "videocrypt";
+				}
+				else {
+					sys = "";
 				}
 				// retrieve image
 				File outputfile = new File(output + "_d" + 

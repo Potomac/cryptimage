@@ -25,14 +25,10 @@ package com.ib.cryptimage.core;
  * @author Mannix54
  *
  */
-import java.awt.RenderingHints;
-import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.awt.image.RescaleOp;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -193,7 +189,6 @@ public class PalEncoder {
 	
 		
 	private void filter() {
-		long timeStart = System.currentTimeMillis();
 		double [][] values;
 		FilterPixels filt;
 		// Y 6.0 MHz low pass
@@ -404,16 +399,6 @@ public class PalEncoder {
 		for (int y = 0; y < 576; y++) {
 			for (int x = 0; x < 768; x++) {
 				rasterOutput.setPixel(x, y, yuvCalc.convertYUVtoRGB(rasterOutput.getPixel(x, y,
-						pixelTab)));
-			}			
-		}		
-	}
-	
-	private void convertToRGB2(){	
-		WritableRaster rasterYuv = imgInput.getRaster();
-		for (int y = 0; y < 576; y++) {
-			for (int x = 0; x < 768; x++) {
-				rasterYuv.setPixel(x, y, yuvCalc.convertYUVtoRGB(rasterYuv.getPixel(x, y,
 						pixelTab)));
 			}			
 		}		

@@ -28,12 +28,8 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 //import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
-
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 /**
@@ -135,8 +131,6 @@ public class Discret11DecFindKey extends Discret {
 	private Queue<String> queueLines310 = new LinkedList<String>();
 	
 	private Discret11ComputePixels d11Pixels;
-	
-	private int totalFrameCount = 10;
 	
 	
 	/**
@@ -643,8 +637,7 @@ public class Discret11DecFindKey extends Discret {
 	 * @param image the image to be transformed
 	 * @return the transformed image
 	 */
-	public BufferedImage transform(BufferedImage image) {	
-		this.totalFrameCount++;
+	public BufferedImage transform(BufferedImage image) {
 		JobConfig.incrementPalFrame();
 		JobConfig.incrementPalFrameDec();
 		
@@ -700,10 +693,7 @@ public class Discret11DecFindKey extends Discret {
 
 			
 			if(!is310WhiteLine(image) && this.seqFrame == 3) {				
-				d11Pixels.setImg(image, this.audienceLevel);			
-//				if(this.totalFrameCount >= JobConfig.getVideo_frame()) {					
-//					this.get16bitKey();
-//				}
+				d11Pixels.setImg(image, this.audienceLevel);
 			}
 			
 			if (this.currentframePos == 0) {

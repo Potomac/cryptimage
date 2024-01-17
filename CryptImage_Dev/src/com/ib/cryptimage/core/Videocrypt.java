@@ -34,6 +34,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 
+import com.ib.cryptimage.core.types.ColorType;
+
 /**
  * @author Mannix54
  *
@@ -125,22 +127,22 @@ public abstract class Videocrypt extends Device {
 		
 		try {
 			if (!bPreviewMode && JobConfig.isLogVideocrypt()) {				
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 0) {
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.RGB) {
 					colorMode = "rgb";
 				}
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 1) {
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL) {
 					colorMode = "pal";
 				}
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 2) {
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.SECAM) {
 					colorMode = "secam";
 				}
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 3) {
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC_DEC) {
 					colorMode = "pal_composite_encode_and_decode";
 				}
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 4) {
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_ENC) {
 					colorMode = "pal_composite_encode_only";
 				}
-				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == 5) {
+				if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.PAL_COMPOSITE_DEC) {
 					colorMode = "pal_composite_decode_only";
 				}
 				
