@@ -75,6 +75,7 @@ public class Transcode extends Device {
 	}
 
 	@Override
+	public
 	BufferedImage transform(BufferedImage image) {
 		JobConfig.incrementPalFrame();
 		JobConfig.incrementPalFrameDec();
@@ -133,31 +134,31 @@ public class Transcode extends Device {
 	}
 
 	@Override
-	boolean isEnable() {
+	public boolean isEnable() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	int getAudienceLevel() {
+	public int getAudienceLevel() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	int getKey11bits() {
+	public int getKey11bits() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	void closeFileData() {
+	public void closeFileData() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	void skipFrame() {
+	public void skipFrame() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -244,7 +245,7 @@ public class Transcode extends Device {
 	}
 
 	@Override
-	int getKey() {
+	public int getKey() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

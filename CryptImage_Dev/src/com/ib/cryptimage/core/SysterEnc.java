@@ -475,7 +475,7 @@ public class SysterEnc extends Syster {
 		}
 	}
 	
-	protected void closeFileData(){			
+	 public  void closeFileData(){			
 		try {
 			fileOut.flush();
 			fileOut.close();
@@ -486,7 +486,7 @@ public class SysterEnc extends Syster {
 	}
 	
 	@Override
-	void skipFrame() {
+	public void skipFrame() {
 		// TODO Auto-generated method stub		
 		numSkip++;
 		if(!this.bPreviewMode){
@@ -495,25 +495,25 @@ public class SysterEnc extends Syster {
 	}
 
 	@Override
-	boolean isEnable() {
+	public boolean isEnable() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	int getAudienceLevel() {
+	public int getAudienceLevel() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	int getKey11bits() {
+	public int getKey11bits() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	int getKey() {
+	public int getKey() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

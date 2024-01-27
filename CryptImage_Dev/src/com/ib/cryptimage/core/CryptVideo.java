@@ -36,6 +36,8 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import com.ib.cryptimage.gui.VideoPlayer;
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptCore;
 import com.ib.cryptimage.core.types.ColorType;
 import com.ib.cryptimage.core.types.SystemType;
 import com.xuggle.mediatool.IMediaReader;
@@ -78,21 +80,17 @@ public class CryptVideo {
 	SplitFrames splitFrames;
 	private boolean is944 = false;
 	
+	private String eurocryptMode = "";
+	
 	
 	
 	public CryptVideo() {	
-//		if(JobConfig.getGui().getCombSystemCrypt().getSelectedIndex() == 2) {
-//			splitFrames = new SplitFrames(14750000);
-//		}
-//		else {
-//			splitFrames = new SplitFrames(17750000);
-//		}
 		splitFrames = new SplitFrames((int)JobConfig.getGui().getCmbPalFreq().getSelectedItem());
-		
-		
+			
 		
 		if (JobConfig.getSystemCrypt() == SystemType.SYSTER || JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT 
-				|| JobConfig.getSystemCrypt() == SystemType.TRANSCODE ) {
+				|| JobConfig.getSystemCrypt() == SystemType.TRANSCODE 
+				|| JobConfig.getSystemCrypt() == SystemType.EUROCRYPT ) {
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.RGB) {
 				this.colorMode = "rgb";
 			}
@@ -281,7 +279,7 @@ public class CryptVideo {
 		else if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE) { //transcode
 			device = new Transcode();			
 		}		
-		else{ //videocrypt
+		else if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT){ //videocrypt
 			if(this.isDecoding){
 				device = new VideocryptDec(
 						JobConfig.getFileDataDecVideocrypt(),
@@ -294,10 +292,35 @@ public class CryptVideo {
 						JobConfig.getGui().getChkPlayer().isSelected());
 			}
 		}
+		else if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) { //eurocrypt
+			device = new EurocryptCore();
+			
+			if(EurocryptConf.isEurocryptSingleCut) {
+				this.eurocryptMode="single-cut_key-" + EurocryptConf.seedCode;
+				
+				if(EurocryptConf.isEncodeMacDecode576pNoEurocrypt){
+					this.eurocryptMode="dmac_no-eurocrypt-management_" + this.eurocryptMode;
+				}
+			}
+			else if(EurocryptConf.isEurocryptDoubleCut) {
+				this.eurocryptMode="double-cut_key-" + EurocryptConf.seedCode;
+				if(EurocryptConf.isEncodeMacDecode576pNoEurocrypt){
+					this.eurocryptMode="dmac_no-eurocrypt-management_" + this.eurocryptMode;
+				}
+			}
+			else if(EurocryptConf.isDisableEurocrypt && EurocryptConf.isEncodeMacDecode576pNoEurocrypt) {
+				this.eurocryptMode="dmac_no-eurocrypt-management_eurocrypt-disabled";
+			}
+			else if(EurocryptConf.isDisableEurocrypt && EurocryptConf.isEncodeMac) {
+				this.eurocryptMode="eurocrypt-disabled_mac-only";
+			}
+			
+		}	
 		//////
 
 		
-		if(JobConfig.getGui().getRdi944().isSelected() && this.strictMode) {
+		if(JobConfig.getGui().getRdi944().isSelected() && this.strictMode
+		   && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {
 			this.width = 944;
 			this.height = 626;
 			is944 = true;
@@ -348,6 +371,12 @@ public class CryptVideo {
 								+ JobConfig.getExtension(), width, height,
 								frameRate, JobConfig.getAudioRate());
 					}
+					else if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {//eurocrypt						
+						vid = new VideoRecorder(outputFilename + info
+								+ "mac" + "_" + this.eurocryptMode + "."
+								+ JobConfig.getExtension(), width, height,
+								frameRate, JobConfig.getAudioRate());
+					}
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(
@@ -377,7 +406,7 @@ public class CryptVideo {
 		else{
 		BufferedImage bi = save;
 		
-		if(this.strictMode  && !is944 ){
+		if(this.strictMode  && !is944 && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT ){
 			save = getScaledImage(save, this.width, 576);
 			if( vidPlayer.isInverse() == false){
 				if(JobConfig.isHasToBeUnsplit()) {
@@ -389,6 +418,7 @@ public class CryptVideo {
 		else
 		{	if( vidPlayer.isInverse() == false){
 			if(JobConfig.isHasToBeUnsplit() && this.strictMode) {
+
 				buff = splitFrames.unsplitFrames(buff);
 			}
 				bi = this.device.transform(buff);
@@ -396,9 +426,6 @@ public class CryptVideo {
 		}
 			
 		if( vidPlayer.isInverse() == true){	
-//			if(is944) {
-//				save = splitFrames.splitFrames(false, save);
-//			}
 			vidPlayer.addImage(save);
 		}
 		else{
@@ -471,12 +498,9 @@ public class CryptVideo {
 	public void addFrameEnc(BufferedImage buff, int pos, double timingFrame){				
 		frameCount++;
 		if (frameCount < this.positionSynchro) {
-			if (this.strictMode && !is944) {
+			if (this.strictMode && !is944 && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {
 				buff = getScaledImage(buff, 768, 576);
 			}
-//			if(JobConfig.isHasToBeUnsplit() && !JobConfig.getGui().getRdi944().isSelected()) {
-//				//buff = splitFrames.unsplitFrames(buff);
-//			}
 			
 			if(is944 && buff.getWidth() != 944 && buff.getWidth() != 626 && this.strictMode) {
 				if(buff.getWidth() != 768 || buff.getHeight() != 576) {				
@@ -495,7 +519,7 @@ public class CryptVideo {
 			bi = this.device.transform(buff);
 			JobConfig.setReadyTransform(device.isEnable());	
 			if (bi != null) {
-				if(is944 && this.strictMode) {
+				if(is944 && this.strictMode) {			
 					bi = splitFrames.splitFrames(false, bi);
 				}	
 				
@@ -508,19 +532,14 @@ public class CryptVideo {
 	public void addFrameDec(BufferedImage buff, int pos, double timingFrame){			
 		frameCount++;
 		if (frameCount < this.positionSynchro) {
-			if (this.strictMode && !is944) {				
+			if (this.strictMode && !is944 && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {				
 				buff = getScaledImage(buff, 768, 576);
 			}
-//			if(JobConfig.isHasToBeUnsplit() && !JobConfig.getGui().getRdi944().isSelected() ) {
-//				//buff = splitFrames.unsplitFrames(buff);
-//			}
 			
 			if(is944 && buff.getWidth() != 944 && buff.getWidth() != 626 && this.strictMode) {
 				if(buff.getWidth() != 768 || buff.getHeight() != 576) {				
 					buff = getScaledImage(buff, 768, 576);
 				}
-				
-				System.out.println("split");
 				buff = splitFrames.splitFrames(false, buff);
 			}
 			
@@ -533,12 +552,11 @@ public class CryptVideo {
 			BufferedImage bi;
 			if(JobConfig.isHasToBeUnsplit() && this.strictMode) {
 				buff = splitFrames.unsplitFrames(buff);
-				//System.out.println(buff.getWidth() + " " + buff.getHeight());
 			}
 			bi = this.device.transform(buff);
 			JobConfig.setReadyTransform(device.isEnable());	
 			if (bi != null) {
-				if(is944) {
+				if(is944) {				
 					bi = splitFrames.splitFrames(false, bi);
 				}				
 				if(!JobConfig.isSearchCode68705()) {
@@ -598,6 +616,14 @@ public class CryptVideo {
 						+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
 						"transcode" + "_" + this.colorMode + "." + JobConfig.getExtension());
 			}
+			else if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT){
+							
+							JobConfig.getGui().getTextInfos()
+							.setText(JobConfig.getGui().getTextInfos().getText() 
+									+ "\n\r"
+									+ JobConfig.getRes().getString("cryptVideo.progress.fin.codage") + this.outputFilename + "_c" +
+									"mac" + "_" + this.eurocryptMode + "." + JobConfig.getExtension());
+						}
 		}		
 	}
 	
@@ -650,17 +676,23 @@ public class CryptVideo {
 		else {
 			if (isDecoding != true) {
 				String sys, extension = "";
-				if(JobConfig.getGui().getCombSystemCrypt().getSelectedIndex()== 1){
+				if(JobConfig.getGui().getCombSystemCrypt().getSelectedIndex()== SystemType.SYSTER){
 					sys = "_csyster";
 					extension = ".dec";
+					
+					JobConfig.getGui().getTextInfos()
+					.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + JobConfig.getRes().getString("cryptVideo.progress.fin.decodage.logfile")
+							+ this.outputFilename + sys + "_" + this.colorMode + extension);
 				}
-				else{
+				else if(JobConfig.getGui().getCombSystemCrypt().getSelectedIndex()== SystemType.VIDEOCRYPT){
 					sys = "_cvideocrypt";
 					extension = ".vid";
+					
+					JobConfig.getGui().getTextInfos()
+					.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + JobConfig.getRes().getString("cryptVideo.progress.fin.decodage.logfile")
+							+ this.outputFilename + sys + "_" + this.colorMode + extension);
 				}
-				JobConfig.getGui().getTextInfos()
-				.setText(JobConfig.getGui().getTextInfos().getText() + "\n\r" + JobConfig.getRes().getString("cryptVideo.progress.fin.decodage.logfile")
-						+ this.outputFilename + sys + "_" + this.colorMode + extension);
+
 			}
 		}
 	}

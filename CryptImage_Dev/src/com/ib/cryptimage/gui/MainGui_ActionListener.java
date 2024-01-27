@@ -74,6 +74,7 @@ import com.ib.cryptimage.core.FramesPlayer;
 import com.ib.cryptimage.core.JobConfig;
 import com.ib.cryptimage.core.KeyboardCode;
 import com.ib.cryptimage.core.StreamsFinder;
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
 import com.ib.cryptimage.core.types.AudioCodecType;
 import com.ib.cryptimage.core.types.ColorType;
 import com.ib.cryptimage.core.types.ExtensionType;
@@ -419,6 +420,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
             else if(SystemType.VIDEOCRYPT == combSystemIndex) {
            	 setVideocrypt(combSystemIndex);
             }
+            else if(SystemType.EUROCRYPT == combSystemIndex) {
+              	 setEurocrypt(combSystemIndex);
+               }            
             else if(SystemType.TRANSCODE == combSystemIndex) {
            	 setTranscode(combSystemIndex);
             } 
@@ -542,6 +546,41 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		// setMultiCodeComboBox();
 		this.mainGui.getChkStrictMode().setEnabled(false);
 
+	}
+	
+	private void setEurocrypt(int index) {
+		JobConfig.setSystemCrypt(index);
+		this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+		this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Eurocrypt");
+		
+		if (!this.mainGui.getChkStrictMode().isSelected()) {
+			setMultiCodeComboBox();
+		}
+		
+		this.mainGui.getChkStrictMode().setSelected(true);
+		if (this.mainGui.getRdiVideo().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		
+		if (this.mainGui.getRdiPhoto().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		
+		mainGui.getRdi720().setEnabled(true);
+		mainGui.getRdi768().setEnabled(true);
+		mainGui.getRdi944().setEnabled(true);
+		
+		this.mainGui.getChkStrictMode().setEnabled(false);
 	}
 
 	private void setTranscode(int index) {
@@ -2867,7 +2906,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getCombAudioCodec().getSelectedIndex(),
 				this.mainGui.getCombAudioRate().getSelectedItem().toString().replaceAll("Hz", "").trim(),
 				this.mainGui.getCombSystemCrypt().getSelectedIndex(),
-				JobConfig.getLang());			
+				JobConfig.getLang(),
+				EurocryptConf.seedCode);			
 	}
 	
 	private String getTime(int timer){		  

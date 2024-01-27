@@ -177,8 +177,8 @@ public abstract class Videocrypt extends Device {
 		
 	}
 	
-	abstract BufferedImage transform(BufferedImage img);
-	abstract void closeFileData();
+	public abstract BufferedImage transform(BufferedImage img);
+	public abstract void closeFileData();
 	
 	protected void feedLog(int nbFrame, int cuttingPoint){
 		frameLine++;		

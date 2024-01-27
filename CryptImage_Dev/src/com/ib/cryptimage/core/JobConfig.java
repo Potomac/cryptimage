@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
 import com.ib.cryptimage.core.types.AudioCodecType;
 import com.ib.cryptimage.core.types.SystemType;
 import com.ib.cryptimage.core.types.VideoCodecType;
@@ -102,8 +103,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.6.6";
-	private static String releaseDate = "2024-01-03";
+	private static String VERSION = "1.7.0";
+	private static String releaseDate = "2024-01-27";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -244,7 +245,7 @@ public final class JobConfig {
 				+ File.separator + "cryptimage.conf");
 
 		if (config.exists()) {			
-			String[] options = new String[18];
+			String[] options = new String[19];
 			FileInputStream fis;
 			try {
 				fis = new FileInputStream(config);
@@ -256,7 +257,7 @@ public final class JobConfig {
 				int compt = 0;
 
 				try {
-					while ((line = br.readLine()) != null && compt < 18) {
+					while ((line = br.readLine()) != null && compt < 19) {
 						options[compt] = line;
 						compt++;						
 					}
@@ -319,7 +320,8 @@ public final class JobConfig {
 				JobConfig.setLaunch(options[16]);
 				//language
 				JobConfig.setLang(Integer.valueOf(options[17]));
-				
+				//Eurocrypt seed code
+				EurocryptConf.seedCode = options[18];				
 				
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -338,7 +340,7 @@ public final class JobConfig {
 			double delay2, String serial, boolean horodatage, int codecIndex,
 			int bitrate, String extension, String workingDirectory,
 			String multiMode, String cycle, boolean resolution720, int audioCodecValue,
-			String audioRateValue, int systemCrypt, int language) {
+			String audioRateValue, int systemCrypt, int language, String eurocryptSeedCode) {
 
 		try {
 
@@ -386,6 +388,7 @@ public final class JobConfig {
 				bfw.write(systemCrypt + lineSeparator);
 				bfw.write(VERSION + lineSeparator);
 				bfw.write(language + lineSeparator);
+				bfw.write(eurocryptSeedCode + lineSeparator);
 				bfw.close();
 
 				return true;
@@ -564,7 +567,8 @@ public final class JobConfig {
 		// system crypt
 		try {
 			if (Integer.valueOf(options[15]) != SystemType.DISCRET11 && Integer.valueOf(options[15]) != SystemType.SYSTER
-					 && Integer.valueOf(options[15]) != SystemType.VIDEOCRYPT && Integer.valueOf(options[15]) != SystemType.TRANSCODE ) {
+					 && Integer.valueOf(options[15]) != SystemType.VIDEOCRYPT && Integer.valueOf(options[15]) != SystemType.TRANSCODE 
+					 && Integer.valueOf(options[15]) != SystemType.EUROCRYPT ) {
 				options[15] = String.valueOf(SystemType.DISCRET11);
 			}
 		} catch (Exception e) {
@@ -586,6 +590,16 @@ public final class JobConfig {
 			} catch (Exception e) {
 			options[17] = "0";
 				}
+		
+		// Eurocrypt seed code
+		try {
+			if (Integer.valueOf(options[18]) < 0 || Integer.valueOf(options[18]) > 99999999) {
+				options[18] = "12345678";
+				}
+			} catch (Exception e) {
+			options[18] = "12345678";
+				}
+		
 		return options;		
 	}
 	

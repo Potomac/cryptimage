@@ -550,31 +550,31 @@ public class DiscretDecCorrel extends Discret {
 	
 
 	@Override
-	boolean isEnable() {
+	public boolean isEnable() {
 		// TODO Auto-generated method stub
 		return this.enable;
 	}
 
 	@Override
-	int getAudienceLevel() {
+	public int getAudienceLevel() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	int getKey11bits() {
+	public int getKey11bits() {
 		// TODO Auto-generated method stub
 		return seqSol;
 	}
 
 	@Override
-	void closeFileData() {
+	public void closeFileData() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	int getKey() {
+	public int getKey() {
 		// TODO Auto-generated method stub
 		return 0;
 	}	

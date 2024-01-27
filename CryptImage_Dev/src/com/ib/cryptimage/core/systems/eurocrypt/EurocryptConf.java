@@ -14,22 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with CryptImage.  If not, see <http://www.gnu.org/licenses/>
  * 
- * 9 jan. 2024 Author Mannix54
+ * 2024-01-18 Author Mannix54
  * http://ibsoftware.free.fr/cryptimage.php
  */
 
-package com.ib.cryptimage.core.types;
+package com.ib.cryptimage.core.systems.eurocrypt;
 
-public final class SystemType {
+public final class EurocryptConf {
 	
-	public static int DISCRET11 = 0;
-	public static int SYSTER = 1;
-	public static int VIDEOCRYPT = 2;
-	public static int EUROCRYPT = 3;
-	public static int TRANSCODE = 4;
+	public static boolean isEncodeMac = true;
+	public static boolean isEncodeMacDecode576pNoEurocrypt = false;
+	public static boolean isDecodeMac = false;
 	
-	public static String[] getSystems() {
-		return new String[] {"Discret11", "Nagravision syster", "Videocrypt", "MAC-Eurocrypt", "Transcode"};
+	public static boolean isDisableEurocrypt = false;
+	public static boolean isEurocryptSingleCut = true;
+	public static boolean isEurocryptDoubleCut = false;
+	
+	public static String seedCode = "12345678";
+	
+	private static EurocryptGui gui;
+	
+	public static EurocryptGui getGui() {
+		return gui;
 	}
+	
+	public static void setGui(EurocryptGui eurocryptGui) {
+		gui = eurocryptGui;
+	}
+	public static int width = 1344;
+	public static int height = 576;
 
 }

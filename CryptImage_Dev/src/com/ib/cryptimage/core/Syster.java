@@ -122,8 +122,8 @@ public abstract class Syster extends Device {
 		initKeyTable();
 	}
 	
-	abstract BufferedImage transform(BufferedImage img);
-	abstract void closeFileData();
+	public abstract BufferedImage transform(BufferedImage img);
+	public abstract void closeFileData();
 	
 	protected void genOffsetIncrement() {		
 		Random rand = new Random();

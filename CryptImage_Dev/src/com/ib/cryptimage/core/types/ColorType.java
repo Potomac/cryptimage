@@ -20,9 +20,6 @@
 
 package com.ib.cryptimage.core.types;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import com.ib.cryptimage.core.JobConfig;
 
 public class ColorType {

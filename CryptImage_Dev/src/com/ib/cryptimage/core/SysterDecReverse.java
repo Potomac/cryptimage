@@ -385,7 +385,7 @@ public class SysterDecReverse extends Syster {
 	}
 	
 	@Override
-	void closeFileData() {
+	public void closeFileData() {
 		// TODO Auto-generated method stub		
 		if (this.wantCorrel && this.bPreviewMode == false) {
 			try {
@@ -752,7 +752,7 @@ public class SysterDecReverse extends Syster {
 	}	
 		
 		@Override
-		void skipFrame() {
+		public void skipFrame() {
 			// TODO Auto-generated method stub
 			//numSkip++;
 			//numFrames = 0;
@@ -768,25 +768,25 @@ public class SysterDecReverse extends Syster {
 		}
 
 		@Override
-		boolean isEnable() {
+		public boolean isEnable() {
 			// TODO Auto-generated method stub
 			return this.enable;
 		}
 
 		@Override
-		int getAudienceLevel() {
+		public int getAudienceLevel() {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
-		int getKey11bits() {
+		public int getKey11bits() {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
-		int getKey() {
+		public int getKey() {
 			// TODO Auto-generated method stub
 			return 0;
 		}

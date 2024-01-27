@@ -32,6 +32,8 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptCore;
 import com.ib.cryptimage.core.types.ColorType;
 import com.ib.cryptimage.core.types.SystemType;
 
@@ -45,13 +47,15 @@ public class CryptPhoto {
 	private int offset;
 	private int increment;
 	private String colorMode;
+	private String eurocryptMode = "";
 	private boolean is944 = false;
 	private SplitFrames splitFrames;
 	private boolean isGrey = false;
 	
 	public CryptPhoto(){		
 		if (JobConfig.getSystemCrypt() == SystemType.SYSTER
-				|| JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT || JobConfig.getSystemCrypt() == SystemType.TRANSCODE) {
+				|| JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT || JobConfig.getSystemCrypt() == SystemType.TRANSCODE
+				|| JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {
 			if (JobConfig.getGui().getCbColorMode().getSelectedIndex() == ColorType.RGB) {
 				this.colorMode = "rgb";
 			}
@@ -72,17 +76,11 @@ public class CryptPhoto {
 				this.colorMode = "pal_composite_decode_only";
 			}
 		}
-		
-//		if(JobConfig.getGui().getCombSystemCrypt().getSelectedIndex() == 2) {
-//			splitFrames = new SplitFrames(14750000);
-//		}
-//		else {
-//			splitFrames = new SplitFrames(17750000);
-//		}
-		
+	
 		splitFrames = new SplitFrames((int)JobConfig.getGui().getCmbPalFreq().getSelectedItem());
 		
-		if(JobConfig.getGui().getRdi944().isSelected()) {
+		if(JobConfig.getGui().getRdi944().isSelected() 
+				&& JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {
 			is944 = true;
 		}
 				
@@ -192,9 +190,47 @@ public class CryptPhoto {
 			transcode(img);
 		}
 		
+		if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {
+			if(EurocryptConf.isEurocryptSingleCut) {
+				this.eurocryptMode="single-cut_key-" + EurocryptConf.seedCode;
+				
+				if(EurocryptConf.isEncodeMacDecode576pNoEurocrypt){
+					this.eurocryptMode="dmac_no-eurocrypt-management_" + this.eurocryptMode;
+				}
+			}
+			else if(EurocryptConf.isEurocryptDoubleCut) {
+				this.eurocryptMode="double-cut_key-" + EurocryptConf.seedCode;
+				if(EurocryptConf.isEncodeMacDecode576pNoEurocrypt){
+					this.eurocryptMode="dmac_no-eurocrypt-management_" + this.eurocryptMode;
+				}
+			}
+			else if(EurocryptConf.isDisableEurocrypt && EurocryptConf.isEncodeMacDecode576pNoEurocrypt) {
+				this.eurocryptMode="dmac_no-eurocrypt-management_eurocrypt-disabled";
+			}
+			else if(EurocryptConf.isDisableEurocrypt && EurocryptConf.isEncodeMac) {
+				this.eurocryptMode="eurocrypt-disabled_mac-only";
+			}
+			
+			eurocrypt(img);
+		}
+		
 		return true;
 	}
 	
+	private void eurocrypt(BufferedImage img) {
+		Device device;
+		device = new EurocryptCore();
+		BufferedImage imgRes = device.transform(img);
+		
+		if(EurocryptConf.isDecodeMac) {
+			saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);
+		}
+		else {
+			saveCryptImage(imgRes);
+		}
+		
+		
+	}
 	
 	private void transcode(BufferedImage img) {
 		Device device;
@@ -528,6 +564,29 @@ public class CryptPhoto {
 			}
 		}
 		
+		if (JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) { //eurocrypt
+			// retrieve image
+			File outputfile = new File(
+					output + "_c" + 
+			"mac" + "_" + this.eurocryptMode + ".png");
+			try {
+				ImageIO.write(bi, "png", outputfile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane
+				.showMessageDialog(
+						JobConfig.getGui().getFrame(),
+						JobConfig.getRes().getString("cryptPhoto.errorCryptIO"),
+						JobConfig.getRes().getString("cryptPhoto.errorCryptIO.title"),
+						JOptionPane.ERROR_MESSAGE);	
+				return false;
+			}
+			if (JobConfig.isHasGUI()) {
+				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + output + "_c"
+						+ "mac" + "_" + this.eurocryptMode + ".png");
+			}
+		}
+		
 		
 		if (JobConfig.getSystemCrypt() == SystemType.SYSTER) { //syster
 			// retrieve image
@@ -634,6 +693,9 @@ public class CryptPhoto {
 				}
 				else if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT ){
 					sys = "videocrypt";
+				}
+				else if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT ){
+					sys = "mac";
 				}
 				else {
 					sys = "";

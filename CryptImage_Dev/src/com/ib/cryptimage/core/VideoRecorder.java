@@ -31,7 +31,9 @@ import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IRational;
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
 import com.ib.cryptimage.core.types.AudioCodecType;
+import com.ib.cryptimage.core.types.SystemType;
 import com.ib.cryptimage.core.types.VideoCodecType;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
@@ -75,6 +77,12 @@ public class VideoRecorder {
 		if(JobConfig.getsWidth()== 720 && JobConfig.isStrictMode() == true ){
 			this.is720 = true;
 			width = 720;
+		}
+		
+		
+		if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {			
+			width = EurocryptConf.width;
+			height = EurocryptConf.height;		
 		}
 		
 		if(JobConfig.isWantJoinInputOutputFrames()) {
@@ -187,7 +195,8 @@ public class VideoRecorder {
 	}
 	
 	public void addFrame(BufferedImage buff, long timeMilliseconds){		
-		if(this.is720 && !JobConfig.isWantJoinInputOutputFrames()){
+		if(this.is720 && !JobConfig.isWantJoinInputOutputFrames() 
+				&& JobConfig.getSystemCrypt() != SystemType.EUROCRYPT){
 			buff = getScaledImage(buff, 720, 576);		
 		}
 		
@@ -320,7 +329,7 @@ public class VideoRecorder {
 	}
 	
 	public void closeVideo(){
-		if(this.is720){
+		if(this.is720 && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT){
 			IRational ratio = IRational.make(16,15);			 
 			writer.getContainer().getStream(0).setSampleAspectRatio(ratio);
 		}		

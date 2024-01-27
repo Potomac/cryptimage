@@ -30,10 +30,10 @@ import java.awt.image.BufferedImage;
  */
 public abstract class Discret extends Device {
 
-	abstract BufferedImage transform(BufferedImage img);
-	abstract boolean isEnable();
-	abstract int getAudienceLevel();
-	abstract int getKey11bits();
+	public abstract BufferedImage transform(BufferedImage img);
+	public abstract boolean isEnable();
+	public abstract int getAudienceLevel();
+	public abstract int getKey11bits();
 	
 	protected int shiftX;
 	protected int shiftY;

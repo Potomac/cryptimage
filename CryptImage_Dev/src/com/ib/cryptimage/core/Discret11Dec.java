@@ -1194,21 +1194,21 @@ public class Discret11Dec extends Discret {
 
 
 	@Override
-	void closeFileData() {
+	public void closeFileData() {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	void skipFrame() {
+	public void skipFrame() {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	int getKey() {
+	public int getKey() {
 		// TODO Auto-generated method stub
 		return 0;
 	}		

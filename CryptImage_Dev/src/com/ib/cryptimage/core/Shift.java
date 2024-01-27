@@ -44,7 +44,7 @@ public class Shift {
 	}
 	
 	
-	BufferedImage transform(BufferedImage image, int shiftX, int shiftY) {		
+	public BufferedImage transform(BufferedImage image, int shiftX, int shiftY) {		
 		raster = image.getRaster();
 		newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		raster2 = newImage.getRaster();		

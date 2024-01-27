@@ -28,13 +28,13 @@ import java.awt.image.BufferedImage;
  *
  */
 public abstract class Device {		
-	abstract BufferedImage transform(BufferedImage img);
-	abstract boolean isEnable();
-	abstract int getAudienceLevel();
-	abstract int getKey11bits();
-	abstract void closeFileData();
-	abstract void skipFrame();
-	abstract int getKey();
-	abstract String getDeviceName();
+public	abstract BufferedImage transform(BufferedImage img);
+public	abstract boolean isEnable();
+public	abstract int getAudienceLevel();
+public	abstract int getKey11bits();
+public	abstract void closeFileData();
+public	abstract void skipFrame();
+public	abstract int getKey();
+public	abstract String getDeviceName();
 
 }

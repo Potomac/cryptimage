@@ -78,6 +78,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
 import com.ib.cryptimage.core.JobConfig;
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
+import com.ib.cryptimage.core.systems.eurocrypt.EurocryptGui;
 import com.ib.cryptimage.core.types.AudioCodecType;
 import com.ib.cryptimage.core.types.ColorType;
 import com.ib.cryptimage.core.types.ExtensionType;
@@ -375,6 +377,11 @@ public class MainGui {
 		panSystemCrypt.add(panOptionsDiscret11, "Discret11");
 		panSystemCrypt.add(panOptionsSyster, "Syster");
 		panSystemCrypt.add(panVideocryptOptions, "Videocrypt");
+		
+		EurocryptGui eurocryptGui = new EurocryptGui();
+		
+		panSystemCrypt.add(eurocryptGui.getPanOptionsEurocrypt(), "Eurocrypt");
+		
 		panSystemCrypt.add(panOptionsTranscode, "Transcode");
 		
 		tabbedPane = new JTabbedPane();
@@ -436,19 +443,19 @@ public class MainGui {
 			this.slidBitrate.setValue(JobConfig.getVideoBitrate());
 			switch (JobConfig.getExtension()) {
 			case "mp4":
-				this.jcbExtension.setSelectedIndex(0);
+				this.jcbExtension.setSelectedIndex(ExtensionType.MP4);
 				break;
 			case "avi":
-				this.jcbExtension.setSelectedIndex(1);
+				this.jcbExtension.setSelectedIndex(ExtensionType.AVI);
 				break;
 			case "mkv":
-				this.jcbExtension.setSelectedIndex(2);
+				this.jcbExtension.setSelectedIndex(ExtensionType.MKV);
 				break;
 			case "mpeg":
-				this.jcbExtension.setSelectedIndex(3);
+				this.jcbExtension.setSelectedIndex(ExtensionType.MPEG);
 				break;
 			case "ts":
-				this.jcbExtension.setSelectedIndex(4);
+				this.jcbExtension.setSelectedIndex(ExtensionType.TS);
 				break;
 			default:
 				break;
@@ -472,6 +479,8 @@ public class MainGui {
 				this.combAudioRate.setSelectedIndex(1);
 			}
 			this.combSystemCrypt.setSelectedIndex(JobConfig.getSystemCrypt());
+			
+			eurocryptGui.getTxtSeedCode().setText(EurocryptConf.seedCode);
 		}
 		
 		//check documentation
@@ -764,6 +773,9 @@ public class MainGui {
 		rdiLetterbox.setText(JobConfig.getRes().getString("pixelsRatio.letterbox"));
 		rdiPanScan.setText(JobConfig.getRes().getString("pixelsRatio.panScan"));
 		rdiStretch.setText(JobConfig.getRes().getString("pixelsRatio.stretch"));
+		
+		// eurocrypt
+		EurocryptConf.getGui().refreshGui();
 		
 	}
 	
