@@ -10,8 +10,10 @@ Systems simulated are :
 
 - videocrypt (used by Sky TV and by several other broadcasters on astra satellites)
 
-This software allows to encrypt a video file (image and sound) , and allows also a decryption of an encrypted file, by meeting the standard discret11, nagravision syster and videocrypt.
-Besides the ability to reproduce in a digital way these three encryption systems, its second use is to allow the re-use of hardware descramblers by injecting to them an encrypted video file produced by cryptimage.
+- MAC-Eurocrypt
+
+This software allows to encrypt a video file (image and sound) , and allows also a decryption of an encrypted file, by meeting the standard discret11, nagravision syster, videocrypt and MAC-Eurocrypt.
+Besides the ability to reproduce in a digital way these encryption systems, its second use is to allow the re-use of hardware descramblers by injecting to them an encrypted video file produced by cryptimage.
 
 Official web site :
 http://cryptimage.vot.pl
