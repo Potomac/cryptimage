@@ -1161,11 +1161,11 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		String help_name_file = "";
 		if (JobConfig.getUserLanguage().equals("fr")) {
 			help_name_file = "cryptimage_fr.pdf";
-		} else if (JobConfig.getUserLanguage().equals("pl")) {
-			help_name_file = "cryptimage_pl.pdf";
-		} else if (JobConfig.getUserLanguage().equals("en")) {
+		} 
+		else if (JobConfig.getUserLanguage().equals("en")) {
 			help_name_file = "cryptimage_en.pdf";
-		} else {
+		} 
+		else {
 			help_name_file = "cryptimage_en.pdf";
 		}
 		

@@ -512,8 +512,6 @@ public class MainGui {
 			installHelpFile("cryptimage_fr.pdf");
 			// english version
 			installHelpFile("cryptimage_en.pdf");
-			// polish version
-			installHelpFile("cryptimage_pl.pdf");
 		}
 	}
 	
