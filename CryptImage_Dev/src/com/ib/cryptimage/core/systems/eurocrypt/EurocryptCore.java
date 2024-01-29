@@ -108,9 +108,15 @@ public class EurocryptCore extends Device {
 			image = encodeToMac(image);
 			return decodeFromMac(image);
 		}
-		else {
+		else if(EurocryptConf.isDecodeMac) {
 			return decodeFromMac(image);
-		}		
+		}
+		else if(EurocryptConf.isDecode576p) {
+			return decodeFrom576p(image);
+		}
+		else {
+			return image;
+		}
 		
 	}
 	
@@ -132,13 +138,13 @@ public class EurocryptCore extends Device {
 
 		createLumaChromaImages(image);
 		
-		if(EurocryptConf.isEurocryptSingleCut) {
+		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isDecode576p) {
 			assembleChromaLumaSingleCut();
 			generateValues();
 			cutAndRotateSingleCutEncode();
 		}
 		
-		if(EurocryptConf.isEurocryptDoubleCut) {
+		if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isDecode576p) {
 			generateValues();
 			generateValuesDoubleCutLuma();
 			cutAndRotateDoubleCutEncode();
@@ -148,10 +154,10 @@ public class EurocryptCore extends Device {
 		
 		createSoundPart();
 		
-		if(EurocryptConf.isEurocryptSingleCut) {
+		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isDecode576p) {
 			assembleEncodedMacImageSingleCut();
 		}
-		else if(EurocryptConf.isEurocryptDoubleCut) {
+		else if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isDecode576p) {
 				assembleEncodedMacImageDoubleCut();
 			}
 		else {
@@ -217,6 +223,50 @@ public class EurocryptCore extends Device {
 		return newImage;
 	}
 
+	private BufferedImage decodeFrom576p(BufferedImage image) {
+		image = this.encodeToMac(image);
+		
+		if(EurocryptConf.isEurocryptSingleCut) {
+			newImageSingleCut =  extractChromaLumaSingleCut(image);
+			generateValues();
+			cutAndRotateSingleCutDecode();
+			
+			raster2Mac = image.getRaster();
+			raster1SingleCut = newImageSingleCutRotated.getRaster();
+			
+			raster2Mac.setPixels(192, 0, 1152, 576, raster1SingleCut.getPixels(0, 0, 1152, 576, new int[1152 * 576 * 3]));			
+			
+		}		
+		
+		if(EurocryptConf.isEurocryptDoubleCut) {
+			newImageDoubleCut =  extractChromaLumaDoubleCut(image);
+			generateValues();
+			generateValuesDoubleCutLuma();
+			cutAndRotateDoubleCutDecode();
+			
+			raster2Mac = image.getRaster();
+			raster1DoubleCut = newImageDoubleCutRotated.getRaster();
+			
+			raster2Mac.setPixels(192, 0, 1152, 576, raster1DoubleCut.getPixels(0, 0, 1152, 576, new int[1152 * 576 * 3]));			
+			
+		}	
+		
+		// extract chroma part
+		newImageChromaPart = extractChromaPart(image);
+		
+		// extract luma part
+		newImageLumaPart = extractLumaPart(image);
+		
+		// assemble chroma and luma parts
+		newImage = assembleDecodedMacImage();
+		
+		
+		EurocryptConf.width = newImage.getWidth();
+		EurocryptConf.height = newImage.getHeight();
+		
+		return newImage;
+	}
+	
 	
 	private void createSoundPart() {	
 		newImageSoundPart = new BufferedImage(192, 576, BufferedImage.TYPE_3BYTE_BGR);

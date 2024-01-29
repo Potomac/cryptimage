@@ -47,10 +47,11 @@ public class EurocryptGui {
 	
 	private TitledBorder titleMacOptions;	
 	private JPanel panRdiMac;
+	
 	private JRadioButton rdiMacCoding;
-
 	private JRadioButton rdiMacCoding576p;
 	private JRadioButton rdiMacDecoding;
+	private JRadioButton rdiMacDecoding576p;
 
 	private TitledBorder titleEurocryptModes;
 	private JPanel panEurocryptModes;
@@ -101,10 +102,14 @@ public class EurocryptGui {
 		rdiMacDecoding = new JRadioButton(res.getString("panEurocrypt.mac.options.decode"));
 		rdiMacDecoding.addActionListener(eurocryptListener);
 		
+		rdiMacDecoding576p = new JRadioButton(res.getString("panEurocrypt.mac.options.decode576p"));
+		rdiMacDecoding576p.addActionListener(eurocryptListener);
+		
 		ButtonGroup btnGroupMac = new ButtonGroup();
 		btnGroupMac.add(rdiMacCoding);
 		btnGroupMac.add(rdiMacCoding576p);
 		btnGroupMac.add(rdiMacDecoding);
+		btnGroupMac.add(rdiMacDecoding576p);
 		
 		//Mac coding placement
 		JPanel panRdiMacCoding = new JPanel();
@@ -129,6 +134,14 @@ public class EurocryptGui {
 				rdiMacDecoding,
 				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
 				0, 2,
+				1,1,
+				1,1,
+				1, 1,1,1);
+		this.placerComposants(panRdiMacCoding,
+				gbl,
+				rdiMacDecoding576p,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 3,
 				1,1,
 				1,1,
 				1, 1,1,1);
@@ -268,6 +281,7 @@ public class EurocryptGui {
 		rdiMacCoding.setText(res.getString("panEurocrypt.mac.options.encode.toMac"));
 		rdiMacCoding576p.setText(res.getString("panEurocrypt.mac.options.encode.decode"));
 		rdiMacDecoding.setText(res.getString("panEurocrypt.mac.options.decode"));
+		rdiMacDecoding576p.setText(res.getString("panEurocrypt.mac.options.decode576p"));
 		
 		rdiEurocryptDisable.setText(res.getString("panEurocrypt.eurocrypt.options.disable"));
 		rdiEurocryptSingleCut.setText(res.getString("panEurocrypt.eurocrypt.options.singleCut"));
@@ -331,6 +345,10 @@ public class EurocryptGui {
 
 	public JRadioButton getRdiMacDecoding() {
 		return rdiMacDecoding;
+	}
+
+	public JRadioButton getRdiMacDecoding576p() {
+		return rdiMacDecoding576p;
 	}
 
 	public JRadioButton getRdiEurocryptDisable() {

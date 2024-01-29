@@ -25,6 +25,7 @@ public final class EurocryptConf {
 	public static boolean isEncodeMac = true;
 	public static boolean isEncodeMacDecode576pNoEurocrypt = false;
 	public static boolean isDecodeMac = false;
+	public static boolean isDecode576p = false;
 	
 	public static boolean isDisableEurocrypt = false;
 	public static boolean isEurocryptSingleCut = true;

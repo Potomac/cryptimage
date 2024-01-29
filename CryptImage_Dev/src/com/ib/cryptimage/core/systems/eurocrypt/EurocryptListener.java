@@ -78,6 +78,7 @@ public class EurocryptListener implements ActionListener, DocumentListener {
 				EurocryptConf.isEncodeMac = true;
 				EurocryptConf.isEncodeMacDecode576pNoEurocrypt = false;
 				EurocryptConf.isDecodeMac = false;
+				EurocryptConf.isDecode576p = false;
 				
 				JobConfig.setWantDec(false);
 				EurocryptConf.width = 1344;
@@ -88,6 +89,7 @@ public class EurocryptListener implements ActionListener, DocumentListener {
 				EurocryptConf.isEncodeMac = false;
 				EurocryptConf.isEncodeMacDecode576pNoEurocrypt = true;
 				EurocryptConf.isDecodeMac = false;
+				EurocryptConf.isDecode576p = false;
 				
 				EurocryptConf.width = 768;
 				
@@ -99,6 +101,19 @@ public class EurocryptListener implements ActionListener, DocumentListener {
 				EurocryptConf.isEncodeMac = false;
 				EurocryptConf.isEncodeMacDecode576pNoEurocrypt = false;
 				EurocryptConf.isDecodeMac = true;
+				EurocryptConf.isDecode576p = false;
+				
+				EurocryptConf.width = 768;
+				
+				JobConfig.setWantDec(true);
+			}		
+	    }
+		else if(src.equals(this.eurocryptGui.getRdiMacDecoding576p())){
+			if(src.isSelected()){
+				EurocryptConf.isEncodeMac = false;
+				EurocryptConf.isEncodeMacDecode576pNoEurocrypt = false;
+				EurocryptConf.isDecodeMac = false;
+				EurocryptConf.isDecode576p = true;
 				
 				EurocryptConf.width = 768;
 				
