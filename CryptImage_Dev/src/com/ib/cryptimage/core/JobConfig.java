@@ -132,7 +132,17 @@ public final class JobConfig {
 	private static int currentPalFrameDec = 0;
 	
 	private static boolean hasMultiAudioChannels = false;
+	
+	private static int nbFrames = 0;
 		
+	public static int getNbFrames() {
+		return nbFrames;
+	}
+
+	public static void setNbFrames(int nbFrames) {
+		JobConfig.nbFrames = nbFrames;
+	}
+
 	public static boolean isHasMultiAudioChannels() {
 		return hasMultiAudioChannels;
 	}

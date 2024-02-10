@@ -25,12 +25,14 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.JRadioButton;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import com.ib.cryptimage.core.JobConfig;
 
-public class EurocryptListener implements ActionListener, DocumentListener {
+public class EurocryptListener implements ActionListener, DocumentListener, ChangeListener {
 	
 	private EurocryptGui eurocryptGui;
 	
@@ -139,7 +141,38 @@ public class EurocryptListener implements ActionListener, DocumentListener {
 				EurocryptConf.isEurocryptSingleCut = false;
 				EurocryptConf.isEurocryptDoubleCut = true;
 			}		
-	    }	
+	    }
+
+	@Override
+	public void stateChanged(ChangeEvent arg0) {
+		// TODO Auto-generated method stub
+		String time = getTime((int)(EurocryptConf.getGui().getRangeSlider().getValue()/JobConfig.getFrameRate()));
+		EurocryptConf.getGui().getTxtValueMinRangeSlider()
+		                       .setText(EurocryptConf.getGui().getRangeSlider().getValue() + " (" + time + ")");
+		
+		time = getTime((int)(EurocryptConf.getGui().getRangeSlider().getUpperValue()/JobConfig.getFrameRate()));
+		EurocryptConf.getGui().getTxtValueMaxRangeSlider()
+		                       .setText(EurocryptConf.getGui().getRangeSlider().getUpperValue() + " (" + time + ")") ;
+		
+        EurocryptConf.selectedFrameStart = EurocryptConf.getGui().getRangeSlider().getValue();
+        EurocryptConf.selectedFrameEnd = EurocryptConf.getGui().getRangeSlider().getUpperValue();
+		
+		//EurocryptConf.frameStart = EurocryptConf.getGui().getRangeSlider().getValue();
+		//EurocryptConf.frameEnd = EurocryptConf.getGui().getRangeSlider().getUpperValue();
+		
+	}	
+	
+	private String getTime(int timer) {
+		int hours = timer / 3600; // get the amount of hours from the seconds
+		int remainder = timer % 3600; // get the rest in seconds
+		int minutes = remainder / 60; // get the amount of minutes from the rest
+		int seconds = remainder % 60; // get the new rest
+		String disHour = (hours < 10 ? "0" : "") + hours; // get hours and add "0" before if lower than 10
+		String disMinu = (minutes < 10 ? "0" : "") + minutes; // get minutes and add "0" before if lower than 10
+		String disSec = (seconds < 10 ? "0" : "") + seconds; // get seconds and add "0" before if lower than 10
+		String formattedTime = disHour + ":" + disMinu + ":" + disSec; // get the whole time
+		return formattedTime;
+	}
 	
 
 	}

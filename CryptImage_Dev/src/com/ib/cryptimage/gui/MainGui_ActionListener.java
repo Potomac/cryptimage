@@ -2534,6 +2534,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 		mainGui.getProgress().setMaximum(nb_frames_def);
 		
+		JobConfig.setNbFrames(nb_frames_def);
+		JobConfig.getGui().refreshPanSlidersNbFrames();
+		
 	}
 	
 	@Override

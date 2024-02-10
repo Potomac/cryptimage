@@ -572,6 +572,7 @@ public class MainGui {
 		}
 	}
 	
+	
 	public void refreshGUI(){
 		//menu bar
 		mFile.setText(JobConfig.getRes().getString("mFile"));
@@ -775,6 +776,12 @@ public class MainGui {
 		// eurocrypt
 		EurocryptConf.getGui().refreshGui();
 		
+	}
+	
+	public void refreshPanSlidersNbFrames() {
+		EurocryptConf.frameStart = 1;
+		EurocryptConf.frameEnd = JobConfig.getNbFrames();
+		EurocryptConf.getGui().refreshSlider();
 	}
 	
 	private void createMenu(){				

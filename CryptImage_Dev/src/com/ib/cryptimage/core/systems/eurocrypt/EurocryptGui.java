@@ -38,6 +38,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
 import com.ib.cryptimage.core.JobConfig;
+import com.ib.cryptimage.core.RangeSlider;
 
 
 public class EurocryptGui {
@@ -66,6 +67,11 @@ public class EurocryptGui {
 	private JFormattedTextField txtSeedCode;
 	private JLabel lblSeedCode;
 	private ResourceBundle res;
+	
+	private RangeSlider rangeSlider;
+	private JLabel lblRangeSlider;
+    private JTextField txtValueMinRangeSlider;
+    private JTextField txtValueMaxRangeSlider;
 	
 	
 	public EurocryptGui() {
@@ -207,6 +213,70 @@ public class EurocryptGui {
             
             panSeedCode.add(lblSeedCode);
             panSeedCode.add(txtSeedCode);
+            
+            // JRangeSlider
+            rangeSlider = new RangeSlider();            
+            rangeSlider.setMinimum(1);
+            rangeSlider.setMaximum(200000);
+            rangeSlider.setValue(1);
+            rangeSlider.setUpperValue(200000);
+            //rangeSlider.setPreferredSize(new Dimension(290, rangeSlider.getPreferredSize().height));
+            
+            lblRangeSlider = new JLabel(res.getString("rangeSlider.lblFrameStart"));
+        
+
+            txtValueMinRangeSlider = new JTextField(12);
+            txtValueMinRangeSlider.setEditable(false);
+            txtValueMinRangeSlider.setHorizontalAlignment(JLabel.LEFT);
+            txtValueMaxRangeSlider = new JTextField(12);
+            txtValueMaxRangeSlider.setEditable(false);
+            
+            String time = getTime((int) (rangeSlider.getValue()/JobConfig.getFrameRate()));            
+            txtValueMinRangeSlider.setText(rangeSlider.getValue() + " (" + time + ")");
+            
+            time = getTime((int) (rangeSlider.getUpperValue()/JobConfig.getFrameRate()));   
+            txtValueMaxRangeSlider.setText(rangeSlider.getUpperValue() + " (" + time + ")");
+            
+            rangeSlider.addChangeListener(eurocryptListener);
+            
+            JPanel panRangeSlider = new JPanel();
+            
+
+    		this.placerComposants(panRangeSlider,
+    				gbl,
+    				lblRangeSlider,
+    				GridBagConstraints.WEST, GridBagConstraints.EAST,
+    				0, 0,
+    				1,1,
+    				0.1,1,
+    				1, 1,1,1);
+    		this.placerComposants(panRangeSlider,
+    				gbl,
+    				txtValueMinRangeSlider,
+    				GridBagConstraints.BASELINE_TRAILING, GridBagConstraints.NONE,
+    				0, 1,
+    				1,1,
+    				0.1,1,
+    				1, 1,1,1);
+    		this.placerComposants(panRangeSlider,
+    				gbl,
+    				rangeSlider,
+    				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+    				1, 1,
+    				1,1,
+    				0.8,1,
+    				1, 1,1,1);
+
+    		this.placerComposants(panRangeSlider,
+    				gbl,
+    				txtValueMaxRangeSlider,
+    				GridBagConstraints.WEST, GridBagConstraints.NONE,
+    				2, 1,
+    				1,1,
+    				0.1,1,
+    				1, 1,1,1);
+            
+            
 		
 		// eurocrypt modes panel placement
 		this.placerComposants(panEurocryptModes,
@@ -245,6 +315,15 @@ public class EurocryptGui {
 				1,1,
 				1, 1,1,1);
 		
+		this.placerComposants(panEurocryptModes,
+				gbl,
+				panRangeSlider,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+				0, 4,
+				1,1,
+				1,1,
+				1, 1,1,1);
+		
 		// global panel placement		
 		this.placerComposants(panOptionsEurocrypt,
 				gbl,
@@ -258,9 +337,9 @@ public class EurocryptGui {
 		this.placerComposants(panOptionsEurocrypt,
 				gbl,
 				panEurocryptModes,
-				GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 				0, 1,
-				1,1,
+				2,1,
 				0.5,0.5,
 				1, 1,1,1);
 
@@ -286,7 +365,18 @@ public class EurocryptGui {
 		rdiEurocryptDisable.setText(res.getString("panEurocrypt.eurocrypt.options.disable"));
 		rdiEurocryptSingleCut.setText(res.getString("panEurocrypt.eurocrypt.options.singleCut"));
 		rdiEurocryptDoubleCut.setText(res.getString("panEurocrypt.eurocrypt.options.doubleCut"));
-		lblSeedCode.setText(res.getString("panEurocrypt.eurocrypt.options.seed"));		
+		lblSeedCode.setText(res.getString("panEurocrypt.eurocrypt.options.seed"));
+		lblRangeSlider.setText(res.getString("rangeSlider.lblFrameStart"));
+	}
+	
+	public void refreshSlider() {		
+        rangeSlider.setMinimum(EurocryptConf.frameStart);
+        rangeSlider.setMaximum(EurocryptConf.frameEnd);
+        rangeSlider.setValue(EurocryptConf.frameStart);
+        rangeSlider.setUpperValue(EurocryptConf.frameEnd);
+        
+        EurocryptConf.selectedFrameStart = EurocryptConf.frameStart;
+        EurocryptConf.selectedFrameEnd = EurocryptConf.frameEnd;
 	}
 	
 	/**
@@ -365,6 +455,31 @@ public class EurocryptGui {
 
 	public JFormattedTextField getTxtSeedCode() {
 		return txtSeedCode;
+	}
+	
+    public RangeSlider getRangeSlider() {
+		return rangeSlider;
+	}
+
+	public JTextField getTxtValueMinRangeSlider() {
+		return txtValueMinRangeSlider;
+	}
+
+	public JTextField getTxtValueMaxRangeSlider() {
+		return txtValueMaxRangeSlider;
+	}
+
+	
+	private String getTime(int timer) {
+		int hours = timer / 3600; // get the amount of hours from the seconds
+		int remainder = timer % 3600; // get the rest in seconds
+		int minutes = remainder / 60; // get the amount of minutes from the rest
+		int seconds = remainder % 60; // get the new rest
+		String disHour = (hours < 10 ? "0" : "") + hours; // get hours and add "0" before if lower than 10
+		String disMinu = (minutes < 10 ? "0" : "") + minutes; // get minutes and add "0" before if lower than 10
+		String disSec = (seconds < 10 ? "0" : "") + seconds; // get seconds and add "0" before if lower than 10
+		String formattedTime = disHour + ":" + disMinu + ":" + disSec; // get the whole time
+		return formattedTime;
 	}
 	
 }

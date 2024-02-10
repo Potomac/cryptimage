@@ -44,5 +44,11 @@ public final class EurocryptConf {
 	}
 	public static int width = 1344;
 	public static int height = 576;
+	
+	public static int frameStart = 1;
+	public static int frameEnd = 200000;
+	
+	public static int selectedFrameStart = 1;
+	public static int selectedFrameEnd = 200000;
 
 }

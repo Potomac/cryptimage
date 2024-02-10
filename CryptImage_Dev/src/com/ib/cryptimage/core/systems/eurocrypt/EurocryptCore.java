@@ -24,6 +24,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.util.Random;
 
@@ -45,9 +46,14 @@ public class EurocryptCore extends Device {
 	private int[] valTabSound = new int[331776];
 	private int rangeStart;
 	private int rangeEnd;
-	Random rand;
-	Random randDoubleCut;
-	Random randSound;
+	private Random rand;
+	private Random randSound;
+	private Random randVal;
+	private int tagValue = 0;
+	private boolean okDecodeTag = false;
+	private int[] backupTag768 = new int[768 * 3];
+	private int[] backupTag1152 = new int[1152 * 3];
+	private BufferedImage tagImage;
 	
 	WritableRaster raster;
 	WritableRaster raster2;
@@ -66,6 +72,7 @@ public class EurocryptCore extends Device {
 	WritableRaster raster2Mac;	
 	WritableRaster raster2SingleCut;
 	WritableRaster raster2DoubleCut;
+	WritableRaster rasterRestoreTag;
 	
 	BufferedImage newImage;		
 	BufferedImage newImageMac;
@@ -76,6 +83,7 @@ public class EurocryptCore extends Device {
 	BufferedImage newImageDoubleCut;
 	BufferedImage newImageSingleCutRotated;
 	BufferedImage newImageDoubleCutRotated;	
+	int frameEurocrypt = 0;
 	
     public EurocryptCore() {
 		shift = new Shift();		
@@ -86,7 +94,7 @@ public class EurocryptCore extends Device {
 		this.rangeEnd = 215;	
 
 		this.rand = new Random(Integer.valueOf(EurocryptConf.seedCode));
-	    this.randDoubleCut = new Random(Integer.valueOf(EurocryptConf.seedCode));
+		this.randVal = new Random(Integer.valueOf(EurocryptConf.seedCode));
 		this.randSound = new Random(Integer.valueOf(EurocryptConf.seedCode));
 		
 	}
@@ -99,14 +107,29 @@ public class EurocryptCore extends Device {
 
 	@Override
 	public BufferedImage transform(BufferedImage image) {
+		frameEurocrypt++;
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		
 		if(EurocryptConf.isEncodeMac) {
 			return encodeToMac(image);
 		}
-		else if(EurocryptConf.isEncodeMacDecode576pNoEurocrypt) {
+		else if(EurocryptConf.isEncodeMacDecode576pNoEurocrypt) {			
 			image = encodeToMac(image);
-			return decodeFromMac(image);
+			
+//			// backup tag
+//			backupTag1152 = image.getRaster().getPixels(192, 0, 1152, 1, new int[1152 * 3]);		
+//			tagImage = new BufferedImage(1152, 1, BufferedImage.TYPE_3BYTE_BGR);
+//			tagImage.getRaster().setPixels(0, 0, 1152, 1, backupTag1152);
+//			
+//			tagImage = getResizeImage(tagImage, 768, 1);			
+						
+			image = decodeFromMac(image);
+			
+//			// restore tag
+//			image.getRaster().setPixels(0, 0, 768, 1, tagImage.getRaster().getPixels(0, 0, 768, 1, new int[768 * 3]));
+			
+			return image;
+			
 		}
 		else if(EurocryptConf.isDecodeMac) {
 			return decodeFromMac(image);
@@ -138,13 +161,17 @@ public class EurocryptCore extends Device {
 
 		createLumaChromaImages(image);
 		
-		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isDecode576p) {
+		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isDecode576p
+			&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+			&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 			assembleChromaLumaSingleCut();
 			generateValues();
 			cutAndRotateSingleCutEncode();
 		}
 		
-		if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isDecode576p) {
+		if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isDecode576p
+			&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+			&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 			generateValues();
 			generateValuesDoubleCutLuma();
 			cutAndRotateDoubleCutEncode();
@@ -154,10 +181,14 @@ public class EurocryptCore extends Device {
 		
 		createSoundPart();
 		
-		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isDecode576p) {
+		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isDecode576p
+				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 			assembleEncodedMacImageSingleCut();
 		}
-		else if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isDecode576p) {
+		else if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isDecode576p
+				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 				assembleEncodedMacImageDoubleCut();
 			}
 		else {
@@ -167,6 +198,12 @@ public class EurocryptCore extends Device {
 		EurocryptConf.width = newImageMac.getWidth();
 		EurocryptConf.height = newImageMac.getHeight();
 		
+		if((EurocryptConf.isEurocryptSingleCut || EurocryptConf.isEurocryptDoubleCut)
+				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
+		   newImageMac = saveTag(newImageMac);	
+		}			
+		
 		return newImageMac;
 	}
 
@@ -175,14 +212,30 @@ public class EurocryptCore extends Device {
 			image = this.getScaledImage(image, 1344, 576);
 		}
 		
+		// backup tag
+		backupTag1152 = image.getRaster().getPixels(192, 0, 1152, 1, new int[1152 * 3]);	
+		tagImage = new BufferedImage(1152, 1, BufferedImage.TYPE_3BYTE_BGR);
+		tagImage.getRaster().setPixels(0, 0, 1152, 1, backupTag1152);
+		tagImage = getResizeImage(tagImage, 768, 1);	
+		
 		JobConfig.setInputImage(image);
+		
+		if((EurocryptConf.isEurocryptSingleCut || EurocryptConf.isEurocryptDoubleCut)
+				&& !EurocryptConf.isEncodeMacDecode576pNoEurocrypt
+				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
+			readTag(image);
+		}		
 		
 		//check shift X and Y
 		if(shiftX != 0 || shiftY !=0) {
 			image = shift.transform(image, shiftX, shiftY);
 		}
 		
-		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isEncodeMacDecode576pNoEurocrypt) {
+		if(EurocryptConf.isEurocryptSingleCut 
+				&& !EurocryptConf.isEncodeMacDecode576pNoEurocrypt
+				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt && okDecodeTag) {
 			newImageSingleCut =  extractChromaLumaSingleCut(image);
 			generateValues();
 			cutAndRotateSingleCutDecode();
@@ -194,7 +247,10 @@ public class EurocryptCore extends Device {
 			
 		}		
 		
-		if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isEncodeMacDecode576pNoEurocrypt) {
+		if(EurocryptConf.isEurocryptDoubleCut 
+				&& !EurocryptConf.isEncodeMacDecode576pNoEurocrypt
+				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt && okDecodeTag) {
 			newImageDoubleCut =  extractChromaLumaDoubleCut(image);
 			generateValues();
 			generateValuesDoubleCutLuma();
@@ -219,14 +275,37 @@ public class EurocryptCore extends Device {
 		
 		EurocryptConf.width = newImage.getWidth();
 		EurocryptConf.height = newImage.getHeight();
+		
+		// restore tag
+		newImage.getRaster().setPixels(0, 0, 768, 1, tagImage.getRaster().getPixels(0, 0, 768, 1, new int[768 * 3]));
 		
 		return newImage;
 	}
 
 	private BufferedImage decodeFrom576p(BufferedImage image) {
+		if (image.getWidth() != 768 || image.getHeight() != 576) {
+			image = this.getScaledImage(image, 768, 576);
+		}
+		
+		// backup tag
+		backupTag768 = image.getRaster().getPixels(0, 0, 768, 1, new int[768 * 3]);		
+		tagImage = new BufferedImage(768, 1, BufferedImage.TYPE_3BYTE_BGR);
+		tagImage.getRaster().setPixels(0, 0, 768, 1, backupTag768);
+		
+		tagImage = getResizeImage(tagImage, 1152, 1);		
+		
+		
 		image = this.encodeToMac(image);
 		
-		if(EurocryptConf.isEurocryptSingleCut) {
+		// restore tag
+		image.getRaster().setPixels(192, 0, 1152, 1, tagImage.getRaster().getPixels(0, 0, 1152, 1, new int[1152 * 3]));
+		
+		readTag(image);
+		
+		
+		if(EurocryptConf.isEurocryptSingleCut
+				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt && okDecodeTag) {
 			newImageSingleCut =  extractChromaLumaSingleCut(image);
 			generateValues();
 			cutAndRotateSingleCutDecode();
@@ -238,7 +317,9 @@ public class EurocryptCore extends Device {
 			
 		}		
 		
-		if(EurocryptConf.isEurocryptDoubleCut) {
+		if(EurocryptConf.isEurocryptDoubleCut
+				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
+				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt && okDecodeTag) {
 			newImageDoubleCut =  extractChromaLumaDoubleCut(image);
 			generateValues();
 			generateValuesDoubleCutLuma();
@@ -263,6 +344,9 @@ public class EurocryptCore extends Device {
 		
 		EurocryptConf.width = newImage.getWidth();
 		EurocryptConf.height = newImage.getHeight();
+		
+		// restore tag
+		newImage.getRaster().setPixels(0, 0, 768, 1, backupTag768);
 		
 		return newImage;
 	}
@@ -372,9 +456,8 @@ public class EurocryptCore extends Device {
 		for (int i = 0; i < valTab.length; i++) {		
 			valVideocrypt = (int) (rand.nextInt(max - min + 1) + min);
 			
-			valTab[i] = (int) (valVideocrypt * 1.5);
-		}		
-
+			valTab[i] = (int) (valVideocrypt * 1.5);		
+		}
 	}
 	
 	private void generateValuesDoubleCutLuma(){
@@ -386,8 +469,9 @@ public class EurocryptCore extends Device {
 		for (int i = 0; i < valTabDoubleCutLuma.length; i++) {			
 			valVideocryptDoubleCut = (int) (rand.nextInt(max - min + 1) + min);
 			
-			valTabDoubleCutLuma[i] = (int) (valVideocryptDoubleCut * 3);
+			valTabDoubleCutLuma[i] = (int) (valVideocryptDoubleCut * 3);					
 		}
+
 	}
 
 	
@@ -702,6 +786,144 @@ public class EurocryptCore extends Device {
 		raster2.setPixels(0, 0, 768, 576, newImgRGB);
 		
 		return newImage;		
+	}
+	
+	private void readTag(BufferedImage img) {
+		Raster raster = img.getRaster();
+		String binControlIdent = "";
+		String binSeed = "";
+		
+		int nbPixels = 16;
+		int whiteMin = 140; //200
+		int whiteMax = 255;
+		int blackMin = 0;
+		int blackMax = 127;
+		
+		int[] tab = new int[3];
+		double somme = 0;
+		int incre = 192;
+		
+		//control indent	
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < nbPixels; j++) {
+				somme += ( raster.getPixel(incre, 0, tab)[0] + raster.getPixel(incre, 0,tab)[1] 
+						   + raster.getPixel(incre, 0, tab)[2] )/ 3d;
+				incre++;
+			}
+			
+			somme = somme / nbPixels;
+			
+			if(somme >= blackMin && somme < blackMax){
+				binControlIdent = binControlIdent + "0";
+				somme = 0;
+			}
+			else{
+				if(somme >whiteMin && somme <= whiteMax){
+					binControlIdent = binControlIdent + "1";
+					somme = 0;
+				}
+			}				
+		}
+		
+		if(binControlIdent.length() > 0 && Integer.parseInt(binControlIdent, 2) == 12) {
+			okDecodeTag = true;
+			somme = 0;
+			incre = 192;
+			
+			//tag seed		
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < nbPixels; j++) {
+					somme += ( raster.getPixel(incre + 8 * nbPixels, 0, tab)[0] + raster.getPixel(incre + 8 * nbPixels, 0,tab)[1] 
+							   + raster.getPixel(incre + 8 * nbPixels, 0, tab)[2] )/ 3d;
+					incre++;
+				}
+				
+				somme = somme / nbPixels;
+				
+				if(somme >= blackMin && somme < blackMax){
+					binSeed = binSeed + "0";
+					somme = 0;
+				}
+				else{
+					if(somme >whiteMin && somme <= whiteMax){
+						binSeed = binSeed + "1";
+						somme = 0;
+					}
+				}				
+			}		
+			
+			int newSeed = Integer.parseInt(binSeed, 2) + Integer.valueOf(EurocryptConf.seedCode);
+			
+			this.rand = new Random(newSeed);
+		}
+		else {
+			okDecodeTag = false;
+		}
+		
+	}
+	
+	private BufferedImage saveTag(BufferedImage img) {
+		WritableRaster raster = img.getRaster();
+		
+		int[] blackLine = new int[1152 * 3];
+		raster.setPixels(192, 0, 1152, 1, blackLine);
+		
+		String controlIdent1 = String.format
+				("%8s", Integer.toBinaryString(12)).replace(" ", "0");
+		
+		
+		int[] black, white = new int[3];               
+		black = new int[] {0,0,0};
+        white = new int[] {255,255,255};			
+
+		
+		int incre = 192;
+		int nbPixels = 16;
+
+		// control ident
+		for (int i = 0; i < controlIdent1.length(); i++) {
+			if (controlIdent1.charAt(i) == '0') {
+				for (int j = 0; j < nbPixels; j++) {
+				raster.setPixel(incre, 0, black);
+				incre++;
+				}
+			} else {
+				for (int j = 0; j < nbPixels; j++) {
+				raster.setPixel( incre, 0, white);
+				incre++;
+				}
+			}
+		}
+		
+		String incrementBin = String.format
+				("%8s", Integer.toBinaryString(tagValue)).replace(" ", "0");
+	
+		incre = 192;
+		nbPixels = 16;
+
+		// tag
+		for (int i = 0; i < incrementBin.length(); i++) {
+			if (incrementBin.charAt(i) == '0') {
+				for (int j = 0; j < nbPixels; j++) {
+				raster.setPixel(incre + 8 * nbPixels , 0, black);
+				incre++;
+				}
+			} else {
+				for (int j = 0; j < nbPixels; j++) {
+				raster.setPixel( incre + 8 * nbPixels, 0, white);
+				incre++;
+				}
+			}
+		}
+						
+		int index = (int) (randVal.nextInt(575) + 1);
+		tagValue = (int)(valTab[index]/1.5);
+		
+		int newSeed = tagValue + Integer.valueOf(EurocryptConf.seedCode);
+		
+		this.rand = new Random(newSeed);
+		
+		return img;
 	}
 	
 	@Override
