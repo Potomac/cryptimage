@@ -122,7 +122,7 @@ public final class JobConfig {
 	private static boolean panAndScan = false;
 	private static boolean stretch = false;
 
-	private static int whiteValue = 80;
+	private static int whiteValue = 160;
 	private static boolean hasToBeUnsplit = false;
 	
 	private static PalEncoder palEncoder;
@@ -134,6 +134,15 @@ public final class JobConfig {
 	private static boolean hasMultiAudioChannels = false;
 	
 	private static int nbFrames = 0;
+	
+	// RangeSlider for Discret11 and SimpleDiscret
+	private static int discretStartFrame = 1;
+	private static int discretEndFrame = 20000;
+	private static int discretSelectedFrameStart = 1;
+	private static int discretSelectedFrameEnd = 20000;
+	
+	public static int frameCount;
+	
 		
 	public static int getNbFrames() {
 		return nbFrames;
@@ -1242,5 +1251,37 @@ public final class JobConfig {
 
 	public static void setWantJoinInputOutputFrames(boolean isWantJoinInputOutputFrames) {
 		JobConfig.isWantJoinInputOutputFrames = isWantJoinInputOutputFrames;
+	}
+
+	public static int getDiscretStartFrame() {
+		return discretStartFrame;
+	}
+
+	public static void setDiscretStartFrame(int discretStartFrame) {
+		JobConfig.discretStartFrame = discretStartFrame;
+	}
+
+	public static int getDiscretEndFrame() {
+		return discretEndFrame;
+	}
+
+	public static void setDiscretEndFrame(int discretEndFrame) {
+		JobConfig.discretEndFrame = discretEndFrame;
+	}
+
+	public static int getDiscretSelectedFrameStart() {
+		return discretSelectedFrameStart;
+	}
+
+	public static void setDiscretSelectedFrameStart(int discretSelectedFrameStart) {
+		JobConfig.discretSelectedFrameStart = discretSelectedFrameStart;
+	}
+
+	public static int getDiscretSelectedFrameEnd() {
+		return discretSelectedFrameEnd;
+	}
+
+	public static void setDiscretSelectedFrameEnd(int discretSelectedFrameEnd) {
+		JobConfig.discretSelectedFrameEnd = discretSelectedFrameEnd;
 	}	
 }

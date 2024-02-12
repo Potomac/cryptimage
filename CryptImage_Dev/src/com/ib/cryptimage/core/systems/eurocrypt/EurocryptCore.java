@@ -1058,5 +1058,15 @@ public class EurocryptCore extends Device {
 		    
 	    return target;
 	}
+
+	@Override
+	public boolean isInsideRangeSliderFrames() {
+		if(JobConfig.frameCount <= EurocryptConf.selectedFrameEnd) {
+			return true;
+		}
+		else {
+			return false;
+		}	
+	}
 	
 }

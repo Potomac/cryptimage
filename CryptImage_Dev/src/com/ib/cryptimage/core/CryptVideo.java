@@ -58,8 +58,8 @@ public class CryptVideo {
 	
 	private VideoRecorder vid;
 	private int videoLengthFrames;
-	private double timeBase;///
-	private int frameCount;
+	private double timeBase;
+
 	private String audienceLevel;
 	
 	private Device device;
@@ -137,7 +137,7 @@ public class CryptVideo {
 
 		this.keyWord11 = this.computeAudienceMulti(this.codePattern, JobConfig.getWord16bits());
 
-		this.frameCount = 0;
+		JobConfig.frameCount = 0;
 		this.positionSynchro = JobConfig.getPositionSynchro();
 		this.strictMode = JobConfig.isStrictMode();
 
@@ -396,8 +396,8 @@ public class CryptVideo {
 		BufferedImage save;
 		save = deepCopy(buff);	
 		
-		frameCount++;
-		if (frameCount < this.positionSynchro){			
+		JobConfig.frameCount++;
+		if (JobConfig.frameCount < this.positionSynchro){			
 			vidPlayer.addImage(buff);			
 			vidPlayer.showImage();
 			device.skipFrame();
@@ -438,7 +438,7 @@ public class CryptVideo {
 		}
 		
 		vidPlayer.showImage();
-		if(JobConfig.isStop() || this.frameCount == this.getVideoLengthFrames()){
+		if(JobConfig.isStop() || JobConfig.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();			
 		}
 		updateProgress();		
@@ -450,8 +450,8 @@ public class CryptVideo {
 		BufferedImage save;		
 		save = deepCopy(buff);
 		
-		frameCount++;
-		if (frameCount < this.positionSynchro){			
+		JobConfig.frameCount++;
+		if (JobConfig.frameCount < this.positionSynchro){			
 			vidPlayer.addImage(buff);
 			vidPlayer.showImage();
 			device.skipFrame();
@@ -477,7 +477,7 @@ public class CryptVideo {
 		}
 		
 		vidPlayer.showImage();
-		if(JobConfig.isStop() || this.frameCount == this.getVideoLengthFrames()){
+		if(JobConfig.isStop() || JobConfig.frameCount == this.getVideoLengthFrames()){
 			vidPlayer.close();			
 		}
 		updateProgress();		
@@ -489,15 +489,15 @@ public class CryptVideo {
 				&& JobConfig.isDisableSound() == false
 				&& JobConfig.isVideoHasAudioTrack()) {
 			if(!JobConfig.isSearchCode68705()) {
-				vid.addAudioFrame(sample);
+				vid.addAudioFrame(sample, device.isInsideRangeSliderFrames());
 			}			
 		} else if (JobConfig.isWantPlay() ){				
 		}
 	}
 	
 	public void addFrameEnc(BufferedImage buff, int pos, double timingFrame){				
-		frameCount++;
-		if (frameCount < this.positionSynchro) {
+		JobConfig.frameCount++;
+		if (JobConfig.frameCount < this.positionSynchro) {
 			if (this.strictMode && !is944 && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {
 				buff = getScaledImage(buff, 768, 576);
 			}
@@ -530,8 +530,8 @@ public class CryptVideo {
 	}
 	
 	public void addFrameDec(BufferedImage buff, int pos, double timingFrame){			
-		frameCount++;
-		if (frameCount < this.positionSynchro) {
+		JobConfig.frameCount++;
+		if (JobConfig.frameCount < this.positionSynchro) {
 			if (this.strictMode && !is944 && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {				
 				buff = getScaledImage(buff, 768, 576);
 			}
@@ -652,7 +652,7 @@ public class CryptVideo {
 					bfw.write("encoder started at frame n° : " + this.positionSynchro + "\r\n");
 					bfw.write("Delay 1 : " + this.perc1 * 100 + "%\r\n");
 					bfw.write("Delay 2 : " + this.perc2 * 100 + "%\r\n");
-					bfw.write("Number of frames : " + this.frameCount + "\r\n");
+					bfw.write("Number of frames : " + JobConfig.frameCount + "\r\n");
 					bfw.write("video framerate : " + this.framerate + "\r\n");
 					bfw.write("File : " + this.outputFilename + "_c" + this.keyWord + this.fileAudienceLevel
 							+ fileKeyboardCode + "." + JobConfig.getExtension() + "\r\n");
@@ -726,12 +726,12 @@ public class CryptVideo {
 			messFrames = JobConfig.getRes().getString("cryptVideo.progress.frames.code");
 		}
 		
-		JobConfig.getGui().getProgress().setValue(this.frameCount);
+		JobConfig.getGui().getProgress().setValue(JobConfig.frameCount);
 		   JobConfig
 					.getGui()
 					.getTextInfos()
 					.setText(
-							messFrames + " " + frameCount
+							messFrames + " " + JobConfig.frameCount
 									+ "/" + this.videoLengthFrames +
 									"\n\r" + stats);
 		

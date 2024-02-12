@@ -463,6 +463,8 @@ public class Discret11DecFindKey extends Discret {
 				} else {
 					motif = motif + "2";
 					System.out.println("erreur motif 2");
+					this.synchro = false;
+					this.enable = false;
 					indexPos++;
 				}
 			}
@@ -924,7 +926,7 @@ public class Discret11DecFindKey extends Discret {
 //					 pix.getPixel(i, 574, new int[this.sWidth * 3])[2];
 		}	
 
-		if ((total / sWidth) < JobConfig.getWhiteValue()) { //30 40 //80
+		if ((total / sWidth) < 30) {//JobConfig.getWhiteValue()) { //30 40 //80
 			return true;
 		} else {
 			return false;
@@ -963,7 +965,7 @@ public class Discret11DecFindKey extends Discret {
 //					 pix.getPixel(i, 573, new int[this.sWidth * 3])[2];
 		}	
 
-		if ((total / sWidth) < JobConfig.getWhiteValue() ) { //30 40 //80
+		if ((total / sWidth) < 30) {// JobConfig.getWhiteValue() ) { //30 40 //80
 			return true;
 		} else {
 			return false;
@@ -1164,6 +1166,13 @@ public class Discret11DecFindKey extends Discret {
 		// TODO Auto-generated method stub
 		get16bitKey();
 		return 0;
+	}
+
+
+	@Override
+	public boolean isInsideRangeSliderFrames() {
+		// TODO Auto-generated method stub
+		return true;
 	}		
 
 }

@@ -455,85 +455,91 @@ public class Discret11Enc extends Discret {
 			image = shift.transform(image, shiftX, shiftY);
 		}
 
-		image = encodePal(image);
-		
-		//checkMotif(image);		
-		
-			//System.out.println("transform : " + totalFrameCount);
+		if(JobConfig.frameCount <= JobConfig.getDiscretSelectedFrameEnd()) {
+			image = encodePal(image);
+			
+			//checkMotif(image);		
+			
+				//System.out.println("transform : " + totalFrameCount);
 
-			int z = 0;
+				int z = 0;
 
-			switch (this.seqFrame) {
-			case 0:
-				z = 0;
-				break;
-			case 1:
-				z = 0;
-				break;
-			case 2:
-				z = 0;
-				break;
-			case 3:
-				z = 1;
-				break;
-			case 4:
-				z = 1;
-				break;
-			case 5:
-				z = 1;
-				break;
+				switch (this.seqFrame) {
+				case 0:
+					z = 0;
+					break;
+				case 1:
+					z = 0;
+					break;
+				case 2:
+					z = 0;
+					break;
+				case 3:
+					z = 1;
+					break;
+				case 4:
+					z = 1;
+					break;
+				case 5:
+					z = 1;
+					break;
 
-			default:
-				break;
-			}
-
-			if (this.seqFrame == 0) {				
-				image = setWhite310Line(image);	
-				if (this.saveIndexUse11bitsKey != -1 ) {					
-					int saveKey = this.indexUse11bitsKey;
-					this.indexUse11bitsKey = this.saveIndexUse11bitsKey;
-					image = modifyOddFrame2(image, 1);
-					cptArray = 0;					
-					this.indexUse11bitsKey = saveKey;
+				default:
+					break;
 				}
-				// we compute only the even part of
-												// the image				
-				image = modifyEvenFrame(image, z);
-				this.seqFrame++;
-				setAudience622Line(image);
-				this.currentframePos++;
-			} else { // we compute both the odd and even parts of the image (
-						// impaire, paire )				
-				
-				image = modifyOddFrame(image, z);
-				this.seqFrame++;
 
-				if (this.seqFrame == 6) {					
-					indexCycle +=1;	
-					if(indexCycle == 8) {
-						this.enable = true;
-					}
+				if (this.seqFrame == 0) {				
 					image = setWhite310Line(image);	
-					this.seqFrame = 0;					
+					if (this.saveIndexUse11bitsKey != -1 ) {					
+						int saveKey = this.indexUse11bitsKey;
+						this.indexUse11bitsKey = this.saveIndexUse11bitsKey;
+						image = modifyOddFrame2(image, 1);
+						cptArray = 0;					
+						this.indexUse11bitsKey = saveKey;
+					}
+					// we compute only the even part of
+													// the image				
+					image = modifyEvenFrame(image, z);
+					this.seqFrame++;
+					setAudience622Line(image);
+					this.currentframePos++;
+				} else { // we compute both the odd and even parts of the image (
+							// impaire, paire )				
+					
+					image = modifyOddFrame(image, z);
+					this.seqFrame++;
+
+					if (this.seqFrame == 6) {					
+						indexCycle +=1;	
+						if(indexCycle == 8) {
+							this.enable = true;
+						}
+						image = setWhite310Line(image);	
+						this.seqFrame = 0;					
+					}
+					else{
+						image = setBlack310Line(image);	
+					}
+					
+					if(indexCycle ==  8  ){					
+						changeAudience();
+					}		
+					
+
+					image = modifyEvenFrame(image, z);
+					this.seqFrame++;
+					setAudience622Line(image);
+
+					this.currentframePos++;
+
 				}
-				else{
-					image = setBlack310Line(image);	
-				}
-				
-				if(indexCycle ==  8  ){					
-					changeAudience();
-				}		
-				
 
-				image = modifyEvenFrame(image, z);
-				this.seqFrame++;
-				setAudience622Line(image);
-
-				this.currentframePos++;
-
-			}
-
-			return decodePal(image);		
+				return decodePal(image);	
+		}
+		else {
+			image = encodePal(image);
+			return decodePal(image);
+		}
 	}
 	
 	/**
@@ -938,6 +944,17 @@ public class Discret11Enc extends Discret {
 	public int getKey() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+
+	@Override
+	public boolean isInsideRangeSliderFrames() {
+		if(JobConfig.frameCount <= JobConfig.getDiscretSelectedFrameEnd()) {
+			return true;
+		}
+		else {
+			return false;
+		}	
 	}		
 
 }

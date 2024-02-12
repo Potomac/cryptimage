@@ -83,5 +83,17 @@ public final class Utils {
 			return outputFrame;
 		}	
 	}
+	
+	public static String getTime(int timer) {
+		int hours = timer / 3600; // get the amount of hours from the seconds
+		int remainder = timer % 3600; // get the rest in seconds
+		int minutes = remainder / 60; // get the amount of minutes from the rest
+		int seconds = remainder % 60; // get the new rest
+		String disHour = (hours < 10 ? "0" : "") + hours; // get hours and add "0" before if lower than 10
+		String disMinu = (minutes < 10 ? "0" : "") + minutes; // get minutes and add "0" before if lower than 10
+		String disSec = (seconds < 10 ? "0" : "") + seconds; // get seconds and add "0" before if lower than 10
+		String formattedTime = disHour + ":" + disMinu + ":" + disSec; // get the whole time
+		return formattedTime;
+	}
 
 }

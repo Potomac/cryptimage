@@ -210,12 +210,14 @@ public class VideoRecorder {
 	
 	
 	
-	public void addAudioFrame(IAudioSamples sample){		
+	public void addAudioFrame(IAudioSamples sample, boolean isInsideRangeSlider){		
 		if (sample.isComplete()) {
-			if(this.wantSoundCryptDecrypt && JobConfig.isHasMultiAudioChannels()) {
+			if(this.wantSoundCryptDecrypt && JobConfig.isHasMultiAudioChannels()
+					&& isInsideRangeSlider) {
 				transformMultiChannelsAudioFrame(sample, JobConfig.isReadyTransform());
 			}			
-			else if (this.wantSoundCryptDecrypt && !JobConfig.isHasMultiAudioChannels()) {
+			else if (this.wantSoundCryptDecrypt && !JobConfig.isHasMultiAudioChannels()
+					&& isInsideRangeSlider) {
 				addAudioFrameTemp(sample, JobConfig.isReadyTransform());
 			} else {
 				//addAudioFrameTemp(sample, false);

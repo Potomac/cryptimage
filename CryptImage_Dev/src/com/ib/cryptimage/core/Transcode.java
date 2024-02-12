@@ -254,4 +254,10 @@ public class Transcode extends Device {
 		return "Transcode";
 	}
 
+	@Override
+	public boolean isInsideRangeSliderFrames() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 }

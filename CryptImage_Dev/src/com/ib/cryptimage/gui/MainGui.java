@@ -78,6 +78,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
 import com.ib.cryptimage.core.JobConfig;
+import com.ib.cryptimage.core.RangeSlider;
+import com.ib.cryptimage.core.Utils;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptGui;
 import com.ib.cryptimage.core.types.AudioCodecType;
@@ -144,11 +146,8 @@ public class MainGui {
 	private JCheckBox chkDelay;
 	private JCheckBox chkNullDelay;
 	private JSpinner jsp16bitKeyword;
-	private JLabel labFrameStart;
 	private JLabel labFrameStartSyster;
-	private JSpinner jspFrameStart;
 	private JSpinner jspFrameStartSyster;
-	private JSlider slideFrameStart;
 	private JSlider slideFrameStartSyster;
 	private JCheckBox chkAutorisation1;
 	private JCheckBox chkAutorisation2;
@@ -322,6 +321,11 @@ public class MainGui {
 	private JCheckBox palAverageDecode;
 	private JCheckBox chkSysterReverse;
 	private JCheckBox chkJoinInputOutput;
+	
+	private RangeSlider rangeSliderDiscret;
+	private JLabel lblRangeSliderDiscret;
+    private JTextField txtValueMinRangeSliderDiscret;
+    private JTextField txtValueMaxRangeSliderDiscret;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -639,8 +643,6 @@ public class MainGui {
 		chkDelay.setText(JobConfig.getRes().getString("panDiscret11.chkDelay"));
 		labDelay1.setText(JobConfig.getRes().getString("panDiscret11.labDelay1"));
 		labDelay2.setText(JobConfig.getRes().getString("panDiscret11.labDelay2"));
-		labFrameStart.setText(JobConfig.getRes().getString("panDiscret11.labFrameStart"));
-		slideFrameStart.setToolTipText(JobConfig.getRes().getString("panDiscret11.slideFrameStart.tooltip"));
 		chkMaskedBorder.setText(JobConfig.getRes().getString("panDiscret11.chkMaskedBar"));
 		chkMaskedBorder.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkMaskedBar.tooltip"));
 		chkSound.setText(JobConfig.getRes().getString("panDiscret11.chkSound"));
@@ -648,6 +650,9 @@ public class MainGui {
 		chkDisableSound.setText(JobConfig.getRes().getString("panDiscret11.chkDisableSound"));
 		chkDisableSound.setToolTipText(JobConfig.getRes().getString("panDiscret11.chkDisableSound.tooltip"));
 		chkNullDelay.setText(JobConfig.getRes().getString("panDiscret11.chkNullDelay"));
+		
+		// RangeSliderDiscret
+		lblRangeSliderDiscret.setText(JobConfig.getRes().getString("rangeSlider.lblFrameStart"));
 			
 		//createPanKeyboard
 		titlePanKeyboard.setTitle(JobConfig.getRes().getString("panKeyboard.titlePanKeyboard"));
@@ -779,9 +784,22 @@ public class MainGui {
 	}
 	
 	public void refreshPanSlidersNbFrames() {
+		// Eurocrypt
 		EurocryptConf.frameStart = 1;
 		EurocryptConf.frameEnd = JobConfig.getNbFrames();
 		EurocryptConf.getGui().refreshSlider();
+		
+		// discret11
+		JobConfig.setDiscretStartFrame(1);
+		JobConfig.setDiscretEndFrame(JobConfig.getNbFrames());
+		
+	    rangeSliderDiscret.setMinimum(JobConfig.getDiscretStartFrame());
+	    rangeSliderDiscret.setMaximum(JobConfig.getDiscretEndFrame());
+	    rangeSliderDiscret.setValue(JobConfig.getDiscretStartFrame());
+	    rangeSliderDiscret.setUpperValue(JobConfig.getDiscretEndFrame());
+	    
+	    JobConfig.setDiscretSelectedFrameStart(JobConfig.getDiscretStartFrame());
+	    JobConfig.setDiscretSelectedFrameEnd(JobConfig.getDiscretEndFrame());		
 	}
 	
 	private void createMenu(){				
@@ -2446,65 +2464,72 @@ public class MainGui {
 				1, 1,1,15);
 		
 		
-		//frame start    
-		labFrameStart = new JLabel(JobConfig.getRes().getString("panDiscret11.labFrameStart"));
-		slideFrameStart = new JSlider(JSlider.HORIZONTAL,1,200000,1);
-		slideFrameStart.setToolTipText(JobConfig.getRes().getString("panDiscret11.slideFrameStart.tooltip"));
-		jspFrameStart = new JSpinner();	
-		jspFrameStart.addChangeListener(controler);		
-		JSpinner.NumberEditor spinnerEditor2 = new JSpinner.NumberEditor(jspFrameStart);
-		jspFrameStart.setEditor(spinnerEditor2);
-		JComponent editor = jspFrameStart.getEditor();
-		JFormattedTextField tf2 = ((JSpinner.DefaultEditor) editor).getTextField();
-		tf2.setColumns(5);
-		tf2.setEditable(false);
-		spinnerEditor2.getModel().setMinimum(1);
-		spinnerEditor2.getModel().setMaximum(200000);
-		spinnerEditor2.getModel().setStepSize(1);
-		spinnerEditor2.getModel().setValue(1);
+		// RangeSlider Discret11
+        rangeSliderDiscret = new RangeSlider();            
+        rangeSliderDiscret.setMinimum(1);
+        rangeSliderDiscret.setMaximum(200000);
+        rangeSliderDiscret.setValue(1);
+        rangeSliderDiscret.setUpperValue(200000);
+        
+        lblRangeSliderDiscret = new JLabel(JobConfig.getRes().getString("rangeSlider.lblFrameStart"));
+    
+
+        txtValueMinRangeSliderDiscret = new JTextField(12);
+        txtValueMinRangeSliderDiscret.setEditable(false);
+        txtValueMinRangeSliderDiscret.setHorizontalAlignment(JLabel.LEFT);
+        txtValueMaxRangeSliderDiscret = new JTextField(12);
+        txtValueMaxRangeSliderDiscret.setEditable(false);
+        
+        String time = Utils.getTime((int) (rangeSliderDiscret.getValue()/JobConfig.getFrameRate()));            
+        txtValueMinRangeSliderDiscret.setText(rangeSliderDiscret.getValue() + " (" + time + ")");
+        
+        time = Utils.getTime((int) (rangeSliderDiscret.getUpperValue()/JobConfig.getFrameRate()));   
+        txtValueMaxRangeSliderDiscret.setText(rangeSliderDiscret.getUpperValue() + " (" + time + ")");
+        
+        rangeSliderDiscret.addChangeListener(controler);
 		
-		
-		slideFrameStart.addChangeListener(controler);			
-		slideFrameStart.setValue(1);
-		slideFrameStart.setMajorTickSpacing(50000);
-		slideFrameStart.setMinorTickSpacing(10000);
-		Hashtable<Integer, JLabel> labelTable3 = new Hashtable<Integer, JLabel>();
-		labelTable3.put( new Integer( 1 ), new JLabel("1"));		
-		labelTable3.put( new Integer( 200000 ), new JLabel("200000"));
-		slideFrameStart.setLabelTable(labelTable3);
-		slideFrameStart.setPaintLabels(true);		
-		slideFrameStart.setPaintTicks(true);
 		
 		JPanel panFrameStart = new JPanel();
 		GridBagLayout gblFrameStart = new GridBagLayout();
 		
 		this.placerComposants(panFrameStart,
 				gblFrameStart,
-				labFrameStart,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				lblRangeSliderDiscret,
+				GridBagConstraints.WEST, GridBagConstraints.EAST,
 				0, 0,
 				1,1,
-				10,25,
+				0.1,1,
 				1, 1,1,1);
 		this.placerComposants(panFrameStart,
 				gblFrameStart,
-				slideFrameStart,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 0,
+				txtValueMinRangeSliderDiscret,
+				GridBagConstraints.BASELINE_TRAILING, GridBagConstraints.NONE,
+				0, 1,
 				1,1,
-				70,25,
+				0.1,1,
 				1, 1,1,1);
 		this.placerComposants(panFrameStart,
 				gblFrameStart,
-				jspFrameStart,
-				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
-				2, 0,
+				rangeSliderDiscret,
+				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+				1, 1,
 				1,1,
-				20,25,
+				0.8,1,
+				1, 1,1,1);
+
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				txtValueMaxRangeSliderDiscret,
+				GridBagConstraints.WEST, GridBagConstraints.NONE,
+				2, 1,
+				1,1,
+				0.1,1,
 				1, 1,1,1);
 		
+		
+		// slider white value
 		lblWhiteValue = new JLabel(JobConfig.getRes().getString("panDiscret11.lblWhiteValue"));
-		sldWhiteValue = new JSlider(JSlider.HORIZONTAL,0,255,80);
+		sldWhiteValue = new JSlider(JSlider.HORIZONTAL,0, 255, 160);
 		slpWhiteValue = new JSpinner();		
 		slpWhiteValue.addChangeListener(controler);
 		
@@ -2514,14 +2539,14 @@ public class MainGui {
 		spinnerEditorWhiteValue.getModel().setMinimum(0);
 		spinnerEditorWhiteValue.getModel().setMaximum(255);
 		spinnerEditorWhiteValue.getModel().setStepSize(1);
-		spinnerEditorWhiteValue.getModel().setValue(80);
+		spinnerEditorWhiteValue.getModel().setValue(160);
 		
 		JFormattedTextField tfWhiteValue = ((JSpinner.DefaultEditor) spinnerEditorWhiteValue).getTextField();
 		tfWhiteValue.setColumns(3);
 		tfWhiteValue.setEditable(false);
 		
 		sldWhiteValue.addChangeListener(controler);
-		sldWhiteValue.setValue(80);
+		sldWhiteValue.setValue(160);
 		sldWhiteValue.setMajorTickSpacing(50);
 		sldWhiteValue.setMinorTickSpacing(10);
 		Hashtable<Integer, JLabel> labelTableWhiteValue = new Hashtable<Integer, JLabel>();
@@ -3334,14 +3359,6 @@ public class MainGui {
 		return btnCancel;
 	}
 
-	public JSpinner getJspFrameStart() {
-		return jspFrameStart;
-	}
-
-	public JSlider getSlideFrameStart() {
-		return slideFrameStart;
-	}
-
 	public JPanel getPanVideoOptions() {
 		return panVideoOptions;
 	}
@@ -3964,6 +3981,22 @@ public class MainGui {
 
 	public void setChkJoinInputOutput(JCheckBox chkJoinInputOutput) {
 		this.chkJoinInputOutput = chkJoinInputOutput;
+	}
+
+	public RangeSlider getRangeSliderDiscret() {
+		return rangeSliderDiscret;
+	}
+
+	public JLabel getLblRangeSliderDiscret() {
+		return lblRangeSliderDiscret;
+	}
+
+	public JTextField getTxtValueMinRangeSliderDiscret() {
+		return txtValueMinRangeSliderDiscret;
+	}
+
+	public JTextField getTxtValueMaxRangeSliderDiscret() {
+		return txtValueMaxRangeSliderDiscret;
 	}
 	
 }

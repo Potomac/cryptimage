@@ -24,13 +24,20 @@ package com.ib.cryptimage.core;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
-import javax.imageio.ImageIO;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author Mannix54
@@ -39,7 +46,6 @@ import javax.imageio.ImageIO;
 public class Discret11ComputePixels {
 	
 	private BufferedImage img;
-	private int cpt = 0;
 	private int cord = 21;//326;
 	private int[] sample = new int[92];
 	
@@ -54,7 +60,7 @@ public class Discret11ComputePixels {
 	private Map<Integer, Integer> dicKey = new HashMap<Integer,  Integer>();
 	
 	private String keyfull = "";
-
+	private int sWidth = 768;
 	private int[][]  delayArrayFull = new int[12282][286]; //8188
 	private int[] decaPixels = new int[3];
 	
@@ -74,14 +80,17 @@ public class Discret11ComputePixels {
 	private int discretCycle = 0;
 	private int discretSeq = 0;
 	private int minRepetition = 20;
-
+		
 	
 	/**
 	 * 
 	 */
 	public Discret11ComputePixels(int searchMode) {
 		this.searchMode = searchMode;
-		if(this.searchMode == 0) {			
+		if(this.searchMode == 0) {	
+			initDecaPixels(JobConfig.getPerc1(),JobConfig.getPerc2());
+			loadFullArray();
+			
 			for (int i = 0; i < 2047; i++) {
 				for (int j = 0; j < 6; j++) {
 					for (int k = 0; k < 286; k++) {					
@@ -127,16 +136,6 @@ public class Discret11ComputePixels {
 		else {
 			getSamplesEven();
 			System.out.println(img.getHeight());
-			
-			cpt++;
-			File outputfile = new File("/home/cesar/seagate2to/video/cryptimage/test/img_" + cpt);
-			
-			try {
-				ImageIO.write(img, "png", outputfile);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
 		}		
 	}
 
@@ -300,7 +299,7 @@ public class Discret11ComputePixels {
 					incr_opt = incr;
 				}
 			}
-		
+
 		 if (incr_opt != -1) {
 			 
 			 keyfull = keyfull + " " + (relation[incr_opt] + 1);
@@ -438,9 +437,112 @@ public class Discret11ComputePixels {
 		}
 		return res;
 	}
+
 	
+	/**
+	 * set the 3 shift pixels value for the decaPixels array
+	 * 
+	 * @param perc1 the percentage value of retard 1
+	 * @param perc2 the percentage value of retard 2
+	 */
+	private void initDecaPixels(double perc1, double perc2) {
+		decaPixels[0] = 0;
+		decaPixels[1] = (int) (Math.round(perc1 * this.sWidth)); // previous value : 0.018 0.0167 0.0167
+		decaPixels[2] = (int) (Math.round(perc2 * this.sWidth)); // previous value : 0.036 0.0347 0.0334
 
+		if (decaPixels[1] == 0) {
+			decaPixels[1] = 1;
+		}
+		if (decaPixels[2] == 0) {
+			decaPixels[2] = 2;
+		}
 
+		JobConfig.setDelay1(decaPixels[1]);
+		JobConfig.setDelay2(decaPixels[2]);
+
+	}
+	
+	private void loadFullArray(){		
+		//get the zip file content
+		byte[] buffer = new byte[1024];
+    	try {
+    		//InputStream is = this.getClass().getResourceAsStream("/ressources/delarray.zip");
+    		InputStream is = this.getClass().getResourceAsStream("/ressources/delarray_special.zip");
+			ZipInputStream zis = 
+				new ZipInputStream(is);
+		   	
+			//get the zipped file list entry
+	    	ZipEntry ze = null;
+			try {
+				ze = zis.getNextEntry();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    		
+	    	while(ze!=null){
+	    			
+	    	   String fileName = ze.getName();
+	           File newFile = new File(System.getProperty("java.io.tmpdir") + File.separator + fileName);
+	           	            	              
+	           FileOutputStream fos = new FileOutputStream(newFile);             
+
+	            int len;
+	            try {
+					while ((len = zis.read(buffer)) > 0) {
+					fos.write(buffer, 0, len);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        		
+	            try {
+					fos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}   
+	            try {
+					ze = zis.getNextEntry();
+					zis.closeEntry();
+			    	zis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    	}
+	   	    	    	
+    	} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+    				
+		
+		ObjectInputStream inputStream = null;
+        try{
+            inputStream = new ObjectInputStream(new FileInputStream((System.getProperty("java.io.tmpdir")+ File.separator +"delarray_special.bin")));
+        }catch(IOException e){
+            System.out.println("There was a problem opening the file: " + e);
+            System.exit(0);
+        }
+        
+        try{
+            delayArrayFull = (int [][])inputStream.readObject();       
+            inputStream.close();
+        }catch(Exception e){
+            System.out.println("There was an issue reading from the file: " + e);
+            System.exit(0);
+        }
+        Path path = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"), "delarray_special.bin");
+        
+        try {
+			Files.delete(path);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public Vector<Integer> getAudienceVec() {
 		return audienceVec;

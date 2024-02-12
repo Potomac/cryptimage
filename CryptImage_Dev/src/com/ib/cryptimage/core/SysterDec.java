@@ -735,4 +735,10 @@ public class SysterDec extends Syster {
 			// TODO Auto-generated method stub
 			return 0;
 		}
+
+		@Override
+		public boolean isInsideRangeSliderFrames() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 }

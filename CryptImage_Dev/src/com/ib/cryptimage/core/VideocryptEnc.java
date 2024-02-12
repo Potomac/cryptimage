@@ -337,4 +337,10 @@ public class VideocryptEnc extends Videocrypt {
 		return 0;
 	}
 
+	@Override
+	public boolean isInsideRangeSliderFrames() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 }

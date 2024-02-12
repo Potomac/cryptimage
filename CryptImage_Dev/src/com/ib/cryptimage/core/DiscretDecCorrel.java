@@ -363,19 +363,26 @@ public class DiscretDecCorrel extends Discret {
 		//check shift X and Y
 		if(shiftX != 0 || shiftY !=0) {			
 			img = shift.transform(img, shiftX, shiftY);
-		}
+		}		
 		
 		JobConfig.incrementPalFrame();
 		
-		img = encodePal(img);
-		
-		raster = img.getRaster();
-		createImageOddEven();
-		computeSolution(imageOdd);
-		decryptImgOdd();
-		computeSolution(imageEven);
-		decryptImgEven();
-		return decodePal(this.imgFinal);
+		if(JobConfig.frameCount <= JobConfig.getDiscretSelectedFrameEnd()) {			
+			img = encodePal(img);
+			
+			raster = img.getRaster();
+			createImageOddEven();
+			computeSolution(imageOdd);
+			decryptImgOdd();
+			computeSolution(imageEven);
+			decryptImgEven();
+			return decodePal(this.imgFinal);	
+		}
+		else {
+			img = encodePal(img);
+			return decodePal(img);
+		}		
+
 	}
 	
 		
@@ -577,6 +584,16 @@ public class DiscretDecCorrel extends Discret {
 	public int getKey() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public boolean isInsideRangeSliderFrames() {
+		if(JobConfig.frameCount <= JobConfig.getDiscretSelectedFrameEnd()) {
+			return true;
+		}
+		else {
+			return false;
+		}	
 	}	
 
 }

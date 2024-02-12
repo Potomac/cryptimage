@@ -36,5 +36,6 @@ public	abstract void closeFileData();
 public	abstract void skipFrame();
 public	abstract int getKey();
 public	abstract String getDeviceName();
+public abstract boolean isInsideRangeSliderFrames();
 
 }

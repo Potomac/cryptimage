@@ -430,37 +430,41 @@ public class SimpleDiscret11 extends Discret {
 		
 		JobConfig.setInputImage(image);
 		
-		raster = image.getRaster();		
+		if(JobConfig.frameCount <= JobConfig.getDiscretSelectedFrameEnd()) {
+			raster = image.getRaster();				
 			
-		
-		if (this.currentMode == MODE_ENC) {
-			for (int y = 0; y < this.height; y++) {
-				raster.setPixels(delayArray[this.seqFullFrame][y], y, this.width - delayArray[this.seqFullFrame][y], 1,
-						raster.getPixels(0, y, this.width - delayArray[this.seqFullFrame][y], 1,
-								new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
-				// draw black line at start of delay
-				drawLine(y);
+			if (this.currentMode == MODE_ENC) {
+				for (int y = 0; y < this.height; y++) {
+					raster.setPixels(delayArray[this.seqFullFrame][y], y, this.width - delayArray[this.seqFullFrame][y], 1,
+							raster.getPixels(0, y, this.width - delayArray[this.seqFullFrame][y], 1,
+									new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
+					// draw black line at start of delay
+					drawLine(y);
+				}
 			}
-		}
-		else{
-			for (int y = 0; y < this.height; y++) {
-				raster.setPixels(0, y, this.width - delayArray[this.seqFullFrame][y], 1,
-						raster.getPixels(delayArray[this.seqFullFrame][y], y, this.width - delayArray[this.seqFullFrame][y], 1,
-								new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
-				// draw black line at end of delay
-				drawLineDec(y);
+			else{
+				for (int y = 0; y < this.height; y++) {
+					raster.setPixels(0, y, this.width - delayArray[this.seqFullFrame][y], 1,
+							raster.getPixels(delayArray[this.seqFullFrame][y], y, this.width - delayArray[this.seqFullFrame][y], 1,
+									new int[(this.width - delayArray[this.seqFullFrame][y]) * 3]));
+					// draw black line at end of delay
+					drawLineDec(y);
+				}
 			}
-		}
+			
+			this.seqFullFrame++;
 		
-		this.seqFullFrame++;
-	
-		if (this.seqFullFrame == 3) {
-			this.seqFullFrame = 0;			
-		}
+			if (this.seqFullFrame == 3) {
+				this.seqFullFrame = 0;			
+			}
 
-		this.currentframePos++;
-		
-		return image;
+			this.currentframePos++;
+			
+			return image;
+		}
+		else {
+			return image;
+		}
 	}
 	
 	protected void drawLine(int y){
@@ -558,6 +562,16 @@ public class SimpleDiscret11 extends Discret {
 	public int getKey() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public boolean isInsideRangeSliderFrames() {
+		if(JobConfig.frameCount <= JobConfig.getDiscretSelectedFrameEnd()) {
+			return true;
+		}
+		else {
+			return false;
+		}	
 	}
 	
 }

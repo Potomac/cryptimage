@@ -56,11 +56,11 @@ public class Discret11Dec extends Discret {
 	/**
 	 * the queue for the state of the color of the 310 and 622 lines
 	 */
-	private Queue<String> queueLines=new LinkedList<String>();
+	private Queue<String> queueLines622=new LinkedList<String>();
 	/**
 	 * string for storing the motif of a 310 and 622 lines on a frame
 	 */
-	private String motif ="";
+	private String motif622 ="";
 	/**
 	 * the position inside an dimension of 3 full frames
 	 */
@@ -458,7 +458,7 @@ public class Discret11Dec extends Discret {
 				}
 			}
 			
-			if(tot>=3) {
+			if(tot >= 3) {
 				return true;
 			}
 			else {
@@ -470,7 +470,6 @@ public class Discret11Dec extends Discret {
 	
 	
 	protected void checkMotif(BufferedImage buff) {	
-		
 		int val310 = 0;
 		if(is310WhiteLine(buff)) {
 			val310 = 1;
@@ -490,15 +489,15 @@ public class Discret11Dec extends Discret {
 		
 		if ( indexPos < 3 && synchro == true) {
 			if (is622WhiteLine(buff) ) {
-				motif = motif + "1";
+				motif622 = motif622 + "1";
 				indexPos++;
 			} else {
 				if (is622BlackLine(buff)) {
-					motif = motif + "0";
+					motif622 = motif622 + "0";
 					indexPos++;
 				} else {
-					motif = motif + "2";
-					System.out.println("erreur motif 2");
+					motif622 = motif622 + "2";
+					//System.out.println("erreur motif 2");
 					indexPos++;
 				}
 			}
@@ -509,13 +508,14 @@ public class Discret11Dec extends Discret {
 					razMotif(); //desactivé
 				}
 				else {
+					razMotif();
 					cptArray = 0;	//desactive
 					this.seqFrame = 0; //desactive
 					this.start = true; //desactive
 					this.currentframePos = 0; //desactive
 					indexPos = 0; //desactive
-					motif = "";
-					this.queueLines.clear(); //desactive
+					motif622 = "";
+					this.queueLines622.clear(); //desactive
 					motif310 = "";
 					//this.queueLines310.clear();
 					//this.synchro = true;
@@ -524,13 +524,13 @@ public class Discret11Dec extends Discret {
 		}
 
 
-		if (motif.length() == 3 ) {			
-			this.queueLines.add(motif);
-			if (queueLines.size() == 8) {
+		if (motif622.length() == 3 ) {			
+			this.queueLines622.add(motif622);
+			if (queueLines622.size() == 8) {
 				//showMotif622();
 				checkAudience();				
 			}
-			motif = "";
+			motif622 = "";
 			indexPos = 0;
 			this.synchro = false; //desactivé			
 		}	
@@ -539,14 +539,15 @@ public class Discret11Dec extends Discret {
 	
 	private void razMotif(){	
 		//this.synchro = true;
-		//this.enable = false; //desactive
+		// fix end of encryption
+		this.enable = false; //desactive
 		cptArray = 0;	//desactive
 		this.seqFrame = 0; //desactive
 		this.start = true; //desactive
 		this.currentframePos = 0; //desactive
 		indexPos = 0; //desactive
-		motif = "";
-		this.queueLines.clear(); //desactive
+		motif622 = "";
+		this.queueLines622.clear(); //desactive
 		motif310 = "";
 		//this.queueLines310.clear();
 		//this.saveIndex11bitsKey = this.index11bitsKey;
@@ -559,15 +560,15 @@ public class Discret11Dec extends Discret {
 		
 		//String motif = "";
 
-		for (int i = 0; i < queueLines.size(); i++) {
+		for (int i = 0; i < queueLines622.size(); i++) {
 			
-			motif += queueLines.toArray()[i] + ",";
-			total = total + Integer.valueOf((String) queueLines.toArray()[i]);
+			motif622 += queueLines622.toArray()[i] + ",";
+			total = total + Integer.valueOf((String) queueLines622.toArray()[i]);
 		}	
 		
 		
 		if((double)(total)/8d - total/8 == 0 ){
-			total = Integer.valueOf((String) queueLines.toArray()[0]);
+			total = Integer.valueOf((String) queueLines622.toArray()[0]);
 		}
 		else
 			total = -1;
@@ -664,7 +665,7 @@ public class Discret11Dec extends Discret {
 			cptArray = 0;			
 			this.enable = true;			
 			break;
-		case 0: // clair			
+		case 0: // clair
 			this.currentframePos = 0;
 			this.seqFrame = 0;
 			this.saveIndex11bitsKey = this.index11bitsKey;
@@ -687,7 +688,7 @@ public class Discret11Dec extends Discret {
 			break;
 		}
 
-		this.queueLines.remove();
+		this.queueLines622.remove();
 
 	}
 	
@@ -699,131 +700,129 @@ public class Discret11Dec extends Discret {
 	 * @param image the image to be transformed
 	 * @return the transformed image
 	 */
-	public BufferedImage transform(BufferedImage image) {	
-		//totalFrameCount++;			
+	public BufferedImage transform(BufferedImage image) {
+		// totalFrameCount++;
 		JobConfig.incrementPalFrame();
 		JobConfig.incrementPalFrameDec();
-		
+
 		// we check the type image and the size
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		if (image.getWidth() != this.sWidth || image.getHeight() != 576) {
 			image = this.getScaledImage(image, this.sWidth, 576);
 		}
-					
-		JobConfig.setInputImage(image);		
-		
-		//check shift X and Y
-		if(shiftX != 0 || shiftY !=0) {
+
+		JobConfig.setInputImage(image);
+
+		// check shift X and Y
+		if (shiftX != 0 || shiftY != 0) {
 			image = shift.transform(image, shiftX, shiftY);
 		}
-			
-		
-		image = encodePal(image);
 
-		if (this.enable) {	
-			//System.out.println("enable " + seqFrame);
+		if (JobConfig.frameCount <= JobConfig.getDiscretSelectedFrameEnd()) {
+			image = encodePal(image);
 
-			int z = 0;
+			if (this.enable) {
+				// System.out.println("enable " + seqFrame);
 
-			switch (this.seqFrame) {
-			case 0:
-				z = 0;
-				break;
-			case 1:
-				z = 0;
-				break;
-			case 2:
-				z = 0;
-				break;
-			case 3:
-				z = 1;
-				break;
-			case 4:
-				z = 1;
-				break;
-			case 5:
-				z = 1;
-				break;
+				int z = 0;
 
-			default:
-				break;
+				switch (this.seqFrame) {
+				case 0:
+					z = 0;
+					break;
+				case 1:
+					z = 0;
+					break;
+				case 2:
+					z = 0;
+					break;
+				case 3:
+					z = 1;
+					break;
+				case 4:
+					z = 1;
+					break;
+				case 5:
+					z = 1;
+					break;
+
+				default:
+					break;
+				}
+
+				if (this.currentframePos == 0) {
+					if (this.start == false) {
+						int saveKey = this.index11bitsKey;
+						this.index11bitsKey = this.saveIndex11bitsKey;
+						image = modifyOddFrame2(image, 1);
+						cptArray = 0;
+						this.index11bitsKey = saveKey;
+					}
+					// we compute only the even part of
+					// the image
+					image = modifyEvenFrame(image, z);
+
+					this.seqFrame++;
+					this.currentframePos++;
+				} else { // we compute both the odd and even parts of the image (
+							// impaire, paire )
+					image = modifyOddFrame(image, z);
+					this.seqFrame++;
+
+					if (this.seqFrame == 6) {
+						this.seqFrame = 0;
+					}
+
+					image = modifyEvenFrame(image, z);
+					this.seqFrame++;
+
+					this.currentframePos++;
+
+				}
+
+				this.checkMotif(image);
+				this.start = false;
+
+				if (JobConfig.isNullDelay()) {
+					if (is310BlackLine(image)) {
+						image = setBlack310Line(image);
+					} else {
+						image = setWhite310Line(image);
+					}
+
+					if (is622BlackLine(image)) {
+						image = setBlack622Line(image);
+					} else {
+						image = setWhite622Line(image);
+					}
+				}
+
+				return decodePal(image);
+			} else {
+				// System.out.println("pas enable " + seqFrame);
+				this.checkMotif(image);
+
+				if (JobConfig.isNullDelay()) {
+					if (is310BlackLine(image)) {
+						image = setBlack310Line(image);
+					} else {
+						image = setWhite310Line(image);
+					}
+
+					if (is622BlackLine(image)) {
+						image = setBlack622Line(image);
+					} else {
+						image = setWhite622Line(image);
+					}
+				}
+
+				return decodePal(image);
 			}
-
-			if (this.currentframePos == 0) {
-				if (this.start == false) {					
-					int saveKey = this.index11bitsKey;
-					this.index11bitsKey = this.saveIndex11bitsKey;
-					image = modifyOddFrame2(image, 1);
-					cptArray = 0;					
-					this.index11bitsKey = saveKey;
-				}
-				// we compute only the even part of
-												// the image
-				image = modifyEvenFrame(image, z);
-
-				this.seqFrame++;
-				this.currentframePos++;
-			} else { // we compute both the odd and even parts of the image (
-						// impaire, paire )
-				image = modifyOddFrame(image, z);
-				this.seqFrame++;
-
-				if (this.seqFrame == 6) {
-					this.seqFrame = 0;					
-				}
-
-				image = modifyEvenFrame(image, z);
-				this.seqFrame++;
-
-				this.currentframePos++;
-
-			}
-			
-			this.checkMotif(image);
-			this.start = false;
-			
-			if( JobConfig.isNullDelay() ) {
-				if(is310BlackLine(image)) {
-					image = setBlack310Line(image);
-				}
-				else {
-					image = setWhite310Line(image);
-				}
-				
-				if(is622BlackLine(image)) {
-					image = setBlack622Line(image);
-				}
-				else {
-					image = setWhite622Line(image);
-				}				
-			}
-			
-			return decodePal(image);
-		} else {		
-			//System.out.println("pas enable " + seqFrame);
-			this.checkMotif(image);
-			
-			if(JobConfig.isNullDelay()) {
-				if(is310BlackLine(image)) {
-					image = setBlack310Line(image);
-				}
-				else {
-					image = setWhite310Line(image);
-				}
-				
-				if(is622BlackLine(image)) {
-					image = setBlack622Line(image);
-				}
-				else {
-					image = setWhite622Line(image);
-				}				
-			}
-			
+		} else {
+			image = encodePal(image);
 			return decodePal(image);
 		}
-	}
-
-	
+	}	
 
 	
 	/**
@@ -838,23 +837,27 @@ public class Discret11Dec extends Discret {
 		
 		//int temp2 = 0;
 		
-		for (int y = 1; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
-			}
-			
-			if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
-				// digital image ) or if next line is 623 ( 576 in digital image )
-				raster.setPixels(0 , y, this.sWidth
-						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
-						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] , 1,
-						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray]) * 3]));
-				//draw black line at end of delay
-				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
-				cptArray++;
-			}
-			y++; // add one to y in order to have only even lines frame
-		}		
+		if(this.enable) {
+			for (int y = 1; y < 576; y++) {
+				if(cptArray == 286){
+					this.cptArray = 0;
+				}
+				
+				if (y != 573 && y != 575) { // we don't increment if next line is 622 ( 574 in
+					// digital image ) or if next line is 623 ( 576 in digital image )
+					raster.setPixels(0 , y, this.sWidth
+							- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
+							y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] , 1,
+							new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray]) * 3]));
+					//draw black line at end of delay
+					drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
+					cptArray++;
+				}
+				y++; // add one to y in order to have only even lines frame
+			}		
+		}
+		
+	
 		return image;		
 	}
 
@@ -871,26 +874,29 @@ public class Discret11Dec extends Discret {
 
 		//int temp2 = 0;	
 
-	
-		for (int y = 2; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
-			}
-								
-			//temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
+		if(this.enable) {
+			for (int y = 2; y < 576; y++) {
+				if(cptArray == 286){
+					this.cptArray = 0;
+				}
+									
+				//temp2 = delayArray[index11bitsKey][this.seqFrame][cptArray];
 
-			if (y != 574) { // we don't increment if it's line 310 ( 575 in
-				// digital image )
-				raster.setPixels(0 , y, this.sWidth
-						- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
-						y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray], 1,
-						new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] ) * 3]));
-				//draw black line at end of delay
-				drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
-				cptArray++;
-			}
-			y++; // add one to y in order to have only odd lines frame
+				if (y != 574) { // we don't increment if it's line 310 ( 575 in
+					// digital image )
+					raster.setPixels(0 , y, this.sWidth
+							- delayArray[index11bitsKey][this.seqFrame][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][this.seqFrame][cptArray],
+							y, this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray], 1,
+							new int[(this.sWidth - delayArray[index11bitsKey][this.seqFrame][cptArray] ) * 3]));
+					//draw black line at end of delay
+					drawLine(delayArray[index11bitsKey][this.seqFrame][cptArray], y);
+					cptArray++;
+				}
+				y++; // add one to y in order to have only odd lines frame
+			}		
 		}
+	
+
 		return image;			
 	}
 
@@ -907,24 +913,26 @@ public class Discret11Dec extends Discret {
 
 		//int temp2 = 0;	
 
-	
-		for (int y = 2; y < 576; y++) {
-			if(cptArray == 286){
-				this.cptArray = 0;
+		if(this.enable) {
+			for (int y = 2; y < 576; y++) {
+				if(cptArray == 286){
+					this.cptArray = 0;
+				}			
+						
+				if (y != 574) { // we don't increment if it's line 310 ( 575 in
+					// digital image )
+					raster.setPixels(0 , y, this.sWidth
+							- delayArray[index11bitsKey][5][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][5][cptArray],
+							y, this.sWidth - delayArray[index11bitsKey][5][cptArray], 1,
+							new int[(this.sWidth - delayArray[index11bitsKey][5][cptArray] ) * 3]));
+					//draw black line at end of delay
+					drawLine(delayArray[index11bitsKey][5][cptArray], y);
+					cptArray++;
+				}
+				y++; // add one to y in order to have only odd lines frame
 			}			
-					
-			if (y != 574) { // we don't increment if it's line 310 ( 575 in
-				// digital image )
-				raster.setPixels(0 , y, this.sWidth
-						- delayArray[index11bitsKey][5][cptArray] , 1, raster.getPixels(delayArray[index11bitsKey][5][cptArray],
-						y, this.sWidth - delayArray[index11bitsKey][5][cptArray], 1,
-						new int[(this.sWidth - delayArray[index11bitsKey][5][cptArray] ) * 3]));
-				//draw black line at end of delay
-				drawLine(delayArray[index11bitsKey][5][cptArray], y);
-				cptArray++;
-			}
-			y++; // add one to y in order to have only odd lines frame
 		}
+
 		return image;			
 	}
 
@@ -1213,4 +1221,14 @@ public class Discret11Dec extends Discret {
 		return 0;
 	}		
 
+	@Override
+	public boolean isInsideRangeSliderFrames() {
+		if(JobConfig.frameCount <= JobConfig.getDiscretSelectedFrameEnd()) {
+			return true;
+		}
+		else {
+			return false;
+		}		
+	}
+	
 }
