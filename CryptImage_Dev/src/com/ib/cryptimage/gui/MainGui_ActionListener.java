@@ -2052,6 +2052,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JobConfig.setPositionSynchro(
 						(int) mainGui.getRangeSliderVideocrypt().getValue());
 			}
+			else if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {
+				JobConfig.setPositionSynchro(1);
+			}
 			
 			//discret dec enc normal
 			if(mainGui.getRdiDiscretDecoding().isSelected()
