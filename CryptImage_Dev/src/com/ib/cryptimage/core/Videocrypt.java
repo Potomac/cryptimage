@@ -107,7 +107,8 @@ public abstract class Videocrypt extends Device {
 		strictMode = JobConfig.getGui().getChkVideocryptStrictMode().isSelected();
 		
 		if (!JobConfig.isModePhoto()) {
-			numFrame = Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString())-1;			
+			//numFrame = Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString())-1;
+			numFrame = JobConfig.getGui().getRangeSliderVideocrypt().getValue() - 1;
 		}
 				
 		palEngine = new PalEngine();
@@ -159,9 +160,11 @@ public abstract class Videocrypt extends Device {
 					fileName = file.getParent() + File.separator + fileName;
 				}
 
-				if (JobConfig.getVideo_frame()
-						- Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString()) < 113
-						|| JobConfig.isModePhoto()) {
+//				if (JobConfig.getVideo_frame()
+//						- Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString()) < 113
+//						|| JobConfig.isModePhoto()) {
+					if (JobConfig.getVideo_frame() - JobConfig.getGui().getRangeSliderVideocrypt().getValue() < 113
+							|| JobConfig.isModePhoto()) {
 					fileLog = new FileWriter(fileName + "_" + modeMachine + "videocrypt_" + colorMode + ".csv");
 
 				} else {

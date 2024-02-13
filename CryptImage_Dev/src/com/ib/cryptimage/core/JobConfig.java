@@ -147,6 +147,12 @@ public final class JobConfig {
 	private static int systerSelectedFrameStart = 1;
 	private static int systerSelectedFrameEnd = 20000;
 	
+	// RangeSlider for Videocrypt
+	private static int videocryptStartFrame = 1;
+	private static int videocryptEndFrame = 20000;
+	private static int videocryptSelectedFrameStart = 1;
+	private static int videocryptSelectedFrameEnd = 20000;
+	
 	public static int frameCount;
 	
 		
@@ -1321,5 +1327,37 @@ public final class JobConfig {
 
 	public static void setSysterSelectedFrameEnd(int systerSelectedFrameEnd) {
 		JobConfig.systerSelectedFrameEnd = systerSelectedFrameEnd;
+	}
+
+	public static int getVideocryptStartFrame() {
+		return videocryptStartFrame;
+	}
+
+	public static void setVideocryptStartFrame(int videocryptStartFrame) {
+		JobConfig.videocryptStartFrame = videocryptStartFrame;
+	}
+
+	public static int getVideocryptEndFrame() {
+		return videocryptEndFrame;
+	}
+
+	public static void setVideocryptEndFrame(int videocryptEndFrame) {
+		JobConfig.videocryptEndFrame = videocryptEndFrame;
+	}
+
+	public static int getVideocryptSelectedFrameStart() {
+		return videocryptSelectedFrameStart;
+	}
+
+	public static void setVideocryptSelectedFrameStart(int videocryptSelectedFrameStart) {
+		JobConfig.videocryptSelectedFrameStart = videocryptSelectedFrameStart;
+	}
+
+	public static int getVideocryptSelectedFrameEnd() {
+		return videocryptSelectedFrameEnd;
+	}
+
+	public static void setVideocryptSelectedFrameEnd(int videocryptSelectedFrameEnd) {
+		JobConfig.videocryptSelectedFrameEnd = videocryptSelectedFrameEnd;
 	}	
 }

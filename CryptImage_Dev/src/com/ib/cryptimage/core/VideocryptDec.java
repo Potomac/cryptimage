@@ -78,60 +78,65 @@ public class VideocryptDec extends Videocrypt {
 			image = shift.transform(image, shiftX, shiftY);
 		}
 		
-		raster = image.getRaster();
-		newImage = new BufferedImage(this.sWidth, 576, BufferedImage.TYPE_3BYTE_BGR);
-		raster2 = newImage.getRaster();
-		
-		if (this.wantCorrel == false) {
+		if(JobConfig.frameCount <= JobConfig.getVideocryptSelectedFrameEnd()) {
+			raster = image.getRaster();
+			newImage = new BufferedImage(this.sWidth, 576, BufferedImage.TYPE_3BYTE_BGR);
+			raster2 = newImage.getRaster();
+			
+			if (this.wantCorrel == false) {
 
-			if (JobConfig.isWantVideocryptTags()) {
-				if (!tagLine()) {
-					this.enable = false;
-					return image;
+				if (JobConfig.isWantVideocryptTags()) {
+					if (!tagLine()) {
+						this.enable = false;
+						return image;
+					}
+				} else {
+					if (!this.readFileData()) {
+						this.enable = false;
+						return image;
+					}
 				}
+				
+				//encode image to pal composite
+				if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+					palEncoder.setImage(image);
+					image = palEncoder.encode(false);
+					raster = image.getRaster();
+				}
+				
+				cutAndRotate();
+			
 			} else {
-				if (!this.readFileData()) {
-					this.enable = false;
-					return image;
+				//encode image to pal composite
+				if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+					palEncoder.setImage(image);
+					image = palEncoder.encode(false);
+					raster = image.getRaster();
 				}
+				
+				searchCorrel();
+			}		
+			
+			// encodage pal
+			if (JobConfig.getColorMode() == 1) {
+				palEngine.setImg(newImage);
+				newImage = palEngine.average(valTab, strictMode);
 			}
 			
-			//encode image to pal composite
-			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
-				palEncoder.setImage(image);
-				image = palEncoder.encode(false);
-				raster = image.getRaster();
-			}
+			//decode pal image composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
+				palDecoder.setImage(newImage);
+				newImage = palDecoder.decode();
+			}	
 			
-			cutAndRotate();
-		
-		} else {
-			//encode image to pal composite
-			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
-				palEncoder.setImage(image);
-				image = palEncoder.encode(false);
-				raster = image.getRaster();
-			}
 			
-			searchCorrel();
-		}		
-		
-		// encodage pal
-		if (JobConfig.getColorMode() == 1) {
-			palEngine.setImg(newImage);
-			newImage = palEngine.average(valTab, strictMode);
+			this.enable = true;
+				
+			return newImage;
 		}
-		
-		//decode pal image composite
-		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
-			palDecoder.setImage(newImage);
-			newImage = palDecoder.decode();
-		}	
-		
-		
-		this.enable = true;
-			
-		return newImage;
+		else {
+			return image;
+		}
 	}
 	
 	private void cutAndRotate(){
@@ -409,8 +414,12 @@ public class VideocryptDec extends Videocrypt {
 
 	@Override
 	public boolean isInsideRangeSliderFrames() {
-		// TODO Auto-generated method stub
-		return true;
+		if(JobConfig.frameCount <= JobConfig.getVideocryptSelectedFrameEnd()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 }

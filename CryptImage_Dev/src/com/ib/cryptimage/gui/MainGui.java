@@ -275,9 +275,6 @@ public class MainGui {
 	
 	private JCheckBox chkSoundVideocrypt;	
 	private JCheckBox chkDisableSoundVideocrypt;
-	private JLabel labFrameStartVideocrypt;
-	private JSpinner jspFrameStartVideocrypt;	
-	private JSlider slideFrameStartVideocrypt;
 	private TitledBorder titlePanVideocrypt;
 	private JPanel panColorMode;
 	
@@ -329,6 +326,11 @@ public class MainGui {
 	private JLabel lblRangeSliderSyster;
     private JTextField txtValueMinRangeSliderSyster;
     private JTextField txtValueMaxRangeSliderSyster;
+    
+	private RangeSlider rangeSliderVideocrypt;
+	private JLabel lblRangeSliderVideocrypt;
+    private JTextField txtValueMinRangeSliderVideocrypt;
+    private JTextField txtValueMaxRangeSliderVideocrypt;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -738,7 +740,9 @@ public class MainGui {
 		chkSoundVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.chkSoundVideocrypt"));
 		chkDisableSoundVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.chkDisableSoundVideocrypt"));
 		btnVideocryptDec.setText(JobConfig.getRes().getString("panVideocrypt.btnDec"));
-		labFrameStartVideocrypt.setText(JobConfig.getRes().getString("panVideocrypt.lblFrameStart"));
+		
+		// RangeSliderVideocrypt
+		lblRangeSliderVideocrypt.setText(JobConfig.getRes().getString("rangeSlider.lblFrameStart"));
 		
 		titleColorMode.setTitle(JobConfig.getRes().getString("panColorMode.title"));
 		
@@ -816,6 +820,18 @@ public class MainGui {
 	    
 	    JobConfig.setSysterSelectedFrameStart(JobConfig.getSysterStartFrame());
 	    JobConfig.setSysterSelectedFrameEnd(JobConfig.getSysterEndFrame());
+	    
+		// Videocrypt
+		JobConfig.setVideocryptStartFrame(1);
+		JobConfig.setVideocryptEndFrame(JobConfig.getNbFrames());
+		
+	    rangeSliderVideocrypt.setMinimum(JobConfig.getVideocryptStartFrame());
+	    rangeSliderVideocrypt.setMaximum(JobConfig.getVideocryptEndFrame());
+	    rangeSliderVideocrypt.setValue(JobConfig.getVideocryptStartFrame());
+	    rangeSliderVideocrypt.setUpperValue(JobConfig.getVideocryptEndFrame());
+	    
+	    JobConfig.setVideocryptSelectedFrameStart(JobConfig.getVideocryptStartFrame());
+	    JobConfig.setVideocryptSelectedFrameEnd(JobConfig.getVideocryptEndFrame());
 	}
 	
 	private void createMenu(){				
@@ -1694,61 +1710,71 @@ public class MainGui {
 		panSound.add(chkSoundVideocrypt);
 		panSound.add(chkDisableSoundVideocrypt);
 		
-		labFrameStartVideocrypt = new JLabel(JobConfig.getRes().getString("panVideocrypt.lblFrameStart"));
-		slideFrameStartVideocrypt = new JSlider(JSlider.HORIZONTAL,1,200000,1);
-		slideFrameStartVideocrypt.setToolTipText(JobConfig.getRes().getString("panSyster.labFrameStartSyster.tooltip"));
-		jspFrameStartVideocrypt = new JSpinner();	
-		jspFrameStartVideocrypt.addChangeListener(controler);		
-		JSpinner.NumberEditor spinnerEditor3 = new JSpinner.NumberEditor(jspFrameStartVideocrypt);
-		jspFrameStartVideocrypt.setEditor(spinnerEditor3);
-		JComponent editor2 = jspFrameStartVideocrypt.getEditor();
-		JFormattedTextField tf2 = ((JSpinner.DefaultEditor) editor2).getTextField();
-		tf2.setColumns(5);
-		tf2.setEditable(false);
-		spinnerEditor3.getModel().setMinimum(1);
-		spinnerEditor3.getModel().setMaximum(200000);
-		spinnerEditor3.getModel().setStepSize(1);
-		spinnerEditor3.getModel().setValue(1);
+        ///////////////
 		
-		slideFrameStartVideocrypt.addChangeListener(controler);			
-		slideFrameStartVideocrypt.setValue(1);
-		slideFrameStartVideocrypt.setMajorTickSpacing(50000);
-		slideFrameStartVideocrypt.setMinorTickSpacing(10000);
-		Hashtable<Integer, JLabel> labelTable4 = new Hashtable<Integer, JLabel>();
-		labelTable4.put( new Integer( 1 ), new JLabel("1"));		
-		labelTable4.put( new Integer( 200000 ), new JLabel("200000"));
-		slideFrameStartVideocrypt.setLabelTable(labelTable4);
-		slideFrameStartVideocrypt.setPaintLabels(true);		
-		slideFrameStartVideocrypt.setPaintTicks(true);
+        // RangeSlider Videocrypt
+        rangeSliderVideocrypt = new RangeSlider();            
+        rangeSliderVideocrypt.setMinimum(1);
+        rangeSliderVideocrypt.setMaximum(200000);
+        rangeSliderVideocrypt.setValue(1);
+        rangeSliderVideocrypt.setUpperValue(200000);
+        
+        lblRangeSliderVideocrypt = new JLabel(JobConfig.getRes().getString("rangeSlider.lblFrameStart"));
+    
+
+        txtValueMinRangeSliderVideocrypt = new JTextField(12);
+        txtValueMinRangeSliderVideocrypt.setEditable(false);
+        txtValueMinRangeSliderVideocrypt.setHorizontalAlignment(JLabel.LEFT);
+        txtValueMaxRangeSliderVideocrypt = new JTextField(12);
+        txtValueMaxRangeSliderVideocrypt.setEditable(false);
+        
+        String time = Utils.getTime((int) (rangeSliderVideocrypt.getValue()/JobConfig.getFrameRate()));            
+        txtValueMinRangeSliderVideocrypt.setText(rangeSliderVideocrypt.getValue() + " (" + time + ")");
+        
+        time = Utils.getTime((int) (rangeSliderVideocrypt.getUpperValue()/JobConfig.getFrameRate()));   
+        txtValueMaxRangeSliderVideocrypt.setText(rangeSliderVideocrypt.getUpperValue() + " (" + time + ")");
+        
+        rangeSliderVideocrypt.addChangeListener(controler);
 		
-		JPanel panSlide = new JPanel();
-		GridBagLayout gblSlide = new GridBagLayout();
 		
-		this.placerComposants(panSlide,
-				gblSlide,
-				labFrameStartVideocrypt,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+		JPanel panFrameStart = new JPanel();
+		GridBagLayout gblFrameStart = new GridBagLayout();
+		
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				lblRangeSliderVideocrypt,
+				GridBagConstraints.WEST, GridBagConstraints.EAST,
 				0, 0,
 				1,1,
-				10,33,
+				0.1,1,
 				1, 1,1,1);
-		this.placerComposants(panSlide,
-				gblSlide,
-				slideFrameStartVideocrypt,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 0,
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				txtValueMinRangeSliderVideocrypt,
+				GridBagConstraints.BASELINE_TRAILING, GridBagConstraints.NONE,
+				0, 1,
 				1,1,
-				70,33,
+				0.1,1,
 				1, 1,1,1);
-		this.placerComposants(panSlide,
-				gblSlide,
-				jspFrameStartVideocrypt,
-				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
-				2, 0,
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				rangeSliderVideocrypt,
+				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+				1, 1,
 				1,1,
-				20,33,
+				0.8,1,
+				1, 1,1,1);
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				txtValueMaxRangeSliderVideocrypt,
+				GridBagConstraints.WEST, GridBagConstraints.NONE,
+				2, 1,
+				1,1,
+				0.1,1,
 				1, 1,1,1);
 		
+		
+		///////////////
 		
 		JPanel panLog = new JPanel();
 		panLog.add(chkLogVideocrypt);
@@ -1789,7 +1815,7 @@ public class MainGui {
 				1, 1,1,1);
 		this.placerComposants(panVideocryptOptions,
 				gblVideocrypt,
-				panSlide,
+				panFrameStart,
 				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 4,
 				3,1,
@@ -2158,7 +2184,6 @@ public class MainGui {
 				1,1,
 				0.8,1,
 				1, 1,1,1);
-
 		this.placerComposants(panFrameStart,
 				gblFrameStart,
 				txtValueMaxRangeSliderSyster,
@@ -3819,14 +3844,6 @@ public class MainGui {
 		this.chkDisableSoundVideocrypt = chkDisableSoundVideocrypt;
 	}
 
-	public JSpinner getJspFrameStartVideocrypt() {
-		return jspFrameStartVideocrypt;
-	}
-
-	public JSlider getSlideFrameStartVideocrypt() {
-		return slideFrameStartVideocrypt;
-	}
-
 	public JPanel getPanVideocryptOptions() {
 		return panVideocryptOptions;
 	}
@@ -4025,6 +4042,18 @@ public class MainGui {
 
 	public JTextField getTxtValueMaxRangeSliderSyster() {
 		return txtValueMaxRangeSliderSyster;
+	}
+
+	public RangeSlider getRangeSliderVideocrypt() {
+		return rangeSliderVideocrypt;
+	}
+
+	public JTextField getTxtValueMinRangeSliderVideocrypt() {
+		return txtValueMinRangeSliderVideocrypt;
+	}
+
+	public JTextField getTxtValueMaxRangeSliderVideocrypt() {
+		return txtValueMaxRangeSliderVideocrypt;
 	}
 	
 }

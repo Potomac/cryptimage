@@ -43,7 +43,10 @@ public class PalEngine {
 	public PalEngine() {
 		if (JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT && !JobConfig.isModePhoto() 
 				&& JobConfig.isWantDec()) {
-			int val = Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString());
+			
+			//int val = Integer.valueOf(JobConfig.getGui().getJspFrameStartVideocrypt().getValue().toString());
+			int val = JobConfig.getGui().getRangeSliderVideocrypt().getValue();
+			
 			if (val > 1 && JobConfig.getNbSkippedFrames() == 0) {
 				numFrame =  val - 1;
 			}

@@ -100,69 +100,77 @@ public class VideocryptEnc extends Videocrypt {
 			image = shift.transform(image, shiftX, shiftY);
 		}
 		
-		raster = image.getRaster();
-		newImage = new BufferedImage(this.sWidth, 576, BufferedImage.TYPE_3BYTE_BGR);
-		raster2 = newImage.getRaster();
-		
-		
-		if(JobConfig.isWantVideocryptEncRandom() == false ){
-			if(!this.readFileData()){
-				this.enable = false;
-				//skip
-				if (this.skip){
-					this.skipFrame();
-				}
-				return image;
-			}
-		}
-		else{
-			int min = 1;
-			int max = 16777216;
-			Random rand = new Random();
-
-			int valVideocrypt;			
-						
-			valVideocrypt = (int) (rand.nextInt(max - min + 1) + min);
-			this.seed = valVideocrypt;
-			generateValues(valVideocrypt);
-		}
-		
-		//encode image to pal composite
-		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
-			palEncoder.setImage(image);
-			image = palEncoder.encode(false);
+		if(JobConfig.frameCount <= JobConfig.getVideocryptSelectedFrameEnd()) {
 			raster = image.getRaster();
-		}
-		
-		cutAndRotate();
-		
-		//decode pal image composite
-		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
-			palDecoder.setImage(newImage);
-			newImage = palDecoder.decode();
-		}	
-		
-		if(!this.bPreviewMode){
-			this.feedFileData();
-		}
-				
-		//encodage pal
-		if(JobConfig.getColorMode() == 1){			
-			palEngine.setImg(newImage);
-			newImage = palEngine.average(valTab, strictMode);
-		}
-		//encodage secam
-		if(JobConfig.getColorMode() == 2){			
-			secamEngine.setImg(newImage);
-			newImage = secamEngine.averageSpecial();			
-		}
-		
-		//tags
-		if(JobConfig.isWantVideocryptTags()){
-			tagLine();
-		}
+			newImage = new BufferedImage(this.sWidth, 576, BufferedImage.TYPE_3BYTE_BGR);
+			raster2 = newImage.getRaster();
 			
-		return newImage;
+			
+			if(JobConfig.isWantVideocryptEncRandom() == false ){
+				if(!this.readFileData()){
+					this.enable = false;
+					//skip
+					if (this.skip){
+						this.skipFrame();
+					}
+					return image;
+				}
+			}
+			else{
+				int min = 1;
+				int max = 16777216;
+				Random rand = new Random();
+
+				int valVideocrypt;			
+							
+				valVideocrypt = (int) (rand.nextInt(max - min + 1) + min);
+				this.seed = valVideocrypt;
+				generateValues(valVideocrypt);
+			}
+			
+			//encode image to pal composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+				palEncoder.setImage(image);
+				image = palEncoder.encode(false);
+				raster = image.getRaster();
+			}
+			
+			cutAndRotate();
+			
+			//decode pal image composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
+				palDecoder.setImage(newImage);
+				newImage = palDecoder.decode();
+			}	
+			
+			if(!this.bPreviewMode){
+				this.feedFileData();
+			}
+					
+			//encodage pal
+			if(JobConfig.getColorMode() == 1){			
+				palEngine.setImg(newImage);
+				newImage = palEngine.average(valTab, strictMode);
+			}
+			//encodage secam
+			if(JobConfig.getColorMode() == 2){			
+				secamEngine.setImg(newImage);
+				newImage = secamEngine.averageSpecial();			
+			}
+			
+			//tags
+			if(JobConfig.isWantVideocryptTags()){
+				tagLine();
+			}
+				
+			return newImage;
+		}
+		else {
+			this.skipFrame();
+			return image;
+		}
+		
+
 	}
 	
 	private void cutAndRotate(){
@@ -339,8 +347,12 @@ public class VideocryptEnc extends Videocrypt {
 
 	@Override
 	public boolean isInsideRangeSliderFrames() {
-		// TODO Auto-generated method stub
-		return true;
+		if(JobConfig.frameCount <= JobConfig.getVideocryptSelectedFrameEnd()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 }
