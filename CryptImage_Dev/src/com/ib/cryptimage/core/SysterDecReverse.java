@@ -153,40 +153,44 @@ public class SysterDecReverse extends Syster {
 			image = shift.transform(image, shiftX, shiftY);
 		}
 		
-		this.imageSource = deepCopy(image);		
-		
-		// encodage pal
-		if (JobConfig.getColorMode() == 1) {
-			palEngine.setImg(image);
-			image = palEngine.encode();
+		if(JobConfig.frameCount <= JobConfig.getSysterSelectedFrameEnd()) {
+			this.imageSource = deepCopy(image);		
+			
+			// encodage pal
+			if (JobConfig.getColorMode() == 1) {
+				palEngine.setImg(image);
+				image = palEngine.encode();
+			}
+			
+			//encode image to pal composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+				palEncoder.setImage(image);
+				image = palEncoder.encode(false);
+			}
+			
+			
+			deCryptOddFrame(image);
+					
+			deCryptEvenFrame(image);
+			
+//			   if(!this.bPreviewMode) {
+	//
+//				   this.vOffset.add(this.offset);
+//				   this.vIncrement.add(this.increment);
+//				   System.out.println(this.vOffset.size() + " " + this.vIncrement.size());
+//				   System.out.println(this.offset + " " + this.increment );
+//				   
+//				   if(this.vOffset.size() > 2 && this.vIncrement.size() > 2) {
+//					   System.out.println("écriture" + this.offset + " " + this.increment );
+//					   feedFileData();
+//				   }
+//			   }		
+			
+			return this.getCompletFrame();
 		}
-		
-		//encode image to pal composite
-		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
-			palEncoder.setImage(image);
-			image = palEncoder.encode(false);
-		}
-		
-		
-		deCryptOddFrame(image);
-				
-		deCryptEvenFrame(image);
-		
-//		   if(!this.bPreviewMode) {
-//
-//			   this.vOffset.add(this.offset);
-//			   this.vIncrement.add(this.increment);
-//			   System.out.println(this.vOffset.size() + " " + this.vIncrement.size());
-//			   System.out.println(this.offset + " " + this.increment );
-//			   
-//			   if(this.vOffset.size() > 2 && this.vIncrement.size() > 2) {
-//				   System.out.println("écriture" + this.offset + " " + this.increment );
-//				   feedFileData();
-//			   }
-//		   }		
-		
-		return this.getCompletFrame();
-		
+		else {
+			return image;
+		}		
 	}
 	
 	private void deCryptOddFrame(BufferedImage image){
@@ -793,7 +797,11 @@ public class SysterDecReverse extends Syster {
 
 		@Override
 		public boolean isInsideRangeSliderFrames() {
-			// TODO Auto-generated method stub
-			return true;
+			if(JobConfig.frameCount <= JobConfig.getSysterSelectedFrameEnd()) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 }

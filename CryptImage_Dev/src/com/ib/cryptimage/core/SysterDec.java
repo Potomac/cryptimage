@@ -137,27 +137,31 @@ public class SysterDec extends Syster {
 			image = shift.transform(image, shiftX, shiftY);
 		}
 		
-		this.imageSource = deepCopy(image);		
-		
-		// encodage pal
-		if (JobConfig.getColorMode() == 1) {
-			palEngine.setImg(image);
-			image = palEngine.encode();
+		if(JobConfig.frameCount <= JobConfig.getSysterSelectedFrameEnd()) {
+			this.imageSource = deepCopy(image);		
+			
+			// encodage pal
+			if (JobConfig.getColorMode() == 1) {
+				palEngine.setImg(image);
+				image = palEngine.encode();
+			}
+			
+			//encode image to pal composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+				palEncoder.setImage(image);
+				image = palEncoder.encode(false);
+			}
+			
+			if(numFrames > 1){
+			deCryptOddFrame(image);
+			}		
+			deCryptEvenFrame(image);
+			
+			return this.getCompletFrame();			
 		}
-		
-		//encode image to pal composite
-		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
-			palEncoder.setImage(image);
-			image = palEncoder.encode(false);
-		}
-		
-		if(numFrames > 1){
-		deCryptOddFrame(image);
+		else {
+			return image;
 		}		
-		deCryptEvenFrame(image);
-		
-		return this.getCompletFrame();
-		
 	}
 	
 	private void deCryptOddFrame(BufferedImage image){
@@ -738,7 +742,11 @@ public class SysterDec extends Syster {
 
 		@Override
 		public boolean isInsideRangeSliderFrames() {
-			// TODO Auto-generated method stub
-			return true;
+			if(JobConfig.frameCount <= JobConfig.getSysterSelectedFrameEnd()) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 }

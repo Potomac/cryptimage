@@ -146,9 +146,7 @@ public class MainGui {
 	private JCheckBox chkDelay;
 	private JCheckBox chkNullDelay;
 	private JSpinner jsp16bitKeyword;
-	private JLabel labFrameStartSyster;
-	private JSpinner jspFrameStartSyster;
-	private JSlider slideFrameStartSyster;
+
 	private JCheckBox chkAutorisation1;
 	private JCheckBox chkAutorisation2;
 	private JCheckBox chkAutorisation3;
@@ -326,6 +324,11 @@ public class MainGui {
 	private JLabel lblRangeSliderDiscret;
     private JTextField txtValueMinRangeSliderDiscret;
     private JTextField txtValueMaxRangeSliderDiscret;
+    
+	private RangeSlider rangeSliderSyster;
+	private JLabel lblRangeSliderSyster;
+    private JTextField txtValueMinRangeSliderSyster;
+    private JTextField txtValueMaxRangeSliderSyster;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -685,6 +688,9 @@ public class MainGui {
 		rdiSysterCodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterCodingFile"));
 		chkTags.setText(JobConfig.getRes().getString("panSyster.chkTags"));
 		
+		// RangeSliderSyster
+		lblRangeSliderSyster.setText(JobConfig.getRes().getString("rangeSlider.lblFrameStart"));
+		
 		int indexSysterEnc = getComboTableSysterEnc().getSelectedIndex();
 		int indexSysterDec = comboTableSysterDec.getSelectedIndex();
 		String[] tabSyster ={JobConfig.getRes().getString("panSyster.comboTableSysterEnc.menu1"),
@@ -700,8 +706,6 @@ public class MainGui {
 		rdiSysterDecodingFile.setText(JobConfig.getRes().getString("panSyster.rdiSysterDecodingFile"));
 		rdiSysterDeCodingTags.setText(JobConfig.getRes().getString("panSyster.rdiSysterDeCodingTags"));
 		rdiSysterDecodingCorrel.setText(JobConfig.getRes().getString("panSyster.rdiSysterDecodingCorrel"));
-		labFrameStartSyster.setText(JobConfig.getRes().getString("panSyster.labFrameStartSyster"));
-		slideFrameStartSyster.setToolTipText(JobConfig.getRes().getString("panSyster.labFrameStartSyster.tooltip"));
 		chkSoundSyster.setText(JobConfig.getRes().getString("panSyster.chkSoundSyster"));
 		chkSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkSoundSyster.tooltip"));
 		chkDisableSoundSyster.setText(JobConfig.getRes().getString("panSyster.chkDisableSoundSyster"));
@@ -799,7 +803,19 @@ public class MainGui {
 	    rangeSliderDiscret.setUpperValue(JobConfig.getDiscretEndFrame());
 	    
 	    JobConfig.setDiscretSelectedFrameStart(JobConfig.getDiscretStartFrame());
-	    JobConfig.setDiscretSelectedFrameEnd(JobConfig.getDiscretEndFrame());		
+	    JobConfig.setDiscretSelectedFrameEnd(JobConfig.getDiscretEndFrame());
+	    
+		// syster
+		JobConfig.setSysterStartFrame(1);
+		JobConfig.setSysterEndFrame(JobConfig.getNbFrames());
+		
+	    rangeSliderSyster.setMinimum(JobConfig.getSysterStartFrame());
+	    rangeSliderSyster.setMaximum(JobConfig.getSysterEndFrame());
+	    rangeSliderSyster.setValue(JobConfig.getSysterStartFrame());
+	    rangeSliderSyster.setUpperValue(JobConfig.getSysterEndFrame());
+	    
+	    JobConfig.setSysterSelectedFrameStart(JobConfig.getSysterStartFrame());
+	    JobConfig.setSysterSelectedFrameEnd(JobConfig.getSysterEndFrame());
 	}
 	
 	private void createMenu(){				
@@ -2071,35 +2087,7 @@ public class MainGui {
 		panSysterEncDecCard.add(panCoderSyster,"SysterCoding");
 		panSysterEncDecCard.add(panDecoderSyster,"SysterDecoding");
 		
-		//pan syster misc
-		labFrameStartSyster = new JLabel(JobConfig.getRes().getString("panSyster.labFrameStartSyster"));
-		slideFrameStartSyster = new JSlider(JSlider.HORIZONTAL,1,200000,1);
-		slideFrameStartSyster.setToolTipText(JobConfig.getRes().getString("panSyster.labFrameStartSyster.tooltip"));
-		jspFrameStartSyster = new JSpinner();	
-		jspFrameStartSyster.addChangeListener(controler);		
-		JSpinner.NumberEditor spinnerEditor3 = new JSpinner.NumberEditor(jspFrameStartSyster);
-		jspFrameStartSyster.setEditor(spinnerEditor3);
-		JComponent editor2 = jspFrameStartSyster.getEditor();
-		JFormattedTextField tf2 = ((JSpinner.DefaultEditor) editor2).getTextField();
-		tf2.setColumns(5);
-		tf2.setEditable(false);
-		spinnerEditor3.getModel().setMinimum(1);
-		spinnerEditor3.getModel().setMaximum(200000);
-		spinnerEditor3.getModel().setStepSize(1);
-		spinnerEditor3.getModel().setValue(1);
-		
-		
-		slideFrameStartSyster.addChangeListener(controler);			
-		slideFrameStartSyster.setValue(1);
-		slideFrameStartSyster.setMajorTickSpacing(50000);
-		slideFrameStartSyster.setMinorTickSpacing(10000);
-		Hashtable<Integer, JLabel> labelTable4 = new Hashtable<Integer, JLabel>();
-		labelTable4.put( new Integer( 1 ), new JLabel("1"));		
-		labelTable4.put( new Integer( 200000 ), new JLabel("200000"));
-		slideFrameStartSyster.setLabelTable(labelTable4);
-		slideFrameStartSyster.setPaintLabels(true);		
-		slideFrameStartSyster.setPaintTicks(true);
-		
+		//pan syster misc	
 		chkSoundSyster = new JCheckBox(JobConfig.getRes().getString("panSyster.chkSoundSyster"));
 		chkSoundSyster.setSelected(true);
 		chkSoundSyster.setToolTipText(JobConfig.getRes().getString("panSyster.chkSoundSyster.tooltip"));
@@ -2116,6 +2104,72 @@ public class MainGui {
 				
 		panSound.add(chkSoundSyster);
 		panSound.add(chkDisableSoundSyster);
+		///////////////
+		
+        // RangeSlider Syster
+        rangeSliderSyster = new RangeSlider();            
+        rangeSliderSyster.setMinimum(1);
+        rangeSliderSyster.setMaximum(200000);
+        rangeSliderSyster.setValue(1);
+        rangeSliderSyster.setUpperValue(200000);
+        
+        lblRangeSliderSyster = new JLabel(JobConfig.getRes().getString("rangeSlider.lblFrameStart"));
+    
+
+        txtValueMinRangeSliderSyster = new JTextField(12);
+        txtValueMinRangeSliderSyster.setEditable(false);
+        txtValueMinRangeSliderSyster.setHorizontalAlignment(JLabel.LEFT);
+        txtValueMaxRangeSliderSyster = new JTextField(12);
+        txtValueMaxRangeSliderSyster.setEditable(false);
+        
+        String time = Utils.getTime((int) (rangeSliderSyster.getValue()/JobConfig.getFrameRate()));            
+        txtValueMinRangeSliderSyster.setText(rangeSliderSyster.getValue() + " (" + time + ")");
+        
+        time = Utils.getTime((int) (rangeSliderSyster.getUpperValue()/JobConfig.getFrameRate()));   
+        txtValueMaxRangeSliderSyster.setText(rangeSliderSyster.getUpperValue() + " (" + time + ")");
+        
+        rangeSliderSyster.addChangeListener(controler);
+		
+		
+		JPanel panFrameStart = new JPanel();
+		GridBagLayout gblFrameStart = new GridBagLayout();
+		
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				lblRangeSliderSyster,
+				GridBagConstraints.WEST, GridBagConstraints.EAST,
+				0, 0,
+				1,1,
+				0.1,1,
+				1, 1,1,1);
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				txtValueMinRangeSliderSyster,
+				GridBagConstraints.BASELINE_TRAILING, GridBagConstraints.NONE,
+				0, 1,
+				1,1,
+				0.1,1,
+				1, 1,1,1);
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				rangeSliderSyster,
+				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+				1, 1,
+				1,1,
+				0.8,1,
+				1, 1,1,1);
+
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				txtValueMaxRangeSliderSyster,
+				GridBagConstraints.WEST, GridBagConstraints.NONE,
+				2, 1,
+				1,1,
+				0.1,1,
+				1, 1,1,1);
+		
+		
+		///////////////
 		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
@@ -2127,28 +2181,13 @@ public class MainGui {
 				1, 1,1,1);		
 		this.placerComposants(panSysterMisc,
 				gblSysterMisc,
-				labFrameStartSyster,
-				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				panFrameStart,
+				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
 				0, 1,
 				1,1,
-				10,33,
+				100,33,
 				1, 1,1,1);
-		this.placerComposants(panSysterMisc,
-				gblSysterMisc,
-				slideFrameStartSyster,
-				GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
-				1, 1,
-				1,1,
-				70,33,
-				1, 1,1,1);
-		this.placerComposants(panSysterMisc,
-				gblSysterMisc,
-				jspFrameStartSyster,
-				GridBagConstraints.LINE_START, GridBagConstraints.EAST,
-				2, 1,
-				1,1,
-				20,33,
-				1, 1,1,1);
+
 
 		GridBagLayout gblOptionsSyster = new GridBagLayout();
 		this.placerComposants(panOptionsSyster,
@@ -3643,29 +3682,6 @@ public class MainGui {
 		this.chkDisableSoundSyster = chkDisableSoundSyster;
 	}
 
-	public JLabel getLabFrameStartSyster() {
-		return labFrameStartSyster;
-	}
-
-	public void setLabFrameStartSyster(JLabel labFrameStartSyster) {
-		this.labFrameStartSyster = labFrameStartSyster;
-	}
-
-	public JSpinner getJspFrameStartSyster() {
-		return jspFrameStartSyster;
-	}
-
-	public void setJspFrameStartSyster(JSpinner jspFrameStartSyster) {
-		this.jspFrameStartSyster = jspFrameStartSyster;
-	}
-
-	public JSlider getSlideFrameStartSyster() {
-		return slideFrameStartSyster;
-	}
-
-	public void setSlideFrameStartSyster(JSlider slideFrameStartSyster) {
-		this.slideFrameStartSyster = slideFrameStartSyster;
-	}
 
 	public JComboBox<String> getComboTableSysterEnc() {
 		return comboTableSysterEnc;
@@ -3997,6 +4013,18 @@ public class MainGui {
 
 	public JTextField getTxtValueMaxRangeSliderDiscret() {
 		return txtValueMaxRangeSliderDiscret;
+	}
+
+	public RangeSlider getRangeSliderSyster() {
+		return rangeSliderSyster;
+	}
+
+	public JTextField getTxtValueMinRangeSliderSyster() {
+		return txtValueMinRangeSliderSyster;
+	}
+
+	public JTextField getTxtValueMaxRangeSliderSyster() {
+		return txtValueMaxRangeSliderSyster;
 	}
 	
 }

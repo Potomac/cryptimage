@@ -664,10 +664,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			}
 			mainGui.getTxtDelay2().setText(String.valueOf(
 					mainGui.getSlidDelay2().getValue()/1000d) + "%");
-		} else if(src.equals(mainGui.getSlideFrameStartSyster())){
-			mainGui.getJspFrameStartSyster().setValue(
-					mainGui.getSlideFrameStartSyster().getValue());
-		} 	else if(src.equals(mainGui.getSlideFrameStartVideocrypt())){
+		} else if(src.equals(mainGui.getSlideFrameStartVideocrypt())){
 			mainGui.getJspFrameStartVideocrypt().setValue(
 					mainGui.getSlideFrameStartVideocrypt().getValue());
 		}else if(src.equals(mainGui.getSlidBitrate())){
@@ -691,9 +688,6 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if(src.equals(this.mainGui.getJsp16bitKeyword())){
 			mainGui.getSlid16bitsWord().setValue(
 					(int) src.getValue());			
-		} else if(src.equals(this.mainGui.getJspFrameStartSyster())){
-			mainGui.getSlideFrameStartSyster().setValue(
-					(int) src.getValue());
 		} else if(src.equals(this.mainGui.getJspFrameStartVideocrypt())){
 			mainGui.getSlideFrameStartVideocrypt().setValue(
 					(int) src.getValue());
@@ -712,6 +706,18 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			JobConfig.setDiscretSelectedFrameStart(JobConfig.getGui().getRangeSliderDiscret().getValue());
 			JobConfig.setDiscretSelectedFrameEnd(JobConfig.getGui().getRangeSliderDiscret().getUpperValue());
+		}
+		else if(src.equals(this.mainGui.getRangeSliderSyster())){
+			String time = Utils.getTime((int)(JobConfig.getGui().getRangeSliderSyster().getValue()/JobConfig.getFrameRate()));
+			JobConfig.getGui().getTxtValueMinRangeSliderSyster()
+			                       .setText(JobConfig.getGui().getRangeSliderSyster().getValue() + " (" + time + ")");
+			
+			time = Utils.getTime((int)(JobConfig.getGui().getRangeSliderSyster().getUpperValue()/JobConfig.getFrameRate()));
+			JobConfig.getGui().getTxtValueMaxRangeSliderSyster()
+			                       .setText(JobConfig.getGui().getRangeSliderSyster().getUpperValue() + " (" + time + ")") ;
+			
+			JobConfig.setSysterSelectedFrameStart(JobConfig.getGui().getRangeSliderSyster().getValue());
+			JobConfig.setSysterSelectedFrameEnd(JobConfig.getGui().getRangeSliderSyster().getUpperValue());
 		}
 	}
 
@@ -1595,17 +1601,17 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	//check if possible the size of lines with the frame lenght of the video
 		if(!this.mainGui.getTxtInputFile().getText().equals("")){			
-//			if(compt  < mainGui.getSlideFrameStart().getMaximum()
-//					&& this.mainGui.getRdiVideo().isSelected()){
-//				JOptionPane
-//				.showMessageDialog(
-//						mainGui.getFrame(),
-//						JobConfig.getRes().getString("mainGui.validityError.file.name") 
-//						+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name2"),
-//						JobConfig.getRes().getString("mainGui.validityError.file.name3"),
-//						JOptionPane.ERROR_MESSAGE);
-//				return false;
-//			}
+			if(compt  < mainGui.getRangeSliderDiscret().getMaximum()
+					&& this.mainGui.getRdiVideo().isSelected()){
+				JOptionPane
+				.showMessageDialog(
+						mainGui.getFrame(),
+						JobConfig.getRes().getString("mainGui.validityError.file.name") 
+						+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name2"),
+						JobConfig.getRes().getString("mainGui.validityError.file.name3"),
+						JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
 			
 			if(compt  < 1
 					&& this.mainGui.getRdiPhoto().isSelected()
@@ -1724,7 +1730,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 								JOptionPane.ERROR_MESSAGE);
 						fileInBuff.close();
 						return false;
-					}
+					}					
 				}
 			} catch ( IOException e) {
 				// TODO Auto-generated catch block
@@ -1757,17 +1763,17 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				if(decEnc.equals("dec")){
 					corr = 1 ;
 				}
-//				if(compt + corr < mainGui.getSlideFrameStart().getMaximum()
-//						&& this.mainGui.getRdiVideo().isSelected()){
-//					JOptionPane
-//					.showMessageDialog(
-//							mainGui.getFrame(),
-//							JobConfig.getRes().getString("mainGui.validityError.file.name") + " " + decEnc
-//							+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name2"),
-//							JobConfig.getRes().getString("mainGui.validityError.file.name3") + " " + decEnc,
-//							JOptionPane.ERROR_MESSAGE);
-//					return false;
-//				}
+				if(compt + corr < mainGui.getRangeSliderSyster().getMaximum()
+						&& this.mainGui.getRdiVideo().isSelected()){
+					JOptionPane
+					.showMessageDialog(
+							mainGui.getFrame(),
+							JobConfig.getRes().getString("mainGui.validityError.file.name") + " " + decEnc
+							+ " " + JobConfig.getRes().getString("mainGui.validityError.file.name2"),
+							JobConfig.getRes().getString("mainGui.validityError.file.name3") + " " + decEnc,
+							JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
 				if(compt + corr < 3
 						&& this.mainGui.getRdiPhoto().isSelected()
 						&& this.mainGui.getRdiSysterCodingGen().isSelected()){
@@ -2035,7 +2041,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						(int) mainGui.getRangeSliderDiscret().getValue());				
 			} else if(JobConfig.getSystemCrypt() == SystemType.SYSTER) {
 				JobConfig.setPositionSynchro(
-						(int) mainGui.getJspFrameStartSyster().getValue());
+						(int) mainGui.getRangeSliderSyster().getValue());	
 			}else if(JobConfig.getSystemCrypt() == SystemType.VIDEOCRYPT) {
 				JobConfig.setPositionSynchro(
 						(int) mainGui.getJspFrameStartVideocrypt().getValue());
@@ -2492,18 +2498,6 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		labelTable.put( new Integer( nb_frames_def ), 
 				new JLabel(String.valueOf(nb_frames_def)));
 		
-		mainGui.getSlideFrameStartSyster().setMaximum(nb_frames_def);
-		mainGui.getSlideFrameStartSyster().setValue(1);
-		Hashtable<Integer, JLabel> labelTable2 = new Hashtable<Integer, JLabel>();
-		labelTable2.put( new Integer( 1 ), new JLabel("1"));		
-		labelTable2.put( new Integer( nb_frames_def ), 
-				new JLabel(String.valueOf(nb_frames_def)));		
-		mainGui.getSlideFrameStartSyster().setLabelTable(labelTable2);
-		mainGui.getSlideFrameStartSyster().setMajorTickSpacing((int) (0.5 * nb_frames_def));
-		mainGui.getSlideFrameStartSyster().setMinorTickSpacing((int) (0.05 * nb_frames_def));
-		mainGui.getSlideFrameStartSyster().setPaintLabels(true);		
-		mainGui.getSlideFrameStartSyster().setPaintTicks(true);
-		
 		mainGui.getSlideFrameStartVideocrypt().setMaximum(nb_frames_def);
 		mainGui.getSlideFrameStartVideocrypt().setValue(1);
 		Hashtable<Integer, JLabel> labelTable3 = new Hashtable<Integer, JLabel>();
@@ -2547,8 +2541,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (e.getSource().equals(mainGui.getRangeSliderDiscret())) {
 			RangeSlider rangeSlider = (RangeSlider) e.getSource();
 			manageRangeSlider(rangeSlider);
-		} else if (e.getSource().equals(mainGui.getJsp16bitKeyword())
-				|| e.getSource().equals(mainGui.getJspFrameStartSyster())
+		} 
+		else if (e.getSource().equals(mainGui.getRangeSliderSyster())) {
+			RangeSlider rangeSlider = (RangeSlider) e.getSource();
+			manageRangeSlider(rangeSlider);
+		}		
+		else if (e.getSource().equals(mainGui.getJsp16bitKeyword())
 				|| e.getSource().equals(mainGui.getJspFrameStartVideocrypt())
 				|| e.getSource().equals(mainGui.getSlpWhiteValue())) {
 			JSpinner spi = (JSpinner) e.getSource();

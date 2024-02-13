@@ -105,52 +105,60 @@ public class SysterEnc extends Syster {
 		if(shiftX != 0 || shiftY !=0) {
 			image = shift.transform(image, shiftX, shiftY);
 		}
-				
-		if(JobConfig.getColorMode() == 1){			
-			palEngine.setImg(image);
-			image = palEngine.encode();
-		}
-		
-		if(JobConfig.getColorMode() == 2){			
-			secamEngine.setImg(image);
-			image = secamEngine.encode();			
-		}
-		
-		//encode image to pal composite
-		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
-			palEncoder.setImage(image);
-			image = palEncoder.encode(false);
-		}
-		
-		if (JobConfig.isWantSysterEncRandom() == false) {
-			this.readFileData();			
-			this.offset = this.offSetOdd;
-			this.increment = this.incrementOdd;
-		} else {
-			this.genOffsetIncrement();
-		}
-		
-		this.initPermut();
-		this.crypt();
-		
-		this.cryptOddFrame(image);
-		
-		if (JobConfig.isWantSysterEncRandom() == false ) {			
-				this.offset = this.offSetEven;
-				this.increment = this.incrementEven;			
-		} else {
-			if(JobConfig.isOffsetIncrementChange()){
+
+		if(JobConfig.frameCount <= JobConfig.getSysterSelectedFrameEnd()) {
+			if(JobConfig.getColorMode() == 1){			
+				palEngine.setImg(image);
+				image = palEngine.encode();
+			}
+			
+			if(JobConfig.getColorMode() == 2){			
+				secamEngine.setImg(image);
+				image = secamEngine.encode();			
+			}
+			
+			//encode image to pal composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+				palEncoder.setImage(image);
+				image = palEncoder.encode(false);
+			}
+			
+			if (JobConfig.isWantSysterEncRandom() == false) {
+				this.readFileData();			
+				this.offset = this.offSetOdd;
+				this.increment = this.incrementOdd;
+			} else {
 				this.genOffsetIncrement();
 			}
 			
+			this.initPermut();
+			this.crypt();
+			
+			this.cryptOddFrame(image);
+			
+			if (JobConfig.isWantSysterEncRandom() == false ) {			
+					this.offset = this.offSetEven;
+					this.increment = this.incrementEven;			
+			} else {
+				if(JobConfig.isOffsetIncrementChange()){
+					this.genOffsetIncrement();
+				}
+				
+			}
+			
+			this.initPermut();
+			this.crypt();
+			
+			this.cryptEvenFrame(image);		
+			
+			return this.getCompletFrame();			
+		}
+		else {
+			this.skipFrame();
+			return image;
 		}
 		
-		this.initPermut();
-		this.crypt();
-		
-		this.cryptEvenFrame(image);		
-		
-		return this.getCompletFrame();
+
 	}
 	
 	public BufferedImage transformPhoto(BufferedImage image, int offset1, 
@@ -520,8 +528,12 @@ public class SysterEnc extends Syster {
 
 	@Override
 	public boolean isInsideRangeSliderFrames() {
-		// TODO Auto-generated method stub
-		return true;
+		if(JobConfig.frameCount <= JobConfig.getSysterSelectedFrameEnd()) {
+			return true;
+		}
+		else {
+			return false;
+		}	
 	}
 }
 

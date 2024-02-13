@@ -141,6 +141,12 @@ public final class JobConfig {
 	private static int discretSelectedFrameStart = 1;
 	private static int discretSelectedFrameEnd = 20000;
 	
+	// RangeSlider for Syster
+	private static int systerStartFrame = 1;
+	private static int systerEndFrame = 20000;
+	private static int systerSelectedFrameStart = 1;
+	private static int systerSelectedFrameEnd = 20000;
+	
 	public static int frameCount;
 	
 		
@@ -1283,5 +1289,37 @@ public final class JobConfig {
 
 	public static void setDiscretSelectedFrameEnd(int discretSelectedFrameEnd) {
 		JobConfig.discretSelectedFrameEnd = discretSelectedFrameEnd;
+	}
+
+	public static int getSysterStartFrame() {
+		return systerStartFrame;
+	}
+
+	public static void setSysterStartFrame(int systerStartFrame) {
+		JobConfig.systerStartFrame = systerStartFrame;
+	}
+
+	public static int getSysterEndFrame() {
+		return systerEndFrame;
+	}
+
+	public static void setSysterEndFrame(int systerEndFrame) {
+		JobConfig.systerEndFrame = systerEndFrame;
+	}
+
+	public static int getSysterSelectedFrameStart() {
+		return systerSelectedFrameStart;
+	}
+
+	public static void setSysterSelectedFrameStart(int systerSelectedFrameStart) {
+		JobConfig.systerSelectedFrameStart = systerSelectedFrameStart;
+	}
+
+	public static int getSysterSelectedFrameEnd() {
+		return systerSelectedFrameEnd;
+	}
+
+	public static void setSysterSelectedFrameEnd(int systerSelectedFrameEnd) {
+		JobConfig.systerSelectedFrameEnd = systerSelectedFrameEnd;
 	}	
 }
