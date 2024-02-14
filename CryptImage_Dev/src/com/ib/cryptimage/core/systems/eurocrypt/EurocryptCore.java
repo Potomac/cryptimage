@@ -85,6 +85,12 @@ public class EurocryptCore extends Device {
 	BufferedImage newImageDoubleCutRotated;	
 	int frameEurocrypt = 0;
 	
+	private boolean isEncodeMac = false;
+	private boolean isEncodeMacDecode576pNoEurocrypt = false;
+	private boolean isDecodeMac = false;
+	private boolean isDecode576p = false;
+	
+	
     public EurocryptCore() {
 		shift = new Shift();		
 		shiftX = Integer.valueOf(JobConfig.getGui().getjShiftX().getValue().toString());
@@ -96,6 +102,11 @@ public class EurocryptCore extends Device {
 		this.rand = new Random(Integer.valueOf(EurocryptConf.seedCode));
 		this.randVal = new Random(Integer.valueOf(EurocryptConf.seedCode));
 		this.randSound = new Random(Integer.valueOf(EurocryptConf.seedCode));
+		
+		this.isEncodeMac = EurocryptConf.isEncodeMac;
+		this.isEncodeMacDecode576pNoEurocrypt = EurocryptConf.isEncodeMacDecode576pNoEurocrypt;
+		this.isDecodeMac = EurocryptConf.isDecodeMac;
+		this.isDecode576p = EurocryptConf.isDecode576p;
 		
 	}
 	
@@ -110,10 +121,10 @@ public class EurocryptCore extends Device {
 		frameEurocrypt++;
 		image = this.convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 		
-		if(EurocryptConf.isEncodeMac) {
+		if(isEncodeMac) {
 			return encodeToMac(image);
 		}
-		else if(EurocryptConf.isEncodeMacDecode576pNoEurocrypt) {			
+		else if(isEncodeMacDecode576pNoEurocrypt) {			
 			image = encodeToMac(image);
 			
 //			// backup tag
@@ -131,10 +142,10 @@ public class EurocryptCore extends Device {
 			return image;
 			
 		}
-		else if(EurocryptConf.isDecodeMac) {
+		else if(isDecodeMac) {
 			return decodeFromMac(image);
 		}
-		else if(EurocryptConf.isDecode576p) {
+		else if(isDecode576p) {
 			return decodeFrom576p(image);
 		}
 		else {
@@ -161,7 +172,7 @@ public class EurocryptCore extends Device {
 
 		createLumaChromaImages(image);
 		
-		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isDecode576p
+		if(EurocryptConf.isEurocryptSingleCut && !isDecode576p
 			&& EurocryptConf.selectedFrameStart <= frameEurocrypt
 			&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 			assembleChromaLumaSingleCut();
@@ -169,7 +180,7 @@ public class EurocryptCore extends Device {
 			cutAndRotateSingleCutEncode();
 		}
 		
-		if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isDecode576p
+		if(EurocryptConf.isEurocryptDoubleCut && !isDecode576p
 			&& EurocryptConf.selectedFrameStart <= frameEurocrypt
 			&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 			generateValues();
@@ -181,12 +192,12 @@ public class EurocryptCore extends Device {
 		
 		createSoundPart();
 		
-		if(EurocryptConf.isEurocryptSingleCut && !EurocryptConf.isDecode576p
+		if(EurocryptConf.isEurocryptSingleCut && !isDecode576p
 				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
 				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 			assembleEncodedMacImageSingleCut();
 		}
-		else if(EurocryptConf.isEurocryptDoubleCut && !EurocryptConf.isDecode576p
+		else if(EurocryptConf.isEurocryptDoubleCut && !isDecode576p
 				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
 				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 				assembleEncodedMacImageDoubleCut();
@@ -221,7 +232,7 @@ public class EurocryptCore extends Device {
 		JobConfig.setInputImage(image);
 		
 		if((EurocryptConf.isEurocryptSingleCut || EurocryptConf.isEurocryptDoubleCut)
-				&& !EurocryptConf.isEncodeMacDecode576pNoEurocrypt
+				&& !isEncodeMacDecode576pNoEurocrypt
 				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
 				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt) {
 			readTag(image);
@@ -233,7 +244,7 @@ public class EurocryptCore extends Device {
 		}
 		
 		if(EurocryptConf.isEurocryptSingleCut 
-				&& !EurocryptConf.isEncodeMacDecode576pNoEurocrypt
+				&& !isEncodeMacDecode576pNoEurocrypt
 				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
 				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt && okDecodeTag) {
 			newImageSingleCut =  extractChromaLumaSingleCut(image);
@@ -248,7 +259,7 @@ public class EurocryptCore extends Device {
 		}		
 		
 		if(EurocryptConf.isEurocryptDoubleCut 
-				&& !EurocryptConf.isEncodeMacDecode576pNoEurocrypt
+				&& !isEncodeMacDecode576pNoEurocrypt
 				&& EurocryptConf.selectedFrameStart <= frameEurocrypt
 				&& EurocryptConf.selectedFrameEnd >= frameEurocrypt && okDecodeTag) {
 			newImageDoubleCut =  extractChromaLumaDoubleCut(image);
