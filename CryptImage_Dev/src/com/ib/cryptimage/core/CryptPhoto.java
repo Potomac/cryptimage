@@ -191,6 +191,9 @@ public class CryptPhoto {
 		}
 		
 		if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {
+			EurocryptConf.getGui().getRangeSlider().setMinimum(1);
+			EurocryptConf.getGui().refreshSlider();
+			
 			if(EurocryptConf.isEurocryptSingleCut) {
 				this.eurocryptMode="single-cut_key-" + EurocryptConf.seedCode;
 				
