@@ -25,7 +25,6 @@ package com.ib.cryptimage.gui;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
-import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -331,6 +330,11 @@ public class MainGui {
 	private JLabel lblRangeSliderVideocrypt;
     private JTextField txtValueMinRangeSliderVideocrypt;
     private JTextField txtValueMaxRangeSliderVideocrypt;
+    
+	private RangeSlider rangeSliderTranscode;
+	private JLabel lblRangeSliderTranscode;
+    private JTextField txtValueMinRangeSliderTranscode;
+    private JTextField txtValueMaxRangeSliderTranscode;
 	
 	public MainGui(){			
 		JobConfig.setRes(ResourceBundle.getBundle("ressources/mainGui", Locale.getDefault())); 		
@@ -779,6 +783,8 @@ public class MainGui {
 		
 		//transcode
 		lblTranscodeDesc.setText(JobConfig.getRes().getString("panTranscode.desc"));
+		// RangeSliderTranscode
+		lblRangeSliderTranscode.setText(JobConfig.getRes().getString("rangeSlider.lblFrameStart"));
 		
 		//4/3 options
 		titlePanRdiPixelsRatio.setTitle(JobConfig.getRes().getString("panPixelsRatio.title"));
@@ -832,6 +838,19 @@ public class MainGui {
 	    
 	    JobConfig.setVideocryptSelectedFrameStart(JobConfig.getVideocryptStartFrame());
 	    JobConfig.setVideocryptSelectedFrameEnd(JobConfig.getVideocryptEndFrame());
+	    
+		// Transcode
+		JobConfig.setTranscodeStartFrame(1);
+		JobConfig.setTranscodeEndFrame(JobConfig.getNbFrames());
+		
+	    rangeSliderTranscode.setMinimum(JobConfig.getTranscodeStartFrame());
+	    rangeSliderTranscode.setMaximum(JobConfig.getTranscodeEndFrame());
+	    rangeSliderTranscode.setValue(JobConfig.getTranscodeStartFrame());
+	    rangeSliderTranscode.setUpperValue(JobConfig.getTranscodeEndFrame());
+	    
+	    JobConfig.setTranscodeSelectedFrameStart(JobConfig.getTranscodeStartFrame());
+	    JobConfig.setTranscodeSelectedFrameEnd(JobConfig.getTranscodeEndFrame());
+	    
 	}
 	
 	private void createMenu(){				
@@ -1838,8 +1857,93 @@ public class MainGui {
 		panOptionsTranscode.setBorder(titlePanTranscode);		
 		
 		lblTranscodeDesc = new JLabel(JobConfig.getRes().getString("panTranscode.desc"));
-		//panOptionsTranscode.setLayout(new BorderLayout());
-		panOptionsTranscode.add(lblTranscodeDesc, BorderLayout.CENTER);
+
+        ///////////////
+		
+        // RangeSlider Transcode
+        rangeSliderTranscode = new RangeSlider();            
+        rangeSliderTranscode.setMinimum(1);
+        rangeSliderTranscode.setMaximum(200000);
+        rangeSliderTranscode.setValue(1);
+        rangeSliderTranscode.setUpperValue(200000);
+        
+        lblRangeSliderTranscode = new JLabel(JobConfig.getRes().getString("rangeSlider.lblFrameStart"));
+    
+
+        txtValueMinRangeSliderTranscode = new JTextField(12);
+        txtValueMinRangeSliderTranscode.setEditable(false);
+        txtValueMinRangeSliderTranscode.setHorizontalAlignment(JLabel.LEFT);
+        txtValueMaxRangeSliderTranscode = new JTextField(12);
+        txtValueMaxRangeSliderTranscode.setEditable(false);
+        
+        String time = Utils.getTime((int) (rangeSliderTranscode.getValue()/JobConfig.getFrameRate()));            
+        txtValueMinRangeSliderTranscode.setText(rangeSliderTranscode.getValue() + " (" + time + ")");
+        
+        time = Utils.getTime((int) (rangeSliderTranscode.getUpperValue()/JobConfig.getFrameRate()));   
+        txtValueMaxRangeSliderTranscode.setText(rangeSliderTranscode.getUpperValue() + " (" + time + ")");
+        
+        rangeSliderTranscode.addChangeListener(controler);
+		
+		
+		JPanel panFrameStart = new JPanel();
+		GridBagLayout gblFrameStart = new GridBagLayout();
+				
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				lblRangeSliderTranscode,
+				GridBagConstraints.WEST, GridBagConstraints.EAST,
+				0, 0,
+				1,1,
+				0.1,1,
+				1, 1,1,1);
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				txtValueMinRangeSliderTranscode,
+				GridBagConstraints.BASELINE_TRAILING, GridBagConstraints.NONE,
+				0, 1,
+				1,1,
+				0.1,1,
+				1, 1,1,1);
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				rangeSliderTranscode,
+				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+				1, 1,
+				1,1,
+				0.8,1,
+				1, 1,1,1);
+		this.placerComposants(panFrameStart,
+				gblFrameStart,
+				txtValueMaxRangeSliderTranscode,
+				GridBagConstraints.WEST, GridBagConstraints.NONE,
+				2, 1,
+				1,1,
+				0.1,1,
+				1, 1,1,1);
+		
+		
+		///////////////
+		
+		//panOptionsTranscode.add(lblTranscodeDesc, BorderLayout.CENTER);
+		
+		GridBagLayout gbl = new GridBagLayout();
+		
+		this.placerComposants(panOptionsTranscode,
+				gbl,
+				lblTranscodeDesc,
+				GridBagConstraints.CENTER, GridBagConstraints.NONE,
+				0, 0,
+				1,1,
+				1,1,
+				1, 1,1,1);
+		this.placerComposants(panOptionsTranscode,
+				gbl,
+				panFrameStart,
+				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+				0, 1,
+				1,1,
+				1,1,
+				1, 1,1,1);
 		
 		
 	}
@@ -4054,6 +4158,18 @@ public class MainGui {
 
 	public JTextField getTxtValueMaxRangeSliderVideocrypt() {
 		return txtValueMaxRangeSliderVideocrypt;
+	}
+
+	public RangeSlider getRangeSliderTranscode() {
+		return rangeSliderTranscode;
+	}
+
+	public JTextField getTxtValueMinRangeSliderTranscode() {
+		return txtValueMinRangeSliderTranscode;
+	}
+
+	public JTextField getTxtValueMaxRangeSliderTranscode() {
+		return txtValueMaxRangeSliderTranscode;
 	}
 	
 }

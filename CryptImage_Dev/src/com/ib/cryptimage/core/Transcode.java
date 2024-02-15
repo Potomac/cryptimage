@@ -92,45 +92,50 @@ public class Transcode extends Device {
 			image = shift.transform(image, shiftX, shiftY);
 		}
 		
-		this.imageSource = deepCopy(image);		
-		
-		// encodage pal
-		if (JobConfig.getColorMode() == 1) {
-			palEngine.setImg(image);
-			image = palEngine.encode();
+		if(JobConfig.frameCount <= JobConfig.getTranscodeSelectedFrameEnd()) {
+			this.imageSource = deepCopy(image);		
+			
+			// encodage pal
+			if (JobConfig.getColorMode() == 1) {
+				palEngine.setImg(image);
+				image = palEngine.encode();
+			}
+			
+			//encode image to pal composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
+				palEncoder.setImage(image);
+				image = palEncoder.encode(false);
+			}
+			
+			//encode secam
+			if(JobConfig.getColorMode() == 2){			
+				secamEngine.setImg(image);
+				image = secamEngine.encode();			
+			}
+			
+			//decode secam
+			if (JobConfig.getColorMode() == 2) {
+				secamEngine.setImg(image);				
+				return secamEngine.decode();
+			}			
+			
+			//decode pal composite
+			if ( JobConfig.getColorMode() == 1) {
+				palEngine.setImg(image);				
+				return palEngine.decode(false);
+			}
+			
+			//decode pal image composite
+			if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
+				palDecoder.setImage(image);
+				return palDecoder.decode();
+			}	
+					
+			return image;
 		}
-		
-		//encode image to pal composite
-		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 4 ) {
-			palEncoder.setImage(image);
-			image = palEncoder.encode(false);
+		else {
+			return image;
 		}
-		
-		//encode secam
-		if(JobConfig.getColorMode() == 2){			
-			secamEngine.setImg(image);
-			image = secamEngine.encode();			
-		}
-		
-		//decode secam
-		if (JobConfig.getColorMode() == 2) {
-			secamEngine.setImg(image);				
-			return secamEngine.decode();
-		}			
-		
-		//decode pal composite
-		if ( JobConfig.getColorMode() == 1) {
-			palEngine.setImg(image);				
-			return palEngine.decode(false);
-		}
-		
-		//decode pal image composite
-		if (JobConfig.getColorMode() == 3 || JobConfig.getColorMode() == 5 ) {
-			palDecoder.setImage(image);
-			return palDecoder.decode();
-		}	
-				
-		return image;
 	}
 
 	@Override
@@ -256,8 +261,12 @@ public class Transcode extends Device {
 
 	@Override
 	public boolean isInsideRangeSliderFrames() {
-		// TODO Auto-generated method stub
-		return true;
+		if(JobConfig.frameCount <= JobConfig.getTranscodeSelectedFrameEnd()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 }

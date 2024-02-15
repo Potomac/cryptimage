@@ -700,6 +700,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			JobConfig.setDiscretSelectedFrameStart(JobConfig.getGui().getRangeSliderDiscret().getValue());
 			JobConfig.setDiscretSelectedFrameEnd(JobConfig.getGui().getRangeSliderDiscret().getUpperValue());
+			
+			JobConfig.setPositionSynchro(
+					(int) mainGui.getRangeSliderDiscret().getValue());			
 		}
 		else if(src.equals(this.mainGui.getRangeSliderSyster())){
 			String time = Utils.getTime((int)(JobConfig.getGui().getRangeSliderSyster().getValue()/JobConfig.getFrameRate()));
@@ -712,6 +715,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			JobConfig.setSysterSelectedFrameStart(JobConfig.getGui().getRangeSliderSyster().getValue());
 			JobConfig.setSysterSelectedFrameEnd(JobConfig.getGui().getRangeSliderSyster().getUpperValue());
+			
+			JobConfig.setPositionSynchro(
+					(int) mainGui.getRangeSliderSyster().getValue());
 		}
 		else if(src.equals(this.mainGui.getRangeSliderVideocrypt())){
 			String time = Utils.getTime((int)(JobConfig.getGui().getRangeSliderVideocrypt().getValue()/JobConfig.getFrameRate()));
@@ -724,6 +730,24 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			
 			JobConfig.setVideocryptSelectedFrameStart(JobConfig.getGui().getRangeSliderVideocrypt().getValue());
 			JobConfig.setVideocryptSelectedFrameEnd(JobConfig.getGui().getRangeSliderVideocrypt().getUpperValue());
+			
+			JobConfig.setPositionSynchro(
+					(int) mainGui.getRangeSliderVideocrypt().getValue());
+		}
+		else if(src.equals(this.mainGui.getRangeSliderTranscode())){
+			String time = Utils.getTime((int)(JobConfig.getGui().getRangeSliderTranscode().getValue()/JobConfig.getFrameRate()));
+			JobConfig.getGui().getTxtValueMinRangeSliderTranscode()
+			                       .setText(JobConfig.getGui().getRangeSliderTranscode().getValue() + " (" + time + ")");
+			
+			time = Utils.getTime((int)(JobConfig.getGui().getRangeSliderTranscode().getUpperValue()/JobConfig.getFrameRate()));
+			JobConfig.getGui().getTxtValueMaxRangeSliderTranscode()
+			                       .setText(JobConfig.getGui().getRangeSliderTranscode().getUpperValue() + " (" + time + ")") ;
+			
+			JobConfig.setTranscodeSelectedFrameStart(JobConfig.getGui().getRangeSliderTranscode().getValue());
+			JobConfig.setTranscodeSelectedFrameEnd(JobConfig.getGui().getRangeSliderTranscode().getUpperValue());
+			
+			JobConfig.setPositionSynchro(
+					(int) mainGui.getRangeSliderTranscode().getValue());
 		}
 	}
 
@@ -2055,6 +2079,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			else if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {
 				JobConfig.setPositionSynchro(1);
 			}
+			else if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE) {
+				JobConfig.setPositionSynchro(
+						(int) mainGui.getRangeSliderTranscode().getValue());
+			}
 			
 			//discret dec enc normal
 			if(mainGui.getRdiDiscretDecoding().isSelected()
@@ -2542,6 +2570,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			manageRangeSlider(rangeSlider);
 		}
 		else if (e.getSource().equals(mainGui.getRangeSliderVideocrypt())) {
+			RangeSlider rangeSlider = (RangeSlider) e.getSource();
+			manageRangeSlider(rangeSlider);
+		}
+		else if (e.getSource().equals(mainGui.getRangeSliderTranscode())) {
 			RangeSlider rangeSlider = (RangeSlider) e.getSource();
 			manageRangeSlider(rangeSlider);
 		}

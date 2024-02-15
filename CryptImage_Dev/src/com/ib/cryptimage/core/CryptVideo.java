@@ -54,7 +54,7 @@ public class CryptVideo {
 	private int width;	
 	private boolean isDecoding;
 	private boolean strictMode;
-	private int positionSynchro;
+	//private int positionSynchro;
 	
 	private VideoRecorder vid;
 	private int videoLengthFrames;
@@ -138,7 +138,7 @@ public class CryptVideo {
 		this.keyWord11 = this.computeAudienceMulti(this.codePattern, JobConfig.getWord16bits());
 
 		JobConfig.frameCount = 0;
-		this.positionSynchro = JobConfig.getPositionSynchro();
+		//this.positionSynchro = JobConfig.getPositionSynchro();
 		this.strictMode = JobConfig.isStrictMode();
 
 		if (JobConfig.isHorodatage()) {
@@ -397,7 +397,7 @@ public class CryptVideo {
 		save = deepCopy(buff);	
 		
 		JobConfig.frameCount++;
-		if (JobConfig.frameCount < this.positionSynchro){			
+		if (JobConfig.frameCount < JobConfig.getPositionSynchro()){			
 			vidPlayer.addImage(buff);			
 			vidPlayer.showImage();
 			device.skipFrame();
@@ -451,7 +451,7 @@ public class CryptVideo {
 		save = deepCopy(buff);
 		
 		JobConfig.frameCount++;
-		if (JobConfig.frameCount < this.positionSynchro){			
+		if (JobConfig.frameCount < JobConfig.getPositionSynchro()){			
 			vidPlayer.addImage(buff);
 			vidPlayer.showImage();
 			device.skipFrame();
@@ -497,7 +497,7 @@ public class CryptVideo {
 	
 	public void addFrameEnc(BufferedImage buff, int pos, double timingFrame){				
 		JobConfig.frameCount++;
-		if (JobConfig.frameCount < this.positionSynchro) {
+		if (JobConfig.frameCount < JobConfig.getPositionSynchro()) {
 			if (this.strictMode && !is944 && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {
 				buff = getScaledImage(buff, 768, 576);
 			}
@@ -531,7 +531,7 @@ public class CryptVideo {
 	
 	public void addFrameDec(BufferedImage buff, int pos, double timingFrame){			
 		JobConfig.frameCount++;
-		if (JobConfig.frameCount < this.positionSynchro) {
+		if (JobConfig.frameCount < JobConfig.getPositionSynchro()) {
 			if (this.strictMode && !is944 && JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {				
 				buff = getScaledImage(buff, 768, 576);
 			}
@@ -649,7 +649,7 @@ public class CryptVideo {
 						bfw.write("serial eprom : " + JobConfig.getSerial() + "\r\n");
 						bfw.write("keyboard code : " + JobConfig.getCode() + "\r\n");
 					}
-					bfw.write("encoder started at frame n° : " + this.positionSynchro + "\r\n");
+					bfw.write("encoder started at frame n° : " + JobConfig.getPositionSynchro() + "\r\n");
 					bfw.write("Delay 1 : " + this.perc1 * 100 + "%\r\n");
 					bfw.write("Delay 2 : " + this.perc2 * 100 + "%\r\n");
 					bfw.write("Number of frames : " + JobConfig.frameCount + "\r\n");

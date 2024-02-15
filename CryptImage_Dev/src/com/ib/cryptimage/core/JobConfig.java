@@ -153,6 +153,12 @@ public final class JobConfig {
 	private static int videocryptSelectedFrameStart = 1;
 	private static int videocryptSelectedFrameEnd = 20000;
 	
+	// RangeSlider for Transcode
+	private static int transcodeStartFrame = 1;
+	private static int transcodeEndFrame = 20000;
+	private static int transcodeSelectedFrameStart = 1;
+	private static int transcodeSelectedFrameEnd = 20000;
+	
 	public static int frameCount;
 	
 		
@@ -1359,5 +1365,37 @@ public final class JobConfig {
 
 	public static void setVideocryptSelectedFrameEnd(int videocryptSelectedFrameEnd) {
 		JobConfig.videocryptSelectedFrameEnd = videocryptSelectedFrameEnd;
+	}
+
+	public static int getTranscodeStartFrame() {
+		return transcodeStartFrame;
+	}
+
+	public static void setTranscodeStartFrame(int transcodeStartFrame) {
+		JobConfig.transcodeStartFrame = transcodeStartFrame;
+	}
+
+	public static int getTranscodeEndFrame() {
+		return transcodeEndFrame;
+	}
+
+	public static void setTranscodeEndFrame(int transcodeEndFrame) {
+		JobConfig.transcodeEndFrame = transcodeEndFrame;
+	}
+
+	public static int getTranscodeSelectedFrameStart() {
+		return transcodeSelectedFrameStart;
+	}
+
+	public static void setTranscodeSelectedFrameStart(int transcodeSelectedFrameStart) {
+		JobConfig.transcodeSelectedFrameStart = transcodeSelectedFrameStart;
+	}
+
+	public static int getTranscodeSelectedFrameEnd() {
+		return transcodeSelectedFrameEnd;
+	}
+
+	public static void setTranscodeSelectedFrameEnd(int transcodeSelectedFrameEnd) {
+		JobConfig.transcodeSelectedFrameEnd = transcodeSelectedFrameEnd;
 	}	
 }
