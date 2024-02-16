@@ -2019,6 +2019,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 
 			mainGui.getFrame().setCursor(
 					Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			
+			mainGui.getCombSystemCrypt().setEnabled(false);
 
 			mainGui.getBtnEnter().setEnabled(false);
 			mainGui.getBtnCancel().setEnabled(true);
@@ -2282,6 +2284,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						mainGui.getProgress().setValue(1);
 						mainGui.getProgress().setValue(2);
 						mainGui.getBtnEnter().setEnabled(true);
+						
+						mainGui.getCombSystemCrypt().setEnabled(true);
+						
 						mainGui.getBtnCancel().setEnabled(false);
 						mainGui.getBtnExit().setEnabled(true);
 						mainGui.getBtnInputFile().setEnabled(true);
@@ -2301,7 +2306,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					public void run() {	
 							FramesPlayer frmVideo = new FramesPlayer();
 							frmVideo.readFrame();
+														
+							
 							mainGui.getBtnEnter().setEnabled(true);
+							
+							mainGui.getCombSystemCrypt().setEnabled(true);
+							
 							mainGui.getBtnCancel().setEnabled(false);
 							mainGui.getBtnExit().setEnabled(true);
 							mainGui.getBtnInputFile().setEnabled(true);
@@ -2320,6 +2330,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 	}
 	
 	private void manageCancel(){		
+		      mainGui.getCombSystemCrypt().setEnabled(true);
 			  mainGui.getBtnCancel().setEnabled(false);
 			  JobConfig.setStop(true);
 			  mainGui.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
