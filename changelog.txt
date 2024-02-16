@@ -1,3 +1,14 @@
+v1.8.0 2024-02-16
+- Add RangeSlider control, 
+we can now set both the beginning and ending of the encode/decode process
+- Add new option for MAC-Eurocrypt for decoding scrambled 768x576 videos
+- New pseudo random number generator (PRNG) for Eurocrypt,
+note that scrambled Eurocrypt videos made by 1.7.0 version will not be decoded 
+by 1.8.0 version, as the PRNG is different.
+- Improved robustness of Mac-Eurocrypt GUI
+- Bugfixes for Discret11 (decoding and search code mode)
+- Update documentation
+
 v1.7.0 2024-01-27
 - Add MAC-Eurocrypt
 - Source code reorganization (constants for audio, video and extension types)
