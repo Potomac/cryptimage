@@ -447,7 +447,8 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		
 		if (src.equals(mainGui.getJcbExtension())) {
 			if (src.getSelectedIndex() == ExtensionType.MP4
-					&& this.mainGui.getCombCodec().getSelectedIndex() == VideoCodecType.HUFFYUV) {
+					&& (this.mainGui.getCombCodec().getSelectedIndex() == VideoCodecType.HUFFYUV
+					    || this.mainGui.getCombCodec().getSelectedIndex() == VideoCodecType.FFV1)) {
 				this.mainGui.getCombCodec().setSelectedIndex(VideoCodecType.H264);
 			}
 			if (src.getSelectedIndex() == ExtensionType.MPEG || src.getSelectedIndex() == ExtensionType.TS) {
@@ -457,7 +458,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				mainGui.getCombCodec().setEnabled(true);
 			}
 		} else if (src.equals(mainGui.getCombCodec())) {
-			if (src.getSelectedIndex() == VideoCodecType.HUFFYUV
+			if ((src.getSelectedIndex() == VideoCodecType.HUFFYUV || src.getSelectedIndex() == VideoCodecType.FFV1)
 					&& this.mainGui.getJcbExtension().getSelectedIndex() == ExtensionType.MP4) {
 				this.mainGui.getJcbExtension().setSelectedIndex(ExtensionType.AVI);
 			}
