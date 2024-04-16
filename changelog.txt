@@ -1,3 +1,6 @@
+v1.8.1 2024-04-16
+- Fix crash when flac codec is selected
+
 v1.8.0 2024-02-16
 - Add RangeSlider control, 
 we can now set both the beginning and ending of the encode/decode process
