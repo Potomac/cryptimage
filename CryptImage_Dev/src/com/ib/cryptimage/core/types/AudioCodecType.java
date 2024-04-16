@@ -29,7 +29,7 @@ public class AudioCodecType {
 	public static int MP3_224KBS = 4;
 	public static int MP3_320KBS = 5;
 	public static int WAV = 6;
-	public static int FLAC = 6;
+	public static int FLAC = 7;
 	
 	public static String[] getAudioCodecs() {
 		return new String[] {"mp3 96 kbs","mp3 128 kbs","mp3 160 kbs",
