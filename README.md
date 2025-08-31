@@ -6,6 +6,8 @@ Systems simulated are :
 
 - discret 11 (used between 1984 and 1995 by french TV network "canal plus") 
 
+- discret 12 (6 frames mode, audience 7)
+
 - nagravision syster (used between 1995 and 2010) 
 
 - videocrypt (used by Sky TV and by several other broadcasters on astra satellites)
