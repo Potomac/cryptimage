@@ -1,3 +1,6 @@
+v1.9.0 2025-09-01
+- Add Discret12 (6 frames mode, audience 7 free mode)
+
 v1.8.2 2024-04-17
 - Fix crash when FFV1 codec and MP4 container are selected,
 the graphical interface will refuse this FFV1/MP4 combination (because it is not compatible).
