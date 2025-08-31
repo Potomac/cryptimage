@@ -424,9 +424,15 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
             }
             else if(SystemType.EUROCRYPT == combSystemIndex) {
               	 setEurocrypt(combSystemIndex);
-               }            
+               }   
+            else if(SystemType.LUXCRYPT == combSystemIndex) {
+             	 setLuxcrypt(combSystemIndex);
+              } 
+            else if(SystemType.DISCRET12 == combSystemIndex) {
+            	 setDiscret12(combSystemIndex);
+             } 
             else if(SystemType.TRANSCODE == combSystemIndex) {
-           	 setTranscode(combSystemIndex);
+           	 	 setTranscode(combSystemIndex);
             } 
 		}
 		
@@ -555,6 +561,76 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		JobConfig.setSystemCrypt(index);
 		this.mainGui.getCmbPalFreq().setSelectedIndex(1);
 		this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Eurocrypt");
+		
+		if (!this.mainGui.getChkStrictMode().isSelected()) {
+			setMultiCodeComboBox();
+		}
+		
+		this.mainGui.getChkStrictMode().setSelected(true);
+		if (this.mainGui.getRdiVideo().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		
+		if (this.mainGui.getRdiPhoto().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		
+		mainGui.getRdi720().setEnabled(true);
+		mainGui.getRdi768().setEnabled(true);
+		mainGui.getRdi944().setEnabled(true);
+		
+		this.mainGui.getChkStrictMode().setEnabled(false);
+	}
+	
+	private void setLuxcrypt(int index) {
+		JobConfig.setSystemCrypt(index);
+		this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+		this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Luxcrypt");
+		
+		if (!this.mainGui.getChkStrictMode().isSelected()) {
+			setMultiCodeComboBox();
+		}
+		
+		this.mainGui.getChkStrictMode().setSelected(true);
+		if (this.mainGui.getRdiVideo().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		
+		if (this.mainGui.getRdiPhoto().isSelected()) {
+			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
+			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretCoding().setSelected(true);
+			this.mainGui.getSlid16bitsWord().setEnabled(true);
+			this.mainGui.getJsp16bitKeyword().setEnabled(true);
+			enableComboAudience();
+		}
+		
+		mainGui.getRdi720().setEnabled(true);
+		mainGui.getRdi768().setEnabled(true);
+		mainGui.getRdi944().setEnabled(true);
+		
+		this.mainGui.getChkStrictMode().setEnabled(false);
+	}
+	
+	private void setDiscret12(int index) {
+		JobConfig.setSystemCrypt(index);
+		this.mainGui.getCmbPalFreq().setSelectedIndex(1);
+		this.mainGui.getCard().show(this.mainGui.getPanSystemCrypt(), "Discret12");
 		
 		if (!this.mainGui.getChkStrictMode().isSelected()) {
 			setMultiCodeComboBox();
@@ -2080,6 +2156,9 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 						(int) mainGui.getRangeSliderVideocrypt().getValue());
 			}
 			else if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {
+				JobConfig.setPositionSynchro(1);
+			}
+			else if(JobConfig.getSystemCrypt() == SystemType.LUXCRYPT) {
 				JobConfig.setPositionSynchro(1);
 			}
 			else if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE) {

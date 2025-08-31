@@ -103,8 +103,8 @@ public final class JobConfig {
 	private static boolean wantSysterEncRandom = false;
 	
 	private static String launch = "first";
-	private static String VERSION = "1.8.2";
-	private static String releaseDate = "2024-04-17";
+	private static String VERSION = "1.9.0";
+	private static String releaseDate = "2025-09-01";
 	private static int lang = 0; // 0 --> auto, 1--> german, 2--> english, 3--> spanish, 4--> french, 5--> italian, 6-->polish 
 	private static ResourceBundle res;
 	private static int colorMode = 0; // 0--> RGB, 1--> Pal, 2--> Secam 
@@ -603,9 +603,7 @@ public final class JobConfig {
 		}
 		// system crypt
 		try {
-			if (Integer.valueOf(options[15]) != SystemType.DISCRET11 && Integer.valueOf(options[15]) != SystemType.SYSTER
-					 && Integer.valueOf(options[15]) != SystemType.VIDEOCRYPT && Integer.valueOf(options[15]) != SystemType.TRANSCODE 
-					 && Integer.valueOf(options[15]) != SystemType.EUROCRYPT ) {
+			if (!SystemType.IsSystemId(Integer.valueOf(options[15]))) {
 				options[15] = String.valueOf(SystemType.DISCRET11);
 			}
 		} catch (Exception e) {

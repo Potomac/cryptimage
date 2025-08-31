@@ -32,8 +32,13 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import com.ib.cryptimage.core.systems.discret12.Discret12Conf;
+import com.ib.cryptimage.core.systems.discret12.Discret12DecCore;
+import com.ib.cryptimage.core.systems.discret12.Discret12EncCore;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptCore;
+import com.ib.cryptimage.core.systems.luxcrypt.LuxcryptConf;
+import com.ib.cryptimage.core.systems.luxcrypt.LuxcryptCore;
 import com.ib.cryptimage.core.types.ColorType;
 import com.ib.cryptimage.core.types.SystemType;
 
@@ -80,7 +85,8 @@ public class CryptPhoto {
 		splitFrames = new SplitFrames((int)JobConfig.getGui().getCmbPalFreq().getSelectedItem());
 		
 		if(JobConfig.getGui().getRdi944().isSelected() 
-				&& JobConfig.getSystemCrypt() != SystemType.EUROCRYPT) {
+				&& JobConfig.getSystemCrypt() != SystemType.EUROCRYPT
+				&& JobConfig.getSystemCrypt() != SystemType.LUXCRYPT) {
 			is944 = true;
 		}
 				
@@ -217,6 +223,20 @@ public class CryptPhoto {
 			eurocrypt(img);
 		}
 		
+		if(JobConfig.getSystemCrypt() == SystemType.LUXCRYPT) {
+			LuxcryptConf.getGui().getRangeSlider().setMinimum(1);
+			LuxcryptConf.getGui().refreshSlider();
+			
+			luxcrypt(img);
+		}
+		
+		if(JobConfig.getSystemCrypt() == SystemType.DISCRET12) {
+			Discret12Conf.getGui().getRangeSlider().setMinimum(1);
+			Discret12Conf.getGui().refreshSlider();
+			
+			discret12(img);
+		}
+		
 		return true;
 	}
 	
@@ -230,8 +250,39 @@ public class CryptPhoto {
 		}
 		else {
 			saveCryptImage(imgRes);
+		}	
+	}
+	
+	private void luxcrypt(BufferedImage img) {
+		Device device;
+		device = new LuxcryptCore();
+		BufferedImage imgRes = device.transform(img);
+		imgRes = device.transform(img);
+		
+		saveCryptImage(imgRes);	
+	}
+	
+	private void discret12(BufferedImage img) {
+		Device device;
+		
+		if(Discret12Conf.isDecode) {
+			device = new Discret12DecCore();
+		}
+		else {
+			device = new Discret12EncCore();
 		}
 		
+		BufferedImage imgRes = device.transform(img);
+		for (int i = 0; i < 26; i++) {
+		   imgRes = device.transform(img);
+		}		
+		
+		if(Discret12Conf.isEncode) {
+			saveCryptImage(imgRes);	
+		}
+		else {
+			saveDecryptDiscret12(imgRes);
+		}
 		
 	}
 	
@@ -590,6 +641,52 @@ public class CryptPhoto {
 			}
 		}
 		
+		if (JobConfig.getSystemCrypt() == SystemType.LUXCRYPT) { //luxcrypt
+			// retrieve image
+			File outputfile = new File(
+					output + "_" + 
+			"luxcrypt.png");
+			try {
+				ImageIO.write(bi, "png", outputfile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane
+				.showMessageDialog(
+						JobConfig.getGui().getFrame(),
+						JobConfig.getRes().getString("cryptPhoto.errorCryptIO"),
+						JobConfig.getRes().getString("cryptPhoto.errorCryptIO.title"),
+						JOptionPane.ERROR_MESSAGE);	
+				return false;
+			}
+			if (JobConfig.isHasGUI()) {
+				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + output + "_c"
+						+ "luxcrypt.png");
+			}
+		}
+		
+		if (JobConfig.getSystemCrypt() == SystemType.DISCRET12) { //discret12
+			// retrieve image
+			File outputfile = new File(
+					output + "_" + 
+			"discret12.png");
+			try {
+				ImageIO.write(bi, "png", outputfile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane
+				.showMessageDialog(
+						JobConfig.getGui().getFrame(),
+						JobConfig.getRes().getString("cryptPhoto.errorCryptIO"),
+						JobConfig.getRes().getString("cryptPhoto.errorCryptIO.title"),
+						JOptionPane.ERROR_MESSAGE);	
+				return false;
+			}
+			if (JobConfig.isHasGUI()) {
+				JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.codage") + output + "_c"
+						+ "discret12.png");
+			}
+		}
+		
 		
 		if (JobConfig.getSystemCrypt() == SystemType.SYSTER) { //syster
 			// retrieve image
@@ -650,6 +747,45 @@ public class CryptPhoto {
 		return true;
 	}
 	
+	public boolean saveDecryptDiscret12(BufferedImage bi) {
+		if(JobConfig.isWantJoinInputOutputFrames()) {
+			bi = Utils.joinImages(JobConfig.getInputImage(), bi);
+		}		
+		
+		String output = JobConfig.getOutput_file();
+		if (JobConfig.isHorodatage()) {
+			File file = new File(JobConfig.getOutput_file());
+			String fileName = JobConfig.getDateTime() + "_"
+					+ file.getName();
+			output = file.getParent() + File.separator + fileName;		
+		}
+		
+		
+		
+		// retrieve image
+		File outputfile = new File(
+				output + "_" + 
+		"discret12_dec.png");
+		try {
+			ImageIO.write(bi, "png", outputfile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			JOptionPane
+			.showMessageDialog(
+					JobConfig.getGui().getFrame(),
+					JobConfig.getRes().getString("cryptPhoto.errorCryptIO"),
+					JobConfig.getRes().getString("cryptPhoto.errorCryptIO.title"),
+					JOptionPane.ERROR_MESSAGE);	
+			return false;
+		}
+		if (JobConfig.isHasGUI()) {
+			JobConfig.getGui().getTextInfos().setText(JobConfig.getRes().getString("cryptPhoto.saveImage.decodage") + output + "_" + 
+					"discret12_dec.png");
+		}
+		
+		return true;
+	}
+	
 	public  boolean saveDecryptFile(BufferedImage bi,String output_file, int key11){
 		if(JobConfig.isWantJoinInputOutputFrames()) {
 			bi = Utils.joinImages(JobConfig.getInputImage(), bi);
@@ -684,7 +820,7 @@ public class CryptPhoto {
 						JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
-		}
+		}		
 		else {
 			try {
 				String sys;

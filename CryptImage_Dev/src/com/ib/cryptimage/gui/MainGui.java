@@ -79,8 +79,12 @@ import javax.swing.text.MaskFormatter;
 import com.ib.cryptimage.core.JobConfig;
 import com.ib.cryptimage.core.RangeSlider;
 import com.ib.cryptimage.core.Utils;
+import com.ib.cryptimage.core.systems.discret12.Discret12Conf;
+import com.ib.cryptimage.core.systems.discret12.Discret12Gui;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptGui;
+import com.ib.cryptimage.core.systems.luxcrypt.LuxcryptConf;
+import com.ib.cryptimage.core.systems.luxcrypt.LuxcryptGui;
 import com.ib.cryptimage.core.types.AudioCodecType;
 import com.ib.cryptimage.core.types.ColorType;
 import com.ib.cryptimage.core.types.ExtensionType;
@@ -391,9 +395,14 @@ public class MainGui {
 		panSystemCrypt.add(panOptionsSyster, "Syster");
 		panSystemCrypt.add(panVideocryptOptions, "Videocrypt");
 		
-		EurocryptGui eurocryptGui = new EurocryptGui();
-		
+		EurocryptGui eurocryptGui = new EurocryptGui();		
 		panSystemCrypt.add(eurocryptGui.getPanOptionsEurocrypt(), "Eurocrypt");
+		
+		LuxcryptGui luxcryptGui = new LuxcryptGui();		
+		panSystemCrypt.add(luxcryptGui.getPanOptionsLuxcrypt(), "Luxcrypt");
+		
+		Discret12Gui discret12Gui = new Discret12Gui();		
+		panSystemCrypt.add(discret12Gui.getPanOptionsDiscret12(), "Discret12");
 		
 		panSystemCrypt.add(panOptionsTranscode, "Transcode");
 		
@@ -795,6 +804,12 @@ public class MainGui {
 		// eurocrypt
 		EurocryptConf.getGui().refreshGui();
 		
+		// luxcrypt
+		LuxcryptConf.getGui().refreshGui();
+		
+		// discret12
+		Discret12Conf.getGui().refreshGui();
+		
 	}
 	
 	public void refreshPanSlidersNbFrames() {
@@ -802,6 +817,16 @@ public class MainGui {
 		EurocryptConf.frameStart = 1;
 		EurocryptConf.frameEnd = JobConfig.getNbFrames();
 		EurocryptConf.getGui().refreshSlider();
+		
+		// Luxcrypt
+		LuxcryptConf.frameStart = 1;
+		LuxcryptConf.frameEnd = JobConfig.getNbFrames();
+		LuxcryptConf.getGui().refreshSlider();
+		
+		// Discret12
+		Discret12Conf.frameStart = 1;
+		Discret12Conf.frameEnd = JobConfig.getNbFrames();
+		Discret12Conf.getGui().refreshSlider();
 		
 		// discret11
 		JobConfig.setDiscretStartFrame(1);
