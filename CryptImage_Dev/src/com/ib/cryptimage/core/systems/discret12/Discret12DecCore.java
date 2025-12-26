@@ -79,8 +79,15 @@ public class Discret12DecCore extends Discret12Core{
 		if (image.getWidth() != 768 || image.getHeight() != 576) {
 			image = this.getScaledImage(image, 768, 576);
 		}
+		
+		JobConfig.setInputImage(image);
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {			
+			image = shift.transform(image, shiftX, shiftY);
+		}
 
-		if (Discret12Conf.selectedFrameStart <= frameDiscret12 && Discret12Conf.selectedFrameEnd >= frameDiscret12) {
+		if (Discret12Conf.selectedFrameStart <= frameDiscret12 && Discret12Conf.selectedFrameEnd >= frameDiscret12) {        
 
 			/////
 			frameShifted++;

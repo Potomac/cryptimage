@@ -264,26 +264,37 @@ public class CryptPhoto {
 	
 	private void discret12(BufferedImage img) {
 		Device device;
+		BufferedImage imgRes;
 		
 		if(Discret12Conf.isDecode) {
-			device = new Discret12DecCore();
+			if(Discret12Conf.getGui().getRdiDiscret12DecodingRadioPlan().isSelected()) {
+				device = new DiscretDecodeRadioPlan(1, 2000, "Discret12", Discret12Conf.getGui().getChkLog().isSelected());
+			}
+			else {
+				device = new Discret12DecCore();
+			}			
 		}
 		else {
 			device = new Discret12EncCore();
 		}
 		
-		BufferedImage imgRes = device.transform(img);
-		for (int i = 0; i < 26; i++) {
-		   imgRes = device.transform(img);
-		}		
-		
+		if(Discret12Conf.getGui().getRdiDiscret12DecodingRadioPlan().isSelected()) {
+			 imgRes = device.transform(img);			 
+			 device.closeFileData();
+		}
+		else {
+			imgRes = device.transform(img);
+			for (int i = 0; i < 26; i++) {
+			   imgRes = device.transform(img);
+			}	
+		}
+			
 		if(Discret12Conf.isEncode) {
 			saveCryptImage(imgRes);	
 		}
 		else {
 			saveDecryptDiscret12(imgRes);
-		}
-		
+		}		
 	}
 	
 	private void transcode(BufferedImage img) {
@@ -508,7 +519,14 @@ public class CryptPhoto {
 	}
 	
 	public void decPhotoDiscretStrict(BufferedImage img){
-		decPhotoDiscretCorrelStrict(img);	
+		if(JobConfig.getGui().getRdiDiscretDecodingRadioPlan().isSelected()) {
+			Device device = new DiscretDecodeRadioPlan(1, 2000, "Discret11", false);
+			BufferedImage imgRes = device.transform(img);			
+			saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);	
+		}
+		else {
+			decPhotoDiscretCorrelStrict(img);	
+		}		
 	}
 	
 	public void decPhotoDiscretCorrelStrict(BufferedImage img){		
@@ -527,14 +545,21 @@ public class CryptPhoto {
 	
 	public  void decPhotoSimpleDiscret(BufferedImage img){		
 		Device device;
-	
-		device = new SimpleDiscret11(JobConfig.getWord16bits(),
-				JobConfig.getAudienceLevel(),
-				SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth(),
-				JobConfig.getPerc1(), JobConfig.getPerc2());
+		BufferedImage imgRes;
 		
-		this.key11bits = device.getKey11bits();
-		BufferedImage imgRes = device.transform(img);
+		if(JobConfig.getGui().getRdiDiscretDecodingRadioPlan().isSelected()) {
+			device = new DiscretDecodeRadioPlan(1, 2000, "Discret11", false);
+			imgRes = device.transform(img);
+		}
+		else {
+			device = new SimpleDiscret11(JobConfig.getWord16bits(),
+					JobConfig.getAudienceLevel(),
+					SimpleDiscret11.MODE_DEC, img.getHeight(), img.getWidth(),
+					JobConfig.getPerc1(), JobConfig.getPerc2());
+			
+			this.key11bits = device.getKey11bits();
+			imgRes = device.transform(img);
+		}
 				
 		saveDecryptFile(imgRes, JobConfig.getOutput_file(), this.key11bits);		
 	}

@@ -117,6 +117,7 @@ public class MainGui {
 	private JPanel panKeyboardCode;
 	private JRadioButton rdiDiscretCoding;
 	private JRadioButton rdiDiscretDecoding;
+	private JRadioButton rdiDiscretDecodingRadioPlan;
 	private JRadioButton rdiDiscretCorrel;
 	private JRadioButton rdiDiscret68705;
 	private JRadioButton rdiSysterCodingGen;
@@ -641,6 +642,7 @@ public class MainGui {
 		titlePanDiscret11.setTitle(JobConfig.getRes().getString("panDiscret11.title"));
 		rdiDiscretCoding.setText(JobConfig.getRes().getString("panDiscret11.coding"));
 		rdiDiscretDecoding.setText(JobConfig.getRes().getString("panDiscret11.decoding"));
+		rdiDiscretDecodingRadioPlan.setText(JobConfig.getRes().getString("panDiscret11.decodingRadioPlan"));
 		rdiDiscretCorrel.setText(JobConfig.getRes().getString("panDiscret11.decodingCorrel"));
 		rdiDiscret68705.setText(JobConfig.getRes().getString("panDiscret11.decoding68705"));
 		lab16bitsWord.setText(JobConfig.getRes().getString("panDiscret11.lab16bits"));
@@ -2389,24 +2391,28 @@ public class MainGui {
 		rdiDiscretCoding = new JRadioButton(JobConfig.getRes().getString("panDiscret11.coding"));
 		rdiDiscretCoding.setSelected(true);
 		rdiDiscretDecoding = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decoding"));
+		rdiDiscretDecodingRadioPlan = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decodingRadioPlan"));
 		rdiDiscretCorrel = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decodingCorrel"));		
 		rdiDiscret68705 = new JRadioButton(JobConfig.getRes().getString("panDiscret11.decoding68705"));
 		
 		rdiDiscretCoding.addActionListener(controler);
 		rdiDiscretDecoding.addActionListener(controler);
+		rdiDiscretDecodingRadioPlan.addActionListener(controler);
 		rdiDiscretCorrel.addActionListener(controler);
 		rdiDiscret68705.addActionListener(controler);
 		
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(rdiDiscretCoding);
-		btnGroup.add(rdiDiscretDecoding);
+		btnGroup.add(rdiDiscretDecoding);		
 		btnGroup.add(rdiDiscretCorrel);
+		btnGroup.add(rdiDiscretDecodingRadioPlan);
 		btnGroup.add(rdiDiscret68705);
 		
 		JPanel panRdiDiscret = new JPanel();
 		panRdiDiscret.add(rdiDiscretCoding);
 		panRdiDiscret.add(rdiDiscretDecoding);
 		panRdiDiscret.add(rdiDiscretCorrel);
+		panRdiDiscret.add(rdiDiscretDecodingRadioPlan);
 		panRdiDiscret.add(rdiDiscret68705);
 		
 		//init 16 bits word slider
@@ -4195,6 +4201,14 @@ public class MainGui {
 
 	public JTextField getTxtValueMaxRangeSliderTranscode() {
 		return txtValueMaxRangeSliderTranscode;
+	}
+
+	public JRadioButton getRdiDiscretDecodingRadioPlan() {
+		return rdiDiscretDecodingRadioPlan;
+	}
+
+	public void setRdiDiscretDecodingRadioPlan(JRadioButton rdiDiscretDecodingRadioPlan) {
+		this.rdiDiscretDecodingRadioPlan = rdiDiscretDecodingRadioPlan;
 	}
 	
 }

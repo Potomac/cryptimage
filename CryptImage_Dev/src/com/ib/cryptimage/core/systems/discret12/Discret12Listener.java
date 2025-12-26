@@ -61,7 +61,32 @@ public class Discret12Listener implements ActionListener, DocumentListener, Chan
 		if (src instanceof JRadioButton) {
 			manageRadioButton((JRadioButton) src);
 		}
+		else if (src instanceof JCheckBox) {
+			manageCheckBoxes((JCheckBox) src);
+		}
 		
+	}
+	
+	private void manageCheckBoxes(JCheckBox src) {
+		if(src.equals(this.discret12Gui.getChkDisableSound())){
+			if(src.isSelected()) {
+				this.discret12Gui.getChkSound().setSelected(false);
+				this.discret12Gui.getChkSound().setEnabled(false);
+			}
+			else {
+				this.discret12Gui.getChkSound().setSelected(true);
+				this.discret12Gui.getChkSound().setEnabled(true);
+			}
+		}
+		
+		if(src.equals(this.discret12Gui.getChkSound())) {
+			if(src.isSelected()) {
+				JobConfig.setWantSound(true);
+			}
+			else {
+				JobConfig.setWantSound(false);
+			}
+		}
 	}
 	
 	private void manageRadioButton(JRadioButton src) {
@@ -69,7 +94,9 @@ public class Discret12Listener implements ActionListener, DocumentListener, Chan
 			if(src.isSelected()){
 				Discret12Conf.isEncode = true;
 				Discret12Conf.isDecode = false;				
-				JobConfig.setWantDec(false);	
+				JobConfig.setWantDec(false);
+				this.discret12Gui.getChkLog().setSelected(false);
+				this.discret12Gui.getChkLog().setEnabled(false);
 			}
 		}
 		else if(src.equals(this.discret12Gui.getRdiDiscret12Decoding())){
@@ -77,7 +104,19 @@ public class Discret12Listener implements ActionListener, DocumentListener, Chan
 				Discret12Conf.isEncode = false;
 				Discret12Conf.isDecode = true;				
 				JobConfig.setWantDec(true);
+				this.discret12Gui.getChkLog().setSelected(false);
+				this.discret12Gui.getChkLog().setEnabled(false);
 			}		
+
+		}
+		else if(src.equals(this.discret12Gui.getRdiDiscret12DecodingRadioPlan())){
+			if(src.isSelected()){
+				Discret12Conf.isEncode = false;
+				Discret12Conf.isDecode = true;				
+				JobConfig.setWantDec(true);
+				this.discret12Gui.getChkLog().setSelected(false);
+				this.discret12Gui.getChkLog().setEnabled(true);
+			}
 		}
 	}
 	

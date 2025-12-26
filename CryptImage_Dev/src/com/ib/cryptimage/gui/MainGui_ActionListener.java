@@ -76,6 +76,7 @@ import com.ib.cryptimage.core.KeyboardCode;
 import com.ib.cryptimage.core.RangeSlider;
 import com.ib.cryptimage.core.StreamsFinder;
 import com.ib.cryptimage.core.Utils;
+import com.ib.cryptimage.core.systems.discret12.Discret12Conf;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
 import com.ib.cryptimage.core.types.AudioCodecType;
 import com.ib.cryptimage.core.types.ColorType;
@@ -226,6 +227,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					this.mainGui.getRdiDiscretCoding().setSelected(true);
 					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 					this.mainGui.getRdiDiscret68705().setEnabled(false);
+					this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 				}
 				if(this.mainGui.getRdiVideo().isSelected()){			
 					this.mainGui.getRdiDiscretCorrel().setEnabled(true);
@@ -248,6 +250,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}
 				if(this.mainGui.getRdiPhoto().isSelected()){					
 					this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+					this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 					this.mainGui.getRdiDiscretCorrel().setEnabled(false);
 					this.mainGui.getRdiDiscret68705().setEnabled(false);
 					this.mainGui.getRdiDiscretCoding().setSelected(true);
@@ -505,6 +508,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiVideo().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -513,6 +517,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiPhoto().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -536,6 +541,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiVideo().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -544,6 +550,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiPhoto().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -570,6 +577,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiVideo().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -579,6 +587,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiPhoto().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -605,6 +614,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiVideo().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -614,6 +624,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiPhoto().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -640,6 +651,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiVideo().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -649,6 +661,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiPhoto().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -660,6 +673,17 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		mainGui.getRdi944().setEnabled(true);
 		
 		this.mainGui.getChkStrictMode().setEnabled(false);
+		this.mainGui.getRangeSliderDiscret().setValue(1);
+		this.mainGui.getRangeSliderDiscret().setUpperValue(Discret12Conf.frameEnd);
+		
+		this.mainGui.getRangeSliderSyster().setValue(1);
+		this.mainGui.getRangeSliderSyster().setUpperValue(Discret12Conf.frameEnd);
+		
+		this.mainGui.getRangeSliderVideocrypt().setValue(1);
+		this.mainGui.getRangeSliderVideocrypt().setUpperValue(Discret12Conf.frameEnd);
+		
+		this.mainGui.getRangeSliderTranscode().setValue(1);
+		this.mainGui.getRangeSliderTranscode().setUpperValue(Discret12Conf.frameEnd);
 	}
 
 	private void setTranscode(int index) {
@@ -673,6 +697,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiVideo().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -681,6 +706,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		if (this.mainGui.getRdiPhoto().isSelected()) {
 			this.mainGui.getRdiDiscretCorrel().setEnabled(true);
 			this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscretCoding().setSelected(true);
 			this.mainGui.getSlid16bitsWord().setEnabled(true);
 			this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -952,6 +978,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				this.mainGui.getChkStrictMode().setSelected(true);
 				if(this.mainGui.getRdiPhoto().isSelected()){
 					this.mainGui.getRdiDiscretDecoding().setEnabled(false);
+					this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 				}
 				mainGui.getRdi720().setEnabled(true);
 				mainGui.getRdi768().setEnabled(true);
@@ -1003,6 +1030,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				//**setNoMultiCodeComboBox();
 				if(this.mainGui.getChkStrictMode().isSelected()){
 					this.mainGui.getRdiDiscretDecoding().setEnabled(false);	
+					this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 					this.mainGui.getRdiDiscretCoding().setSelected(true);
 					this.mainGui.getSlid16bitsWord().setEnabled(true);
 					this.mainGui.getJsp16bitKeyword().setEnabled(true);
@@ -1014,6 +1042,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				}
 				else{
 					this.mainGui.getRdiDiscretDecoding().setEnabled(true);	
+					this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 					//this.mainGui.getRdiDiscret68705().setEnabled(true);
 				}
 				if (!this.mainGui.getRdiDiscretDecoding().isSelected()
@@ -1045,6 +1074,7 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 		} else if(src.equals(mainGui.getRdiVideo())){
 			
 			this.mainGui.getRdiDiscretDecoding().setEnabled(true);
+			this.mainGui.getRdiDiscretDecodingRadioPlan().setEnabled(true);
 			this.mainGui.getRdiDiscret68705().setEnabled(true);
 			
 			if(!this.mainGui.getChkStrictMode().isSelected()){
@@ -2171,6 +2201,10 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 					&& JobConfig.getSystemCrypt() == SystemType.DISCRET11){
 				JobConfig.setWantDec(true);
 			}
+			if(mainGui.getRdiDiscretDecodingRadioPlan().isSelected()
+					&& JobConfig.getSystemCrypt() == SystemType.DISCRET11){
+				JobConfig.setWantDec(true);
+			}
 			if(mainGui.getRdiDiscretCoding().isSelected() 
 					&& JobConfig.getSystemCrypt() == SystemType.DISCRET11){
 				JobConfig.setWantDec(false);
@@ -2297,7 +2331,12 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 				JobConfig.setWantSound(mainGui.getChkSoundVideocrypt().isSelected());
 				JobConfig.setDisableSound(
 					mainGui.getChkDisableSoundVideocrypt().isSelected());
+			}else if(JobConfig.getSystemCrypt() == SystemType.DISCRET12) {
+				JobConfig.setWantSound(Discret12Conf.getGui().getChkSound().isSelected());
+				JobConfig.setDisableSound(
+						Discret12Conf.getGui().getChkDisableSound().isSelected());
 			}
+			
 			
 			JobConfig.setAutorisations(getAutorisationTab());
 			
@@ -2338,8 +2377,19 @@ DocumentListener, FocusListener, KeyListener, MouseListener, WindowListener {
 			if(JobConfig.getSystemCrypt() == SystemType.TRANSCODE) {//transcode
 				JobConfig.setWantDec(false);
 				JobConfig.setStrictMode(true);
+				JobConfig.setWantSound(true);
+				JobConfig.setDisableSound(false);
 			}
 			
+			if(JobConfig.getSystemCrypt() == SystemType.EUROCRYPT) {// Eurocrypt
+				JobConfig.setWantSound(true);
+				JobConfig.setDisableSound(false);
+			}
+			
+			if(JobConfig.getSystemCrypt() == SystemType.DISCRET12) {// Discret12
+				JobConfig.setWantSound(Discret12Conf.getGui().getChkSound().isSelected());					
+				JobConfig.setDisableSound(Discret12Conf.getGui().getChkDisableSound().isSelected());
+			}
 			
 			JobConfig.setSerial(mainGui.getTxtSerial().getText());
 			JobConfig.setCode(mainGui.getTxtCode().getText());

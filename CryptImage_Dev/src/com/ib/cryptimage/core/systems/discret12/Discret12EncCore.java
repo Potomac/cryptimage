@@ -2,6 +2,7 @@ package com.ib.cryptimage.core.systems.discret12;
 
 import java.awt.image.BufferedImage;
 
+import com.ib.cryptimage.core.JobConfig;
 import com.ib.cryptimage.core.types.SystemType;
 
 public class Discret12EncCore extends Discret12Core {
@@ -14,6 +15,13 @@ public class Discret12EncCore extends Discret12Core {
 		
 		if (image.getWidth() != 768 || image.getHeight() != 576) {
 			image = this.getScaledImage(image, 768, 576);
+		}
+		
+		JobConfig.setInputImage(image);
+		
+		//check shift X and Y
+		if(shiftX != 0 || shiftY !=0) {			
+			image = shift.transform(image, shiftX, shiftY);
 		}
 		
 		if(Discret12Conf.selectedFrameStart <= frameDiscret12

@@ -36,8 +36,10 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import com.ib.cryptimage.gui.VideoPlayer;
+import com.ib.cryptimage.core.systems.discret12.Discret12Conf;
 import com.ib.cryptimage.core.systems.discret12.Discret12DecCore;
 import com.ib.cryptimage.core.systems.discret12.Discret12EncCore;
+import com.ib.cryptimage.core.systems.discret12.Discret12Gui;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptConf;
 import com.ib.cryptimage.core.systems.eurocrypt.EurocryptCore;
 import com.ib.cryptimage.core.systems.luxcrypt.LuxcryptCore;
@@ -225,16 +227,23 @@ public class CryptVideo {
 					else {
 						if (JobConfig.isWantDecCorrel()) {
 							device = new DiscretDecCorrel();
-						}
+						}						
 						else {
-							device = new Discret11Dec(JobConfig.getWord16bits(), this.perc1, this.perc2);
+							if(JobConfig.getGui().getRdiDiscretDecodingRadioPlan().isSelected()) {
+								device = new DiscretDecodeRadioPlan(JobConfig.getDiscretSelectedFrameStart(),
+										                            JobConfig.getDiscretSelectedFrameEnd(),
+										                            "Discret11", false);
+							}
+							else {
+								device = new Discret11Dec(JobConfig.getWord16bits(), this.perc1, this.perc2);
+							}							
 						}
 					}
 				} else {
 					if (JobConfig.isMaskedEdge()) {
 						device = new Discret11EncMaskedBorder(JobConfig.getWord16bits(), this.codePattern, this.cycle,
 								this.perc1, this.perc2);
-					} else { //modif test discret12 retards nuls
+					} else {
 						device = new Discret11Enc(JobConfig.getWord16bits(), this.codePattern, this.cycle, this.perc1,
 								this.perc2);
 					}
@@ -324,7 +333,14 @@ public class CryptVideo {
 		}
 		else if(JobConfig.getSystemCrypt() == SystemType.DISCRET12) { // discret12
 			if(this.isDecoding) {
-				device = new Discret12DecCore();
+				if(Discret12Conf.getGui().getRdiDiscret12DecodingRadioPlan().isSelected()) {
+					device = new DiscretDecodeRadioPlan(Discret12Conf.selectedFrameStart, 
+							                            Discret12Conf.selectedFrameEnd,
+							                            "Discret12", Discret12Conf.getGui().getChkLog().isSelected());
+				}
+				else {
+					device = new Discret12DecCore();
+				}				
 			}
 			else {
 				device = new Discret12EncCore();

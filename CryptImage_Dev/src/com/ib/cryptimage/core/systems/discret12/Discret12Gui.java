@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,6 +28,11 @@ public class Discret12Gui {
 	
 	private JRadioButton rdiDiscret12Coding;
 	private JRadioButton rdiDiscret12Decoding;
+	private JRadioButton rdiDiscret12DecodingRadioPlan;
+	
+	private JCheckBox chkSound;
+	private JCheckBox chkDisableSound;
+	private JCheckBox chkLog;
 
 
 	private Discret12Listener discret12Listener;	
@@ -71,10 +77,28 @@ public class Discret12Gui {
 		rdiDiscret12Decoding = new JRadioButton(res.getString("panDiscret12.decode"));
 		rdiDiscret12Decoding.addActionListener(discret12Listener);
         
+		rdiDiscret12DecodingRadioPlan = new JRadioButton(res.getString("panDiscret12.decodeRadioPlan"));
+		rdiDiscret12DecodingRadioPlan.addActionListener(discret12Listener);
+		
+		chkLog = new JCheckBox(JobConfig.getRes().getString("panDiscret12.chkLog"));
+		chkLog.addActionListener(discret12Listener);	    
+		chkLog.setSelected(false);
+		chkLog.setEnabled(false);
+		
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(rdiDiscret12Coding);
 		btnGroup.add(rdiDiscret12Decoding);
-
+		btnGroup.add(rdiDiscret12DecodingRadioPlan);
+		
+		chkSound = new JCheckBox(JobConfig.getRes().getString("panDiscret12.chkSound"));
+		chkSound.addActionListener(discret12Listener);	    
+	    //chkSound.setToolTipText(JobConfig.getRes().getString("panDiscret12.chkSound.tooltip"));
+	
+	    chkDisableSound = new JCheckBox(JobConfig.getRes().getString("panDiscret12.chkDisableSound"));		
+	    chkDisableSound.addActionListener(discret12Listener);
+	    
+	    chkSound.setSelected(true);
+	    chkDisableSound.setSelected(false);
 		
 		//Discret12 coding placement
 		this.placerComposants(panRdiDiscret12CodingMode,
@@ -93,8 +117,40 @@ public class Discret12Gui {
 				1,1,
 				1,1,
 				1, 1,1,1);
-
-
+		this.placerComposants(panRdiDiscret12CodingMode,
+				gbl,
+				rdiDiscret12DecodingRadioPlan,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 0,
+				1,1,
+				1,1,
+				1, 1,1,1);
+		this.placerComposants(panRdiDiscret12CodingMode,
+				gbl,
+				chkSound,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				0, 1,
+				1,1,
+				1,1,
+				1, 1,1,1);
+		this.placerComposants(panRdiDiscret12CodingMode,
+				gbl,
+				chkDisableSound,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				1, 1,
+				1,1,
+				1,1,
+				1, 1,1,1);
+		this.placerComposants(panRdiDiscret12CodingMode,
+				gbl,
+				chkLog,
+				GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+				2, 1,
+				1,1,
+				1,1,
+				1, 1,1,1);
+		
+		
             
 		// JRangeSlider
 		rangeSlider = new RangeSlider();
@@ -249,7 +305,13 @@ public class Discret12Gui {
 		
 		rdiDiscret12Coding.setText(res.getString("panDiscret12.encode"));
 		rdiDiscret12Decoding.setText(res.getString("panDiscret12.decode"));	
+		rdiDiscret12DecodingRadioPlan.setText(res.getString("panDiscret12.decodeRadioPlan"));
 
+		chkSound.setText(JobConfig.getRes().getString("panDiscret12.chkSound"));
+	    //chkSound.setToolTipText(JobConfig.getRes().getString("panDiscret12.chkSound.tooltip"));
+	
+	    chkDisableSound.setText(JobConfig.getRes().getString("panDiscret12.chkDisableSound"));
+	    chkLog.setText(JobConfig.getRes().getString("panDiscret12.chkLog"));	
 
 		lblRangeSlider.setText(res.getString("rangeSlider.lblFrameStart"));
 	}
@@ -290,6 +352,38 @@ public class Discret12Gui {
 
 	public void setRdiDiscret12Decoding(JRadioButton rdiDiscret12Decoding) {
 		this.rdiDiscret12Decoding = rdiDiscret12Decoding;
+	}
+
+	public JRadioButton getRdiDiscret12DecodingRadioPlan() {
+		return rdiDiscret12DecodingRadioPlan;
+	}
+
+	public void setRdiDiscret12DecodingRadioPlan(JRadioButton rdiDiscret12DecodingRadioPlan) {
+		this.rdiDiscret12DecodingRadioPlan = rdiDiscret12DecodingRadioPlan;
+	}
+
+	public JCheckBox getChkSound() {
+		return chkSound;
+	}
+
+	public void setChkSound(JCheckBox chkSound) {
+		this.chkSound = chkSound;
+	}
+
+	public JCheckBox getChkDisableSound() {
+		return chkDisableSound;
+	}
+
+	public void setChkDisableSound(JCheckBox chkDisableSound) {
+		this.chkDisableSound = chkDisableSound;
+	}
+
+	public JCheckBox getChkLog() {
+		return chkLog;
+	}
+
+	public void setChkLog(JCheckBox chkLog) {
+		this.chkLog = chkLog;
 	}
 	
 }

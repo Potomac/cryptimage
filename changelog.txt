@@ -1,3 +1,8 @@
+v1.9.1 2025-12-26
+- Add Radio Plan decode mode, for Discret11 and Discret12
+- Add options for disable sound coding in Discret12
+- Minor bugfixes in Discret12 GUI
+
 v1.9.0 2025-09-01
 - Add Discret12 (6 frames mode, audience 7 free mode)
 

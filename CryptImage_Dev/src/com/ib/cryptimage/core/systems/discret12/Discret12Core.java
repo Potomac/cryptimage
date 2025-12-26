@@ -85,7 +85,7 @@ public abstract class Discret12Core extends Device {
 		
 		initTabsColor();
 		initAudienceList();
-		JobConfig.setWantSound(true);
+		//JobConfig.setWantSound(true);
 		
 		try {
 			 if(Discret12Conf.isDiscret11) {
